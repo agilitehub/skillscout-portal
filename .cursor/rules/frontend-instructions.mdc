@@ -1,0 +1,19 @@
+---
+description: 
+globs: src/modules/**/*,src/ui/**/*
+alwaysApply: false
+---
+## This rule provides standards for designing User Interfaces (aka frontend development)
+- Always start the file with a comment "Frontend Instructions Rule Applied!".
+- Use Ant Design (antd) and TailwindCSS exclusively to design the user interfaces and functionality.
+- Never use inline CSS and never create CSS resources.
+- All styling must be done through Tailwind only.
+- FontAwesome must be used for ALL icons.
+- Split logic into reusable components within the `components` folder in the folder the primary file is in.
+- Design User Intefaces to be responsive, with emphasis on mobile browsers.
+- Always design for light and dark mode using [ThemeContext.js](mdc:src/ui/ThemeContext.js)
+- Use the already installed "recharts" module for visual reports like charts, etc.
+
+## This rule provides best practices when working with ReactJS specifically
+- Optimize performance using React.memo, useMemo, and useCallback
+- Follow React hooks best practices and rules

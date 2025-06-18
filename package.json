@@ -1,0 +1,55 @@
+{
+  "name": "ai-assessment-portal",
+  "description": "AI Assessment Portal",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "craco start",
+    "build": "craco build",
+    "eject": "craco eject",
+    "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx}\""
+  },
+  "devDependencies": {
+    "@craco/craco": "^7.1.0",
+    "@fortawesome/fontawesome-svg-core": "^6.7.2",
+    "@fortawesome/free-brands-svg-icons": "^6.7.2",
+    "@fortawesome/free-regular-svg-icons": "^6.7.2",
+    "@fortawesome/free-solid-svg-icons": "^6.7.2",
+    "@fortawesome/react-fontawesome": "^0.2.2",
+    "antd": "^5.24.4",
+    "axios": "^1.8.4",
+    "deso-protocol": "^3.3.8",
+    "firebase": "^11.6.0",
+    "lodash": "^4.17.21",
+    "prettier": "^3.5.3",
+    "react": "^19.0.0",
+    "react-deso-protocol": "^0.0.3",
+    "react-dom": "^19.0.0",
+    "react-router-dom": "^7.4.0",
+    "react-scripts": "5.0.1",
+    "react-toastify": "^11.0.5",
+    "recharts": "^2.15.2",
+    "tailwindcss": "^3.4.17",
+    "web-vitals": "^4.2.4"
+  },
+  "dependencies": {
+    "agilite-utils": "7.7.0-rc-3"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

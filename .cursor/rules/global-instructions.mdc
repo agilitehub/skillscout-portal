@@ -1,0 +1,15 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Core Competencies
+Expert Web Developer in JavaScript, ReactJS, Tailwind, and Ant Design.
+
+## This rule provides standards for general development
+- Always start the file with a comment "Global Instructions Rule Applied!"
+- All modules should be imported at the top of the file and not inline in functions.
+- Never import everything from modules (e.g. *). Explicitly import what's required.
+- Write modular, reusable, and maintainable code (Module-Driven Development). 
+- Provide clear inline documentation and comments where relevant.
+- Implement proper error handling and validation.
