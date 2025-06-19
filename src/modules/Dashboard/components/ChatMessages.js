@@ -73,7 +73,10 @@ const ChatMessages = React.memo(({ messages, isTyping, user }) => {
                   />
                   <Text 
                     strong 
-                    className="text-sm text-gray-600 dark:text-gray-300"
+                    style={{
+                      fontSize: '0.875rem',
+                      color: darkMode ? '#ffffff' : '#374151'
+                    }}
                   >
                     Career Match AI
                   </Text>
@@ -104,7 +107,10 @@ const ChatMessages = React.memo(({ messages, isTyping, user }) => {
                   margin: 0, 
                   whiteSpace: 'pre-wrap',
                   fontSize: '0.875rem',
-                  lineHeight: '1.5'
+                  lineHeight: '1.5',
+                  color: message.type === 'user' ? '#ffffff' : 
+                         message.type === 'system' ? (darkMode ? '#fef3c7' : '#92400e') :
+                         darkMode ? '#ffffff' : '#064e3b'
                 }}
                 className="break-words"
               >
@@ -112,13 +118,15 @@ const ChatMessages = React.memo(({ messages, isTyping, user }) => {
               </Paragraph>
               
               <Text 
-                type="secondary" 
                 style={{ 
                   fontSize: '0.75rem', 
                   display: 'block', 
                   textAlign: message.type === 'user' ? 'right' : 'left',
                   marginTop: '8px',
-                  opacity: 0.7
+                  opacity: 0.7,
+                  color: message.type === 'user' ? '#ffffff' : 
+                         message.type === 'system' ? (darkMode ? '#fbbf24' : '#d97706') :
+                         darkMode ? '#ffffff' : '#374151'
                 }}
               >
                 {message.timestamp && new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}

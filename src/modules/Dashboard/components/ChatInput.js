@@ -3,7 +3,7 @@
 import React from 'react'
 import { Button, Input } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPaperPlane, faPaperclip } from '@fortawesome/free-solid-svg-icons'
+import { faPaperPlane, faPaperclip, faCloudUploadAlt } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../ui/ThemeContext'
 
 const { TextArea } = Input
@@ -129,6 +129,21 @@ const ChatInput = React.memo(({
           }}
           icon={<FontAwesomeIcon icon={faPaperPlane} className="text-white" />}
         />
+      </div>
+      
+      {/* Drag & Drop Hint */}
+      <div className="flex items-center justify-center py-2">
+        <div className="flex items-center space-x-2 text-xs text-gray-400 dark:text-gray-300">
+          <FontAwesomeIcon 
+            icon={faCloudUploadAlt} 
+            className="text-xs opacity-60 dark:opacity-80" 
+          />
+          <span className="opacity-60 dark:opacity-80">
+            Drag & drop files here or click 
+            <FontAwesomeIcon icon={faPaperclip} className="mx-1 text-xs" />
+            to upload
+          </span>
+        </div>
       </div>
     </div>
     </>

@@ -19,7 +19,8 @@ import {
   faAward,
   faEye,
   faList,
-  faChartLine
+  faChartLine,
+  faCloudUploadAlt
 } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../ui/ThemeContext'
 import ChatMessages from './ChatMessages'
@@ -124,7 +125,7 @@ const ResumePreviewPanel = React.memo(({ user, uploadedFiles, messages, darkMode
   }, [user, uploadedFiles, messages])
 
   return (
-    <div className="hidden lg:flex lg:w-1/3 xl:w-2/5 bg-white dark:bg-gray-800 flex-col">
+    <div className="hidden lg:flex lg:w-2/5 xl:w-1/2 bg-white dark:bg-gray-800 flex-col">
       {/* Panel Header */}
       <div className="flex-shrink-0 p-4 border-b dark:border-gray-700">
         <div className="flex items-center justify-between mb-3">
@@ -411,6 +412,10 @@ const ChatInterface = React.memo(({
     }
   ])
   const [isTyping, setIsTyping] = useState(false)
+  
+  // Drag and drop state
+  const [isDragOver, setIsDragOver] = useState(false)
+  const [dragCounter, setDragCounter] = useState(0)
 
   // Color palette for theme consistency
   const colors = useMemo(() => ({
@@ -536,8 +541,107 @@ const ChatInterface = React.memo(({
     }
   }, [])
 
+  // Validate file type and size
+  const validateFile = useCallback((file) => {
+    const allowedTypes = ['pdf', 'doc', 'docx', 'txt', 'jpg', 'jpeg', 'png']
+    const fileExtension = file.name.split('.').pop().toLowerCase()
+    const isValidType = allowedTypes.includes(fileExtension)
+    const isValidSize = file.size <= 10 * 1024 * 1024 // 10MB limit
+    
+    if (!isValidType) {
+      message.error(`${file.name} is not a supported file type. Supported types: PDF, DOC, DOCX, TXT, JPG, JPEG, PNG`)
+      return false
+    }
+    
+    if (!isValidSize) {
+      message.error(`${file.name} must be smaller than 10MB`)
+      return false
+    }
+    
+    return true
+  }, [])
+
+  // Handle drag and drop events
+  const handleDragEnter = useCallback((e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setDragCounter(prev => prev + 1)
+    if (e.dataTransfer.items && e.dataTransfer.items.length > 0) {
+      setIsDragOver(true)
+    }
+  }, [])
+
+  const handleDragLeave = useCallback((e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setDragCounter(prev => prev - 1)
+    if (dragCounter <= 1) {
+      setIsDragOver(false)
+    }
+  }, [dragCounter])
+
+  const handleDragOver = useCallback((e) => {
+    e.preventDefault()
+    e.stopPropagation()
+  }, [])
+
+  const handleDrop = useCallback((e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragOver(false)
+    setDragCounter(0)
+    
+    const files = Array.from(e.dataTransfer.files)
+    if (files.length === 0) return
+    
+    const validFiles = files.filter(validateFile)
+    if (validFiles.length === 0) return
+    
+    const mockFileList = validFiles.map((file, index) => ({
+      uid: Date.now() + index,
+      name: file.name,
+      size: file.size,
+      type: file.type,
+      status: 'done',
+      originFileObj: file
+    }))
+    
+    handleUpload({ fileList: mockFileList, file: mockFileList[0] })
+    
+    if (validFiles.length > 1) {
+      message.success(`${validFiles.length} files uploaded successfully`)
+    }
+  }, [validateFile, handleUpload])
+
   return (
-    <div className="h-full flex flex-col bg-gray-50 dark:bg-gray-900 relative overflow-hidden">
+    <div 
+      className="h-full flex flex-col bg-gray-50 dark:bg-gray-900 relative overflow-hidden"
+      onDragEnter={handleDragEnter}
+      onDragLeave={handleDragLeave}
+      onDragOver={handleDragOver}
+      onDrop={handleDrop}
+    >
+      {/* Drag and Drop Overlay */}
+      {isDragOver && (
+        <div className="absolute inset-0 z-50 bg-blue-500/20 dark:bg-blue-400/20 border-4 border-dashed border-blue-500 dark:border-blue-400 rounded-lg flex items-center justify-center backdrop-blur-sm">
+          <div className="text-center p-8">
+            <FontAwesomeIcon 
+              icon={faCloudUploadAlt} 
+              className="text-6xl text-blue-500 dark:text-blue-400 mb-4" 
+            />
+            <h3 className="text-2xl font-bold text-blue-600 dark:text-blue-300 mb-2">
+              Drop files here to upload
+            </h3>
+            <p className="text-blue-500 dark:text-blue-400">
+              Supported formats: PDF, DOC, DOCX, TXT, JPG, JPEG, PNG
+            </p>
+            <p className="text-sm text-blue-400 dark:text-blue-500 mt-1">
+              Maximum file size: 10MB
+            </p>
+          </div>
+        </div>
+      )}
+      
       {/* Background Elements */}
       <div className="fixed inset-0 pointer-events-none">
         {darkMode ? (
@@ -606,7 +710,7 @@ const ChatInterface = React.memo(({
               {/* Two-Panel Layout */}
         <div className="flex-1 flex overflow-hidden">
           {/* Left Panel - Chat Interface */}
-          <div className="flex-1 flex flex-col lg:w-2/3 xl:w-3/5">
+          <div className="flex-1 flex flex-col lg:w-3/5 xl:w-1/2">
             {/* Uploaded Files Section - Compact */}
         {uploadedFiles.length > 0 && (
               <div className="flex-shrink-0 px-4 py-2 bg-white dark:bg-gray-800 border-b dark:border-gray-700">
