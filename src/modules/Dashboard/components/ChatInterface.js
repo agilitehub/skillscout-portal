@@ -375,7 +375,11 @@ const ChatInterface = React.memo(({ user }) => {
     handleFileUpload,
     handleFileRemove,
     clearChat,
-    getChatStats
+    getChatStats,
+    hasMoreMessages,
+    isLoadingMore,
+    loadMoreMessages,
+    isLoadingHistorical
   } = useChat(user)
 
   // Internal color palette for Career Match AI
@@ -534,6 +538,10 @@ const ChatInterface = React.memo(({ user }) => {
                 user={user}
                 uploadedFiles={uploadedFiles}
                 showFileInfo={true}
+                hasMoreMessages={hasMoreMessages}
+                isLoadingMore={isLoadingMore}
+                isLoadingHistorical={isLoadingHistorical}
+                onLoadMoreMessages={loadMoreMessages}
               />
             </div>
 

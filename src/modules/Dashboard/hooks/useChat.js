@@ -37,6 +37,10 @@ export const useChat = (user = null) => {
   const [chatHistory, setChatHistory] = useState([])
   const [isInitialized, setIsInitialized] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
+  const [messageLimit, setMessageLimit] = useState(5) // Start with 5 messages
+  const [hasMoreMessages, setHasMoreMessages] = useState(true) // Track if more messages exist
+  const [isLoadingMore, setIsLoadingMore] = useState(false) // Loading state for pagination
+  const [isLoadingHistorical, setIsLoadingHistorical] = useState(false) // Track historical loading
   const abortControllerRef = useRef(null)
 
   // Chat initialization with Supabase thread_id
@@ -63,10 +67,14 @@ export const useChat = (user = null) => {
         }
         // 3. Set threadId in controller, then fetch messages
         controller.setThreadId(threadIdFromDb)
-        const response = await controller.getMessages()
+        const response = await controller.getMessages(messageLimit)
         let formattedMessages = response.data.map(formatMessage)
         // Sort by timestamp ascending (oldest first, latest last)
         formattedMessages.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))
+
+        // Check if there are more messages available
+        setHasMoreMessages(response.data.length === messageLimit)
+
         if (formattedMessages.length === 0) {
           // Add welcome message if thread is new/empty
           formattedMessages = [
@@ -87,6 +95,26 @@ export const useChat = (user = null) => {
     }
     initializeChat()
   }, [user, controller, config, mockResponses])
+
+  // Load messages when messageLimit changes (for pagination)
+  useEffect(() => {
+    const loadMessagesWithLimit = async () => {
+      if (!user?.id || !isInitialized || !controller.getThreadId()) return
+
+      try {
+        const response = await controller.getMessages(messageLimit)
+        let formattedMessages = response.data.map(formatMessage)
+        formattedMessages.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))
+        const hasMore = response.data.length === messageLimit
+        setHasMoreMessages(hasMore)
+        setChatHistory(formattedMessages)
+      } catch (error) {
+        console.error('Failed to load messages with new limit:', error)
+      }
+    }
+
+    loadMessagesWithLimit()
+  }, [messageLimit, user?.id, isInitialized, controller])
 
   // Handle AI errors
   useEffect(() => {
@@ -321,6 +349,27 @@ export const useChat = (user = null) => {
     return isInitialized && (!config.development.mockResponses ? !!controller.getThreadId() : true)
   }, [isInitialized, controller, config.development.mockResponses])
 
+  // Load more messages
+  const loadMoreMessages = useCallback(async () => {
+    if (!user?.id || !isInitialized || !hasMoreMessages || isLoadingMore) return
+
+    setIsLoadingMore(true)
+    setIsLoadingHistorical(true)
+
+    try {
+      // Increment the message limit by 5
+      const newLimit = messageLimit + 5
+      setMessageLimit(newLimit)
+    } catch (error) {
+      console.error('Error loading more messages:', error)
+      message.error('Failed to load more messages. Please try again.')
+    } finally {
+      setIsLoadingMore(false)
+      // Keep isLoadingHistorical true for a bit longer to prevent auto-scroll
+      setTimeout(() => setIsLoadingHistorical(false), 500)
+    }
+  }, [user?.id, isInitialized, hasMoreMessages, isLoadingMore, messageLimit])
+
   return {
     // State
     messages: chatHistory,
@@ -332,12 +381,17 @@ export const useChat = (user = null) => {
     isChatReady: isChatReady(),
     isUploading,
     threadId: controller.getThreadId(),
+    messageLimit,
+    hasMoreMessages,
+    isLoadingMore,
+    isLoadingHistorical,
     // Actions
     sendMessage,
     handleFileUpload,
     handleFileRemove,
     clearChat,
     resumeConversation,
+    loadMoreMessages,
     // Utilities
     getChatStats,
     // Configuration
