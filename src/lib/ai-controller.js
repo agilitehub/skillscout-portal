@@ -1,5 +1,5 @@
 // Global Instructions Rule Applied!
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useRef } from 'react'
 
 /**
  * AI Controller for OpenAI Threads Integration (v2 API)
@@ -249,20 +249,15 @@ class AIController {
  * Provides a clean interface for using the AI controller in React components
  */
 export const useAIController = (apiKey, assistantId = null) => {
-  // Persist threadId in localStorage
-  const getInitialThreadId = () => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('openai_thread_id') || null
-    }
-    return null
+  // Stable controller instance for the lifetime of the hook
+  const controllerRef = useRef(null)
+  if (!controllerRef.current) {
+    controllerRef.current = new AIController(apiKey, assistantId)
   }
-
-  // Memoize controller instance to prevent recreation on every render
-  const controller = useMemo(() => new AIController(apiKey, assistantId), [apiKey, assistantId])
+  const controller = controllerRef.current
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null)
   const [messages, setMessages] = useState([])
-  const [threadId, setThreadId] = useState(getInitialThreadId())
   const [isProcessing, setIsProcessing] = useState(false)
 
   // Initialize thread on mount or when needed
@@ -271,15 +266,10 @@ export const useAIController = (apiKey, assistantId = null) => {
       setIsLoading(true)
       setError(null)
       // Only create a new thread if one does not exist
-      if (threadId) {
-        controller.setThreadId(threadId)
-        return { id: threadId }
+      if (controller.getThreadId()) {
+        return { id: controller.getThreadId() }
       }
       const thread = await controller.createThread()
-      setThreadId(thread.id)
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('openai_thread_id', thread.id)
-      }
       return thread
     } catch (err) {
       setError(err.message)
@@ -287,7 +277,7 @@ export const useAIController = (apiKey, assistantId = null) => {
     } finally {
       setIsLoading(false)
     }
-  }, [controller, threadId])
+  }, [controller])
 
   // Send message and get response
   const sendMessage = useCallback(
@@ -296,13 +286,13 @@ export const useAIController = (apiKey, assistantId = null) => {
         setIsLoading(true)
         setError(null)
         setIsProcessing(true)
-        // Always use the persisted threadId
-        let currentThreadId = threadId
+        // Always use the controller's threadId
+        let currentThreadId = controller.getThreadId()
         if (!currentThreadId) {
           const thread = await initializeThread()
           currentThreadId = thread.id
+          controller.setThreadId(currentThreadId)
         }
-        controller.setThreadId(currentThreadId)
         // Add user message to local state
         const userMessage = {
           id: Date.now().toString(),
@@ -331,16 +321,16 @@ export const useAIController = (apiKey, assistantId = null) => {
         setIsProcessing(false)
       }
     },
-    [controller, threadId, initializeThread]
+    [controller, initializeThread]
   )
 
   // Load existing messages
   const loadMessages = useCallback(async () => {
     try {
+      const threadId = controller.getThreadId()
       if (!threadId) return
       setIsLoading(true)
       setError(null)
-      controller.setThreadId(threadId)
       const response = await controller.getMessages()
       const formattedMessages = response.data.map((msg) => ({
         id: msg.id,
@@ -354,16 +344,12 @@ export const useAIController = (apiKey, assistantId = null) => {
     } finally {
       setIsLoading(false)
     }
-  }, [controller, threadId])
+  }, [controller])
 
   // Resume existing thread
   const resumeThread = useCallback(
     (existingThreadId) => {
       controller.setThreadId(existingThreadId)
-      setThreadId(existingThreadId)
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('openai_thread_id', existingThreadId)
-      }
     },
     [controller]
   )
@@ -371,10 +357,6 @@ export const useAIController = (apiKey, assistantId = null) => {
   // Clear messages and thread
   const clearMessages = useCallback(() => {
     setMessages([])
-    setThreadId(null)
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('openai_thread_id')
-    }
     controller.setThreadId(null)
   }, [controller])
 
@@ -384,10 +366,10 @@ export const useAIController = (apiKey, assistantId = null) => {
       isLoading,
       error,
       messages,
-      threadId,
+      threadId: controller.getThreadId(),
       isProcessing
     }),
-    [isLoading, error, messages, threadId, isProcessing]
+    [isLoading, error, messages, isProcessing, controller]
   )
 
   return {
@@ -395,7 +377,7 @@ export const useAIController = (apiKey, assistantId = null) => {
     isLoading,
     error,
     messages,
-    threadId,
+    threadId: controller.getThreadId(),
     isProcessing,
 
     // Actions

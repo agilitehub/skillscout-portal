@@ -325,5 +325,63 @@ export const refreshSession = async () => {
   }
 }
 
+/**
+ * Ensure the user record exists in the users table.
+ * @param {string} userId - The user's unique id (uuid)
+ * @returns {Promise<boolean>} True if exists or created, false otherwise
+ */
+export const ensureUserRecord = async (userId) => {
+  try {
+    if (!supabase) throw new Error('Supabase client not initialized')
+    if (!userId) throw new Error('User ID is required')
+    // Upsert: insert if not exists, else do nothing
+    const { error } = await supabase.from('users').upsert([{ id: userId }], { onConflict: ['id'] })
+    if (error) throw error
+    return true
+  } catch (error) {
+    console.error('Supabase Controller: ensureUserRecord error:', error)
+    return false
+  }
+}
+
+/**
+ * Get the thread_id for a user from the users table
+ * @param {string} userId - The user's unique id
+ * @returns {Promise<string|null>} The thread_id or null if not found
+ */
+export const getUserThreadId = async (userId) => {
+  try {
+    await ensureUserRecord(userId)
+    if (!supabase) throw new Error('Supabase client not initialized')
+    if (!userId) throw new Error('User ID is required')
+    const { data, error } = await supabase.from('users').select('thread_id').eq('id', userId).single()
+    if (error) throw error
+    return data?.thread_id || null
+  } catch (error) {
+    console.error('Supabase Controller: getUserThreadId error:', error)
+    return null
+  }
+}
+
+/**
+ * Set the thread_id for a user in the users table
+ * @param {string} userId - The user's unique id
+ * @param {string} threadId - The thread id to set
+ * @returns {Promise<boolean>} True if successful, false otherwise
+ */
+export const setUserThreadId = async (userId, threadId) => {
+  try {
+    await ensureUserRecord(userId)
+    if (!supabase) throw new Error('Supabase client not initialized')
+    if (!userId || !threadId) throw new Error('User ID and thread ID are required')
+    const { error } = await supabase.from('users').update({ thread_id: threadId }).eq('id', userId)
+    if (error) throw error
+    return true
+  } catch (error) {
+    console.error('Supabase Controller: setUserThreadId error:', error)
+    return false
+  }
+}
+
 // Export the Supabase client for direct access if needed
 export { supabase }
