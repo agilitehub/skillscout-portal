@@ -34,7 +34,9 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.50.0",
-    "agilite-utils": "7.7.0-rc-3"
+    "agilite-utils": "7.7.0-rc-3",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1"
   },
   "eslintConfig": {
     "extends": [
