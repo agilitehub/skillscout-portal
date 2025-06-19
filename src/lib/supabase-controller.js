@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 
 /**
- * Supabase Controller for Magic Link Authentication
+ * Supabase Controller for Magic Link Authentication and File Storage
  * Implements passwordless email authentication with comprehensive error handling
  * Follows module-driven development principles with proper validation
  */
@@ -380,6 +380,382 @@ export const setUserThreadId = async (userId, threadId) => {
   } catch (error) {
     console.error('Supabase Controller: setUserThreadId error:', error)
     return false
+  }
+}
+
+/**
+ * Upload file to Supabase Storage in user-specific folder
+ * @param {File} file - File object to upload
+ * @param {string} userId - User's UUID for folder organization
+ * @param {string} bucketName - Storage bucket name (default: 'file-uploads')
+ * @returns {Promise<Object>} Result object with success status and file data
+ */
+export const uploadFileToStorage = async (file, userId, bucketName = 'file-uploads') => {
+  try {
+    if (!supabase) {
+      return {
+        success: false,
+        error: 'Supabase client not initialized'
+      }
+    }
+
+    if (!file || !(file instanceof File)) {
+      return {
+        success: false,
+        error: 'Valid file object is required'
+      }
+    }
+
+    if (!userId || typeof userId !== 'string') {
+      return {
+        success: false,
+        error: 'Valid user ID is required'
+      }
+    }
+
+    // Validate file size (max 50MB)
+    const maxSize = 50 * 1024 * 1024 // 50MB
+    if (file.size > maxSize) {
+      return {
+        success: false,
+        error: `File size exceeds limit. Maximum size is ${maxSize / (1024 * 1024)}MB`
+      }
+    }
+
+    // Validate file type
+    const allowedTypes = [
+      'application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'text/plain',
+      'image/jpeg',
+      'image/png',
+      'image/gif',
+      'image/webp',
+      'application/vnd.ms-excel',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'text/csv'
+    ]
+
+    if (!allowedTypes.includes(file.type)) {
+      return {
+        success: false,
+        error: 'File type not supported'
+      }
+    }
+
+    // Generate unique filename with timestamp
+    const timestamp = Date.now()
+    const fileExtension = file.name.split('.').pop()
+    const uniqueFileName = `${timestamp}_${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`
+    const filePath = `${userId}/${uniqueFileName}`
+
+    // Upload file to Supabase Storage
+    const { data, error } = await supabase.storage.from(bucketName).upload(filePath, file, {
+      cacheControl: '3600',
+      upsert: false
+    })
+
+    if (error) {
+      console.error('Supabase Controller: File upload error:', error)
+      return {
+        success: false,
+        error: error.message || 'Failed to upload file'
+      }
+    }
+
+    // Get public URL for the uploaded file
+    const { data: urlData } = supabase.storage.from(bucketName).getPublicUrl(filePath)
+
+    return {
+      success: true,
+      message: 'File uploaded successfully',
+      data: {
+        id: data.id,
+        path: data.path,
+        name: file.name,
+        size: file.size,
+        type: file.type,
+        url: urlData.publicUrl,
+        uploadedAt: new Date().toISOString(),
+        userId: userId
+      }
+    }
+  } catch (error) {
+    console.error('Supabase Controller: Unexpected error in uploadFileToStorage:', error)
+    return {
+      success: false,
+      error: 'An unexpected error occurred during file upload'
+    }
+  }
+}
+
+/**
+ * Upload multiple files to Supabase Storage
+ * @param {File[]} files - Array of File objects to upload
+ * @param {string} userId - User's UUID for folder organization
+ * @param {string} bucketName - Storage bucket name (default: 'file-uploads')
+ * @returns {Promise<Object>} Result object with success status and uploaded files data
+ */
+export const uploadMultipleFiles = async (files, userId, bucketName = 'file-uploads') => {
+  try {
+    if (!Array.isArray(files) || files.length === 0) {
+      return {
+        success: false,
+        error: 'Valid array of files is required'
+      }
+    }
+
+    const uploadPromises = files.map((file) => uploadFileToStorage(file, userId, bucketName))
+    const results = await Promise.allSettled(uploadPromises)
+
+    const successfulUploads = []
+    const failedUploads = []
+
+    results.forEach((result, index) => {
+      if (result.status === 'fulfilled' && result.value.success) {
+        successfulUploads.push(result.value.data)
+      } else {
+        failedUploads.push({
+          file: files[index].name,
+          error: result.status === 'rejected' ? result.reason : result.value.error
+        })
+      }
+    })
+
+    return {
+      success: successfulUploads.length > 0,
+      message: `Successfully uploaded ${successfulUploads.length} of ${files.length} files`,
+      data: {
+        successful: successfulUploads,
+        failed: failedUploads
+      }
+    }
+  } catch (error) {
+    console.error('Supabase Controller: Unexpected error in uploadMultipleFiles:', error)
+    return {
+      success: false,
+      error: 'An unexpected error occurred during multiple file upload'
+    }
+  }
+}
+
+/**
+ * Get files for a specific user from storage
+ * @param {string} userId - User's UUID
+ * @param {string} bucketName - Storage bucket name (default: 'file-uploads')
+ * @returns {Promise<Object>} Result object with user's files
+ */
+export const getUserFiles = async (userId, bucketName = 'file-uploads') => {
+  try {
+    if (!supabase) {
+      return {
+        success: false,
+        error: 'Supabase client not initialized',
+        files: []
+      }
+    }
+
+    if (!userId || typeof userId !== 'string') {
+      return {
+        success: false,
+        error: 'Valid user ID is required',
+        files: []
+      }
+    }
+
+    const { data, error } = await supabase.storage.from(bucketName).list(userId, {
+      limit: 100,
+      offset: 0,
+      sortBy: { column: 'created_at', order: 'desc' }
+    })
+
+    if (error) {
+      console.error('Supabase Controller: Get user files error:', error)
+      return {
+        success: false,
+        error: error.message,
+        files: []
+      }
+    }
+
+    // Get public URLs for all files
+    const filesWithUrls = data.map((file) => {
+      const { data: urlData } = supabase.storage.from(bucketName).getPublicUrl(`${userId}/${file.name}`)
+
+      return {
+        id: file.id,
+        name: file.name,
+        size: file.metadata?.size || 0,
+        type: file.metadata?.mimetype || 'application/octet-stream',
+        url: urlData.publicUrl,
+        createdAt: file.created_at,
+        updatedAt: file.updated_at,
+        userId: userId
+      }
+    })
+
+    return {
+      success: true,
+      files: filesWithUrls,
+      error: null
+    }
+  } catch (error) {
+    console.error('Supabase Controller: Unexpected error in getUserFiles:', error)
+    return {
+      success: false,
+      error: 'An unexpected error occurred while fetching user files',
+      files: []
+    }
+  }
+}
+
+/**
+ * Delete file from Supabase Storage
+ * @param {string} filePath - Full path to the file in storage
+ * @param {string} bucketName - Storage bucket name (default: 'file-uploads')
+ * @returns {Promise<Object>} Result object with success status
+ */
+export const deleteFileFromStorage = async (filePath, bucketName = 'file-uploads') => {
+  try {
+    if (!supabase) {
+      return {
+        success: false,
+        error: 'Supabase client not initialized'
+      }
+    }
+
+    if (!filePath || typeof filePath !== 'string') {
+      return {
+        success: false,
+        error: 'Valid file path is required'
+      }
+    }
+
+    const { error } = await supabase.storage.from(bucketName).remove([filePath])
+
+    if (error) {
+      console.error('Supabase Controller: Delete file error:', error)
+      return {
+        success: false,
+        error: error.message || 'Failed to delete file'
+      }
+    }
+
+    return {
+      success: true,
+      message: 'File deleted successfully'
+    }
+  } catch (error) {
+    console.error('Supabase Controller: Unexpected error in deleteFileFromStorage:', error)
+    return {
+      success: false,
+      error: 'An unexpected error occurred while deleting file'
+    }
+  }
+}
+
+/**
+ * Get file download URL (signed URL for private files)
+ * @param {string} filePath - Full path to the file in storage
+ * @param {string} bucketName - Storage bucket name (default: 'file-uploads')
+ * @param {number} expiresIn - URL expiration time in seconds (default: 3600)
+ * @returns {Promise<Object>} Result object with download URL
+ */
+export const getFileDownloadUrl = async (filePath, bucketName = 'file-uploads', expiresIn = 3600) => {
+  try {
+    if (!supabase) {
+      return {
+        success: false,
+        error: 'Supabase client not initialized',
+        url: null
+      }
+    }
+
+    if (!filePath || typeof filePath !== 'string') {
+      return {
+        success: false,
+        error: 'Valid file path is required',
+        url: null
+      }
+    }
+
+    const { data, error } = await supabase.storage.from(bucketName).createSignedUrl(filePath, expiresIn)
+
+    if (error) {
+      console.error('Supabase Controller: Get download URL error:', error)
+      return {
+        success: false,
+        error: error.message,
+        url: null
+      }
+    }
+
+    return {
+      success: true,
+      url: data.signedUrl,
+      error: null
+    }
+  } catch (error) {
+    console.error('Supabase Controller: Unexpected error in getFileDownloadUrl:', error)
+    return {
+      success: false,
+      error: 'An unexpected error occurred while generating download URL',
+      url: null
+    }
+  }
+}
+
+/**
+ * Update file metadata in storage
+ * @param {string} filePath - Full path to the file in storage
+ * @param {Object} metadata - Metadata to update
+ * @param {string} bucketName - Storage bucket name (default: 'file-uploads')
+ * @returns {Promise<Object>} Result object with success status
+ */
+export const updateFileMetadata = async (filePath, metadata, bucketName = 'file-uploads') => {
+  try {
+    if (!supabase) {
+      return {
+        success: false,
+        error: 'Supabase client not initialized'
+      }
+    }
+
+    if (!filePath || typeof filePath !== 'string') {
+      return {
+        success: false,
+        error: 'Valid file path is required'
+      }
+    }
+
+    if (!metadata || typeof metadata !== 'object') {
+      return {
+        success: false,
+        error: 'Valid metadata object is required'
+      }
+    }
+
+    const { error } = await supabase.storage.from(bucketName).update(filePath, metadata)
+
+    if (error) {
+      console.error('Supabase Controller: Update metadata error:', error)
+      return {
+        success: false,
+        error: error.message || 'Failed to update file metadata'
+      }
+    }
+
+    return {
+      success: true,
+      message: 'File metadata updated successfully'
+    }
+  } catch (error) {
+    console.error('Supabase Controller: Unexpected error in updateFileMetadata:', error)
+    return {
+      success: false,
+      error: 'An unexpected error occurred while updating file metadata'
+    }
   }
 }
 

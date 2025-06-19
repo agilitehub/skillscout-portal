@@ -1,19 +1,27 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
 import React, { useRef, useCallback } from 'react'
-import { Button, Input, message } from 'antd'
+import { Button, Input, message, Progress } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPaperPlane, faPaperclip, faCloudUploadAlt } from '@fortawesome/free-solid-svg-icons'
+import { faPaperPlane, faPaperclip, faCloudUploadAlt, faSpinner } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../ui/ThemeContext'
 
 const { TextArea } = Input
 
 /**
  * ChatInput component - Handles chat input with send functionality and file uploads
- * Implements responsive design, theme support, and AI integration
+ * Implements responsive design, theme support, and AI integration with Supabase storage
  */
 const ChatInput = React.memo(
-  ({ onSendMessage, onAttachFile, onFileUpload, disabled = false, isTyping = false, maxLength = 4000 }) => {
+  ({
+    onSendMessage,
+    onAttachFile,
+    onFileUpload,
+    disabled = false,
+    isTyping = false,
+    isUploading = false,
+    maxLength = 4000
+  }) => {
     const { darkMode } = useTheme()
     const [userInput, setUserInput] = React.useState('')
     const fileInputRef = useRef(null)
@@ -28,11 +36,11 @@ const ChatInput = React.memo(
 
     // Handle sending message
     const handleSendMessage = useCallback(() => {
-      if (userInput.trim() && !disabled && !isTyping) {
+      if (userInput.trim() && !disabled && !isTyping && !isUploading) {
         onSendMessage?.(userInput.trim())
         setUserInput('')
       }
-    }, [userInput, disabled, isTyping, onSendMessage])
+    }, [userInput, disabled, isTyping, isUploading, onSendMessage])
 
     // Handle key press
     const handleKeyPress = useCallback(
@@ -58,7 +66,11 @@ const ChatInput = React.memo(
             'text/plain',
             'image/jpeg',
             'image/png',
-            'image/gif'
+            'image/gif',
+            'image/webp',
+            'application/vnd.ms-excel',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'text/csv'
           ]
 
           const validFiles = Array.from(files).filter((file) => {
@@ -67,9 +79,9 @@ const ChatInput = React.memo(
               return false
             }
 
-            // Check file size (max 10MB)
-            if (file.size > 10 * 1024 * 1024) {
-              message.warning(`File too large: ${file.name} (max 10MB)`)
+            // Check file size (max 50MB)
+            if (file.size > 50 * 1024 * 1024) {
+              message.warning(`File too large: ${file.name} (max 50MB)`)
               return false
             }
 
@@ -92,10 +104,10 @@ const ChatInput = React.memo(
 
     // Handle attach file button click
     const handleAttachFileClick = useCallback(() => {
-      if (fileInputRef.current) {
+      if (fileInputRef.current && !isUploading) {
         fileInputRef.current.click()
       }
-    }, [])
+    }, [isUploading])
 
     // Handle drag and drop
     const handleDragOver = useCallback((e) => {
@@ -108,6 +120,11 @@ const ChatInput = React.memo(
         e.preventDefault()
         e.stopPropagation()
 
+        if (isUploading) {
+          message.warning('Please wait for current upload to complete')
+          return
+        }
+
         const files = e.dataTransfer.files
         if (files && files.length > 0) {
           // Validate and process files
@@ -118,7 +135,11 @@ const ChatInput = React.memo(
             'text/plain',
             'image/jpeg',
             'image/png',
-            'image/gif'
+            'image/gif',
+            'image/webp',
+            'application/vnd.ms-excel',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'text/csv'
           ]
 
           const validFiles = Array.from(files).filter((file) => {
@@ -127,8 +148,8 @@ const ChatInput = React.memo(
               return false
             }
 
-            if (file.size > 10 * 1024 * 1024) {
-              message.warning(`File too large: ${file.name} (max 10MB)`)
+            if (file.size > 50 * 1024 * 1024) {
+              message.warning(`File too large: ${file.name} (max 50MB)`)
               return false
             }
 
@@ -140,12 +161,12 @@ const ChatInput = React.memo(
           }
         }
       },
-      [onFileUpload]
+      [onFileUpload, isUploading]
     )
 
     // Check if input is valid
-    const isInputValid = userInput.trim().length > 0 && !disabled && !isTyping
-    const isDisabled = disabled || isTyping
+    const isInputValid = userInput.trim().length > 0 && !disabled && !isTyping && !isUploading
+    const isDisabled = disabled || isTyping || isUploading
 
     return (
       <>
@@ -154,7 +175,7 @@ const ChatInput = React.memo(
           ref={fileInputRef}
           type='file'
           multiple
-          accept='.pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.gif'
+          accept='.pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.gif,.webp,.xls,.xlsx,.csv'
           onChange={handleFileChange}
           style={{ display: 'none' }}
         />
@@ -182,6 +203,29 @@ const ChatInput = React.memo(
           onDragOver={handleDragOver}
           onDrop={handleDrop}
         >
+          {/* Upload Progress Bar */}
+          {isUploading && (
+            <div className='mb-3'>
+              <div className='flex items-center justify-between mb-1'>
+                <span className='text-xs text-gray-500 dark:text-gray-400 flex items-center'>
+                  <FontAwesomeIcon icon={faSpinner} className='animate-spin mr-2' />
+                  Uploading files...
+                </span>
+              </div>
+              <Progress
+                percent={100}
+                status='active'
+                showInfo={false}
+                strokeColor={{
+                  '0%': colors.shakespeare,
+                  '100%': colors.emeraldPrimary
+                }}
+                trailColor={darkMode ? '#374151' : '#f3f4f6'}
+                size='small'
+              />
+            </div>
+          )}
+
           <div className='flex items-center gap-3'>
             {/* Attachment Button */}
             <Button
@@ -197,7 +241,13 @@ const ChatInput = React.memo(
                 color: darkMode ? colors.shakespeare : colors.seaGreen,
                 opacity: isDisabled ? 0.5 : 1
               }}
-              icon={<FontAwesomeIcon icon={faPaperclip} className='text-lg' />}
+              icon={
+                isUploading ? (
+                  <FontAwesomeIcon icon={faSpinner} className='text-lg animate-spin' />
+                ) : (
+                  <FontAwesomeIcon icon={faPaperclip} className='text-lg' />
+                )
+              }
             />
 
             {/* Text Input */}
@@ -221,11 +271,13 @@ const ChatInput = React.memo(
               }}
               className={`flex-grow ${darkMode ? 'dark-mode-input' : ''}`}
               placeholder={
-                isTyping
-                  ? 'AI is typing...'
-                  : isDisabled
-                    ? 'Chat is disabled...'
-                    : 'Tell me about your career goals or ask for interview preparation help...'
+                isUploading
+                  ? 'Uploading files...'
+                  : isTyping
+                    ? 'AI is typing...'
+                    : isDisabled
+                      ? 'Chat is disabled...'
+                      : 'Tell me about your career goals or ask for interview preparation help...'
               }
             />
 
@@ -260,9 +312,15 @@ const ChatInput = React.memo(
             <div className='flex items-center space-x-2 text-xs text-gray-400 dark:text-gray-300'>
               <FontAwesomeIcon icon={faCloudUploadAlt} className='text-xs opacity-60 dark:opacity-80' />
               <span className='opacity-60 dark:opacity-80'>
-                Drag & drop files here or click
-                <FontAwesomeIcon icon={faPaperclip} className='mx-1 text-xs' />
-                to upload
+                {isUploading ? (
+                  'Uploading files...'
+                ) : (
+                  <>
+                    Drag & drop files here or click
+                    <FontAwesomeIcon icon={faPaperclip} className='mx-1 text-xs' />
+                    to upload
+                  </>
+                )}
               </span>
             </div>
           </div>

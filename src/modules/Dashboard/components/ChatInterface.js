@@ -375,6 +375,7 @@ const ChatInterface = React.memo(({ user }) => {
     uploadedFiles,
     isInitialized,
     isChatReady,
+    isUploading,
     sendMessage,
     handleFileUpload,
     handleFileRemove,
@@ -549,6 +550,7 @@ const ChatInterface = React.memo(({ user }) => {
                 onFileUpload={handleFileUpload}
                 disabled={!isChatReady}
                 isTyping={isTyping}
+                isUploading={isUploading}
                 maxLength={4000}
               />
             </div>

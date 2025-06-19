@@ -3,11 +3,17 @@ import { useState, useCallback, useEffect, useRef, useMemo } from 'react'
 import { message } from 'antd'
 import { useAIController, handleAIError, formatMessage } from '../../../lib/ai-controller'
 import { getValidatedConfig, getMockResponses } from '../../../lib/ai-config'
-import { getUserThreadId, setUserThreadId } from '../../../lib/supabase-controller'
+import {
+  getUserThreadId,
+  setUserThreadId,
+  uploadMultipleFiles,
+  getUserFiles,
+  deleteFileFromStorage
+} from '../../../lib/supabase-controller'
 
 /**
- * Custom hook for chat functionality with AI integration
- * Provides a clean interface for chat components
+ * Custom hook for chat functionality with AI integration and Supabase file storage
+ * Provides a clean interface for chat components with persistent file storage
  */
 export const useChat = (user = null) => {
   // Configuration - memoized to prevent infinite re-renders
@@ -33,6 +39,7 @@ export const useChat = (user = null) => {
   const [uploadedFiles, setUploadedFiles] = useState([])
   const [chatHistory, setChatHistory] = useState([])
   const [isInitialized, setIsInitialized] = useState(false)
+  const [isUploading, setIsUploading] = useState(false)
   const abortControllerRef = useRef(null)
 
   // Chat initialization with Supabase thread_id
@@ -158,34 +165,124 @@ export const useChat = (user = null) => {
     [aiSendMessage, controller, config.development.mockResponses, mockResponses]
   )
 
-  // Handle file upload
-  const handleFileUpload = useCallback((files) => {
-    const newFiles = Array.from(files).map((file) => ({
-      id: Date.now() + Math.random(),
-      name: file.name,
-      size: file.size,
-      type: file.type,
-      file: file,
-      uploadedAt: new Date().toISOString()
-    }))
-    setUploadedFiles((prev) => [...prev, ...newFiles])
-    const fileMessage = {
-      id: Date.now().toString(),
-      type: 'system',
-      content: `Uploaded ${newFiles.length} file(s): ${newFiles.map((f) => f.name).join(', ')}`,
-      timestamp: new Date().toISOString()
+  // Handle file upload with Supabase storage integration
+  const handleFileUpload = useCallback(
+    async (files) => {
+      if (!user?.id) {
+        message.error('User not authenticated. Please log in to upload files.')
+        return
+      }
+
+      setIsUploading(true)
+
+      try {
+        // Upload files to Supabase storage
+        const uploadResult = await uploadMultipleFiles(files, user.id, 'file-uploads')
+
+        if (uploadResult.success) {
+          const newFiles = uploadResult.data.successful.map((fileData) => ({
+            id: fileData.id,
+            name: fileData.name,
+            size: fileData.size,
+            type: fileData.type,
+            url: fileData.url,
+            path: fileData.path,
+            uploadedAt: fileData.uploadedAt,
+            userId: fileData.userId
+          }))
+
+          setUploadedFiles((prev) => [...prev, ...newFiles])
+
+          // Add system message for uploaded files
+          const fileMessage = {
+            id: Date.now().toString(),
+            type: 'system',
+            content: `Uploaded ${newFiles.length} file(s): ${newFiles.map((f) => f.name).join(', ')}`,
+            timestamp: new Date().toISOString()
+          }
+          setChatHistory((prev) => [...prev, fileMessage])
+
+          message.success(`Successfully uploaded ${newFiles.length} file(s)`)
+
+          // Show failed uploads if any
+          if (uploadResult.data.failed.length > 0) {
+            const failedNames = uploadResult.data.failed.map((f) => f.file).join(', ')
+            message.warning(`Failed to upload: ${failedNames}`)
+          }
+        } else {
+          message.error(uploadResult.error || 'Failed to upload files')
+        }
+      } catch (error) {
+        console.error('Error uploading files:', error)
+        message.error('An unexpected error occurred while uploading files')
+      } finally {
+        setIsUploading(false)
+      }
+    },
+    [user?.id]
+  )
+
+  // Handle file removal with Supabase storage cleanup
+  const handleFileRemove = useCallback(
+    async (fileId) => {
+      try {
+        const fileToRemove = uploadedFiles.find((file) => file.id === fileId)
+
+        if (fileToRemove) {
+          // Delete from Supabase storage
+          const deleteResult = await deleteFileFromStorage(fileToRemove.path, 'file-uploads')
+
+          if (deleteResult.success) {
+            setUploadedFiles((prev) => prev.filter((file) => file.id !== fileId))
+            message.success('File removed successfully')
+          } else {
+            message.error(deleteResult.error || 'Failed to remove file')
+          }
+        }
+      } catch (error) {
+        console.error('Error removing file:', error)
+        message.error('An unexpected error occurred while removing file')
+      }
+    },
+    [uploadedFiles]
+  )
+
+  // Load user's existing files from Supabase storage
+  const loadUserFiles = useCallback(async () => {
+    if (!user?.id) return
+
+    try {
+      const result = await getUserFiles(user.id, 'file-uploads')
+
+      if (result.success) {
+        const filesWithMetadata = result.files.map((file) => ({
+          id: file.id,
+          name: file.name,
+          size: file.size,
+          type: file.type,
+          url: file.url,
+          path: `${user.id}/${file.name}`,
+          uploadedAt: file.createdAt,
+          userId: file.userId
+        }))
+
+        setUploadedFiles(filesWithMetadata)
+      } else {
+        console.error('Failed to load user files:', result.error)
+      }
+    } catch (error) {
+      console.error('Error loading user files:', error)
     }
-    setChatHistory((prev) => [...prev, fileMessage])
-    message.success(`Successfully uploaded ${newFiles.length} file(s)`)
-  }, [])
+  }, [user?.id])
 
-  // Handle file removal
-  const handleFileRemove = useCallback((fileId) => {
-    setUploadedFiles((prev) => prev.filter((file) => file.id !== fileId))
-    message.info('File removed')
-  }, [])
+  // Initialize chat with user files
+  useEffect(() => {
+    if (user?.id && isInitialized) {
+      loadUserFiles()
+    }
+  }, [user?.id, isInitialized, loadUserFiles])
 
-  // Clear chat
+  // Clear chat and files
   const clearChat = useCallback(() => {
     setChatHistory([])
     setUploadedFiles([])
@@ -236,6 +333,7 @@ export const useChat = (user = null) => {
     uploadedFiles,
     isInitialized,
     isChatReady: isChatReady(),
+    isUploading,
     threadId: controller.getThreadId(),
     // Actions
     sendMessage,
