@@ -34,6 +34,23 @@ export const useChat = (user = null) => {
   const [isInitialized, setIsInitialized] = useState(false)
   const abortControllerRef = useRef(null)
 
+  // Load chat history from localStorage on mount
+  useEffect(() => {
+    const savedHistory = localStorage.getItem('chat_history')
+    if (savedHistory) {
+      setChatHistory(JSON.parse(savedHistory))
+    }
+  }, [])
+
+  // Persist chat history to localStorage on update
+  useEffect(() => {
+    if (chatHistory.length > 0) {
+      localStorage.setItem('chat_history', JSON.stringify(chatHistory))
+    } else {
+      localStorage.removeItem('chat_history')
+    }
+  }, [chatHistory])
+
   // Initialize chat on mount
   useEffect(() => {
     const initializeChat = async () => {
@@ -53,14 +70,16 @@ export const useChat = (user = null) => {
         await initializeThread()
         setIsInitialized(true)
 
-        // Add welcome message
-        const welcomeMessage = {
-          id: 'welcome',
-          type: 'assistant',
-          content: `Hello${user?.Username ? ` ${user.Username}` : ''}! I'm your Career Match AI assistant. I'm here to help you with resume building, interview preparation, and career guidance. What would you like to work on today?`,
-          timestamp: new Date().toISOString()
+        // Add welcome message if chatHistory is empty
+        if (chatHistory.length === 0) {
+          const welcomeMessage = {
+            id: 'welcome',
+            type: 'assistant',
+            content: `Hello${user?.Username ? ` ${user.Username}` : ''}! I'm your Career Match AI assistant. I'm here to help you with resume building, interview preparation, and career guidance. What would you like to work on today?`,
+            timestamp: new Date().toISOString()
+          }
+          setChatHistory([welcomeMessage])
         }
-        setChatHistory([welcomeMessage])
       } catch (error) {
         console.error('Failed to initialize chat:', error)
         message.error('Failed to initialize chat. Please try again.')
@@ -194,6 +213,7 @@ export const useChat = (user = null) => {
     setChatHistory([])
     setUploadedFiles([])
     clearMessages()
+    localStorage.removeItem('chat_history')
     message.info('Chat cleared')
   }, [clearMessages])
 
