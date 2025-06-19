@@ -29,18 +29,30 @@ export const DefaultLayout = ({ children }) => {
  * @returns {React.ReactElement} Routes component with all application routes
  */
 const AppRoutes = () => {
-  const { currentUser } = useAuth()
+  const { currentUser, isAuthenticated } = useAuth()
   const [user, setUser] = useState(null)
   const location = useLocation()
 
   useEffect(() => {
-    if (currentUser) {
-      setUser(currentUser.ProfileEntryResponse)
-      console.log('User:', user)
+    if (currentUser && isAuthenticated) {
+      // Transform Supabase user to match expected format
+      const transformedUser = {
+        id: currentUser.id,
+        email: currentUser.email,
+        name: currentUser.user_metadata?.full_name || currentUser.email?.split('@')[0] || 'User',
+        avatar: currentUser.user_metadata?.avatar_url || null,
+        ProfileEntryResponse: {
+          Username: currentUser.user_metadata?.username || currentUser.email?.split('@')[0] || 'User',
+          PublicKeyBase58Check: currentUser.id,
+          ProfilePic: currentUser.user_metadata?.avatar_url || null
+        }
+      }
+      setUser(transformedUser)
+      console.log('Supabase User:', transformedUser)
     } else {
       setUser(null)
     }
-  }, [currentUser, user])
+  }, [currentUser, isAuthenticated])
 
   return (
     <Routes>

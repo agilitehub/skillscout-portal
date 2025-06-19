@@ -33,6 +33,7 @@
     "web-vitals": "^4.2.4"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.50.0",
     "agilite-utils": "7.7.0-rc-3"
   },
   "eslintConfig": {

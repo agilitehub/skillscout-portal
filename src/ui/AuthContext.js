@@ -1,10 +1,19 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
-import React, { createContext, useContext, useState, useCallback } from 'react'
+import React, { createContext, useContext, useState, useCallback, useEffect } from 'react'
+import {
+  sendMagicLink,
+  getCurrentUser,
+  signOut,
+  onAuthStateChange,
+  getSession,
+  isAuthenticated
+} from '../lib/supabase-controller'
 
 /**
- * Authentication context for email-based login
- * Replaces DeSo authentication with simple email auth simulation
+ * Authentication context for Supabase Magic Link authentication
+ * Implements passwordless email authentication with comprehensive error handling
+ * Follows module-driven development principles with proper validation
  */
 const AuthContext = createContext()
 
@@ -22,64 +31,176 @@ export const useAuth = () => {
 
 /**
  * Authentication provider component
- * Manages user authentication state for email login
+ * Manages user authentication state for Supabase Magic Link login
  */
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null)
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [authError, setAuthError] = useState(null)
 
-  // Simulate email login
-  const login = useCallback(async (email, password) => {
+  // Initialize authentication state
+  useEffect(() => {
+    const initializeAuth = async () => {
+      try {
+        setLoading(true)
+        setAuthError(null)
+
+        // Check for existing session
+        const sessionResult = await getSession()
+        if (sessionResult.success && sessionResult.session) {
+          setCurrentUser(sessionResult.session.user)
+        } else if (sessionResult.error) {
+          console.warn('AuthContext: Session check error:', sessionResult.error)
+        }
+
+        // Set up auth state listener
+        const unsubscribe = onAuthStateChange(async (event, session) => {
+          try {
+            console.log('AuthContext: Auth state changed:', event, session?.user?.email)
+
+            if (event === 'SIGNED_IN' && session) {
+              setCurrentUser(session.user)
+              setAuthError(null)
+            } else if (event === 'SIGNED_OUT') {
+              setCurrentUser(null)
+              setAuthError(null)
+            } else if (event === 'TOKEN_REFRESHED' && session) {
+              setCurrentUser(session.user)
+            }
+          } catch (error) {
+            console.error('AuthContext: Error handling auth state change:', error)
+            setAuthError('Authentication state change error')
+          }
+        })
+
+        return unsubscribe
+      } catch (error) {
+        console.error('AuthContext: Error initializing auth:', error)
+        setAuthError('Failed to initialize authentication')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    const unsubscribe = initializeAuth()
+    return () => {
+      if (typeof unsubscribe === 'function') {
+        unsubscribe()
+      }
+    }
+  }, [])
+
+  // Magic Link login function
+  const login = useCallback(async (email) => {
     try {
-      setLoading(true)
-      
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1500))
-      
-      // For simulation, create a mock user
-      const mockUser = {
-        id: '1',
-        email: email || 'user@example.com',
-        name: 'Demo User',
-        avatar: null,
-        ProfileEntryResponse: {
-          Username: 'DemoUser',
-          PublicKeyBase58Check: 'demo-key',
-          ProfilePic: null
+      if (!email || typeof email !== 'string') {
+        return {
+          success: false,
+          error: 'Valid email address is required'
         }
       }
-      
-      setCurrentUser(mockUser)
-      return { success: true, user: mockUser }
+
+      setLoading(true)
+      setAuthError(null)
+
+      const result = await sendMagicLink(email)
+
+      if (result.success) {
+        return {
+          success: true,
+          message: result.message
+        }
+      } else {
+        setAuthError(result.error)
+        return {
+          success: false,
+          error: result.error
+        }
+      }
     } catch (error) {
-      console.error('Login error:', error)
-      return { success: false, error: 'Login failed' }
+      console.error('AuthContext: Login error:', error)
+      const errorMessage = 'An unexpected error occurred during login'
+      setAuthError(errorMessage)
+      return {
+        success: false,
+        error: errorMessage
+      }
     } finally {
       setLoading(false)
     }
   }, [])
 
   // Logout function
-  const logout = useCallback(() => {
-    setCurrentUser(null)
+  const logout = useCallback(async () => {
+    try {
+      setLoading(true)
+      setAuthError(null)
+
+      const result = await signOut()
+
+      if (result.success) {
+        setCurrentUser(null)
+        return {
+          success: true,
+          message: result.message
+        }
+      } else {
+        setAuthError(result.error)
+        return {
+          success: false,
+          error: result.error
+        }
+      }
+    } catch (error) {
+      console.error('AuthContext: Logout error:', error)
+      const errorMessage = 'An unexpected error occurred during logout'
+      setAuthError(errorMessage)
+      return {
+        success: false,
+        error: errorMessage
+      }
+    } finally {
+      setLoading(false)
+    }
   }, [])
 
   // Check if user is authenticated
-  const isAuthenticated = Boolean(currentUser)
+  const checkAuthStatus = useCallback(async () => {
+    try {
+      const authenticated = await isAuthenticated()
+      return authenticated
+    } catch (error) {
+      console.error('AuthContext: Error checking auth status:', error)
+      return false
+    }
+  }, [])
+
+  // Get current user data
+  const getUser = useCallback(async () => {
+    try {
+      const result = await getCurrentUser()
+      if (result.success) {
+        return result.user
+      }
+      return null
+    } catch (error) {
+      console.error('AuthContext: Error getting user:', error)
+      return null
+    }
+  }, [])
 
   const value = {
     currentUser,
     loading,
+    authError,
     login,
     logout,
-    isAuthenticated
+    checkAuthStatus,
+    getUser,
+    isAuthenticated: Boolean(currentUser)
   }
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  )
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
 
-export default AuthContext 
+export default AuthContext

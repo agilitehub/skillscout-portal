@@ -3,8 +3,8 @@
 import { useState, useMemo, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../../ui/AuthContext'
-import { 
-  faCoins, 
+import {
+  faCoins,
   faUsers,
   faMoneyBillWave,
   faCode,
@@ -19,14 +19,14 @@ import { LOGIN_COLORS, DARK_MODE_VARIANTS, FEATURED_PROJECTS_CONFIG } from '../c
  * Custom hook for managing Login page data and interactions
  * Centralizes business logic and state management with comprehensive error handling
  * Implements proper validation and follows module-driven development principles
- * 
+ *
  * @returns {Object} Login data and handlers with error states
  */
 export const useLoginData = () => {
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
   const { darkMode } = useTheme()
-  const { login } = useAuth()
+  const { login, authError } = useAuth()
 
   // Validate dependencies with error handling
   if (!navigate) {
@@ -53,7 +53,10 @@ export const useLoginData = () => {
       // Validate all icons are available
       const missingIcons = Object.entries(icons).filter(([key, icon]) => !icon)
       if (missingIcons.length > 0) {
-        console.warn('useLoginData: Missing icons detected:', missingIcons.map(([key]) => key))
+        console.warn(
+          'useLoginData: Missing icons detected:',
+          missingIcons.map(([key]) => key)
+        )
       }
 
       return icons
@@ -71,7 +74,7 @@ export const useLoginData = () => {
         return []
       }
 
-      return FEATURED_PROJECTS_CONFIG.map(project => {
+      return FEATURED_PROJECTS_CONFIG.map((project) => {
         try {
           // Validate project structure
           if (!project || typeof project !== 'object') {
@@ -80,8 +83,8 @@ export const useLoginData = () => {
           }
 
           const requiredFields = ['name', 'icon', 'color', 'description']
-          const missingFields = requiredFields.filter(field => !project[field])
-          
+          const missingFields = requiredFields.filter((field) => !project[field])
+
           if (missingFields.length > 0) {
             console.warn('useLoginData: Project missing required fields:', missingFields, project)
             return null
@@ -115,70 +118,98 @@ export const useLoginData = () => {
         return featuredProjects
       }
 
-      return featuredProjects.map(project => {
-        try {
-          if (!project) return null
+      return featuredProjects
+        .map((project) => {
+          try {
+            if (!project) return null
 
-          const projectColor = project.color
-          const hasDarkModeVariant = DARK_MODE_VARIANTS && DARK_MODE_VARIANTS[projectColor]
-          
-          return {
-            ...project,
-            color: darkMode 
-              ? (hasDarkModeVariant ? projectColor : LOGIN_COLORS.blueHighlight || projectColor)
-              : projectColor,
-            gradientColors: darkMode
-              ? (hasDarkModeVariant 
-                ? DARK_MODE_VARIANTS[projectColor]
-                : [LOGIN_COLORS.blueAccent || projectColor, LOGIN_COLORS.blueHighlight || projectColor])
-              : project.gradientColors || [projectColor, projectColor]
+            const projectColor = project.color
+            const hasDarkModeVariant = DARK_MODE_VARIANTS && DARK_MODE_VARIANTS[projectColor]
+
+            return {
+              ...project,
+              color: darkMode
+                ? hasDarkModeVariant
+                  ? projectColor
+                  : LOGIN_COLORS.blueHighlight || projectColor
+                : projectColor,
+              gradientColors: darkMode
+                ? hasDarkModeVariant
+                  ? DARK_MODE_VARIANTS[projectColor]
+                  : [LOGIN_COLORS.blueAccent || projectColor, LOGIN_COLORS.blueHighlight || projectColor]
+                : project.gradientColors || [projectColor, projectColor]
+            }
+          } catch (projectError) {
+            console.error('useLoginData: Error processing dynamic project:', projectError, project)
+            return project // Return original project on error
           }
-        } catch (projectError) {
-          console.error('useLoginData: Error processing dynamic project:', projectError, project)
-          return project // Return original project on error
-        }
-      }).filter(Boolean)
+        })
+        .filter(Boolean)
     } catch (error) {
       console.error('useLoginData: Error processing dynamic featured projects:', error)
       return featuredProjects
     }
   }, [featuredProjects, darkMode])
 
-  // Login handler with email authentication simulation
-  const handleLogin = useCallback(async () => {
-    try {
-      if (loading) {
-        console.warn('useLoginData: Login already in progress')
-        return
-      }
+  // Magic Link login handler
+  const handleLogin = useCallback(
+    async (email) => {
+      try {
+        if (loading) {
+          console.warn('useLoginData: Login already in progress')
+          return {
+            success: false,
+            error: 'Login already in progress'
+          }
+        }
 
-      if (!navigate || typeof navigate !== 'function') {
-        console.error('useLoginData: Navigate function is not available')
-        return
-      }
+        if (!navigate || typeof navigate !== 'function') {
+          console.error('useLoginData: Navigate function is not available')
+          return {
+            success: false,
+            error: 'Navigation not available'
+          }
+        }
 
-      if (!login || typeof login !== 'function') {
-        console.error('useLoginData: Login function is not available')
-        return
-      }
+        if (!login || typeof login !== 'function') {
+          console.error('useLoginData: Login function is not available')
+          return {
+            success: false,
+            error: 'Login function not available'
+          }
+        }
 
-      setLoading(true)
-      
-      // Use our auth context to simulate email login
-      const loginResult = await login('demo@example.com', 'password123')
-      
-      if (loginResult.success) {
-        console.log('useLoginData: Email login successful')
-        navigate('/dashboard')
-      } else {
-        console.error('useLoginData: Login failed:', loginResult.error)
+        if (!email || typeof email !== 'string') {
+          return {
+            success: false,
+            error: 'Valid email address is required'
+          }
+        }
+
+        setLoading(true)
+
+        // Use Supabase Magic Link authentication
+        const loginResult = await login(email)
+
+        if (loginResult.success) {
+          console.log('useLoginData: Magic link sent successfully')
+          return loginResult
+        } else {
+          console.error('useLoginData: Magic link failed:', loginResult.error)
+          return loginResult
+        }
+      } catch (error) {
+        console.error('useLoginData: Login error:', error)
+        return {
+          success: false,
+          error: 'An unexpected error occurred during login'
+        }
+      } finally {
+        setLoading(false)
       }
-    } catch (error) {
-      console.error('useLoginData: Login error:', error)
-    } finally {
-      setLoading(false)
-    }
-  }, [navigate, loading, login])
+    },
+    [navigate, loading, login]
+  )
 
   // Handle opening project links with security and validation
   const handleProjectClick = useCallback((project) => {
@@ -209,7 +240,7 @@ export const useLoginData = () => {
 
       // Open with security measures
       const newWindow = window.open(trimmedLink, '_blank', 'noopener,noreferrer')
-      
+
       if (!newWindow) {
         console.warn('useLoginData: Failed to open new window (popup blocked?)')
       }
@@ -244,6 +275,7 @@ export const useLoginData = () => {
     handleLogin,
     handleProjectClick,
     isProjectClickable,
-    darkMode: Boolean(darkMode) // Ensure boolean value
+    darkMode: Boolean(darkMode), // Ensure boolean value
+    authError // Include auth error from context
   }
-} 
+}
