@@ -6,29 +6,33 @@
  * Provides consistent theming across all Login components
  */
 export const LOGIN_COLORS = {
-  // Brand Colors
-  logoNavy: '#0D2035',
-  logoNavyLight: '#1A3B5A',
-  logoTeal: '#3A8B9F',
-  logoGold: '#CFAB6F',
-  logoGoldDark: '#B18B50',
-  logoGoldAccent: '#DCAC55',
+  // Brand Colors - Career Match AI palette
+  logoNavy: '#1E3A52',
+  logoNavyLight: '#2A3D4F',
+  logoTeal: '#4A90A4',
+  emeraldPrimary: '#059669',
+  emeraldLight: '#10B981',
+  emeraldAccent: '#047857',
   
   // Accent Colors
-  orange: '#FF7F50',
-  shakespeare: '#3FB1D4',
-  pictonBlue: '#1EC9EA',
-  viking: '#4DC7DC',
-  diSerria: '#DCAA55',
+  forestGreen: '#065F46',
+  seaGreen: '#16A085',
+  mintGreen: '#00D8A3',
+  tealGreen: '#14B8A6',
+  emeraldBright: '#34D399',
+  shakespeare: '#4A90A4',
+  pictonBlue: '#5BA3D4',
+  viking: '#4A90A4',
+  diSerria: '#059669',
   
   // Theme Colors
-  navyDark: '#0A1929',
-  darkBlue: '#0E4173',
-  darkTeal: '#205E6B',
-  blueAccent: '#2C5282',
-  blueHighlight: '#3182CE',
-  botticelli: '#C4D8E5',
-  lightGold: '#E6C389'
+  navyDark: '#0F1419',
+  darkBlue: '#1E3A52',
+  darkTeal: '#1E3A52',
+  blueAccent: '#3D6B99',
+  blueHighlight: '#4A7BA7',
+  botticelli: '#B8D4E3',
+  lightGreen: '#A7F3D0'
 }
 
 /**
@@ -37,8 +41,8 @@ export const LOGIN_COLORS = {
 export const DARK_MODE_VARIANTS = {
   [LOGIN_COLORS.logoNavy]: [LOGIN_COLORS.logoNavy, LOGIN_COLORS.darkBlue],
   [LOGIN_COLORS.logoTeal]: [LOGIN_COLORS.darkTeal, LOGIN_COLORS.logoTeal],
-  [LOGIN_COLORS.logoGold]: [LOGIN_COLORS.logoGoldDark, LOGIN_COLORS.logoGoldAccent],
-  [LOGIN_COLORS.orange]: [LOGIN_COLORS.orange, LOGIN_COLORS.diSerria],
+  [LOGIN_COLORS.emeraldPrimary]: [LOGIN_COLORS.emeraldAccent, LOGIN_COLORS.emeraldLight],
+  [LOGIN_COLORS.forestGreen]: [LOGIN_COLORS.forestGreen, LOGIN_COLORS.emeraldPrimary],
   [LOGIN_COLORS.shakespeare]: [LOGIN_COLORS.blueAccent, LOGIN_COLORS.shakespeare]
 }
 

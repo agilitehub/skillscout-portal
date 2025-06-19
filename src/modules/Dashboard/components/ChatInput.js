@@ -4,6 +4,7 @@ import React from 'react'
 import { Button, Input } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPaperPlane, faPaperclip } from '@fortawesome/free-solid-svg-icons'
+import { useTheme } from '../../../ui/ThemeContext'
 
 const { TextArea } = Input
 
@@ -12,19 +13,41 @@ const { TextArea } = Input
  * Implements responsive design and theme support
  */
 const ChatInput = React.memo(({ 
-  userInput, 
-  setUserInput, 
-  onSendMessage, 
-  onKeyPress, 
+  onSendMessage,
   onAttachFile,
-  darkMode, 
-  colors 
+  disabled = false
 }) => {
-  // Validate required props
-  if (!setUserInput || !onSendMessage || !onKeyPress || !onAttachFile) {
-    console.error('ChatInput: Missing required props')
-    return null
+  const { darkMode } = useTheme()
+  const [userInput, setUserInput] = React.useState('')
+  
+  // Internal color palette for Career Match AI
+  const colors = {
+    shakespeare: '#4A90A4',
+    pictonBlue: '#5BA3D4',
+    seaGreen: '#16A085',
+    emeraldPrimary: '#059669'
   }
+
+  // Handle sending message
+  const handleSendMessage = React.useCallback(() => {
+    if (userInput.trim() && !disabled) {
+      onSendMessage?.(userInput.trim())
+      setUserInput('')
+    }
+  }, [userInput, disabled, onSendMessage])
+
+  // Handle key press
+  const handleKeyPress = React.useCallback((e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      handleSendMessage()
+    }
+  }, [handleSendMessage])
+
+  // Handle attach file
+  const handleAttachFile = React.useCallback(() => {
+    onAttachFile?.()
+  }, [onAttachFile])
 
   return (
     <>
@@ -48,24 +71,30 @@ const ChatInput = React.memo(({
           borderColor: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'
         }}
       >
-      <div className="flex items-center max-w-2xl mx-auto gap-3">
+      <div className="flex items-center gap-3">
+        {/* Attachment Button */}
         <Button
           type="text"
-          onClick={onAttachFile}
-          className="flex items-center justify-center h-auto flex-shrink-0 hover:bg-gray-100 dark:hover:bg-gray-700"
+          onClick={handleAttachFile}
+          disabled={disabled}
+          className="flex items-center justify-center h-auto flex-shrink-0 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200"
           style={{
             borderRadius: '8px',
             minHeight: '44px',
             width: '44px',
             padding: '0',
-            color: darkMode ? colors.shakespeare : colors.blueAccent
+            color: darkMode ? colors.shakespeare : colors.seaGreen,
+            opacity: disabled ? 0.5 : 1
           }}
           icon={<FontAwesomeIcon icon={faPaperclip} className="text-lg" />}
         />
+        
+        {/* Text Input */}
         <TextArea
           value={userInput}
           onChange={(e) => setUserInput(e.target.value)}
-          onKeyPress={onKeyPress}
+          onKeyPress={handleKeyPress}
+          disabled={disabled}
           autoSize={{ minRows: 1, maxRows: 3 }}
           style={{ 
             background: darkMode ? '#374151' : '#ffffff',
@@ -75,21 +104,28 @@ const ChatInput = React.memo(({
             fontSize: '0.875rem',
             boxShadow: 'none',
             resize: 'none',
-            borderRadius: '8px'
+            borderRadius: '8px',
+            opacity: disabled ? 0.7 : 1
           }}
           className={`flex-grow ${darkMode ? 'dark-mode-input' : ''}`}
-          placeholder="Ask about DESO, bounties, or blockchain..."
+          placeholder={disabled ? "AI is typing..." : "Tell me about your career goals or ask for interview preparation help..."}
         />
+        
+        {/* Send Button */}
         <Button
           type="primary"
-          onClick={onSendMessage}
-          className="flex items-center justify-center h-auto border-0 flex-shrink-0"
+          onClick={handleSendMessage}
+          disabled={disabled || !userInput.trim()}
+          className="flex items-center justify-center h-auto border-0 flex-shrink-0 transition-all duration-200"
           style={{
-            background: `linear-gradient(to right, ${darkMode ? colors.blueAccent : colors.shakespeare}, ${darkMode ? colors.blueHighlight : colors.pictonBlue})`,
+            background: disabled 
+              ? '#9CA3AF' 
+              : `linear-gradient(to right, ${colors.emeraldPrimary}, ${colors.seaGreen})`,
             borderRadius: '8px',
             minHeight: '44px',
             width: '44px',
-            padding: '0'
+            padding: '0',
+            opacity: disabled ? 0.5 : (!userInput.trim() ? 0.7 : 1)
           }}
           icon={<FontAwesomeIcon icon={faPaperPlane} className="text-white" />}
         />

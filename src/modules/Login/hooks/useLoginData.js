@@ -2,15 +2,17 @@
 // Frontend Instructions Rule Applied!
 import { useState, useMemo, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../../../ui/AuthContext'
 import { 
   faCoins, 
   faUsers,
   faMoneyBillWave,
   faCode,
-  faStar
+  faStar,
+  faDollarSign,
+  faLaptop
 } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../ui/ThemeContext'
-import { desoLogin } from '../../../lib/deso-controller'
 import { LOGIN_COLORS, DARK_MODE_VARIANTS, FEATURED_PROJECTS_CONFIG } from '../constants/colors'
 
 /**
@@ -24,6 +26,7 @@ export const useLoginData = () => {
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
   const { darkMode } = useTheme()
+  const { login } = useAuth()
 
   // Validate dependencies with error handling
   if (!navigate) {
@@ -42,7 +45,9 @@ export const useLoginData = () => {
         faUsers,
         faMoneyBillWave,
         faCode,
-        faStar
+        faStar,
+        faDollarSign,
+        faLaptop
       }
 
       // Validate all icons are available
@@ -139,16 +144,11 @@ export const useLoginData = () => {
     }
   }, [featuredProjects, darkMode])
 
-  // Login handler with comprehensive error handling and validation
+  // Login handler with email authentication simulation
   const handleLogin = useCallback(async () => {
     try {
       if (loading) {
         console.warn('useLoginData: Login already in progress')
-        return
-      }
-
-      if (!desoLogin || typeof desoLogin !== 'function') {
-        console.error('useLoginData: desoLogin function is not available')
         return
       }
 
@@ -157,26 +157,28 @@ export const useLoginData = () => {
         return
       }
 
-      setLoading(true)
-      
-      const loginResult = await desoLogin()
-      
-      // Validate login result if needed
-      if (loginResult === false) {
-        console.warn('useLoginData: Login was cancelled or failed')
+      if (!login || typeof login !== 'function') {
+        console.error('useLoginData: Login function is not available')
         return
       }
 
-      navigate('/dashboard')
+      setLoading(true)
+      
+      // Use our auth context to simulate email login
+      const loginResult = await login('demo@example.com', 'password123')
+      
+      if (loginResult.success) {
+        console.log('useLoginData: Email login successful')
+        navigate('/dashboard')
+      } else {
+        console.error('useLoginData: Login failed:', loginResult.error)
+      }
     } catch (error) {
       console.error('useLoginData: Login error:', error)
-      
-      // Could add user-friendly error handling here in the future
-      // For now, just log the error and reset loading state
     } finally {
       setLoading(false)
     }
-  }, [navigate, loading])
+  }, [navigate, loading, login])
 
   // Handle opening project links with security and validation
   const handleProjectClick = useCallback((project) => {

@@ -7,41 +7,47 @@
  * Organized by brand colors, semantic colors, and theme-specific variants
  */
 
-// Primary brand colors
+// Primary brand colors - Career Match AI palette
 export const BRAND_COLORS = {
-  // Primary blue palette
-  shakespeare: '#3FB1D4',     // Medium blue - primary brand color
-  pictonBlue: '#1EC9EA',      // Light blue - accent
-  toreaBay: '#134292',        // Dark blue - strong accent
-  blueAccent: '#2C5282',      // Blue accent
-  blueHighlight: '#3182CE',   // Blue highlight
-  darkBlue: '#0E4173',        // Dark blue for dark mode
+  // Primary blue palette - matching logo
+  shakespeare: '#4A90A4',     // Steel blue - primary brand color
+  pictonBlue: '#5BA3D4',      // Lighter steel blue - accent
+  toreaBay: '#2E5984',        // Deep blue - strong accent
+  blueAccent: '#3D6B99',      // Medium blue accent
+  blueHighlight: '#4A7BA7',   // Blue highlight
+  darkBlue: '#1E3A52',        // Dark blue for dark mode
   
   // Navy palette for dark mode
-  navyDark: '#0A1929',        // Very dark navy
-  navyMedium: '#112240',      // Medium navy
-  navyLight: '#1A365D',       // Light navy
-  darkTeal: '#205E6B',        // Dark teal for dark mode
+  navyDark: '#0F1419',        // Very dark navy
+  navyMedium: '#1A2633',      // Medium navy
+  navyLight: '#2A3D4F',       // Light navy
+  darkTeal: '#1E3A52',        // Dark teal matching logo
   
-  // Gold/amber palette
-  logoGoldAccent: '#DCAC55',  // Gold accent
-  diSerria: '#DCAA55',        // Golden brown
-  gamboge: '#E1A00E',         // Orange/gold
+  // Emerald/Forest green palette
+  emeraldPrimary: '#059669',  // Primary emerald green
+  emeraldLight: '#10B981',    // Light emerald
+  emeraldBright: '#34D399',   // Bright emerald
+  forestGreen: '#065F46',     // Forest green
+  emeraldAccent: '#047857',   // Emerald accent
+  seaGreen: '#16A085',        // Sea green
+  mintGreen: '#00D8A3',       // Mint green
+  tealGreen: '#14B8A6',       // Teal green
+  darkForest: '#064E3B',      // Dark forest green
   
   // Supporting colors
-  botticelli: '#C4D8E5',     // Light gray blue
-  viking: '#4DC7DC',         // Turquoise
+  botticelli: '#B8D4E3',     // Light blue-gray
+  viking: '#4A90A4',         // Matching primary blue
 }
 
 // Semantic color assignments
 export const SEMANTIC_COLORS = {
   primary: BRAND_COLORS.shakespeare,
   primaryDark: BRAND_COLORS.darkBlue,
-  secondary: BRAND_COLORS.diSerria,
-  secondaryDark: BRAND_COLORS.logoGoldAccent,
+  secondary: BRAND_COLORS.emeraldPrimary,
+  secondaryDark: BRAND_COLORS.emeraldAccent,
   accent: BRAND_COLORS.pictonBlue,
   accentDark: BRAND_COLORS.blueAccent,
-  success: '#10B981',
+  success: BRAND_COLORS.emeraldLight,
   warning: '#F59E0B',
   error: '#EF4444',
   info: BRAND_COLORS.shakespeare,
@@ -65,8 +71,8 @@ export const LIGHT_THEME = {
     tertiary: '#F3F4F6',
   },
   gradient: {
-    primary: `linear-gradient(90deg, ${BRAND_COLORS.shakespeare} 85%, ${BRAND_COLORS.diSerria})`,
-    secondary: `linear-gradient(135deg, ${BRAND_COLORS.shakespeare}, ${BRAND_COLORS.pictonBlue})`,
+    primary: `linear-gradient(90deg, ${BRAND_COLORS.seaGreen} 60%, ${BRAND_COLORS.emeraldPrimary})`,
+    secondary: `linear-gradient(135deg, ${BRAND_COLORS.tealGreen}, ${BRAND_COLORS.emeraldBright})`,
   }
 }
 
@@ -87,8 +93,8 @@ export const DARK_THEME = {
     tertiary: '#6B7280',
   },
   gradient: {
-    primary: `linear-gradient(90deg, ${BRAND_COLORS.blueAccent} 85%, ${BRAND_COLORS.logoGoldAccent})`,
-    secondary: `linear-gradient(135deg, ${BRAND_COLORS.darkBlue}, ${BRAND_COLORS.logoGoldAccent})`,
+    primary: `linear-gradient(90deg, ${BRAND_COLORS.emeraldAccent} 60%, ${BRAND_COLORS.forestGreen})`,
+    secondary: `linear-gradient(135deg, ${BRAND_COLORS.darkForest}, ${BRAND_COLORS.emeraldAccent})`,
   }
 }
 

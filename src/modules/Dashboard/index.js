@@ -5,14 +5,11 @@ import { Modal, Spin } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronLeft } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../ui/ThemeContext'
-import { initPortal } from '../../lib/agilite-controller'
 import ChatInterface from './components/ChatInterface'
-import DashboardHome from './components/DashboardHome'
-import KnowledgeBase from './components/KnowledgeBase'
-import BottomNavigation from './components/BottomNavigation'
 
 /**
- * Dashboard component - Main dashboard interface with modular components
+ * Dashboard component - Career Match AI Interview and Testing Interface
+ * Main interface for conducting career tests and interviews with document upload capabilities
  * Implements proper state management, error handling, and responsive design
  * Follows module-driven development principles
  */
@@ -22,8 +19,8 @@ const Dashboard = React.memo(({ user }) => {
   // State management with proper initialization
   const [loading, setLoading] = useState(false)
   const [dashboardData, setDashboardData] = useState(null)
-  const [activeTab, setActiveTab] = useState('home')
   const [detailView, setDetailView] = useState(null)
+  const [uploadedFiles, setUploadedFiles] = useState([])
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [modalContent, setModalContent] = useState({
     title: '',
@@ -74,25 +71,42 @@ const Dashboard = React.memo(({ user }) => {
     }
   }, [isIPhoneSE])
 
-  // Fetch dashboard data with proper error handling
+  // Fetch dashboard data with mock data for simulation
   useEffect(() => {
     const fetchData = async () => {
       if (!user) return
 
-        try {
-          setLoading(true)
-          const data = await initPortal(user.PublicKeyBase58Check)
-          setDashboardData(data)
-        } catch (error) {
-          console.error('Error fetching dashboard data:', error)
-        // Could set an error state here for user feedback
-        } finally {
-          setLoading(false)
+      try {
+        setLoading(true)
+        
+        // Simulate API call delay
+        await new Promise(resolve => setTimeout(resolve, 1000))
+        
+        // Mock dashboard data for career interview simulation
+        const mockData = {
+          user: user,
+          interviewSessions: [],
+          careerTests: [],
+          stats: {
+            completedTests: 0,
+            activeInterviews: 0,
+            documentsUploaded: uploadedFiles.length
+          },
+          recentActivity: []
+        }
+        
+        setDashboardData(mockData)
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error)
+        // Set mock data even on error for demonstration
+        setDashboardData({ user: user, interviewSessions: [], careerTests: [], stats: {} })
+      } finally {
+        setLoading(false)
       }
     }
     
     fetchData()
-  }, [user])
+  }, [user, uploadedFiles.length])
 
   // Handle opening detail views with validation
   const handleDetailViewOpen = useCallback((content) => {
@@ -146,16 +160,48 @@ const Dashboard = React.memo(({ user }) => {
     }
   }, [])
 
-  // Handle tab changes with validation
-  const handleTabChange = useCallback((tab) => {
+  // Handle file upload with validation and error handling
+  const handleFileUpload = useCallback((fileList) => {
     try {
-      if (!tab || typeof tab !== 'string') {
-        console.warn('Dashboard: Invalid tab provided')
+      if (!fileList || !Array.isArray(fileList)) {
+        console.warn('Dashboard: Invalid file list provided')
         return
       }
-      setActiveTab(tab)
+      
+      // Validate file types and sizes
+      const validFiles = fileList.filter(file => {
+        const isValidType = ['pdf', 'doc', 'docx', 'txt', 'jpg', 'jpeg', 'png'].includes(
+          file.name.split('.').pop().toLowerCase()
+        )
+        const isValidSize = file.size <= 10 * 1024 * 1024 // 10MB limit
+        
+        if (!isValidType) {
+          console.warn(`Dashboard: Invalid file type for ${file.name}`)
+        }
+        if (!isValidSize) {
+          console.warn(`Dashboard: File ${file.name} exceeds size limit`)
+        }
+        
+        return isValidType && isValidSize
+      })
+      
+      setUploadedFiles(prev => [...prev, ...validFiles])
+      
+      // Log successful uploads
+      if (validFiles.length > 0) {
+        console.log(`Dashboard: Successfully uploaded ${validFiles.length} files`)
+      }
     } catch (error) {
-      console.error('Error changing tab:', error)
+      console.error('Error handling file upload:', error)
+    }
+  }, [])
+
+  // Remove uploaded file
+  const handleFileRemove = useCallback((fileToRemove) => {
+    try {
+      setUploadedFiles(prev => prev.filter(file => file.uid !== fileToRemove.uid))
+    } catch (error) {
+      console.error('Error removing file:', error)
     }
   }, [])
 
@@ -196,13 +242,13 @@ const Dashboard = React.memo(({ user }) => {
   )
   }, [detailView, darkMode, colors, handleBack])
 
-  // Render main content based on active tab or detail view
+  // Render main content - single page view or detail view
   const renderContent = useCallback(() => {
     try {
       // If we have a detail view, render that instead
-    if (detailView) {
-      return (
-          <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-16">
+      if (detailView) {
+        return (
+          <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
             {renderDetailViewHeader}
             <div className="p-4">
               {/* Detail view content would be rendered here */}
@@ -212,43 +258,32 @@ const Dashboard = React.memo(({ user }) => {
                 </h3>
                 <p className="text-gray-600 dark:text-gray-300">
                   {detailView.description || 'Detailed information about this item.'}
-                      </p>
-                    </div>
+                </p>
+              </div>
+            </div>
           </div>
+        )
+      }
+
+      // Render main chat interface for career interviews and tests
+      return (
+        <ChatInterface 
+          onDetailViewOpen={handleDetailViewOpen}
+          uploadedFiles={uploadedFiles}
+          onFileUpload={handleFileUpload}
+          onFileRemove={handleFileRemove}
+          user={user}
+        />
+      )
+    } catch (error) {
+      console.error('Error rendering content:', error)
+      return (
+        <div className="min-h-screen flex items-center justify-center">
+          <p className="text-red-500">Error loading content. Please try again.</p>
         </div>
       )
     }
-
-      // Render based on active tab
-      switch (activeTab) {
-      case 'chat':
-          return (
-            <div className="h-full flex flex-col overflow-hidden">
-              <ChatInterface />
-            </div>
-          )
-          
-        case 'knowledge':
-          return <KnowledgeBase onModalOpen={handleModalOpen} />
-          
-      case 'home':
-        default:
-        return (
-            <DashboardHome 
-              onDetailViewOpen={handleDetailViewOpen}
-              onTabChange={handleTabChange}
-            />
-          )
-      }
-    } catch (error) {
-      console.error('Error rendering content:', error)
-        return (
-        <div className="min-h-screen flex items-center justify-center">
-          <p className="text-red-500">Error loading content. Please try again.</p>
-                </div>
-      )
-    }
-  }, [activeTab, detailView, renderDetailViewHeader, handleDetailViewOpen, handleTabChange, handleModalOpen])
+  }, [detailView, renderDetailViewHeader, handleDetailViewOpen, handleModalOpen, uploadedFiles, handleFileUpload, handleFileRemove, user])
 
   // Show loading spinner while data is being fetched
   if (loading && !dashboardData) {
@@ -289,15 +324,8 @@ const Dashboard = React.memo(({ user }) => {
 
       {/* Main Content */}
       <div className="h-full overflow-hidden relative z-10">
-      {renderContent()}
+        {renderContent()}
       </div>
-
-      {/* Bottom Navigation */}
-      <BottomNavigation 
-        activeTab={activeTab}
-        onTabChange={handleTabChange}
-        onDetailViewReset={handleBack}
-      />
       
       {/* Knowledge Base Detail Modal */}
       <Modal

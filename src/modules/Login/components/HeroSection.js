@@ -3,7 +3,7 @@
 import React from 'react'
 import { Typography, Button } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faUser, faLightbulb } from '@fortawesome/free-solid-svg-icons'
+import { faEnvelope, faLightbulb } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../ui/ThemeContext'
 import Logo from '../../../ui/components/Logo'
 
@@ -16,16 +16,20 @@ const { Title } = Typography
 const HeroSection = React.memo(({ loading, onLogin }) => {
   const { darkMode } = useTheme()
 
-  // Color palette
+  // Color palette - Career Match AI blue-to-green balance
   const colors = {
-    logoNavy: '#0D2035',
-    logoNavyLight: '#1A3B5A',
-    shakespeare: '#3FB1D4',
-    logoTeal: '#3A8B9F',
-    blueHighlight: '#3182CE',
-    blueAccent: '#2C5282',
-    logoGoldAccent: '#DCAC55',
-    diSerria: '#DCAA55'
+    // Blues from brand palette
+    darkBlue: '#1E3A52',
+    shakespeare: '#4A90A4',
+    pictonBlue: '#5BA3D4',
+    toreaBay: '#2E5984',
+    // Greens from brand palette
+    seaGreen: '#16A085',
+    emeraldPrimary: '#059669',
+    emeraldBright: '#34D399',
+    tealGreen: '#14B8A6',
+    mintGreen: '#00D8A3',
+    forestGreen: '#065F46'
   }
 
   return (
@@ -36,12 +40,16 @@ const HeroSection = React.memo(({ loading, onLogin }) => {
           <div 
             className="absolute inset-0 rounded-full"
             style={{ 
-              background: `linear-gradient(to right, ${colors.shakespeare}, ${colors.logoTeal})`,
+              background: `linear-gradient(45deg, ${colors.shakespeare}, ${colors.seaGreen})`,
               animation: 'pulse 2s infinite'
             }}
           />
-          <div className="absolute inset-2 bg-white dark:bg-gray-900 rounded-full flex items-center justify-center overflow-hidden">
-            <Logo className="w-20 h-20 sm:w-28 sm:h-28 md:w-40 md:h-40" alt="Bounty Coin Logo" />
+          <div className={`absolute inset-2 rounded-full flex items-center justify-center overflow-hidden ${
+            darkMode 
+              ? 'bg-white/20 backdrop-blur-md shadow-2xl border border-white/30' 
+              : 'bg-white shadow-lg'
+          }`}>
+            <Logo className="w-20 h-20 sm:w-28 sm:h-28 md:w-40 md:h-40" alt="Career Match AI Logo" />
           </div>
         </div>
       </div>
@@ -57,7 +65,7 @@ const HeroSection = React.memo(({ loading, onLogin }) => {
           }`}
           style={darkMode ? { color: '#ffffff !important' } : {}}
         >
-          Bounty Coin Club
+          Career Match AI
         </Title>
         <Title 
           level={3} 
@@ -68,7 +76,7 @@ const HeroSection = React.memo(({ loading, onLogin }) => {
           }`}
           style={darkMode ? { color: '#ffffff !important', opacity: '0.9' } : {}}
         >
-          Explore DeSo Creators, their projects, and opportunities to earn, stake, and grab airdrops.
+          Streamline your workflow with intelligent forms and seamless data management.
         </Title>
       </div>  
 
@@ -80,19 +88,19 @@ const HeroSection = React.memo(({ loading, onLogin }) => {
           loading={loading}
           block
           className={`h-12 font-medium text-white transition-all duration-300 px-3 flex items-center justify-center hover:shadow-lg border-0 hover:scale-105 transform ${
-            darkMode ? 'hover:shadow-blue-500/25' : 'hover:shadow-shakespeare/30'
+            darkMode ? 'hover:shadow-blue-500/30' : 'hover:shadow-blue-400/40'
           }`}
           style={{ 
             background: darkMode 
-              ? `linear-gradient(90deg, ${colors.blueAccent} 85%, ${colors.logoGoldAccent})`
-              : `linear-gradient(90deg, ${colors.shakespeare} 85%, ${colors.diSerria})`,
+              ? `linear-gradient(135deg, ${colors.darkBlue} 0%, ${colors.shakespeare} 35%, ${colors.emeraldPrimary} 70%, ${colors.forestGreen} 100%)`
+              : `linear-gradient(135deg, ${colors.pictonBlue} 0%, ${colors.shakespeare} 25%, ${colors.seaGreen} 60%, ${colors.emeraldPrimary} 100%)`,
             boxShadow: darkMode 
-              ? `0 4px 14px 0 ${colors.blueAccent}40`
-              : `0 4px 14px 0 ${colors.shakespeare}30`
+              ? `0 6px 20px 0 ${colors.shakespeare}40, 0 2px 6px 0 ${colors.emeraldPrimary}30`
+              : `0 6px 20px 0 ${colors.pictonBlue}40, 0 2px 6px 0 ${colors.seaGreen}20`
           }}
         >
-          <FontAwesomeIcon icon={faUser} className="mr-2" />
-          {loading ? 'Logging in...' : 'Login with DeSo'}
+          <FontAwesomeIcon icon={faEnvelope} className="mr-2" />
+          {loading ? 'Logging in...' : 'Login with E-mail'}
         </Button>
       </div>
 
@@ -101,20 +109,20 @@ const HeroSection = React.memo(({ loading, onLogin }) => {
         <div 
           className="w-1/3 h-px"
           style={{ 
-            background: darkMode ? `${colors.shakespeare}30` : `${colors.logoNavy}20` 
+            background: darkMode ? `${colors.shakespeare}30` : `${colors.pictonBlue}20` 
           }}
         />
         <FontAwesomeIcon 
           icon={faLightbulb} 
           className="mx-4 text-xl" 
           style={{ 
-            color: darkMode ? colors.blueHighlight : colors.logoNavy 
+            color: darkMode ? colors.shakespeare : colors.seaGreen 
           }} 
         />
         <div 
           className="w-1/3 h-px"
           style={{ 
-            background: darkMode ? `${colors.shakespeare}30` : `${colors.logoNavy}20` 
+            background: darkMode ? `${colors.shakespeare}30` : `${colors.pictonBlue}20` 
           }}
         />
       </div>

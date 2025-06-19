@@ -46,10 +46,10 @@ const Header = ({ user }) => {
                    ${darkMode ? 'text-white bg-gray-800 hover:bg-gray-700' : 'text-gray-700 bg-white hover:bg-blue-50'}`}
         onMouseEnter={(e) => {
           if (darkMode) {
-            e.target.style.backgroundColor = BRAND_COLORS.darkBlue
+            e.target.style.backgroundColor = BRAND_COLORS.emeraldAccent
             e.target.style.color = 'white'
           } else {
-            e.target.style.backgroundColor = BRAND_COLORS.shakespeare
+            e.target.style.backgroundColor = BRAND_COLORS.seaGreen
             e.target.style.color = 'white'
           }
         }}
@@ -69,25 +69,32 @@ const Header = ({ user }) => {
     </div>
   )
 
-  // Light mode colors with gold accents
+  // Enhanced header gradient with blue-to-green transitions for Career Match AI branding
   const headerGradient = darkMode
-    ? `linear-gradient(90deg, ${BRAND_COLORS.blueAccent} 85%, ${BRAND_COLORS.logoGoldAccent})`
-    : `linear-gradient(90deg, ${BRAND_COLORS.shakespeare} 85%, ${BRAND_COLORS.diSerria})`
+    ? `linear-gradient(135deg, ${BRAND_COLORS.darkBlue} 0%, ${BRAND_COLORS.shakespeare} 25%, ${BRAND_COLORS.emeraldAccent} 65%, ${BRAND_COLORS.forestGreen} 100%)`
+    : `linear-gradient(135deg, ${BRAND_COLORS.shakespeare} 0%, ${BRAND_COLORS.pictonBlue} 20%, ${BRAND_COLORS.seaGreen} 50%, ${BRAND_COLORS.emeraldPrimary} 80%, ${BRAND_COLORS.tealGreen} 100%)`
 
   return (
-    <header className="sticky top-0 z-10 shadow-sm border-b"
+    <header className="sticky top-0 z-10 shadow-sm border-b transition-all duration-300 hover:shadow-lg"
       style={{ 
         background: headerGradient,
-        borderColor: darkMode ? '#374151' : '#e5e7eb'
+        borderColor: darkMode ? '#374151' : '#e5e7eb',
+        boxShadow: darkMode 
+          ? `0 4px 12px 0 ${BRAND_COLORS.emeraldAccent}25, 0 2px 6px 0 ${BRAND_COLORS.forestGreen}15`
+          : `0 4px 12px 0 ${BRAND_COLORS.shakespeare}25, 0 2px 6px 0 ${BRAND_COLORS.seaGreen}15`
       }}
     >
       <div className='px-2 sm:px-4 md:px-6'>
         <div className='flex justify-between h-16 md:h-20 items-center'>
           {/* Logo and Title */}
           <Link to='/' className='flex-shrink-0 flex items-center'>
-            <Logo size='small' className="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16" />
+            <div className={`rounded-full p-1 transition-all duration-300 ${
+              darkMode ? 'bg-white/15 backdrop-blur-sm shadow-lg' : ''
+            }`}>
+              <Logo size='small' className="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16" />
+            </div>
             <h1 className='ml-1 sm:ml-2 md:ml-3 text-lg sm:text-xl md:text-4xl font-bold text-white whitespace-nowrap'>
-              Bounty <span style={{ color: darkMode ? BRAND_COLORS.logoGoldAccent : BRAND_COLORS.diSerria }}>Coin</span>
+              Career Match AI
             </h1>
           </Link>
 
@@ -107,8 +114,8 @@ const Header = ({ user }) => {
                   <div className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-white/20 flex items-center justify-center text-white mr-1 md:mr-2"
                     style={{ 
                       background: darkMode 
-                        ? `linear-gradient(135deg, ${BRAND_COLORS.darkBlue}, ${BRAND_COLORS.logoGoldAccent}40)`
-                        : `linear-gradient(135deg, ${BRAND_COLORS.shakespeare}, ${BRAND_COLORS.diSerria}40)`
+                        ? `linear-gradient(135deg, ${BRAND_COLORS.emeraldAccent}, ${BRAND_COLORS.forestGreen}40)`
+                        : `linear-gradient(135deg, ${BRAND_COLORS.tealGreen}, ${BRAND_COLORS.emeraldBright}40)`
                     }}
                   >
                     {user.ExtraData?.LargeProfilePicURL ? (
@@ -145,8 +152,8 @@ const Header = ({ user }) => {
         cancelText="Cancel"
         okButtonProps={{ 
           style: { 
-            backgroundColor: darkMode ? BRAND_COLORS.darkBlue : BRAND_COLORS.blueAccent,
-            borderColor: darkMode ? BRAND_COLORS.darkBlue : BRAND_COLORS.blueAccent,
+            backgroundColor: darkMode ? BRAND_COLORS.emeraldAccent : BRAND_COLORS.seaGreen,
+            borderColor: darkMode ? BRAND_COLORS.emeraldAccent : BRAND_COLORS.seaGreen,
             color: '#ffffff'
           },
           danger: true 

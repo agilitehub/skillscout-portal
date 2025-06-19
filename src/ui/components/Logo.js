@@ -25,7 +25,7 @@ const Logo = memo(({ className = '', alt = 'Logo', forceLight = false }) => {
   const { darkMode } = useTheme()
 
   // Use absolute path for logo with error handling
-  const logoSrc = `${process.env.PUBLIC_URL}/logo-dark.png`
+  const logoSrc = `${process.env.PUBLIC_URL}/logo-new.png`
 
   // Handle image loading errors gracefully
   const handleImageError = (e) => {
@@ -54,7 +54,7 @@ Logo.propTypes = {
 
 Logo.defaultProps = {
   className: '',
-  alt: 'Logo',
+      alt: 'Career Match AI Logo',
   forceLight: false
 }
 

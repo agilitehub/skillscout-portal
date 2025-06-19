@@ -1,8 +1,8 @@
 import React from 'react'
 import { ThemeProvider } from './ui/ThemeContext'
+import { AuthProvider } from './ui/AuthContext'
 import { BrowserRouter as Router } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify'
-import { DeSoIdentityProvider } from 'react-deso-protocol'
 import { GlobalStyles } from './ui/styles'
 import 'react-toastify/dist/ReactToastify.css'
 import AppRoutes from './routes'
@@ -13,15 +13,15 @@ import AppRoutes from './routes'
 const App = () => {
 
   return (
-    <DeSoIdentityProvider>
-    <ThemeProvider>
+    <AuthProvider>
+      <ThemeProvider>
         <GlobalStyles />
         <Router>
-            <AppRoutes />
-            <ToastContainer position="top-right" autoClose={3000} />
+          <AppRoutes />
+          <ToastContainer position="top-right" autoClose={3000} />
         </Router>
-    </ThemeProvider>
-    </DeSoIdentityProvider>
+      </ThemeProvider>
+    </AuthProvider>
   )
 }
 

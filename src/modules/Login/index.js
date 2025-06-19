@@ -4,13 +4,9 @@ import React, { useEffect, useCallback } from 'react'
 import { useLoginData } from './hooks/useLoginData'
 import BackgroundElements from './components/BackgroundElements'
 import HeroSection from './components/HeroSection'
-import LaunchingSoonCard from './components/LaunchingSoonCard'
-import ImagineSection from './components/ImagineSection'
-import UpcomingProjectsSection from './components/UpcomingProjectsSection'
-import Footer from './components/Footer'
 
 /**
- * Enhanced Login landing page for Bounty Coin
+ * Enhanced Login landing page for Career Match AI
  * Implements modular design with theme support, responsive layout, and comprehensive error handling
  * Uses React.memo, useMemo, and useCallback for optimal performance
  * Follows accessibility best practices with semantic HTML and ARIA labels
@@ -20,10 +16,7 @@ const Login = React.memo(() => {
   const {
     loading,
     colors,
-    dynamicFeaturedProjects,
     handleLogin,
-    handleProjectClick,
-    isProjectClickable,
     darkMode
   } = useLoginData()
 
@@ -86,19 +79,6 @@ const Login = React.memo(() => {
   }, [handleBodyScrollPrevention])
 
   // Validate required data with error handling
-  if (!colors) {
-    console.error('Login: Colors configuration is missing')
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-red-500">Configuration error. Please refresh the page.</p>
-      </div>
-    )
-  }
-
-  if (!dynamicFeaturedProjects || !Array.isArray(dynamicFeaturedProjects)) {
-    console.warn('Login: Featured projects data is invalid or missing')
-  }
-
   if (!handleLogin || typeof handleLogin !== 'function') {
     console.error('Login: Login handler is missing or invalid')
     return (
@@ -117,7 +97,7 @@ const Login = React.memo(() => {
           : `linear-gradient(135deg, #fff, ${colors.botticelli}20)`
       }}
       role="main"
-      aria-label="Bounty Coin login page"
+      aria-label="Career Match AI login page"
     >
       {/* Animated background elements */}
       <BackgroundElements />
@@ -127,22 +107,6 @@ const Login = React.memo(() => {
         loading={loading} 
         onLogin={handleLogin} 
       />
-
-      {/* Launching Soon card */}
-      <LaunchingSoonCard />
-
-      {/* Imagine Section */}
-      <ImagineSection />
-      
-      {/* Upcoming Projects Section */}
-      <UpcomingProjectsSection 
-        projects={dynamicFeaturedProjects || []}
-        onProjectClick={handleProjectClick}
-        isProjectClickable={isProjectClickable}
-      />
-      
-      {/* Footer */}
-      <Footer />
     </main>
   )
 })

@@ -1,9 +1,9 @@
-import React, { useEffect, useState, useContext } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Route, Navigate, Routes, useLocation } from 'react-router-dom'
 import Login from './modules/Login'
 import Dashboard from './modules/Dashboard'
 import Header from './ui/layout/Header'
-import { DeSoIdentityContext } from 'react-deso-protocol'
+import { useAuth } from './ui/AuthContext'
 
 // Layout components
 export const DashboardLayout = ({ children, user }) => {
@@ -29,7 +29,7 @@ export const DefaultLayout = ({ children }) => {
  * @returns {React.ReactElement} Routes component with all application routes
  */
 const AppRoutes = () => {
-  const { currentUser } = useContext(DeSoIdentityContext)
+  const { currentUser } = useAuth()
   const [user, setUser] = useState(null)
   const location = useLocation()
 
