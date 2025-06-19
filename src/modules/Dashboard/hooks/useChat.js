@@ -24,10 +24,7 @@ export const useChat = (user = null) => {
   const {
     isLoading,
     error,
-    messages,
-    isProcessing,
     sendMessage: aiSendMessage,
-    initializeThread,
     loadMessages,
     resumeThread,
     clearMessages,

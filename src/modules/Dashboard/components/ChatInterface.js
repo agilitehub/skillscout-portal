@@ -1,26 +1,21 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
-import React, { useState, useCallback, useMemo, useRef } from 'react'
-import { Button, message, Typography, Progress, Card, Switch, Divider } from 'antd'
+import React, { useState, useCallback, useMemo } from 'react'
+import { Button, Typography, Progress, Card, Switch } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
-  faPaperclip,
   faFileAlt,
   faFilePdf,
   faFileWord,
   faFileImage,
   faTrash,
-  faPaperPlane,
   faRobot,
   faUser,
-  faUserTie,
   faGraduationCap,
   faBriefcase,
   faAward,
-  faEye,
   faList,
-  faChartLine,
-  faCloudUploadAlt
+  faChartLine
 } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../ui/ThemeContext'
 import ChatMessages from './ChatMessages'

@@ -1,6 +1,6 @@
 // Global Instructions Rule Applied!
 import React, { useState, useRef, useCallback } from 'react'
-import { Button, Upload, message, Progress, Card, List, Tag, Tooltip } from 'antd'
+import { Button, message, Progress, Card, List, Tag, Tooltip } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faCloudUploadAlt,
@@ -17,8 +17,6 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../ThemeContext'
 import { uploadMultipleFiles, deleteFileFromStorage, getFileDownloadUrl } from '../../lib/supabase-controller'
-
-const { Dragger } = Upload
 
 /**
  * FileUpload component - Reusable file upload component with Supabase storage integration
