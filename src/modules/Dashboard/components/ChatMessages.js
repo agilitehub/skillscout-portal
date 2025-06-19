@@ -1,18 +1,27 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
-import React, { useRef, useEffect } from 'react'
-import { Avatar, Typography } from 'antd'
+import React, { useRef, useEffect, useMemo, useCallback } from 'react'
+import { Avatar, Typography, Tag, Tooltip } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faRobot, faUser } from '@fortawesome/free-solid-svg-icons'
+import {
+  faRobot,
+  faUser,
+  faFileAlt,
+  faFilePdf,
+  faFileWord,
+  faFileImage,
+  faPaperclip,
+  faClock
+} from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../ui/ThemeContext'
 
 const { Text, Paragraph } = Typography
 
 /**
  * ChatMessages component - Displays chat messages with proper styling
- * Implements responsive design and theme support
+ * Implements responsive design, theme support, and AI integration
  */
-const ChatMessages = React.memo(({ messages, isTyping, user }) => {
+const ChatMessages = React.memo(({ messages, isTyping, user, uploadedFiles = [], showFileInfo = true }) => {
   const { darkMode } = useTheme()
   const messagesEndRef = useRef(null)
 
@@ -31,120 +40,296 @@ const ChatMessages = React.memo(({ messages, isTyping, user }) => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' })
     }
-  }, [messages])
+  }, [messages, isTyping])
+
+  // Get file icon based on type
+  const getFileIcon = useCallback((fileName) => {
+    const extension = fileName.split('.').pop()?.toLowerCase()
+    switch (extension) {
+      case 'pdf':
+        return faFilePdf
+      case 'doc':
+      case 'docx':
+        return faFileWord
+      case 'jpg':
+      case 'jpeg':
+      case 'png':
+      case 'gif':
+        return faFileImage
+      default:
+        return faFileAlt
+    }
+  }, [])
+
+  // Format timestamp
+  const formatTimestamp = useCallback((timestamp) => {
+    if (!timestamp) return ''
+
+    try {
+      const date = new Date(timestamp)
+      const now = new Date()
+      const diffInHours = (now - date) / (1000 * 60 * 60)
+
+      if (diffInHours < 24) {
+        return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      } else {
+        return date.toLocaleDateString([], { month: 'short', day: 'numeric' })
+      }
+    } catch (error) {
+      return ''
+    }
+  }, [])
+
+  // Get message styling based on type
+  const getMessageStyle = useCallback(
+    (messageType) => {
+      switch (messageType) {
+        case 'user':
+          return {
+            justifySelf: 'end',
+            backgroundColor: darkMode ? '#3B82F6' : '#3B82F6',
+            color: '#ffffff',
+            borderColor: darkMode ? '#2563EB' : '#2563EB'
+          }
+        case 'assistant':
+        case 'bot':
+          return {
+            justifySelf: 'start',
+            backgroundColor: darkMode ? '#1F2937' : '#F3F4F6',
+            color: darkMode ? '#F9FAFB' : '#1F2937',
+            borderColor: darkMode ? '#374151' : '#E5E7EB'
+          }
+        case 'system':
+          return {
+            justifySelf: 'center',
+            backgroundColor: darkMode ? '#FEF3C7' : '#FEF3C7',
+            color: darkMode ? '#92400E' : '#92400E',
+            borderColor: darkMode ? '#F59E0B' : '#F59E0B'
+          }
+        default:
+          return {
+            justifySelf: 'start',
+            backgroundColor: darkMode ? '#1F2937' : '#F3F4F6',
+            color: darkMode ? '#F9FAFB' : '#1F2937',
+            borderColor: darkMode ? '#374151' : '#E5E7EB'
+          }
+      }
+    },
+    [darkMode]
+  )
 
   // Validate props
   if (!messages || !Array.isArray(messages)) {
-    return null
+    return (
+      <div className='flex items-center justify-center h-full text-gray-500'>
+        <Text>No messages to display</Text>
+      </div>
+    )
   }
 
   return (
-    <div 
-      className="h-full overflow-y-auto p-2 md:p-4 flex flex-col"
-      style={{ 
+    <div
+      className='h-full overflow-y-auto p-2 md:p-4 flex flex-col'
+      style={{
         background: darkMode ? '#1F2937' : '#F9FAFB',
-        backgroundImage: darkMode 
+        backgroundImage: darkMode
           ? 'radial-gradient(circle at 25% 25%, rgba(42, 67, 101, 0.05) 0%, transparent 50%), radial-gradient(circle at 75% 75%, rgba(66, 99, 149, 0.05) 0%, transparent 50%)'
           : 'radial-gradient(circle at 25% 25%, rgba(49, 130, 206, 0.05) 0%, transparent 50%), radial-gradient(circle at 75% 75%, rgba(176, 153, 86, 0.05) 0%, transparent 50%)',
         scrollbarWidth: 'thin',
         scrollbarColor: `${colors.shakespeare} ${darkMode ? '#374151' : '#f1f1f1'}`
       }}
     >
-      <div className="w-full space-y-4 px-4">
+      <div className='w-full space-y-4 px-4'>
         {/* Chat Messages */}
-        {messages.map((message) => (
-          <div key={message.id} className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
-            <div 
-              className={`rounded-lg px-4 py-3 shadow-sm max-w-[75%] ${
-                message.type === 'user' ? 'bg-blue-500 text-white' : 
-                message.type === 'system' ? 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200' :
-                darkMode ? 'bg-emerald-800 text-emerald-100' : 'bg-emerald-50 text-emerald-900'
-              }`}
-            >
-              {(message.type === 'bot' || message.type === 'assistant') && (
-                <div className="flex items-center mb-2">
-                  <Avatar 
-                    size="small" 
-                    icon={<FontAwesomeIcon icon={faRobot} />} 
-                    style={{ 
-                      backgroundColor: colors.emeraldPrimary,
-                      marginRight: '8px'
-                    }}
-                  />
-                  <Text 
-                    strong 
+        {messages.map((message) => {
+          const messageStyle = getMessageStyle(message.type)
+          const isUserMessage = message.type === 'user'
+          const isSystemMessage = message.type === 'system'
+
+          return (
+            <div key={message.id} className={`flex ${isUserMessage ? 'justify-end' : 'justify-start'}`}>
+              <div
+                className={`rounded-lg px-4 py-3 shadow-sm max-w-[75%] border ${
+                  isSystemMessage ? 'mx-auto max-w-md' : ''
+                }`}
+                style={{
+                  backgroundColor: messageStyle.backgroundColor,
+                  color: messageStyle.color,
+                  borderColor: messageStyle.borderColor
+                }}
+              >
+                {/* Message Header */}
+                {!isUserMessage && !isSystemMessage && (
+                  <div className='flex items-center mb-2'>
+                    <Avatar
+                      size='small'
+                      icon={<FontAwesomeIcon icon={faRobot} />}
+                      style={{
+                        backgroundColor: colors.emeraldPrimary,
+                        marginRight: '8px'
+                      }}
+                    />
+                    <Text
+                      strong
+                      style={{
+                        fontSize: '0.875rem',
+                        color: messageStyle.color
+                      }}
+                    >
+                      Career Match AI
+                    </Text>
+                  </div>
+                )}
+
+                {isUserMessage && (
+                  <div className='flex items-center mb-2'>
+                    <Avatar
+                      size='small'
+                      icon={<FontAwesomeIcon icon={faUser} />}
+                      style={{
+                        backgroundColor: colors.shakespeare,
+                        marginRight: '8px'
+                      }}
+                    />
+                    <Text strong className='text-sm text-white'>
+                      {user?.Username || 'You'}
+                    </Text>
+                  </div>
+                )}
+
+                {isSystemMessage && (
+                  <div className='flex items-center mb-2'>
+                    <FontAwesomeIcon
+                      icon={faPaperclip}
+                      className='mr-2 text-sm'
+                      style={{ color: messageStyle.color }}
+                    />
+                    <Text
+                      strong
+                      style={{
+                        fontSize: '0.875rem',
+                        color: messageStyle.color
+                      }}
+                    >
+                      System
+                    </Text>
+                  </div>
+                )}
+
+                {/* Message Content */}
+                <Paragraph
+                  style={{
+                    margin: 0,
+                    whiteSpace: 'pre-wrap',
+                    fontSize: '0.875rem',
+                    lineHeight: '1.5',
+                    color: messageStyle.color
+                  }}
+                  className='break-words'
+                >
+                  {message.content}
+                </Paragraph>
+
+                {/* Message Footer */}
+                <div className='flex items-center justify-between mt-2'>
+                  {/* Timestamp */}
+                  <Text
                     style={{
-                      fontSize: '0.875rem',
-                      color: darkMode ? '#ffffff' : '#374151'
+                      fontSize: '0.75rem',
+                      opacity: 0.7,
+                      color: messageStyle.color
                     }}
                   >
-                    Career Match AI
+                    {formatTimestamp(message.timestamp)}
                   </Text>
+
+                  {/* File attachments for system messages */}
+                  {isSystemMessage && showFileInfo && uploadedFiles.length > 0 && (
+                    <div className='flex items-center space-x-1'>
+                      {uploadedFiles.slice(0, 3).map((file, index) => (
+                        <Tooltip key={file.id} title={file.name}>
+                          <Tag
+                            size='small'
+                            icon={<FontAwesomeIcon icon={getFileIcon(file.name)} />}
+                            style={{
+                              backgroundColor: 'rgba(255,255,255,0.1)',
+                              border: 'none',
+                              color: messageStyle.color
+                            }}
+                          >
+                            {file.name.length > 15 ? `${file.name.substring(0, 15)}...` : file.name}
+                          </Tag>
+                        </Tooltip>
+                      ))}
+                      {uploadedFiles.length > 3 && (
+                        <Tag
+                          size='small'
+                          style={{
+                            backgroundColor: 'rgba(255,255,255,0.1)',
+                            border: 'none',
+                            color: messageStyle.color
+                          }}
+                        >
+                          +{uploadedFiles.length - 3} more
+                        </Tag>
+                      )}
+                    </div>
+                  )}
                 </div>
-              )}
-              
-              {message.type === 'user' && (
-                <div className="flex items-center mb-2">
-                  <Avatar 
-                    size="small" 
-                    icon={<FontAwesomeIcon icon={faUser} />} 
-                    style={{ 
-                      backgroundColor: colors.shakespeare,
-                      marginRight: '8px'
-                    }}
-                  />
-                  <Text 
-                    strong 
-                    className="text-sm text-white"
-                  >
-                    {user?.Username || 'You'}
-                  </Text>
-                </div>
-              )}
-              
-              <Paragraph 
-                style={{ 
-                  margin: 0, 
-                  whiteSpace: 'pre-wrap',
-                  fontSize: '0.875rem',
-                  lineHeight: '1.5',
-                  color: message.type === 'user' ? '#ffffff' : 
-                         message.type === 'system' ? (darkMode ? '#fef3c7' : '#92400e') :
-                         darkMode ? '#ffffff' : '#064e3b'
-                }}
-                className="break-words"
-              >
-                {message.content}
-              </Paragraph>
-              
-              <Text 
-                style={{ 
-                  fontSize: '0.75rem', 
-                  display: 'block', 
-                  textAlign: message.type === 'user' ? 'right' : 'left',
-                  marginTop: '8px',
-                  opacity: 0.7,
-                  color: message.type === 'user' ? '#ffffff' : 
-                         message.type === 'system' ? (darkMode ? '#fbbf24' : '#d97706') :
-                         darkMode ? '#ffffff' : '#374151'
-                }}
-              >
-                {message.timestamp && new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-              </Text>
+              </div>
             </div>
-          </div>
-        ))}
+          )
+        })}
 
         {/* Typing indicator */}
         {isTyping && (
-          <div className="flex justify-start">
-            <div 
-              className="rounded-lg px-4 py-3 shadow-sm bg-gray-200 dark:bg-gray-700"
+          <div className='flex justify-start'>
+            <div
+              className='rounded-lg px-4 py-3 shadow-sm max-w-[75%]'
+              style={{
+                backgroundColor: darkMode ? '#1F2937' : '#F3F4F6',
+                border: `1px solid ${darkMode ? '#374151' : '#E5E7EB'}`
+              }}
             >
-              <div className="flex items-center space-x-1">
-                <div className="bg-gray-400 rounded-full h-2 w-2 animate-pulse" style={{ animationDelay: '0ms' }} />
-                <div className="bg-gray-400 rounded-full h-2 w-2 animate-pulse" style={{ animationDelay: '300ms' }} />
-                <div className="bg-gray-400 rounded-full h-2 w-2 animate-pulse" style={{ animationDelay: '600ms' }} />
+              <div className='flex items-center space-x-3'>
+                <Avatar
+                  size='small'
+                  icon={<FontAwesomeIcon icon={faRobot} />}
+                  style={{
+                    backgroundColor: colors.emeraldPrimary
+                  }}
+                />
+                <div className='flex items-center space-x-1'>
+                  <div
+                    className='rounded-full h-2 w-2 animate-pulse'
+                    style={{
+                      backgroundColor: colors.emeraldPrimary,
+                      animationDelay: '0ms'
+                    }}
+                  />
+                  <div
+                    className='rounded-full h-2 w-2 animate-pulse'
+                    style={{
+                      backgroundColor: colors.emeraldPrimary,
+                      animationDelay: '300ms'
+                    }}
+                  />
+                  <div
+                    className='rounded-full h-2 w-2 animate-pulse'
+                    style={{
+                      backgroundColor: colors.emeraldPrimary,
+                      animationDelay: '600ms'
+                    }}
+                  />
+                </div>
+                <Text
+                  style={{
+                    fontSize: '0.875rem',
+                    color: darkMode ? '#F9FAFB' : '#1F2937'
+                  }}
+                >
+                  AI is typing...
+                </Text>
               </div>
             </div>
           </div>
@@ -159,4 +344,4 @@ const ChatMessages = React.memo(({ messages, isTyping, user }) => {
 
 ChatMessages.displayName = 'ChatMessages'
 
-export default ChatMessages 
+export default ChatMessages
