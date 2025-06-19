@@ -159,7 +159,8 @@ const MagicLinkLogin = React.memo(({ onLogin, loading }) => {
                 className='w-full'
                 style={{
                   border: darkMode ? '1px solid rgba(255,255,255,0.3)' : '1px solid #d9d9d9',
-                  color: darkMode ? 'white' : 'inherit'
+                  color: darkMode ? 'white' : 'inherit',
+                  backgroundColor: darkMode ? 'rgba(255,255,255,0.1)' : 'white'
                 }}
               >
                 Use Different Email

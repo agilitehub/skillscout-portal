@@ -38,9 +38,10 @@ export const useChat = (user = null) => {
   const [isInitialized, setIsInitialized] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
   const [messageLimit, setMessageLimit] = useState(5) // Start with 5 messages
-  const [hasMoreMessages, setHasMoreMessages] = useState(true) // Track if more messages exist
+  const [hasMoreMessages, setHasMoreMessages] = useState(false) // Track if more messages exist
   const [isLoadingMore, setIsLoadingMore] = useState(false) // Loading state for pagination
   const [isLoadingHistorical, setIsLoadingHistorical] = useState(false) // Track historical loading
+  const [totalMessageCount, setTotalMessageCount] = useState(0) // Track total messages available
   const abortControllerRef = useRef(null)
 
   // Chat initialization with Supabase thread_id
@@ -51,6 +52,8 @@ export const useChat = (user = null) => {
         if (config.development.mockResponses) {
           setChatHistory([mockResponses.welcome])
           setIsInitialized(true)
+          setHasMoreMessages(false) // Mock responses don't have pagination
+          setTotalMessageCount(1)
           return
         }
         if (!config.validation.isValid) {
@@ -67,13 +70,28 @@ export const useChat = (user = null) => {
         }
         // 3. Set threadId in controller, then fetch messages
         controller.setThreadId(threadIdFromDb)
+        
+        // Get messages with the current limit
         const response = await controller.getMessages(messageLimit)
         let formattedMessages = response.data.map(formatMessage)
         // Sort by timestamp ascending (oldest first, latest last)
         formattedMessages.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))
 
+        // Set total message count based on what we received
+        const receivedCount = response.data.length
+        setTotalMessageCount(receivedCount)
+        
         // Check if there are more messages available
-        setHasMoreMessages(response.data.length === messageLimit)
+        // If we received exactly the limit, there might be more messages
+        const hasMore = receivedCount === messageLimit
+        setHasMoreMessages(hasMore)
+        
+        console.log('Chat initialization:', {
+          messageLimit,
+          receivedCount,
+          hasMoreMessages: hasMore,
+          formattedMessagesLength: formattedMessages.length
+        })
 
         if (formattedMessages.length === 0) {
           // Add welcome message if thread is new/empty
@@ -85,6 +103,8 @@ export const useChat = (user = null) => {
               timestamp: new Date().toISOString()
             }
           ]
+          setTotalMessageCount(1)
+          setHasMoreMessages(false)
         }
         setChatHistory(formattedMessages)
         setIsInitialized(true)
@@ -94,27 +114,40 @@ export const useChat = (user = null) => {
       }
     }
     initializeChat()
-  }, [user, controller, config, mockResponses])
+  }, [user, controller, config, mockResponses, messageLimit])
 
   // Load messages when messageLimit changes (for pagination)
   useEffect(() => {
     const loadMessagesWithLimit = async () => {
-      if (!user?.id || !isInitialized || !controller.getThreadId()) return
+      if (!user?.id || !isInitialized || !controller.getThreadId() || config.development.mockResponses) return
 
       try {
         const response = await controller.getMessages(messageLimit)
         let formattedMessages = response.data.map(formatMessage)
         formattedMessages.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))
-        const hasMore = response.data.length === messageLimit
+        
+        // Update total count with what we actually received
+        const receivedCount = response.data.length
+        setTotalMessageCount(receivedCount)
+        
+        // Update hasMoreMessages - if we got exactly the limit, there might be more
+        const hasMore = receivedCount === messageLimit
         setHasMoreMessages(hasMore)
         setChatHistory(formattedMessages)
+        
+        console.log('Load messages with limit:', {
+          messageLimit,
+          receivedCount,
+          hasMoreMessages: hasMore,
+          formattedMessagesLength: formattedMessages.length
+        })
       } catch (error) {
         console.error('Failed to load messages with new limit:', error)
       }
     }
 
     loadMessagesWithLimit()
-  }, [messageLimit, user?.id, isInitialized, controller])
+  }, [messageLimit, user?.id, isInitialized, controller, totalMessageCount, config.development.mockResponses])
 
   // Handle AI errors
   useEffect(() => {
@@ -139,6 +172,10 @@ export const useChat = (user = null) => {
         }
         setChatHistory((prev) => [...prev, userMessage])
         setIsTyping(true)
+        
+        // Update total message count
+        setTotalMessageCount(prev => prev + 1)
+        
         if (abortControllerRef.current) {
           abortControllerRef.current.abort()
         }
@@ -163,6 +200,7 @@ export const useChat = (user = null) => {
           }
           aiResponse.id = Date.now().toString()
           setChatHistory((prev) => [...prev, aiResponse])
+          setTotalMessageCount(prev => prev + 1)
         } else {
           // Use real AI controller
           const aiResponse = await aiSendMessage(content.trim())
@@ -174,6 +212,7 @@ export const useChat = (user = null) => {
               timestamp: new Date().toISOString()
             }
             setChatHistory((prev) => [...prev, assistantMessage])
+            setTotalMessageCount(prev => prev + 1)
           }
         }
       } catch (error) {
@@ -183,6 +222,7 @@ export const useChat = (user = null) => {
         console.error('Failed to send message:', error)
         message.error('Failed to send message. Please try again.')
         setChatHistory((prev) => prev.slice(0, -1))
+        setTotalMessageCount(prev => prev - 1) // Revert count if message failed
       }
       setIsTyping(false)
       abortControllerRef.current = null
@@ -226,6 +266,7 @@ export const useChat = (user = null) => {
             timestamp: new Date().toISOString()
           }
           setChatHistory((prev) => [...prev, fileMessage])
+          setTotalMessageCount(prev => prev + 1)
 
           message.success(`Successfully uploaded ${newFiles.length} file(s)`)
 
@@ -311,6 +352,9 @@ export const useChat = (user = null) => {
   const clearChat = useCallback(() => {
     setChatHistory([])
     setUploadedFiles([])
+    setTotalMessageCount(0)
+    setHasMoreMessages(false)
+    setMessageLimit(5) // Reset to initial limit
     clearMessages()
     message.info('Chat cleared')
   }, [clearMessages])
@@ -385,6 +429,7 @@ export const useChat = (user = null) => {
     hasMoreMessages,
     isLoadingMore,
     isLoadingHistorical,
+    totalMessageCount,
     // Actions
     sendMessage,
     handleFileUpload,

@@ -300,6 +300,12 @@ const ChatMessages = React.memo(
     const messagesContainerRef = useRef(null)
     const [showLoadMoreButton, setShowLoadMoreButton] = useState(false)
     const prevMessageCountRef = useRef(0)
+    
+    // Add scroll position tracking for when loading previous messages
+    const scrollPositionRef = useRef(null)
+    const prevScrollHeightRef = useRef(0)
+    const isRestoringScrollRef = useRef(false)
+    const prevIsLoadingHistoricalRef = useRef(false)
 
     // Internal color palette for Career Match AI
     const colors = {
@@ -314,6 +320,9 @@ const ChatMessages = React.memo(
     // Handle scroll detection for showing load more button
     const handleScroll = useCallback(
       (e) => {
+        // Don't process scroll events when we're restoring scroll position
+        if (isRestoringScrollRef.current) return
+        
         const { scrollTop } = e.target
         // Show load more button only when user scrolls near the top (within 100px)
         const shouldShow = scrollTop < 100 && hasMoreMessages
@@ -322,10 +331,90 @@ const ChatMessages = React.memo(
       [hasMoreMessages]
     )
 
+    // Enhanced load more messages handler with scroll position preservation
+    const handleLoadMoreMessages = useCallback(async () => {
+      if (!messagesContainerRef.current || !onLoadMoreMessages) return
+      
+      const container = messagesContainerRef.current
+      
+      // Store current scroll position relative to the bottom
+      const scrollTop = container.scrollTop
+      const scrollHeight = container.scrollHeight
+      const clientHeight = container.clientHeight
+      
+      // Store the distance from the bottom
+      scrollPositionRef.current = {
+        scrollTop,
+        scrollHeight,
+        clientHeight,
+        distanceFromBottom: scrollHeight - scrollTop - clientHeight
+      }
+      
+      prevScrollHeightRef.current = scrollHeight
+      
+      // Call the load more function
+      await onLoadMoreMessages()
+    }, [onLoadMoreMessages])
+
+    // Restore scroll position after loading historical messages
+    useEffect(() => {
+      const prevIsLoadingHistorical = prevIsLoadingHistoricalRef.current
+      prevIsLoadingHistoricalRef.current = isLoadingHistorical
+      
+      // Only restore when isLoadingHistorical just changed from true to false
+      if (isLoadingHistorical || !prevIsLoadingHistorical || !scrollPositionRef.current || !messagesContainerRef.current) {
+        return
+      }
+
+      const container = messagesContainerRef.current
+      
+      // Wait a bit for the DOM to update with new messages
+      setTimeout(() => {
+        const newScrollHeight = container.scrollHeight
+        const prevScrollHeight = prevScrollHeightRef.current
+        
+        console.log('Scroll restoration:', {
+          newScrollHeight,
+          prevScrollHeight,
+          storedPosition: scrollPositionRef.current
+        })
+        
+        // Calculate how much the content has grown
+        const heightDifference = newScrollHeight - prevScrollHeight
+        
+        if (heightDifference > 0 && scrollPositionRef.current) {
+          // Set flag to prevent scroll event processing during restoration
+          isRestoringScrollRef.current = true
+          
+          // Restore scroll position by adjusting for the new content
+          const newScrollTop = scrollPositionRef.current.scrollTop + heightDifference
+          
+          console.log('Restoring scroll position:', {
+            oldScrollTop: scrollPositionRef.current.scrollTop,
+            heightDifference,
+            newScrollTop
+          })
+          
+          // Set the scroll position
+          container.scrollTop = newScrollTop
+          
+          // Reset flag after a small delay
+          setTimeout(() => {
+            isRestoringScrollRef.current = false
+          }, 100)
+        }
+        
+        // Clear the stored position
+        scrollPositionRef.current = null
+        prevScrollHeightRef.current = newScrollHeight
+      }, 50) // Small delay to ensure DOM is updated
+      
+    }, [isLoadingHistorical])
+
     // Auto-scroll to bottom when new messages arrive (but not when loading more)
     useEffect(() => {
-      // Completely disable auto-scroll if we're loading historical messages
-      if (isLoadingHistorical) {
+      // Completely disable auto-scroll if we're loading historical messages or restoring scroll
+      if (isLoadingHistorical || isRestoringScrollRef.current) {
         return
       }
 
@@ -428,6 +517,15 @@ const ChatMessages = React.memo(
       [darkMode]
     )
 
+    // Debug logging
+    console.log('ChatMessages props:', {
+      messagesLength: messages?.length,
+      hasMoreMessages,
+      isLoadingMore,
+      isLoadingHistorical,
+      showLoadMoreButton
+    })
+
     // Validate props
     if (!messages || !Array.isArray(messages)) {
       return (
@@ -455,7 +553,7 @@ const ChatMessages = React.memo(
           {showLoadMoreButton && (
             <div className='flex justify-center py-2 sticky top-0 z-10 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-lg shadow-sm border border-blue-200 dark:border-blue-700'>
               <button
-                onClick={onLoadMoreMessages}
+                onClick={handleLoadMoreMessages}
                 disabled={isLoadingMore}
                 className={`
                   px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200
@@ -568,7 +666,7 @@ const ChatMessages = React.memo(
                     style={{
                       margin: 0,
                       whiteSpace: 'pre-wrap',
-                      fontSize: '0.875rem',
+                      fontSize: '0.9rem',
                       lineHeight: '1.5',
                       color: messageStyle.color
                     }}

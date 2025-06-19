@@ -102,7 +102,7 @@ const Header = ({ user }) => {
           {/* Logo and Title */}
           <Link to='/' className='flex-shrink-0 flex items-center'>
             <div
-              className={`rounded-full p-1 transition-all duration-300 ${
+              className={`rounded-full p-0 transition-all duration-300 ${
                 darkMode ? 'bg-white/15 backdrop-blur-sm shadow-lg' : ''
               }`}
             >
