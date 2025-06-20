@@ -16,12 +16,6 @@ module.exports = {
           DEFAULT: '#0E5A94', // Medium Blue from logo
           dark: '#00334F' // Dark Blue shade
         },
-        // Bounty Coin logo colors
-        'bounty-dark-green': '#003921',  // Dark green background
-        'bounty-emerald': '#006B3C',     // Medium green
-        'bounty-light-green': '#33C187', // Light green accent
-        'bounty-blue': '#0E5A94',        // Blue accent in logo
-        'bounty-light-blue': '#4FA8FF',  // Lighter blue tone
         // Legacy brand colors (keeping for backward compatibility)
         'agilite-red': '#E30613',
         'agilite-black': '#151515',

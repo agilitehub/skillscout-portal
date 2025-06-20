@@ -381,7 +381,7 @@ const ChatInput = React.memo(
                 isUploading
                   ? 'Uploading files...'
                   : isTyping
-                    ? 'AI is typing...'
+                    ? '...'
                     : isDisabled
                       ? 'Chat is disabled...'
                       : 'Tell me about your career goals or ask for interview preparation help...'

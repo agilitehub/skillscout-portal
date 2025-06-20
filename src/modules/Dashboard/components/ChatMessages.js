@@ -773,7 +773,7 @@ const ChatMessages = React.memo(
                       color: darkMode ? '#F9FAFB' : '#1F2937'
                     }}
                   >
-                    AI is typing...
+                    ...
                   </Text>
                 </div>
               </div>
