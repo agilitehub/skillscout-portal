@@ -81,16 +81,17 @@ export const useChat = (user = null) => {
         const receivedCount = response.data.length
         setTotalMessageCount(receivedCount)
         
-        // Check if there are more messages available
-        // If we received exactly the limit, there might be more messages
-        const hasMore = receivedCount === messageLimit
+        // Check if there are more messages available using OpenAI's has_more field
+        const hasMore = response.has_more || false
         setHasMoreMessages(hasMore)
         
         console.log('Chat initialization:', {
           messageLimit,
           receivedCount,
           hasMoreMessages: hasMore,
-          formattedMessagesLength: formattedMessages.length
+          hasMoreFromAPI: response.has_more,
+          formattedMessagesLength: formattedMessages.length,
+          reachedEnd: !hasMore
         })
 
         if (formattedMessages.length === 0) {
@@ -116,10 +117,11 @@ export const useChat = (user = null) => {
     initializeChat()
   }, [user, controller, config, mockResponses, messageLimit])
 
-  // Load messages when messageLimit changes (for pagination)
+  // Load messages when messageLimit changes (for pagination) - but not during loadMoreMessages
   useEffect(() => {
     const loadMessagesWithLimit = async () => {
-      if (!user?.id || !isInitialized || !controller.getThreadId() || config.development.mockResponses) return
+      // Skip if we're currently loading more messages (handled directly in loadMoreMessages)
+      if (!user?.id || !isInitialized || !controller.getThreadId() || config.development.mockResponses || isLoadingMore) return
 
       try {
         const response = await controller.getMessages(messageLimit)
@@ -130,16 +132,18 @@ export const useChat = (user = null) => {
         const receivedCount = response.data.length
         setTotalMessageCount(receivedCount)
         
-        // Update hasMoreMessages - if we got exactly the limit, there might be more
-        const hasMore = receivedCount === messageLimit
+        // Update hasMoreMessages using OpenAI's has_more field
+        const hasMore = response.has_more || false
         setHasMoreMessages(hasMore)
         setChatHistory(formattedMessages)
         
-        console.log('Load messages with limit:', {
+        console.log('Load messages with limit (useEffect):', {
           messageLimit,
           receivedCount,
           hasMoreMessages: hasMore,
-          formattedMessagesLength: formattedMessages.length
+          hasMoreFromAPI: response.has_more,
+          formattedMessagesLength: formattedMessages.length,
+          reachedEnd: !hasMore
         })
       } catch (error) {
         console.error('Failed to load messages with new limit:', error)
@@ -147,7 +151,7 @@ export const useChat = (user = null) => {
     }
 
     loadMessagesWithLimit()
-  }, [messageLimit, user?.id, isInitialized, controller, totalMessageCount, config.development.mockResponses])
+  }, [messageLimit, user?.id, isInitialized, controller, config.development.mockResponses, isLoadingMore])
 
   // Handle AI errors
   useEffect(() => {
@@ -393,7 +397,7 @@ export const useChat = (user = null) => {
     return isInitialized && (!config.development.mockResponses ? !!controller.getThreadId() : true)
   }, [isInitialized, controller, config.development.mockResponses])
 
-  // Load more messages
+  // Load more messages - now loads ALL remaining messages
   const loadMoreMessages = useCallback(async () => {
     if (!user?.id || !isInitialized || !hasMoreMessages || isLoadingMore) return
 
@@ -401,18 +405,36 @@ export const useChat = (user = null) => {
     setIsLoadingHistorical(true)
 
     try {
-      // Increment the message limit by 5
-      const newLimit = messageLimit + 5
-      setMessageLimit(newLimit)
+      console.log('Loading all remaining messages...')
+      
+      // Use the getAllMessages function to fetch all messages
+      const response = await controller.getAllMessages(20)
+      let formattedMessages = response.data.map(formatMessage)
+      formattedMessages.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))
+      
+      const totalCount = formattedMessages.length
+      
+      // Update state - since we loaded all messages, there are no more to load
+      setTotalMessageCount(totalCount)
+      setChatHistory(formattedMessages)
+      setHasMoreMessages(false) // No more messages since we loaded them all
+      setMessageLimit(totalCount) // Update limit to reflect all messages loaded
+      
+      console.log('Load all messages result:', {
+        totalMessagesLoaded: totalCount,
+        hasMoreMessages: false,
+        reachedEnd: true
+      })
+      
     } catch (error) {
-      console.error('Error loading more messages:', error)
-      message.error('Failed to load more messages. Please try again.')
+      console.error('Error loading all messages:', error)
+      message.error('Failed to load previous messages. Please try again.')
     } finally {
       setIsLoadingMore(false)
       // Keep isLoadingHistorical true for a bit longer to prevent auto-scroll
       setTimeout(() => setIsLoadingHistorical(false), 500)
     }
-  }, [user?.id, isInitialized, hasMoreMessages, isLoadingMore, messageLimit])
+  }, [user?.id, isInitialized, hasMoreMessages, isLoadingMore, controller])
 
   return {
     // State

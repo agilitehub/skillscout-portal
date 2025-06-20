@@ -142,15 +142,26 @@ class AIController {
   }
 
   /**
-   * Get messages from thread
+   * Get messages from thread with proper pagination support
    */
-  async getMessages(limit = 20) {
+  async getMessages(limit = 20, order = 'desc', after = null, before = null) {
     if (!this.threadId) {
       throw new Error('No thread available')
     }
 
     try {
-      const response = await fetch(`${this.baseURL}/threads/${this.threadId}/messages?limit=${limit}`, {
+      let url = `${this.baseURL}/threads/${this.threadId}/messages?limit=${limit}&order=${order}`
+      
+      if (after) {
+        url += `&after=${after}`
+      }
+      if (before) {
+        url += `&before=${before}`
+      }
+      
+      console.log('Fetching messages from:', url)
+      
+      const response = await fetch(url, {
         headers: {
           Authorization: `Bearer ${this.apiKey}`,
           'OpenAI-Beta': 'assistants=v2'
@@ -161,10 +172,61 @@ class AIController {
         throw new Error(`Failed to get messages: ${response.status}`)
       }
 
-      return await response.json()
+      const result = await response.json()
+      console.log('OpenAI API response:', {
+        threadId: this.threadId,
+        requestedLimit: limit,
+        returnedCount: result.data?.length || 0,
+        hasMore: result.has_more,
+        firstId: result.first_id,
+        lastId: result.last_id,
+        messageIds: result.data?.map(msg => msg.id) || [],
+        after,
+        before
+      })
+      
+      return result
     } catch (error) {
       console.error('Error getting messages:', error)
       throw error
+    }
+  }
+
+  /**
+   * Get all messages from thread using proper pagination
+   */
+  async getAllMessages(batchSize = 20) {
+    if (!this.threadId) {
+      throw new Error('No thread available')
+    }
+
+    const allMessages = []
+    let after = null
+    let hasMore = true
+
+    while (hasMore) {
+      try {
+        const response = await this.getMessages(batchSize, 'desc', after)
+        
+        if (response.data && response.data.length > 0) {
+          allMessages.push(...response.data)
+          after = response.data[response.data.length - 1].id // Get the ID of the last message for next page
+          hasMore = response.has_more
+        } else {
+          hasMore = false
+        }
+      } catch (error) {
+        console.error('Error fetching messages batch:', error)
+        break
+      }
+    }
+
+    console.log(`Retrieved ${allMessages.length} total messages from thread`)
+    return {
+      data: allMessages,
+      has_more: false,
+      first_id: allMessages[0]?.id || null,
+      last_id: allMessages[allMessages.length - 1]?.id || null
     }
   }
 

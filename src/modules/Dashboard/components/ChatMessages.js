@@ -494,9 +494,9 @@ const ChatMessages = React.memo(
           case 'bot':
             return {
               justifySelf: 'start',
-              backgroundColor: darkMode ? '#1F2937' : '#F3F4F6',
-              color: darkMode ? '#F9FAFB' : '#1F2937',
-              borderColor: darkMode ? '#374151' : '#E5E7EB'
+              backgroundColor: darkMode ? '#1F2937' : '#E0F2FE',
+              color: darkMode ? '#F9FAFB' : '#0F172A',
+              borderColor: darkMode ? '#374151' : '#BAE6FD'
             }
           case 'system':
             return {
