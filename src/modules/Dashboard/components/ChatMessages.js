@@ -307,7 +307,7 @@ const ChatMessages = React.memo(
     const isRestoringScrollRef = useRef(false)
     const prevIsLoadingHistoricalRef = useRef(false)
 
-    // Internal color palette for Career Match AI
+    // Internal color palette for Skill Scout
     const colors = {
       darkBlue: '#1E3A52',
       shakespeare: '#4A90A4',
@@ -621,7 +621,7 @@ const ChatMessages = React.memo(
                           color: messageStyle.color
                         }}
                       >
-                        Career Match AI
+                        Skill Scout
                       </Text>
                     </div>
                   )}

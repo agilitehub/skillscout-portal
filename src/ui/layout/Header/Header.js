@@ -185,7 +185,7 @@ const Header = ({ user }) => {
     </div>
   )
 
-  // Enhanced header gradient with blue-to-green transitions for Career Match AI branding
+  // Enhanced header gradient with blue-to-green transitions for Skill Scout branding
   const headerGradient = darkMode
     ? `linear-gradient(135deg, ${BRAND_COLORS.darkBlue} 0%, ${BRAND_COLORS.shakespeare} 25%, ${BRAND_COLORS.emeraldAccent} 65%, ${BRAND_COLORS.forestGreen} 100%)`
     : `linear-gradient(135deg, ${BRAND_COLORS.shakespeare} 0%, ${BRAND_COLORS.pictonBlue} 20%, ${BRAND_COLORS.seaGreen} 50%, ${BRAND_COLORS.emeraldPrimary} 80%, ${BRAND_COLORS.tealGreen} 100%)`
@@ -213,7 +213,7 @@ const Header = ({ user }) => {
               <Logo size='small' className='w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16' />
             </div>
             <h1 className='ml-1 sm:ml-2 md:ml-3 text-lg sm:text-xl md:text-4xl font-bold text-white whitespace-nowrap'>
-              Career Match AI
+              Skill Scout
             </h1>
           </Link>
 

@@ -19,7 +19,7 @@ const MagicLinkLogin = React.memo(({ onLogin, loading }) => {
   const [error, setError] = useState(null)
   const { darkMode } = useTheme()
 
-  // Color palette - Career Match AI blue-to-green balance
+  // Color palette - Skill Scout blue-to-green balance
   const colors = {
     darkBlue: '#1E3A52',
     shakespeare: '#4A90A4',

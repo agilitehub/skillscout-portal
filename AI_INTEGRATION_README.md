@@ -39,7 +39,7 @@ REACT_APP_MOCK_AI=false
 1. Go to [OpenAI Assistants](https://platform.openai.com/assistants)
 2. Click "Create" to create a new assistant
 3. Configure your assistant with:
-   - **Name**: "Career Match AI"
+   - **Name**: "Skill Scout"
    - **Instructions**: Use the instructions from `ai-config.js`
    - **Model**: GPT-4 Turbo
    - **Tools**: Enable "Retrieval" for file processing
@@ -189,7 +189,7 @@ const config = {
   },
   assistant: {
     id: process.env.REACT_APP_OPENAI_ASSISTANT_ID,
-    name: 'Career Match AI',
+    name: 'Skill Scout',
     instructions: '...',
     model: 'gpt-4-turbo-preview'
   },

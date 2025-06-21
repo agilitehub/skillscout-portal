@@ -29,7 +29,7 @@ const ChatInput = React.memo(
     const [uploadProgress, setUploadProgress] = React.useState({})
     const fileInputRef = useRef(null)
 
-    // Internal color palette for Career Match AI
+    // Internal color palette for Skill Scout
     const colors = {
       shakespeare: '#4A90A4',
       pictonBlue: '#5BA3D4',

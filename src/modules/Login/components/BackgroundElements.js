@@ -11,7 +11,7 @@ import { useTheme } from '../../../ui/ThemeContext'
 const BackgroundElements = React.memo(() => {
   const { darkMode } = useTheme()
 
-  // Career Match AI color palette for swirling effects
+  // Skill Scout color palette for swirling effects
   const colors = {
     // Blues
     darkBlue: '#1E3A52',

@@ -17,7 +17,7 @@ const { Title } = Typography
 const HeroSection = React.memo(({ loading, onLogin }) => {
   const { darkMode } = useTheme()
 
-  // Color palette - Career Match AI blue-to-green balance
+  // Color palette - Skill Scout blue-to-green balance
   const colors = {
     // Blues from brand palette
     darkBlue: '#1E3A52',
@@ -50,7 +50,7 @@ const HeroSection = React.memo(({ loading, onLogin }) => {
               darkMode ? 'bg-white/20 backdrop-blur-md shadow-2xl border border-white/30' : 'bg-white shadow-lg'
             }`}
           >
-            <Logo className='w-20 h-20 sm:w-28 sm:h-28 md:w-40 md:h-40' alt='Career Match AI Logo' />
+            <Logo className='w-20 h-20 sm:w-28 sm:h-28 md:w-40 md:h-40' alt='Skill Scout Logo' />
           </div>
         </div>
       </div>
@@ -64,7 +64,7 @@ const HeroSection = React.memo(({ loading, onLogin }) => {
           }`}
           style={darkMode ? { color: '#ffffff !important' } : {}}
         >
-          Career Match AI
+          Skill Scout
         </Title>
         <Title
           level={3}

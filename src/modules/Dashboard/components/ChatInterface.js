@@ -382,7 +382,7 @@ const ChatInterface = React.memo(({ user }) => {
     isLoadingHistorical
   } = useChat(user)
 
-  // Internal color palette for Career Match AI
+  // Internal color palette for Skill Scout
   const colors = {
     darkBlue: '#1E3A52',
     shakespeare: '#4A90A4',
@@ -489,7 +489,7 @@ const ChatInterface = React.memo(({ user }) => {
           <div className='flex items-center justify-between'>
             <div>
               <Title level={4} className='!text-white !mb-0'>
-                Career Match AI Interview
+                Skill Scout Interview
               </Title>
               <Text className='text-white/70 text-sm'>AI-powered career assessment and interview preparation</Text>
             </div>

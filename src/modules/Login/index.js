@@ -6,7 +6,7 @@ import BackgroundElements from './components/BackgroundElements'
 import HeroSection from './components/HeroSection'
 
 /**
- * Enhanced Login landing page for Career Match AI
+ * Enhanced Login landing page for Skill Scout
  * Implements modular design with theme support, responsive layout, and comprehensive error handling
  * Uses React.memo, useMemo, and useCallback for optimal performance
  * Follows accessibility best practices with semantic HTML and ARIA labels
@@ -97,7 +97,7 @@ const Login = React.memo(() => {
           : `linear-gradient(135deg, #fff, ${colors.botticelli}20)`
       }}
       role="main"
-      aria-label="Career Match AI login page"
+      aria-label="Skill Scout login page"
     >
       {/* Animated background elements */}
       <BackgroundElements />

@@ -7,7 +7,7 @@
  * Organized by brand colors, semantic colors, and theme-specific variants
  */
 
-// Primary brand colors - Career Match AI palette
+// Primary brand colors - Skill Scout palette
 export const BRAND_COLORS = {
   // Primary blue palette - matching logo
   shakespeare: '#4A90A4',     // Steel blue - primary brand color

@@ -6,7 +6,7 @@
  * Provides consistent theming across all Login components
  */
 export const LOGIN_COLORS = {
-  // Brand Colors - Career Match AI palette
+  // Brand Colors - Skill Scout palette
   logoNavy: '#1E3A52',
   logoNavyLight: '#2A3D4F',
   logoTeal: '#4A90A4',

@@ -100,7 +100,7 @@ export const useChat = (user = null) => {
             {
               id: 'welcome',
               type: 'assistant',
-              content: `Hello${user?.Username ? ` ${user.Username}` : ''}! I'm your Career Match AI assistant. I'm here to help you with resume building, interview preparation, and career guidance. What would you like to work on today?`,
+              content: `Hello${user?.Username ? ` ${user.Username}` : ''}! I'm your Skill Scout assistant. I'm here to help you with resume building, interview preparation, and career guidance. What would you like to work on today?`,
               timestamp: new Date().toISOString()
             }
           ]

@@ -8,7 +8,7 @@ import { useTheme } from '../../ui/ThemeContext'
 import ChatInterface from './components/ChatInterface'
 
 /**
- * Dashboard component - Career Match AI Interview and Testing Interface
+ * Dashboard component - Skill Scout Interview and Testing Interface
  * Main interface for conducting career tests and interviews with document upload capabilities
  * Implements proper state management, error handling, and responsive design
  * Follows module-driven development principles
