@@ -1,11 +1,11 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
-import React, { useState, useCallback } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import React, { useState, useCallback, useEffect } from 'react'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import Logo from '../../../ui/components/Logo'
 import ThemeToggle from '../../../ui/components/ThemeToggle'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSignOut, faUser } from '@fortawesome/free-solid-svg-icons'
+import { faSignOut, faUser, faBuilding, faUserTie, faChevronDown } from '@fortawesome/free-solid-svg-icons'
 import { Dropdown, Modal } from 'antd'
 import { useTheme } from '../../../ui/ThemeContext'
 import { useAuth } from '../../../ui/AuthContext'
@@ -16,9 +16,20 @@ import { BRAND_COLORS } from '../../../ui/config/colors'
  */
 const Header = ({ user }) => {
   const navigate = useNavigate()
+  const location = useLocation()
   const [isLogoutConfirmOpen, setIsLogoutConfirmOpen] = useState(false)
+  const [selectedDashboard, setSelectedDashboard] = useState('personal') // 'personal' or 'business'
   const { darkMode } = useTheme()
   const { logout } = useAuth()
+
+  // Update selected dashboard based on current route
+  useEffect(() => {
+    if (location.pathname === '/business-dashboard') {
+      setSelectedDashboard('business')
+    } else if (location.pathname === '/dashboard') {
+      setSelectedDashboard('personal')
+    }
+  }, [location.pathname])
 
   // Handle logout click - show confirmation dialog
   const handleLogoutClick = useCallback(() => {
@@ -45,6 +56,99 @@ const Header = ({ user }) => {
       navigate('/')
     }
   }, [navigate, logout])
+
+  // Handle dashboard switch
+  const handleDashboardSwitch = useCallback((dashboardType) => {
+    setSelectedDashboard(dashboardType)
+    // Navigate to different routes based on dashboard type
+    if (dashboardType === 'business') {
+      navigate('/business-dashboard')
+    } else {
+      navigate('/dashboard')
+    }
+  }, [navigate])
+
+  // Dashboard dropdown component
+  const renderDashboardDropdown = () => (
+    <div
+      className={`rounded-md overflow-hidden ${darkMode ? 'bg-gray-900' : 'bg-white'} 
+                     shadow-lg border ${darkMode ? 'border-gray-700' : 'border-gray-200'} min-w-[180px]`}
+    >
+      <button
+        onClick={() => handleDashboardSwitch('personal')}
+        className={`w-full py-3 px-4 text-left flex items-center text-sm transition-all duration-200
+                   ${selectedDashboard === 'personal' 
+                     ? darkMode ? 'bg-emerald-700 text-white' : 'bg-emerald-50 text-emerald-700 border-l-4 border-emerald-500'
+                     : darkMode ? 'text-white bg-gray-800 hover:bg-gray-700' : 'text-gray-700 bg-white hover:bg-gray-50'
+                   }`}
+        onMouseEnter={(e) => {
+          if (selectedDashboard !== 'personal') {
+            if (darkMode) {
+              e.target.style.backgroundColor = BRAND_COLORS.emeraldAccent
+              e.target.style.color = 'white'
+            } else {
+              e.target.style.backgroundColor = BRAND_COLORS.seaGreen
+              e.target.style.color = 'white'
+            }
+          }
+        }}
+        onMouseLeave={(e) => {
+          if (selectedDashboard !== 'personal') {
+            if (darkMode) {
+              e.target.style.backgroundColor = '#374151' // gray-700
+              e.target.style.color = 'white'
+            } else {
+              e.target.style.backgroundColor = 'white'
+              e.target.style.color = '#374151' // gray-700
+            }
+          }
+        }}
+      >
+        <FontAwesomeIcon icon={faUserTie} className='mr-3 w-4' />
+        Personal Dashboard
+        {selectedDashboard === 'personal' && (
+          <div className='ml-auto w-2 h-2 bg-emerald-500 rounded-full'></div>
+        )}
+      </button>
+      
+      <button
+        onClick={() => handleDashboardSwitch('business')}
+        className={`w-full py-3 px-4 text-left flex items-center text-sm transition-all duration-200
+                   ${selectedDashboard === 'business' 
+                     ? darkMode ? 'bg-emerald-700 text-white' : 'bg-emerald-50 text-emerald-700 border-l-4 border-emerald-500'
+                     : darkMode ? 'text-white bg-gray-800 hover:bg-gray-700' : 'text-gray-700 bg-white hover:bg-gray-50'
+                   }`}
+        onMouseEnter={(e) => {
+          if (selectedDashboard !== 'business') {
+            if (darkMode) {
+              e.target.style.backgroundColor = BRAND_COLORS.emeraldAccent
+              e.target.style.color = 'white'
+            } else {
+              e.target.style.backgroundColor = BRAND_COLORS.seaGreen
+              e.target.style.color = 'white'
+            }
+          }
+        }}
+        onMouseLeave={(e) => {
+          if (selectedDashboard !== 'business') {
+            if (darkMode) {
+              e.target.style.backgroundColor = '#374151' // gray-700
+              e.target.style.color = 'white'
+            } else {
+              e.target.style.backgroundColor = 'white'
+              e.target.style.color = '#374151' // gray-700
+            }
+          }
+        }}
+      >
+        <FontAwesomeIcon icon={faBuilding} className='mr-3 w-4' />
+        Business Dashboard
+        {selectedDashboard === 'business' && (
+          <div className='ml-auto w-2 h-2 bg-emerald-500 rounded-full'></div>
+        )}
+      </button>
+    </div>
+  )
 
   // Custom dropdown menu component for better dark mode support
   const renderSignOutDropdown = () => (
@@ -113,8 +217,41 @@ const Header = ({ user }) => {
             </h1>
           </Link>
 
-          {/* Right side - User and theme toggle */}
+          {/* Right side - Dashboard selector, theme toggle, and user menu */}
           <div className='flex items-center ml-auto'>
+            {/* Dashboard Dropdown */}
+            {user && (
+              <Dropdown 
+                dropdownRender={renderDashboardDropdown} 
+                trigger={['click']} 
+                placement='bottomRight'
+                className='mr-2 sm:mr-4 md:mr-6'
+              >
+                <div className='flex items-center cursor-pointer hover:opacity-80 transition-all duration-200 py-1 md:py-2 px-2 md:px-3 rounded-full hover:bg-white/10 dark:hover:bg-black/20'>
+                  <div
+                    className='w-6 h-6 md:w-7 md:h-7 rounded-full bg-white/20 flex items-center justify-center text-white mr-1 md:mr-2'
+                    style={{
+                      background: darkMode
+                        ? `linear-gradient(135deg, ${BRAND_COLORS.emeraldAccent}, ${BRAND_COLORS.forestGreen}40)`
+                        : `linear-gradient(135deg, ${BRAND_COLORS.tealGreen}, ${BRAND_COLORS.emeraldBright}40)`
+                    }}
+                  >
+                    <FontAwesomeIcon 
+                      icon={selectedDashboard === 'business' ? faBuilding : faUserTie} 
+                      className='text-xs md:text-sm' 
+                    />
+                  </div>
+                  <span className='hidden sm:block text-xs md:text-sm font-medium text-white mr-1'>
+                    {selectedDashboard === 'business' ? 'Business Dashboard' : 'Personal Dashboard'}
+                  </span>
+                  <FontAwesomeIcon 
+                    icon={faChevronDown} 
+                    className='text-white text-xs opacity-70' 
+                  />
+                </div>
+              </Dropdown>
+            )}
+
             {/* Theme Toggle */}
             <ThemeToggle className='ml-2 sm:ml-4 md:ml-6 md:mr-3 scale-90 md:scale-100' />
 
