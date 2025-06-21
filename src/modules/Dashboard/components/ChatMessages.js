@@ -621,7 +621,7 @@ const ChatMessages = React.memo(
                           color: messageStyle.color
                         }}
                       >
-                        Skill Scout
+                        <span className="text-blue-500">Skill</span><span className="text-emerald-500">Scout</span>
                       </Text>
                     </div>
                   )}

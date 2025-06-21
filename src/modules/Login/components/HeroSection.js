@@ -50,7 +50,7 @@ const HeroSection = React.memo(({ loading, onLogin }) => {
               darkMode ? 'bg-white/20 backdrop-blur-md shadow-2xl border border-white/30' : 'bg-white shadow-lg'
             }`}
           >
-            <Logo className='w-20 h-20 sm:w-28 sm:h-28 md:w-40 md:h-40' alt='Skill Scout Logo' />
+            <Logo className='w-20 h-20 sm:w-28 sm:h-28 md:w-40 md:h-40' alt='SkillScout Logo' />
           </div>
         </div>
       </div>
@@ -64,7 +64,7 @@ const HeroSection = React.memo(({ loading, onLogin }) => {
           }`}
           style={darkMode ? { color: '#ffffff !important' } : {}}
         >
-          Skill Scout
+          <span className="text-blue-500">Skill</span><span className="text-emerald-500">Scout</span>
         </Title>
         <Title
           level={3}

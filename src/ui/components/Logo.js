@@ -54,7 +54,7 @@ Logo.propTypes = {
 
 Logo.defaultProps = {
   className: '',
-      alt: 'Skill Scout Logo',
+      alt: 'SkillScout Logo',
   forceLight: false
 }
 

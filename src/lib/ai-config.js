@@ -31,7 +31,7 @@ const getConfig = () => {
     // Assistant Configuration
     assistant: {
       id: process.env.REACT_APP_OPENAI_ASSISTANT_ID || '',
-      name: 'Skill Scout',
+      name: 'SkillScout',
       instructions: `You are a helpful career advisor and interview preparation assistant. 
       Help users with:
       - Resume building and optimization
@@ -127,7 +127,7 @@ export const getMockResponses = () => {
     welcome: {
       type: 'assistant',
       content:
-        "Hello! I'm your Skill Scout assistant. I'm here to help you with resume building, interview preparation, and career guidance. What would you like to work on today?",
+        "Hello! I'm your SkillScout assistant. I'm here to help you with resume building, interview preparation, and career guidance. What would you like to work on today?",
       timestamp: new Date().toISOString()
     },
 

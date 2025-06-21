@@ -210,10 +210,10 @@ const Header = ({ user }) => {
                 darkMode ? 'bg-white/15 backdrop-blur-sm shadow-lg' : ''
               }`}
             >
-              <Logo size='small' className='w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16' />
+              <Logo size='small' className='w-12 h-12 sm:w-14 sm:h-14 md:w-18 md:h-18' />
             </div>
             <h1 className='ml-1 sm:ml-2 md:ml-3 text-lg sm:text-xl md:text-4xl font-bold text-white whitespace-nowrap'>
-              Skill Scout
+              <span className="text-blue-500">Skill</span><span className="text-emerald-500">Scout</span>
             </h1>
           </Link>
 

@@ -1,6 +1,6 @@
 {
   "name": "ai-assessment-portal",
-  "description": "Skill Scout",
+  "description": "SkillScout - AI-powered career assessment and job matching platform",
   "version": "0.0.1",
   "private": true,
   "scripts": {

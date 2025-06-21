@@ -489,7 +489,7 @@ const ChatInterface = React.memo(({ user }) => {
           <div className='flex items-center justify-between'>
             <div>
               <Title level={4} className='!text-white !mb-0'>
-                Skill Scout Interview
+                <span className="text-blue-500">Skill</span><span className="text-emerald-500">Scout</span> Interview
               </Title>
               <Text className='text-white/70 text-sm'>AI-powered career assessment and interview preparation</Text>
             </div>

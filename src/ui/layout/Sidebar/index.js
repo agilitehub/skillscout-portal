@@ -66,7 +66,7 @@ const Sidebar = () => {
       {/* Sidebar Header/Logo Section */}
       <div className='p-4 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-white dark:bg-agilite-black z-10'>
         <Link to='/dashboard' className='flex items-center'>
-          <Logo className='h-8 w-auto mr-2' alt='Agilite Logo' />
+          <Logo className='h-10 w-auto mr-2' alt='Agilite Logo' />
           <h1 className='text-xl font-bold text-secondary-dark dark:text-white tracking-tight'>Agilite</h1>
         </Link>
       </div>
