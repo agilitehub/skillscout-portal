@@ -1,7 +1,8 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
 import React, { useState, useEffect, useMemo, useCallback } from 'react'
-import { Card, Button, Modal, Form, Input, Select, Tag, Space, Tooltip, Progress, Statistic, Row, Col } from 'antd'
+import { Card, Button, Modal, Form, Input, Select, Tag, Space, Tooltip, Progress, Statistic, Row, Col, Alert } from 'antd'
+import { useLocation } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { 
   faPlus, 
@@ -31,6 +32,11 @@ const { Option } = Select
  */
 const Assessments = React.memo(() => {
   const { darkMode } = useTheme()
+  const location = useLocation()
+  
+  // Get job context from navigation state
+  const jobContext = location.state?.jobContext
+  const highlightJobId = location.state?.highlightJobId
   
   // State management
   const [assessments, setAssessments] = useState([])
@@ -351,12 +357,41 @@ const Assessments = React.memo(() => {
         </Row>
       </div>
 
+      {/* Job Context Alert */}
+      {jobContext && (
+        <Alert
+          message={`Viewing assessments related to: ${jobContext.title} at ${jobContext.company}`}
+          description={`You navigated here from the job listing. Assessments suitable for "${jobContext.title}" will be highlighted.`}
+          type="info"
+          showIcon
+          closable
+          className="mb-6"
+          style={{
+            backgroundColor: darkMode ? '#1f2937' : '#e6f3ff',
+            borderColor: darkMode ? '#374151' : '#91d5ff',
+            color: darkMode ? '#e5e7eb' : '#1f2937'
+          }}
+        />
+      )}
+
       {/* Assessments Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-        {assessments.map((assessment) => (
+        {assessments.map((assessment) => {
+          const isRelated = jobContext && (
+            assessment.title.toLowerCase().includes(jobContext.title.toLowerCase()) ||
+            assessment.category.toLowerCase().includes(jobContext.title.toLowerCase()) ||
+            assessment.skills.some(skill => 
+              jobContext.title.toLowerCase().includes(skill.toLowerCase()) ||
+              skill.toLowerCase().includes(jobContext.title.toLowerCase())
+            )
+          )
+          
+          return (
           <Card
             key={assessment.id}
-            className={`${darkMode ? 'bg-gray-800 border-gray-700' : ''} shadow-lg hover:shadow-xl transition-shadow`}
+            className={`${darkMode ? 'bg-gray-800 border-gray-700' : ''} ${
+              isRelated ? 'ring-2 ring-blue-500 ring-opacity-50' : ''
+            } shadow-lg hover:shadow-xl transition-all duration-200`}
             loading={loading}
           >
             {/* Header */}
@@ -515,7 +550,8 @@ const Assessments = React.memo(() => {
               </div>
             </div>
           </Card>
-        ))}
+          )
+        })}
       </div>
 
       {/* Assessment Modal */}

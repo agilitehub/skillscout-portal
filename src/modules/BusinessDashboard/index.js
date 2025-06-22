@@ -13,7 +13,9 @@ import {
   faMapMarkerAlt,
   faDollarSign,
   faCalendarAlt,
-  faBuilding
+  faBuilding,
+  faFileText,
+  faClipboardCheck
 } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../ui/ThemeContext'
 import { useNavigate } from 'react-router-dom'
@@ -229,6 +231,25 @@ const BusinessDashboard = React.memo(({ user }) => {
     setSelectedJob(null)
   }, [])
 
+  // Handle navigation to linked pages with job context
+  const handleViewJobDescription = useCallback((job) => {
+    navigate('/business-dashboard/job-descriptions', { 
+      state: { 
+        jobContext: job,
+        highlightJobId: job.id
+      }
+    })
+  }, [navigate])
+
+  const handleViewJobAssessment = useCallback((job) => {
+    navigate('/business-dashboard/assessments', { 
+      state: { 
+        jobContext: job,
+        highlightJobId: job.id
+      }
+    })
+  }, [navigate])
+
   // Table columns configuration
   const columns = useMemo(() => [
     {
@@ -331,7 +352,7 @@ const BusinessDashboard = React.memo(({ user }) => {
       title: 'Actions',
       key: 'actions',
       render: (_, record) => (
-        <Space size="small">
+        <Space size="small" wrap>
           <Tooltip title="View Details">
             <Button
               type="text"
@@ -339,6 +360,24 @@ const BusinessDashboard = React.memo(({ user }) => {
               icon={<FontAwesomeIcon icon={faEye} />}
               onClick={() => handleViewJob(record)}
               className="text-blue-500 hover:text-blue-700"
+            />
+          </Tooltip>
+          <Tooltip title="View Job Description">
+            <Button
+              type="text"
+              size="small"
+              icon={<FontAwesomeIcon icon={faFileText} />}
+              onClick={() => handleViewJobDescription(record)}
+              className="text-purple-500 hover:text-purple-700"
+            />
+          </Tooltip>
+          <Tooltip title="View Assessment">
+            <Button
+              type="text"
+              size="small"
+              icon={<FontAwesomeIcon icon={faClipboardCheck} />}
+              onClick={() => handleViewJobAssessment(record)}
+              className="text-orange-500 hover:text-orange-700"
             />
           </Tooltip>
           <Tooltip title="Edit Job">
@@ -362,7 +401,7 @@ const BusinessDashboard = React.memo(({ user }) => {
         </Space>
       ),
     },
-  ], [handleViewJob, handleEditJob, handleDeleteJob])
+  ], [handleViewJob, handleEditJob, handleDeleteJob, handleViewJobDescription, handleViewJobAssessment])
 
   // Statistics calculations
   const stats = useMemo(() => {

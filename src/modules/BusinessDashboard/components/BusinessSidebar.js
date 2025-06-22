@@ -23,7 +23,7 @@ const BusinessSidebar = React.memo(() => {
     {
       path: '/business-dashboard',
       icon: faTachometerAlt,
-      label: 'Overview',
+      label: 'Job Listings',
       exact: true
     },
     {

@@ -1,7 +1,8 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
 import React, { useState, useEffect, useMemo, useCallback } from 'react'
-import { Card, Button, Modal, Form, Input, Select, Tag, Space, Tooltip, List, Avatar } from 'antd'
+import { Card, Button, Modal, Form, Input, Select, Tag, Space, Tooltip, List, Avatar, Alert } from 'antd'
+import { useLocation } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { 
   faPlus, 
@@ -29,6 +30,11 @@ const { Option } = Select
  */
 const JobDescriptions = React.memo(() => {
   const { darkMode } = useTheme()
+  const location = useLocation()
+  
+  // Get job context from navigation state
+  const jobContext = location.state?.jobContext
+  const highlightJobId = location.state?.highlightJobId
   
   // State management
   const [jobDescriptions, setJobDescriptions] = useState([])
@@ -111,6 +117,89 @@ const JobDescriptions = React.memo(() => {
         'Collaborative work environment'
       ],
       tags: ['Product Strategy', 'Agile', 'Analytics', 'Leadership']
+    },
+    {
+      id: '3',
+      title: 'UX/UI Designer',
+      company: 'DesignStudio Pro',
+      department: 'Design',
+      location: 'Austin, TX',
+      type: 'Contract',
+      salaryRange: '$70 - $90/hour',
+      remote: true,
+      createdDate: '2024-01-10',
+      lastUpdated: '2024-01-15',
+      status: 'Paused',
+      overview: 'We are looking for a creative UX/UI designer to enhance user experiences across our digital products. You will work closely with product managers and developers to create intuitive, user-centered designs that drive engagement and conversion.',
+      responsibilities: [
+        'Conduct user research and usability testing to inform design decisions',
+        'Create wireframes, prototypes, and high-fidelity designs using Figma',
+        'Collaborate with product managers to define user requirements and design specifications',
+        'Design responsive interfaces for web and mobile applications',
+        'Maintain and evolve design systems and component libraries',
+        'Present design concepts and rationale to stakeholders',
+        'Iterate on designs based on user feedback and analytics data'
+      ],
+      requirements: [
+        'Bachelor\'s degree in Design, HCI, Psychology, or related field',
+        '2+ years of experience in UX/UI design',
+        'Proficiency in Figma, Sketch, and Adobe Creative Suite',
+        'Strong portfolio showcasing user-centered design process',
+        'Experience with user research methodologies and usability testing',
+        'Understanding of responsive design principles and accessibility standards',
+        'Knowledge of HTML/CSS basics is a plus'
+      ],
+      benefits: [
+        'Competitive hourly rate with flexible scheduling',
+        'Remote work flexibility',
+        'Professional development and conference budget',
+        'Access to design tools and software',
+        'Collaborative and creative work environment',
+        'Opportunity to work on diverse projects'
+      ],
+      tags: ['UX Design', 'UI Design', 'Figma', 'User Research', 'Prototyping']
+    },
+    {
+      id: '4',
+      title: 'Data Scientist',
+      company: 'DataTech Analytics',
+      department: 'Data Science',
+      location: 'Boston, MA',
+      type: 'Full-time',
+      salaryRange: '$110,000 - $140,000',
+      remote: true,
+      createdDate: '2024-01-25',
+      lastUpdated: '2024-01-26',
+      status: 'Active',
+      overview: 'Join our data science team to build predictive models and extract actionable insights from complex datasets. You will work on cutting-edge machine learning projects that directly impact business decisions and drive growth.',
+      responsibilities: [
+        'Develop and deploy machine learning models for predictive analytics',
+        'Analyze large datasets to identify trends, patterns, and business opportunities',
+        'Create data visualizations and dashboards for stakeholder communication',
+        'Collaborate with engineering teams to implement ML models in production',
+        'Design and conduct A/B tests to measure feature impact',
+        'Clean, preprocess, and validate data from multiple sources',
+        'Stay current with latest ML techniques and industry best practices'
+      ],
+      requirements: [
+        'Master\'s degree in Data Science, Statistics, Computer Science, or Mathematics',
+        '5+ years of experience in data science or machine learning',
+        'Proficiency in Python, R, and SQL',
+        'Experience with ML frameworks (TensorFlow, PyTorch, Scikit-learn)',
+        'Strong statistical analysis and modeling skills',
+        'Experience with cloud platforms (AWS, GCP, or Azure)',
+        'Excellent communication skills for presenting technical findings'
+      ],
+      benefits: [
+        'Competitive salary with performance bonuses',
+        'Comprehensive health, dental, and vision insurance',
+        'Flexible remote work policy',
+        'Learning and development stipend for courses and conferences',
+        '401(k) matching program',
+        'Unlimited PTO policy',
+        'State-of-the-art computing equipment and tools'
+      ],
+      tags: ['Python', 'Machine Learning', 'Statistics', 'SQL', 'TensorFlow', 'Data Analysis']
     }
   ], [])
 
@@ -271,12 +360,37 @@ const JobDescriptions = React.memo(() => {
         </div>
       </div>
 
+      {/* Job Context Alert */}
+      {jobContext && (
+        <Alert
+          message={`Viewing descriptions related to: ${jobContext.title} at ${jobContext.company}`}
+          description={`You navigated here from the job listing. Related job descriptions for "${jobContext.title}" will be highlighted.`}
+          type="info"
+          showIcon
+          closable
+          className="mb-6"
+          style={{
+            backgroundColor: darkMode ? '#1f2937' : '#e6f3ff',
+            borderColor: darkMode ? '#374151' : '#91d5ff',
+            color: darkMode ? '#e5e7eb' : '#1f2937'
+          }}
+        />
+      )}
+
       {/* Job Descriptions List */}
       <div className="grid gap-6">
-        {jobDescriptions.map((description) => (
+        {jobDescriptions.map((description) => {
+          const isRelated = jobContext && (
+            description.title.toLowerCase().includes(jobContext.title.toLowerCase()) ||
+            description.company.toLowerCase().includes(jobContext.company.toLowerCase())
+          )
+          
+          return (
           <Card
             key={description.id}
-            className={`${darkMode ? 'bg-gray-800 border-gray-700' : ''} shadow-lg hover:shadow-xl transition-shadow`}
+            className={`${darkMode ? 'bg-gray-800 border-gray-700' : ''} ${
+              isRelated ? 'ring-2 ring-blue-500 ring-opacity-50' : ''
+            } shadow-lg hover:shadow-xl transition-all duration-200`}
             loading={loading}
           >
             <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between">
@@ -400,7 +514,8 @@ const JobDescriptions = React.memo(() => {
               </div>
             </div>
           </Card>
-        ))}
+          )
+        })}
       </div>
 
       {/* Job Description Modal */}
