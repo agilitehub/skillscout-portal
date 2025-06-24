@@ -305,22 +305,22 @@ const JobDescriptions = React.memo(() => {
   }, [])
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 relative overflow-hidden">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-800 relative overflow-hidden">
       {/* Background Elements */}
       <div className="fixed inset-0 pointer-events-none">
         {darkMode ? (
           <>
             <div 
               className="absolute -top-[10%] -right-[10%] w-1/2 h-1/2 rounded-full blur-3xl"
-              style={{ background: 'radial-gradient(circle, rgba(59, 130, 246, 0.35) 0%, transparent 70%)' }}
+              style={{ background: 'radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%)' }}
             />
             <div 
               className="absolute -bottom-[10%] -left-[10%] w-1/2 h-1/2 rounded-full blur-3xl"
-              style={{ background: 'radial-gradient(circle, rgba(34, 197, 94, 0.25) 0%, transparent 70%)' }}
+              style={{ background: 'radial-gradient(circle, rgba(34, 197, 94, 0.12) 0%, transparent 70%)' }}
             />
             <div 
               className="absolute top-1/3 left-1/3 w-1/4 h-1/4 rounded-full blur-3xl"
-              style={{ background: 'radial-gradient(circle, rgba(16, 185, 129, 0.2) 0%, transparent 70%)' }}
+              style={{ background: 'radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, transparent 70%)' }}
             />
           </>
         ) : (
@@ -370,8 +370,8 @@ const JobDescriptions = React.memo(() => {
           closable
           className="mb-6"
           style={{
-            backgroundColor: darkMode ? '#1f2937' : '#e6f3ff',
-            borderColor: darkMode ? '#374151' : '#91d5ff',
+            backgroundColor: darkMode ? '#374151' : '#e6f3ff',
+            borderColor: darkMode ? '#4b5563' : '#91d5ff',
             color: darkMode ? '#e5e7eb' : '#1f2937'
           }}
         />
@@ -388,7 +388,7 @@ const JobDescriptions = React.memo(() => {
           return (
           <Card
             key={description.id}
-            className={`${darkMode ? 'bg-gray-800 border-gray-700' : ''} ${
+            className={`${darkMode ? 'bg-gray-700 border-gray-600' : ''} ${
               isRelated ? 'ring-2 ring-blue-500 ring-opacity-50' : ''
             } shadow-lg hover:shadow-xl transition-all duration-200`}
             loading={loading}
@@ -546,8 +546,16 @@ const JobDescriptions = React.memo(() => {
         width={900}
         className={darkMode ? 'ant-modal-dark' : ''}
         styles={{
-          content: { backgroundColor: darkMode ? '#1f2937' : '#ffffff' },
-          body: { backgroundColor: darkMode ? '#1f2937' : '#ffffff' }
+          content: { backgroundColor: darkMode ? '#374151' : '#ffffff' },
+          body: { backgroundColor: darkMode ? '#374151' : '#ffffff' },
+          header: {
+            backgroundColor: darkMode ? '#374151' : '#ffffff',
+            borderBottom: darkMode ? '1px solid #4B5563' : '1px solid #e5e7eb'
+          },
+          footer: {
+            backgroundColor: darkMode ? '#374151' : '#ffffff',
+            borderTop: darkMode ? '1px solid #4B5563' : '1px solid #e5e7eb'
+          }
         }}
       >
         {modalMode === 'view' && selectedDescription ? (
@@ -595,12 +603,55 @@ const JobDescriptions = React.memo(() => {
             </div>
           </div>
         ) : (
-          <Form
-            form={form}
-            layout="vertical"
-            onFinish={handleFormSubmit}
-            className={darkMode ? 'dark-form' : ''}
-          >
+          <>
+            {darkMode && (
+              <style>
+                {`
+                  .dark-form .ant-form-item-label > label {
+                    color: #E5E7EB !important;
+                  }
+                  .dark-form .ant-input {
+                    background-color: #4B5563 !important;
+                    border-color: #6B7280 !important;
+                    color: #F9FAFB !important;
+                  }
+                  .dark-form .ant-input:focus {
+                    border-color: #059669 !important;
+                    box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
+                  }
+                  .dark-form .ant-input::placeholder {
+                    color: #9CA3AF !important;
+                  }
+                  .dark-form .ant-select-selector {
+                    background-color: #4B5563 !important;
+                    border-color: #6B7280 !important;
+                    color: #F9FAFB !important;
+                  }
+                  .dark-form .ant-select-focused .ant-select-selector {
+                    border-color: #059669 !important;
+                    box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
+                  }
+                  .dark-form .ant-select-selection-placeholder {
+                    color: #9CA3AF !important;
+                  }
+                  .dark-form .ant-input-number {
+                    background-color: #4B5563 !important;
+                    border-color: #6B7280 !important;
+                    color: #F9FAFB !important;
+                  }
+                  .dark-form .ant-input-number:focus {
+                    border-color: #059669 !important;
+                    box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
+                  }
+                `}
+              </style>
+            )}
+            <Form
+              form={form}
+              layout="vertical"
+              onFinish={handleFormSubmit}
+              className={darkMode ? 'dark-form' : ''}
+            >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Form.Item
                 label={<span className={darkMode ? 'text-gray-300' : ''}>Job Title</span>}
@@ -698,7 +749,8 @@ const JobDescriptions = React.memo(() => {
                 placeholder="Enter each benefit on a new line..."
               />
             </Form.Item>
-          </Form>
+                      </Form>
+          </>
         )}
       </Modal>
       </div>

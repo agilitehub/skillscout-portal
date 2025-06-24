@@ -19,6 +19,7 @@ const Header = ({ user }) => {
   const location = useLocation()
   const [isLogoutConfirmOpen, setIsLogoutConfirmOpen] = useState(false)
   const [selectedDashboard, setSelectedDashboard] = useState('personal') // 'personal' or 'business'
+  const [isDashboardDropdownOpen, setIsDashboardDropdownOpen] = useState(false)
   const { darkMode } = useTheme()
   const { logout } = useAuth()
 
@@ -60,6 +61,7 @@ const Header = ({ user }) => {
   // Handle dashboard switch
   const handleDashboardSwitch = useCallback((dashboardType) => {
     setSelectedDashboard(dashboardType)
+    setIsDashboardDropdownOpen(false) // Close dropdown after selection
     // Navigate to different routes based on dashboard type
     if (dashboardType === 'business') {
       navigate('/business-dashboard')
@@ -226,6 +228,8 @@ const Header = ({ user }) => {
                 trigger={['click']} 
                 placement='bottomRight'
                 className='mr-2 sm:mr-4 md:mr-6'
+                open={isDashboardDropdownOpen}
+                onOpenChange={setIsDashboardDropdownOpen}
               >
                 <div className='flex items-center cursor-pointer hover:opacity-80 transition-all duration-200 py-1 md:py-2 px-2 md:px-3 rounded-full hover:bg-white/10 dark:hover:bg-black/20'>
                   <div

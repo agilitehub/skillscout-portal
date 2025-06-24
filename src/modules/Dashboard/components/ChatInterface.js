@@ -441,7 +441,7 @@ const ChatInterface = React.memo(({ user }) => {
       className='h-full flex flex-col bg-white dark:bg-gray-900 relative overflow-hidden'
       style={{
         background: darkMode
-          ? 'linear-gradient(135deg, #1F2937 0%, #111827 100%)'
+          ? 'linear-gradient(135deg, #0F172A 0%, #1E293B 100%)'
           : 'linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%)'
       }}
     >

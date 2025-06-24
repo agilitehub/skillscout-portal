@@ -27,15 +27,15 @@ const BusinessSidebar = React.memo(() => {
       exact: true
     },
     {
-      path: '/business-dashboard/job-descriptions',
-      icon: faFileText,
-      label: 'Job Descriptions',
-      exact: false
-    },
-    {
       path: '/business-dashboard/assessments',
       icon: faClipboardCheck,
       label: 'Assessments',
+      exact: false
+    },
+    {
+      path: '/business-dashboard/job-descriptions',
+      icon: faFileText,
+      label: 'Job Descriptions',
       exact: false
     }
   ]

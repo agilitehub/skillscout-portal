@@ -494,9 +494,9 @@ const ChatMessages = React.memo(
           case 'bot':
             return {
               justifySelf: 'start',
-              backgroundColor: darkMode ? '#1F2937' : '#E0F2FE',
+              backgroundColor: darkMode ? '#374151' : '#E0F2FE',
               color: darkMode ? '#F9FAFB' : '#0F172A',
-              borderColor: darkMode ? '#374151' : '#BAE6FD'
+              borderColor: darkMode ? '#4B5563' : '#BAE6FD'
             }
           case 'system':
             return {
@@ -508,9 +508,9 @@ const ChatMessages = React.memo(
           default:
             return {
               justifySelf: 'start',
-              backgroundColor: darkMode ? '#1F2937' : '#F3F4F6',
+              backgroundColor: darkMode ? '#374151' : '#F3F4F6',
               color: darkMode ? '#F9FAFB' : '#1F2937',
-              borderColor: darkMode ? '#374151' : '#E5E7EB'
+              borderColor: darkMode ? '#4B5563' : '#E5E7EB'
             }
         }
       },
@@ -539,7 +539,7 @@ const ChatMessages = React.memo(
       <div
         className='h-full overflow-y-auto p-2 md:p-4 flex flex-col'
         style={{
-          background: darkMode ? '#1F2937' : '#F9FAFB',
+          background: darkMode ? '#0F172A' : '#F9FAFB',
           backgroundImage: darkMode
             ? 'radial-gradient(circle at 25% 25%, rgba(42, 67, 101, 0.05) 0%, transparent 50%), radial-gradient(circle at 75% 75%, rgba(66, 99, 149, 0.05) 0%, transparent 50%)'
             : 'radial-gradient(circle at 25% 25%, rgba(49, 130, 206, 0.05) 0%, transparent 50%), radial-gradient(circle at 75% 75%, rgba(176, 153, 86, 0.05) 0%, transparent 50%)',

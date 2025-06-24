@@ -242,10 +242,10 @@ const ChatInput = React.memo(
           <style>
             {`
             .dark-mode-input::placeholder {
-              color: rgba(156, 163, 175, 0.8) !important;
+              color: rgba(229, 231, 235, 0.9) !important;
             }
             .dark-mode-input:focus::placeholder {
-              color: rgba(156, 163, 175, 0.6) !important;
+              color: rgba(229, 231, 235, 0.7) !important;
             }
           `}
           </style>
@@ -368,7 +368,7 @@ const ChatInput = React.memo(
               style={{
                 background: darkMode ? '#374151' : '#ffffff',
                 border: `1px solid ${darkMode ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)'}`,
-                color: darkMode ? '#ffffff' : '#000000',
+                color: darkMode ? '#F9FAFB' : '#000000',
                 padding: '12px 16px',
                 fontSize: '0.875rem',
                 boxShadow: 'none',
@@ -425,7 +425,7 @@ const ChatInput = React.memo(
                 <p 
                   className='text-xs mt-1'
                   style={{ 
-                    color: darkMode ? 'rgba(156, 163, 175, 1)' : 'rgba(75, 85, 99, 1)' 
+                    color: darkMode ? 'rgba(229, 231, 235, 0.9)' : 'rgba(75, 85, 99, 1)' 
                   }}
                 >
                   PDF, DOC, Images, CSV files supported
@@ -442,12 +442,12 @@ const ChatInput = React.memo(
               icon={faCloudUploadAlt} 
               className='text-xs'
               style={{ 
-                color: darkMode ? 'rgba(156, 163, 175, 0.8)' : 'rgba(75, 85, 99, 0.8)' 
+                color: darkMode ? 'rgba(229, 231, 235, 0.9)' : 'rgba(75, 85, 99, 0.8)' 
               }}
             />
             <span 
               style={{ 
-                color: darkMode ? 'rgba(156, 163, 175, 0.8)' : 'rgba(75, 85, 99, 0.8)' 
+                color: darkMode ? 'rgba(229, 231, 235, 0.9)' : 'rgba(75, 85, 99, 0.8)' 
               }}
             >
               {isUploading ? (
@@ -459,7 +459,7 @@ const ChatInput = React.memo(
                     icon={faPaperclip} 
                     className='mx-1 text-xs'
                     style={{ 
-                      color: darkMode ? 'rgba(156, 163, 175, 0.8)' : 'rgba(75, 85, 99, 0.8)' 
+                      color: darkMode ? 'rgba(229, 231, 235, 0.9)' : 'rgba(75, 85, 99, 0.8)' 
                     }}
                   />
                   to upload
@@ -468,10 +468,7 @@ const ChatInput = React.memo(
             </span>
           </div>
 
-          {/* Character count */}
-          <div className='flex justify-end text-xs text-gray-400 dark:text-gray-300'>
-            {userInput.length}/{maxLength}
-          </div>
+
         </div>
       </>
     )

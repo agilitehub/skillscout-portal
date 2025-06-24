@@ -418,22 +418,22 @@ const BusinessDashboard = React.memo(({ user }) => {
   }, [jobOpportunities])
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 relative overflow-hidden">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-800 relative overflow-hidden">
       {/* Background Elements */}
       <div className="fixed inset-0 pointer-events-none">
         {darkMode ? (
           <>
             <div 
               className="absolute -top-[10%] -right-[10%] w-1/2 h-1/2 rounded-full blur-3xl"
-              style={{ background: 'radial-gradient(circle, rgba(59, 130, 246, 0.35) 0%, transparent 70%)' }}
+              style={{ background: 'radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%)' }}
             />
             <div 
               className="absolute -bottom-[10%] -left-[10%] w-1/2 h-1/2 rounded-full blur-3xl"
-              style={{ background: 'radial-gradient(circle, rgba(34, 197, 94, 0.25) 0%, transparent 70%)' }}
+              style={{ background: 'radial-gradient(circle, rgba(34, 197, 94, 0.12) 0%, transparent 70%)' }}
             />
             <div 
               className="absolute top-1/3 left-1/3 w-1/4 h-1/4 rounded-full blur-3xl"
-              style={{ background: 'radial-gradient(circle, rgba(16, 185, 129, 0.2) 0%, transparent 70%)' }}
+              style={{ background: 'radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, transparent 70%)' }}
             />
           </>
         ) : (
@@ -475,7 +475,7 @@ const BusinessDashboard = React.memo(({ user }) => {
 
         {/* Statistics Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          <Card className={darkMode ? 'bg-gray-800 border-gray-700' : ''}>
+          <Card className={darkMode ? 'bg-gray-700 border-gray-600' : ''}>
             <Statistic
               title={<span className={darkMode ? 'text-gray-300' : ''}>Total Jobs</span>}
               value={stats.totalJobs}
@@ -483,7 +483,7 @@ const BusinessDashboard = React.memo(({ user }) => {
               valueStyle={{ color: darkMode ? '#ffffff' : '#1f2937' }}
             />
           </Card>
-          <Card className={darkMode ? 'bg-gray-800 border-gray-700' : ''}>
+          <Card className={darkMode ? 'bg-gray-700 border-gray-600' : ''}>
             <Statistic
               title={<span className={darkMode ? 'text-gray-300' : ''}>Active Jobs</span>}
               value={stats.activeJobs}
@@ -491,7 +491,7 @@ const BusinessDashboard = React.memo(({ user }) => {
               valueStyle={{ color: darkMode ? '#ffffff' : '#1f2937' }}
             />
           </Card>
-          <Card className={darkMode ? 'bg-gray-800 border-gray-700' : ''}>
+          <Card className={darkMode ? 'bg-gray-700 border-gray-600' : ''}>
             <Statistic
               title={<span className={darkMode ? 'text-gray-300' : ''}>Total Applicants</span>}
               value={stats.totalApplicants}
@@ -499,7 +499,7 @@ const BusinessDashboard = React.memo(({ user }) => {
               valueStyle={{ color: darkMode ? '#ffffff' : '#1f2937' }}
             />
           </Card>
-          <Card className={darkMode ? 'bg-gray-800 border-gray-700' : ''}>
+          <Card className={darkMode ? 'bg-gray-700 border-gray-600' : ''}>
             <Statistic
               title={<span className={darkMode ? 'text-gray-300' : ''}>Avg per Job</span>}
               value={stats.avgApplicants}
@@ -511,7 +511,7 @@ const BusinessDashboard = React.memo(({ user }) => {
       </div>
 
       {/* Job Opportunities Table */}
-      <Card className={`${darkMode ? 'bg-gray-800 border-gray-700' : ''} shadow-lg`}>
+      <Card className={`${darkMode ? 'bg-gray-700 border-gray-600' : ''} shadow-lg`}>
         <Table
           columns={columns}
           dataSource={jobOpportunities}
@@ -521,10 +521,94 @@ const BusinessDashboard = React.memo(({ user }) => {
             pageSize: 10,
             showSizeChanger: true,
             showQuickJumper: true,
-            showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} jobs`,
+            showTotal: (total, range) => (
+              <span style={{ color: darkMode ? '#ffffff' : '#000000' }}>
+                {`${range[0]}-${range[1]} of ${total} jobs`}
+              </span>
+            ),
+            className: darkMode ? 'dark-pagination' : '',
+            itemRender: (current, type, originalElement) => {
+              if (type === 'prev' || type === 'next' || type === 'jump-prev' || type === 'jump-next') {
+                return React.cloneElement(originalElement, {
+                  style: {
+                    ...originalElement.props.style,
+                    color: darkMode ? '#ffffff' : '#000000',
+                    backgroundColor: darkMode ? '#4b5563' : '#ffffff',
+                    borderColor: darkMode ? '#6b7280' : '#d9d9d9'
+                  }
+                })
+              }
+              if (type === 'page') {
+                return React.cloneElement(originalElement, {
+                  style: {
+                    ...originalElement.props.style,
+                    color: darkMode ? '#ffffff' : '#000000',
+                    backgroundColor: darkMode ? '#4b5563' : '#ffffff',
+                    borderColor: darkMode ? '#6b7280' : '#d9d9d9'
+                  }
+                })
+              }
+              return originalElement
+            }
           }}
           className={darkMode ? 'dark-table' : ''}
           scroll={{ x: 1200 }}
+          style={{
+            backgroundColor: darkMode ? '#374151' : '#ffffff'
+          }}
+          components={{
+            header: {
+              cell: (props) => (
+                <th
+                  {...props}
+                  style={{
+                    backgroundColor: darkMode ? '#4b5563' : '#fafafa',
+                    color: darkMode ? '#ffffff' : '#000000',
+                    borderBottom: darkMode ? '1px solid #6b7280' : '1px solid #f0f0f0',
+                    ...props.style
+                  }}
+                />
+              )
+            },
+            body: {
+              row: (props) => (
+                <tr
+                  {...props}
+                  style={{
+                    backgroundColor: darkMode ? '#374151' : '#ffffff',
+                    color: darkMode ? '#ffffff' : '#000000',
+                    borderBottom: darkMode ? '1px solid #4b5563' : '1px solid #f0f0f0',
+                    ...props.style
+                  }}
+                  onMouseEnter={(e) => {
+                    if (darkMode) {
+                      e.currentTarget.style.backgroundColor = '#4b5563'
+                    } else {
+                      e.currentTarget.style.backgroundColor = '#fafafa'
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (darkMode) {
+                      e.currentTarget.style.backgroundColor = '#374151'
+                    } else {
+                      e.currentTarget.style.backgroundColor = '#ffffff'
+                    }
+                  }}
+                />
+              ),
+              cell: (props) => (
+                <td
+                  {...props}
+                  style={{
+                    backgroundColor: 'transparent',
+                    color: darkMode ? '#ffffff' : '#000000',
+                    borderBottom: darkMode ? '1px solid #4b5563' : '1px solid #f0f0f0',
+                    ...props.style
+                  }}
+                />
+              )
+            }
+          }}
         />
       </Card>
 
@@ -546,10 +630,18 @@ const BusinessDashboard = React.memo(({ user }) => {
         className={darkMode ? 'ant-modal-dark' : ''}
         styles={{
           content: {
-            backgroundColor: darkMode ? '#1f2937' : '#ffffff',
+            backgroundColor: darkMode ? '#374151' : '#ffffff',
           },
           body: {
-            backgroundColor: darkMode ? '#1f2937' : '#ffffff',
+            backgroundColor: darkMode ? '#374151' : '#ffffff',
+          },
+          header: {
+            backgroundColor: darkMode ? '#374151' : '#ffffff',
+            borderBottom: darkMode ? '1px solid #4B5563' : '1px solid #e5e7eb'
+          },
+          footer: {
+            backgroundColor: darkMode ? '#374151' : '#ffffff',
+            borderTop: darkMode ? '1px solid #4B5563' : '1px solid #e5e7eb'
           }
         }}
       >

@@ -248,11 +248,11 @@ const Dashboard = React.memo(({ user }) => {
       // If we have a detail view, render that instead
       if (detailView) {
         return (
-          <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+          <div className="min-h-screen bg-gray-50 dark:bg-gray-800">
             {renderDetailViewHeader}
             <div className="p-4">
               {/* Detail view content would be rendered here */}
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+              <div className="bg-white dark:bg-gray-700 rounded-lg shadow p-4">
                 <h3 className="text-lg font-medium text-gray-800 dark:text-white mb-3">
                   {detailView.title}
                 </h3>
@@ -383,7 +383,7 @@ const Dashboard = React.memo(({ user }) => {
         <div 
           className="p-5" 
           style={{
-            background: darkMode ? '#1F2937' : '#F9FAFB',
+            background: darkMode ? '#374151' : '#F9FAFB',
             maxHeight: '70vh',
             overflowY: 'auto'
           }}

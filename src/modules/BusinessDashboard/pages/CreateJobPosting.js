@@ -108,22 +108,22 @@ const CreateJobPosting = React.memo(() => {
   }, [])
 
   return (
-    <div className={`min-h-screen ${darkMode ? 'bg-gray-900' : 'bg-gray-50'} relative overflow-hidden`}>
+    <div className={`min-h-screen ${darkMode ? 'bg-gray-800' : 'bg-gray-50'} relative overflow-hidden`}>
       {/* Background Effects */}
       <div className="fixed inset-0 pointer-events-none">
         {darkMode ? (
           <>
             <div 
               className="absolute -top-[10%] -right-[10%] w-1/2 h-1/2 rounded-full blur-3xl"
-              style={{ background: 'radial-gradient(circle, rgba(59, 130, 246, 0.35) 0%, transparent 70%)' }}
+              style={{ background: 'radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%)' }}
             />
             <div 
               className="absolute -bottom-[10%] -left-[10%] w-1/2 h-1/2 rounded-full blur-3xl"
-              style={{ background: 'radial-gradient(circle, rgba(34, 197, 94, 0.25) 0%, transparent 70%)' }}
+              style={{ background: 'radial-gradient(circle, rgba(34, 197, 94, 0.12) 0%, transparent 70%)' }}
             />
             <div 
               className="absolute top-1/4 left-1/4 w-1/3 h-1/3 rounded-full blur-3xl"
-              style={{ background: 'radial-gradient(circle, rgba(16, 185, 129, 0.2) 0%, transparent 70%)' }}
+              style={{ background: 'radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, transparent 70%)' }}
             />
           </>
         ) : (
@@ -139,7 +139,7 @@ const CreateJobPosting = React.memo(() => {
       <BusinessSidebar />
 
       {/* Header */}
-      <div className={`sticky top-0 z-10 ${darkMode ? 'bg-gray-800' : 'bg-white'} border-b ${darkMode ? 'border-gray-700' : 'border-gray-200'} px-6 py-4 ml-64`}>
+      <div className={`sticky top-0 z-10 ${darkMode ? 'bg-gray-700' : 'bg-white'} border-b ${darkMode ? 'border-gray-600' : 'border-gray-200'} px-6 py-4 ml-64`}>
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <Button
@@ -179,11 +179,69 @@ const CreateJobPosting = React.memo(() => {
 
       {/* Main Content - Three Column Layout */}
       <div className="p-6 relative z-10 ml-64">
+        {/* Dark Mode Form Styling */}
+        {darkMode && (
+          <style>
+            {`
+              .dark-form .ant-form-item-label > label {
+                color: #E5E7EB !important;
+              }
+              .dark-form .ant-input {
+                background-color: #4B5563 !important;
+                border-color: #6B7280 !important;
+                color: #F9FAFB !important;
+              }
+              .dark-form .ant-input:focus {
+                border-color: #059669 !important;
+                box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
+              }
+              .dark-form .ant-input::placeholder {
+                color: #9CA3AF !important;
+              }
+              .dark-form .ant-select-selector {
+                background-color: #4B5563 !important;
+                border-color: #6B7280 !important;
+                color: #F9FAFB !important;
+              }
+              .dark-form .ant-select-focused .ant-select-selector {
+                border-color: #059669 !important;
+                box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
+              }
+              .dark-form .ant-select-selection-placeholder {
+                color: #9CA3AF !important;
+              }
+              .dark-form .ant-select-selection-item {
+                color: #F9FAFB !important;
+              }
+              .dark-form .ant-input-number {
+                background-color: #4B5563 !important;
+                border-color: #6B7280 !important;
+                color: #F9FAFB !important;
+              }
+              .dark-form .ant-input-number:focus {
+                border-color: #059669 !important;
+                box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
+              }
+              .dark-form .ant-select-multiple .ant-select-selection-item {
+                background-color: #374151 !important;
+                border-color: #6B7280 !important;
+                color: #F9FAFB !important;
+              }
+              .dark-form .ant-select-multiple .ant-select-selection-item-remove {
+                color: #9CA3AF !important;
+              }
+              .dark-form .ant-select-multiple .ant-select-selection-item-remove:hover {
+                color: #F9FAFB !important;
+              }
+            `}
+          </style>
+        )}
+        
         <Form
           form={form}
           layout="vertical"
           onFinish={handleSubmit}
-          className="max-w-7xl mx-auto"
+          className={`max-w-7xl mx-auto ${darkMode ? 'dark-form' : ''}`}
         >
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             
@@ -562,7 +620,10 @@ const CreateJobPosting = React.memo(() => {
                       key={field.id}
                       size="small"
                       className={`mb-3 ${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50'}`}
-                      bodyStyle={{ padding: '12px' }}
+                      bodyStyle={{ 
+                        padding: '12px',
+                        backgroundColor: darkMode ? '#374151' : '#f9fafb'
+                      }}
                     >
                       <div className="space-y-3">
                         {/* Field Configuration Row */}
