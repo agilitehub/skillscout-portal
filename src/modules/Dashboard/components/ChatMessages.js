@@ -1,6 +1,6 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
-import React, { useRef, useEffect, useMemo, useCallback, useState } from 'react'
+import React, { useRef, useEffect, useCallback, useState } from 'react'
 import { Avatar, Typography, Tag, Tooltip } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
@@ -293,14 +293,15 @@ const ChatMessages = React.memo(
     hasMoreMessages = false,
     isLoadingMore = false,
     isLoadingHistorical = false,
-    onLoadMoreMessages = null
+    onLoadMoreMessages = null,
+    streamingEnabled = false
   }) => {
     const { darkMode } = useTheme()
     const messagesEndRef = useRef(null)
     const messagesContainerRef = useRef(null)
     const [showLoadMoreButton, setShowLoadMoreButton] = useState(false)
     const prevMessageCountRef = useRef(0)
-    
+
     // Add scroll position tracking for when loading previous messages
     const scrollPositionRef = useRef(null)
     const prevScrollHeightRef = useRef(0)
@@ -322,7 +323,7 @@ const ChatMessages = React.memo(
       (e) => {
         // Don't process scroll events when we're restoring scroll position
         if (isRestoringScrollRef.current) return
-        
+
         const { scrollTop } = e.target
         // Show load more button only when user scrolls near the top (within 100px)
         const shouldShow = scrollTop < 100 && hasMoreMessages
@@ -334,14 +335,14 @@ const ChatMessages = React.memo(
     // Enhanced load more messages handler with scroll position preservation
     const handleLoadMoreMessages = useCallback(async () => {
       if (!messagesContainerRef.current || !onLoadMoreMessages) return
-      
+
       const container = messagesContainerRef.current
-      
+
       // Store current scroll position relative to the bottom
       const scrollTop = container.scrollTop
       const scrollHeight = container.scrollHeight
       const clientHeight = container.clientHeight
-      
+
       // Store the distance from the bottom
       scrollPositionRef.current = {
         scrollTop,
@@ -349,9 +350,9 @@ const ChatMessages = React.memo(
         clientHeight,
         distanceFromBottom: scrollHeight - scrollTop - clientHeight
       }
-      
+
       prevScrollHeightRef.current = scrollHeight
-      
+
       // Call the load more function
       await onLoadMoreMessages()
     }, [onLoadMoreMessages])
@@ -360,55 +361,59 @@ const ChatMessages = React.memo(
     useEffect(() => {
       const prevIsLoadingHistorical = prevIsLoadingHistoricalRef.current
       prevIsLoadingHistoricalRef.current = isLoadingHistorical
-      
+
       // Only restore when isLoadingHistorical just changed from true to false
-      if (isLoadingHistorical || !prevIsLoadingHistorical || !scrollPositionRef.current || !messagesContainerRef.current) {
+      if (
+        isLoadingHistorical ||
+        !prevIsLoadingHistorical ||
+        !scrollPositionRef.current ||
+        !messagesContainerRef.current
+      ) {
         return
       }
 
       const container = messagesContainerRef.current
-      
+
       // Wait a bit for the DOM to update with new messages
       setTimeout(() => {
         const newScrollHeight = container.scrollHeight
         const prevScrollHeight = prevScrollHeightRef.current
-        
+
         console.log('Scroll restoration:', {
           newScrollHeight,
           prevScrollHeight,
           storedPosition: scrollPositionRef.current
         })
-        
+
         // Calculate how much the content has grown
         const heightDifference = newScrollHeight - prevScrollHeight
-        
+
         if (heightDifference > 0 && scrollPositionRef.current) {
           // Set flag to prevent scroll event processing during restoration
           isRestoringScrollRef.current = true
-          
+
           // Restore scroll position by adjusting for the new content
           const newScrollTop = scrollPositionRef.current.scrollTop + heightDifference
-          
+
           console.log('Restoring scroll position:', {
             oldScrollTop: scrollPositionRef.current.scrollTop,
             heightDifference,
             newScrollTop
           })
-          
+
           // Set the scroll position
           container.scrollTop = newScrollTop
-          
+
           // Reset flag after a small delay
           setTimeout(() => {
             isRestoringScrollRef.current = false
           }, 100)
         }
-        
+
         // Clear the stored position
         scrollPositionRef.current = null
         prevScrollHeightRef.current = newScrollHeight
       }, 50) // Small delay to ensure DOM is updated
-      
     }, [isLoadingHistorical])
 
     // Auto-scroll to bottom when new messages arrive (but not when loading more)
@@ -621,7 +626,8 @@ const ChatMessages = React.memo(
                           color: messageStyle.color
                         }}
                       >
-                        <span className="text-blue-500">Skill</span><span className="text-emerald-500">Scout</span>
+                        <span className='text-blue-500'>Skill</span>
+                        <span className='text-emerald-500'>Scout</span>
                       </Text>
                     </div>
                   )}
@@ -662,18 +668,30 @@ const ChatMessages = React.memo(
                   )}
 
                   {/* Message Content */}
-                  <Paragraph
-                    style={{
-                      margin: 0,
-                      whiteSpace: 'pre-wrap',
-                      fontSize: '0.9rem',
-                      lineHeight: '1.5',
-                      color: messageStyle.color
-                    }}
-                    className='break-words'
-                  >
-                    {renderMarkdown(message.content, messageStyle.color)}
-                  </Paragraph>
+                  <div className='relative'>
+                    <Paragraph
+                      style={{
+                        margin: 0,
+                        whiteSpace: 'pre-wrap',
+                        fontSize: '0.9rem',
+                        lineHeight: '1.5',
+                        color: messageStyle.color
+                      }}
+                      className='break-words'
+                    >
+                      {renderMarkdown(message.content, messageStyle.color)}
+                      {/* Streaming cursor */}
+                      {message.isStreaming && (
+                        <span
+                          className='inline-block w-2 h-4 ml-1 animate-pulse'
+                          style={{
+                            backgroundColor: messageStyle.color,
+                            opacity: 0.7
+                          }}
+                        />
+                      )}
+                    </Paragraph>
+                  </div>
 
                   {/* Message Footer */}
                   <div className='flex items-center justify-between mt-2'>
@@ -727,7 +745,7 @@ const ChatMessages = React.memo(
           })}
 
           {/* Typing indicator */}
-          {isTyping && (
+          {isTyping && !streamingEnabled && (
             <div className='flex justify-start'>
               <div
                 className='rounded-lg px-4 py-3 shadow-sm max-w-[75%]'

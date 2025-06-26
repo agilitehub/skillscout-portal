@@ -3,7 +3,7 @@ import { useState, useCallback, useRef } from 'react'
 
 /**
  * AI Controller for OpenAI Threads Integration (v2 API)
- * Handles thread management, message sending, and AI responses
+ * Handles thread management, message sending, and AI responses with streaming support
  */
 class AIController {
   constructor(apiKey, assistantId = null) {
@@ -13,6 +13,8 @@ class AIController {
     this.threadId = null
     this.runId = null
     this.isProcessing = false
+    this.isStreaming = false
+    this.streamController = null
   }
 
   /**
@@ -76,9 +78,9 @@ class AIController {
   }
 
   /**
-   * Run the assistant on the thread
+   * Run the assistant on the thread with streaming support
    */
-  async runAssistant(assistantId = null) {
+  async runAssistant(assistantId = null, stream = false) {
     if (!this.threadId) {
       throw new Error('No thread available. Create a thread first.')
     }
@@ -89,6 +91,14 @@ class AIController {
     }
 
     try {
+      const body = {
+        assistant_id: targetAssistantId
+      }
+
+      if (stream) {
+        body.stream = true
+      }
+
       const response = await fetch(`${this.baseURL}/threads/${this.threadId}/runs`, {
         method: 'POST',
         headers: {
@@ -96,13 +106,15 @@ class AIController {
           'Content-Type': 'application/json',
           'OpenAI-Beta': 'assistants=v2'
         },
-        body: JSON.stringify({
-          assistant_id: targetAssistantId
-        })
+        body: JSON.stringify(body)
       })
 
       if (!response.ok) {
         throw new Error(`Failed to run assistant: ${response.status}`)
+      }
+
+      if (stream) {
+        return response // Return the raw response for streaming
       }
 
       const data = await response.json()
@@ -111,6 +123,186 @@ class AIController {
     } catch (error) {
       console.error('Error running assistant:', error)
       throw error
+    }
+  }
+
+  /**
+   * Stream assistant response with real-time updates
+   */
+  async streamAssistantResponse(content, assistantId = null, onChunk = null, onComplete = null, onError = null) {
+    try {
+      this.isProcessing = true
+      this.isStreaming = true
+
+      // Create an AbortController for stream cancellation
+      this.streamController = new AbortController()
+
+      // Add user message first
+      await this.addMessage(content, 'user')
+
+      // Start streaming run
+      const response = await this.runAssistant(assistantId, true)
+
+      if (!response.body) {
+        throw new Error('No response body for streaming')
+      }
+
+      const reader = response.body.getReader()
+      const decoder = new TextDecoder()
+      let buffer = ''
+      let currentMessageContent = ''
+      let messageId = null
+
+      try {
+        while (true) {
+          const { done, value } = await reader.read()
+
+          if (done) {
+            break
+          }
+
+          // Check if stream was cancelled
+          if (this.streamController.signal.aborted) {
+            break
+          }
+
+          buffer += decoder.decode(value, { stream: true })
+          const lines = buffer.split('\n')
+          buffer = lines.pop() || '' // Keep incomplete line in buffer
+
+          for (const line of lines) {
+            const trimmedLine = line.trim()
+
+            if (trimmedLine === '') continue
+            if (trimmedLine === 'data: [DONE]') {
+              // Stream completed
+              if (onComplete && currentMessageContent) {
+                onComplete({
+                  id: messageId || Date.now().toString(),
+                  content: currentMessageContent,
+                  type: 'assistant',
+                  timestamp: new Date().toISOString()
+                })
+              }
+              return {
+                id: messageId || Date.now().toString(),
+                content: currentMessageContent,
+                type: 'assistant',
+                timestamp: new Date().toISOString()
+              }
+            }
+
+            if (trimmedLine.startsWith('data: ')) {
+              try {
+                const eventData = trimmedLine.slice(6) // Remove 'data: ' prefix
+                const parsed = JSON.parse(eventData)
+
+                // Handle different event types
+                if (parsed.object === 'thread.message.delta') {
+                  // This is a message content delta
+                  if (parsed.delta?.content) {
+                    for (const contentItem of parsed.delta.content) {
+                      if (contentItem.type === 'text' && contentItem.text?.value) {
+                        const chunk = contentItem.text.value
+                        currentMessageContent += chunk
+
+                        // Call chunk callback for real-time updates
+                        if (onChunk) {
+                          onChunk({
+                            chunk,
+                            fullContent: currentMessageContent,
+                            messageId: parsed.id || messageId
+                          })
+                        }
+                      }
+                    }
+                  }
+
+                  // Store message ID for later use
+                  if (parsed.id && !messageId) {
+                    messageId = parsed.id
+                  }
+                } else if (parsed.object === 'thread.message') {
+                  // Complete message received
+                  if (parsed.role === 'assistant' && parsed.content) {
+                    const textContent = parsed.content
+                      .filter((item) => item.type === 'text')
+                      .map((item) => item.text.value)
+                      .join('')
+
+                    if (textContent && !currentMessageContent) {
+                      currentMessageContent = textContent
+                      messageId = parsed.id
+
+                      // If we haven't been streaming chunks, send the complete message
+                      if (onChunk) {
+                        onChunk({
+                          chunk: textContent,
+                          fullContent: textContent,
+                          messageId: parsed.id
+                        })
+                      }
+                    }
+                  }
+                } else if (parsed.object === 'thread.run') {
+                  // Run status updates
+                  console.log('Run status:', parsed.status)
+                  if (parsed.status === 'completed' && currentMessageContent) {
+                    if (onComplete) {
+                      onComplete({
+                        id: messageId || Date.now().toString(),
+                        content: currentMessageContent,
+                        type: 'assistant',
+                        timestamp: new Date().toISOString()
+                      })
+                    }
+                  } else if (parsed.status === 'failed') {
+                    throw new Error(`Run failed: ${parsed.last_error?.message || 'Unknown error'}`)
+                  }
+                }
+              } catch (parseError) {
+                console.warn('Failed to parse SSE data:', parseError, 'Raw data:', trimmedLine.slice(6))
+                // Continue processing other lines
+              }
+            }
+          }
+        }
+      } finally {
+        reader.releaseLock()
+      }
+
+      // Return the final message if we have content
+      if (currentMessageContent) {
+        return {
+          id: messageId || Date.now().toString(),
+          content: currentMessageContent,
+          type: 'assistant',
+          timestamp: new Date().toISOString()
+        }
+      }
+
+      throw new Error('No content received from stream')
+    } catch (error) {
+      if (onError) {
+        onError(error)
+      }
+      console.error('Error in streamAssistantResponse:', error)
+      throw error
+    } finally {
+      this.isProcessing = false
+      this.isStreaming = false
+      this.streamController = null
+    }
+  }
+
+  /**
+   * Cancel ongoing stream
+   */
+  cancelStream() {
+    if (this.streamController) {
+      this.streamController.abort()
+      this.isStreaming = false
+      this.isProcessing = false
     }
   }
 
@@ -151,16 +343,16 @@ class AIController {
 
     try {
       let url = `${this.baseURL}/threads/${this.threadId}/messages?limit=${limit}&order=${order}`
-      
+
       if (after) {
         url += `&after=${after}`
       }
       if (before) {
         url += `&before=${before}`
       }
-      
+
       console.log('Fetching messages from:', url)
-      
+
       const response = await fetch(url, {
         headers: {
           Authorization: `Bearer ${this.apiKey}`,
@@ -180,11 +372,11 @@ class AIController {
         hasMore: result.has_more,
         firstId: result.first_id,
         lastId: result.last_id,
-        messageIds: result.data?.map(msg => msg.id) || [],
+        messageIds: result.data?.map((msg) => msg.id) || [],
         after,
         before
       })
-      
+
       return result
     } catch (error) {
       console.error('Error getting messages:', error)
@@ -207,7 +399,7 @@ class AIController {
     while (hasMore) {
       try {
         const response = await this.getMessages(batchSize, 'desc', after)
-        
+
         if (response.data && response.data.length > 0) {
           allMessages.push(...response.data)
           after = response.data[response.data.length - 1].id // Get the ID of the last message for next page
@@ -255,7 +447,7 @@ class AIController {
   }
 
   /**
-   * Send message and get AI response
+   * Send message and get AI response (non-streaming)
    */
   async sendMessageAndGetResponse(content, assistantId = null) {
     try {
@@ -304,10 +496,17 @@ class AIController {
   getIsProcessing() {
     return this.isProcessing
   }
+
+  /**
+   * Check if currently streaming
+   */
+  getIsStreaming() {
+    return this.isStreaming
+  }
 }
 
 /**
- * React Hook for AI Controller
+ * React Hook for AI Controller with streaming support
  * Provides a clean interface for using the AI controller in React components
  */
 export const useAIController = (apiKey, assistantId = null) => {
@@ -321,6 +520,8 @@ export const useAIController = (apiKey, assistantId = null) => {
   const [error, setError] = useState(null)
   const [messages, setMessages] = useState([])
   const [isProcessing, setIsProcessing] = useState(false)
+  const [isStreaming, setIsStreaming] = useState(false)
+  const [streamingMessage, setStreamingMessage] = useState(null)
 
   // Initialize thread on mount or when needed
   const initializeThread = useCallback(async () => {
@@ -341,13 +542,15 @@ export const useAIController = (apiKey, assistantId = null) => {
     }
   }, [controller])
 
-  // Send message and get response
+  // Send message with streaming support
   const sendMessage = useCallback(
-    async (content) => {
+    async (content, useStreaming = false) => {
       try {
         setIsLoading(true)
         setError(null)
         setIsProcessing(true)
+        setIsStreaming(useStreaming)
+
         // Always use the controller's threadId
         let currentThreadId = controller.getThreadId()
         if (!currentThreadId) {
@@ -355,36 +558,104 @@ export const useAIController = (apiKey, assistantId = null) => {
           currentThreadId = thread.id
           controller.setThreadId(currentThreadId)
         }
-        // Add user message to local state
-        const userMessage = {
-          id: Date.now().toString(),
-          type: 'user',
-          content,
-          timestamp: new Date().toISOString()
-        }
-        setMessages((prev) => [...prev, userMessage])
-        // Get AI response
-        const aiResponse = await controller.sendMessageAndGetResponse(content)
-        if (aiResponse) {
-          const assistantMessage = {
-            id: aiResponse.id,
+
+        if (useStreaming) {
+          // For streaming, don't add user message here as it's handled by useChat
+          // to avoid duplication
+          // Initialize streaming message
+          const tempStreamingMessage = {
+            id: `streaming-${Date.now()}`,
             type: 'assistant',
-            content: aiResponse.content[0]?.text?.value || 'No response received',
+            content: '',
+            timestamp: new Date().toISOString(),
+            isStreaming: true
+          }
+          setStreamingMessage(tempStreamingMessage)
+          setMessages((prev) => [...prev, tempStreamingMessage])
+
+          // Stream the response
+          const aiResponse = await controller.streamAssistantResponse(
+            content,
+            null,
+            // onChunk callback
+            ({ chunk, fullContent, messageId }) => {
+              setStreamingMessage((prev) => ({
+                ...prev,
+                id: messageId || prev.id,
+                content: fullContent,
+                isStreaming: true
+              }))
+              setMessages((prev) =>
+                prev.map((msg) =>
+                  msg.id === tempStreamingMessage.id
+                    ? { ...msg, id: messageId || msg.id, content: fullContent, isStreaming: true }
+                    : msg
+                )
+              )
+            },
+            // onComplete callback
+            (finalMessage) => {
+              setStreamingMessage(null)
+              setMessages((prev) =>
+                prev.map((msg) =>
+                  msg.id === tempStreamingMessage.id || msg.isStreaming ? { ...finalMessage, isStreaming: false } : msg
+                )
+              )
+            },
+            // onError callback
+            (streamError) => {
+              console.error('Streaming error:', streamError)
+              setError(streamError.message)
+              // Remove the streaming message on error
+              setMessages((prev) => prev.filter((msg) => msg.id !== tempStreamingMessage.id))
+              setStreamingMessage(null)
+            }
+          )
+
+          return aiResponse
+        } else {
+          // Add user message for non-streaming mode
+          const userMessage = {
+            id: Date.now().toString(),
+            type: 'user',
+            content,
             timestamp: new Date().toISOString()
           }
-          setMessages((prev) => [...prev, assistantMessage])
+          setMessages((prev) => [...prev, userMessage])
+
+          // Use non-streaming response
+          const aiResponse = await controller.sendMessageAndGetResponse(content)
+          if (aiResponse) {
+            const assistantMessage = {
+              id: aiResponse.id,
+              type: 'assistant',
+              content: aiResponse.content[0]?.text?.value || 'No response received',
+              timestamp: new Date().toISOString()
+            }
+            setMessages((prev) => [...prev, assistantMessage])
+          }
+          return aiResponse
         }
-        return aiResponse
       } catch (err) {
         setError(err.message)
         throw err
       } finally {
         setIsLoading(false)
         setIsProcessing(false)
+        setIsStreaming(false)
       }
     },
     [controller, initializeThread]
   )
+
+  // Cancel streaming
+  const cancelStream = useCallback(() => {
+    controller.cancelStream()
+    setIsStreaming(false)
+    setStreamingMessage(null)
+    // Remove any streaming messages
+    setMessages((prev) => prev.filter((msg) => !msg.isStreaming))
+  }, [controller])
 
   // Load existing messages
   const loadMessages = useCallback(async () => {
@@ -419,6 +690,7 @@ export const useAIController = (apiKey, assistantId = null) => {
   // Clear messages and thread
   const clearMessages = useCallback(() => {
     setMessages([])
+    setStreamingMessage(null)
     controller.setThreadId(null)
   }, [controller])
 
@@ -429,9 +701,11 @@ export const useAIController = (apiKey, assistantId = null) => {
       error,
       messages,
       threadId: controller.getThreadId(),
-      isProcessing
+      isProcessing,
+      isStreaming,
+      streamingMessage
     }),
-    [isLoading, error, messages, isProcessing, controller]
+    [isLoading, error, messages, isProcessing, isStreaming, streamingMessage, controller]
   )
 
   return {
@@ -441,10 +715,13 @@ export const useAIController = (apiKey, assistantId = null) => {
     messages,
     threadId: controller.getThreadId(),
     isProcessing,
+    isStreaming,
+    streamingMessage,
 
     // Actions
     initializeThread,
     sendMessage,
+    cancelStream,
     loadMessages,
     resumeThread,
     clearMessages,

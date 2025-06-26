@@ -9,7 +9,7 @@ import { useTheme } from '../../../ui/ThemeContext'
 const { TextArea } = Input
 
 /**
- * ChatInput component - Handles chat input with send functionality and file uploads
+ * ChatInput component - Handles chat input with send functionality, file uploads, and streaming controls
  * Implements responsive design, theme support, and AI integration with Supabase storage
  */
 const ChatInput = React.memo(
@@ -20,6 +20,10 @@ const ChatInput = React.memo(
     disabled = false,
     isTyping = false,
     isUploading = false,
+    isStreaming = false,
+    streamingEnabled = true,
+    onToggleStreaming = null,
+    onCancelStream = null,
     maxLength = 4000
   }) => {
     const { darkMode } = useTheme()
@@ -39,11 +43,11 @@ const ChatInput = React.memo(
 
     // Handle sending message
     const handleSendMessage = useCallback(() => {
-      if (userInput.trim() && !disabled && !isTyping && !isUploading) {
+      if (userInput.trim() && !disabled && !isTyping && !isUploading && !isStreaming) {
         onSendMessage?.(userInput.trim())
         setUserInput('')
       }
-    }, [userInput, disabled, isTyping, isUploading, onSendMessage])
+    }, [userInput, disabled, isTyping, isUploading, isStreaming, onSendMessage])
 
     // Handle key press
     const handleKeyPress = useCallback(
@@ -76,7 +80,7 @@ const ChatInput = React.memo(
       const validFiles = []
       const MAX_FILE_SIZE = 50 * 1024 * 1024 // 50MB
 
-      Array.from(files).forEach(file => {
+      Array.from(files).forEach((file) => {
         if (!allowedTypes.includes(file.type)) {
           errors.push(`${file.name}: Unsupported file type`)
         } else if (file.size > MAX_FILE_SIZE) {
@@ -96,54 +100,56 @@ const ChatInput = React.memo(
     }, [])
 
     // Process files and pass them to the real upload system
-    const processFiles = useCallback(async (files) => {
-      try {
-        // Show progress indicators while uploading
-        const progressEntries = {}
-        files.forEach(file => {
-          progressEntries[file.name] = 0
-        })
-        setUploadProgress(progressEntries)
+    const processFiles = useCallback(
+      async (files) => {
+        try {
+          // Show progress indicators while uploading
+          const progressEntries = {}
+          files.forEach((file) => {
+            progressEntries[file.name] = 0
+          })
+          setUploadProgress(progressEntries)
 
-        // Simulate visual progress for better UX (since Supabase doesn't provide real progress)
-        const progressInterval = setInterval(() => {
-          setUploadProgress(prev => {
-            const updated = { ...prev }
-            Object.keys(updated).forEach(filename => {
-              if (updated[filename] < 90) {
-                updated[filename] += Math.random() * 20
-              }
+          // Simulate visual progress for better UX (since Supabase doesn't provide real progress)
+          const progressInterval = setInterval(() => {
+            setUploadProgress((prev) => {
+              const updated = { ...prev }
+              Object.keys(updated).forEach((filename) => {
+                if (updated[filename] < 90) {
+                  updated[filename] += Math.random() * 20
+                }
+              })
+              return updated
             })
-            return updated
+          }, 200)
+
+          // Call the real upload system that integrates with Supabase
+          if (onFileUpload) {
+            await onFileUpload(files)
+          }
+
+          // Complete progress and clean up
+          clearInterval(progressInterval)
+          setUploadProgress((prev) => {
+            const completed = { ...prev }
+            Object.keys(completed).forEach((filename) => {
+              completed[filename] = 100
+            })
+            return completed
           })
-        }, 200)
 
-        // Call the real upload system that integrates with Supabase
-        if (onFileUpload) {
-          await onFileUpload(files)
-        }
-
-        // Complete progress and clean up
-        clearInterval(progressInterval)
-        setUploadProgress(prev => {
-          const completed = { ...prev }
-          Object.keys(completed).forEach(filename => {
-            completed[filename] = 100
-          })
-          return completed
-        })
-
-        // Clean up progress indicators after a short delay
-        setTimeout(() => {
+          // Clean up progress indicators after a short delay
+          setTimeout(() => {
+            setUploadProgress({})
+          }, 1000)
+        } catch (error) {
+          console.error('File processing error:', error)
+          message.error('File processing failed: ' + error.message)
           setUploadProgress({})
-        }, 1000)
-        
-      } catch (error) {
-        console.error('File processing error:', error)
-        message.error('File processing failed: ' + error.message)
-        setUploadProgress({})
-      }
-    }, [onFileUpload])
+        }
+      },
+      [onFileUpload]
+    )
 
     // Handle file input change
     const handleFileChange = useCallback(
@@ -165,8 +171,6 @@ const ChatInput = React.memo(
       },
       [onAttachFile, validateFiles, processFiles]
     )
-
-
 
     // Handle attach file button click
     const handleAttachFileClick = useCallback(() => {
@@ -253,19 +257,17 @@ const ChatInput = React.memo(
 
         <div
           className={`relative p-2 md:p-4 border-t transition-all duration-200 ${
-            isDragOver 
-              ? 'border-2 border-dashed shadow-lg transform scale-[1.02]' 
-              : 'border-t'
+            isDragOver ? 'border-2 border-dashed shadow-lg transform scale-[1.02]' : 'border-t'
           }`}
           style={{
-            background: isDragOver 
-              ? darkMode 
-                ? 'rgba(59, 130, 246, 0.1)' 
+            background: isDragOver
+              ? darkMode
+                ? 'rgba(59, 130, 246, 0.1)'
                 : 'rgba(59, 130, 246, 0.05)'
-              : darkMode ? '#1F2937' : '#ffffff',
-            borderColor: isDragOver 
-              ? colors.emeraldPrimary
-              : darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'
+              : darkMode
+                ? '#1F2937'
+                : '#ffffff',
+            borderColor: isDragOver ? colors.emeraldPrimary : darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'
           }}
           onDragEnter={handleDragEnter}
           onDragLeave={handleDragLeave}
@@ -310,9 +312,7 @@ const ChatInput = React.memo(
             <div className='mb-3 space-y-1'>
               {Object.entries(uploadProgress).map(([fileName, progress]) => (
                 <div key={fileName} className='flex items-center space-x-2'>
-                  <span className='text-xs text-gray-500 dark:text-gray-400 min-w-0 flex-1 truncate'>
-                    {fileName}
-                  </span>
+                  <span className='text-xs text-gray-500 dark:text-gray-400 min-w-0 flex-1 truncate'>{fileName}</span>
                   <div className='w-16'>
                     <Progress
                       percent={Math.round(progress)}
@@ -410,22 +410,19 @@ const ChatInput = React.memo(
           {isDragOver && (
             <div className='absolute inset-0 z-20 flex items-center justify-center bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-lg border-2 border-dashed border-emerald-500'>
               <div className='text-center'>
-                <FontAwesomeIcon 
-                  icon={faCloudUploadAlt} 
-                  className='text-4xl text-emerald-500 mb-2 animate-bounce' 
-                />
-                <p 
+                <FontAwesomeIcon icon={faCloudUploadAlt} className='text-4xl text-emerald-500 mb-2 animate-bounce' />
+                <p
                   className='font-medium'
-                  style={{ 
-                    color: darkMode ? '#34D399' : '#059669' 
+                  style={{
+                    color: darkMode ? '#34D399' : '#059669'
                   }}
                 >
                   Drop files here to upload
                 </p>
-                <p 
+                <p
                   className='text-xs mt-1'
-                  style={{ 
-                    color: darkMode ? 'rgba(229, 231, 235, 0.9)' : 'rgba(75, 85, 99, 1)' 
+                  style={{
+                    color: darkMode ? 'rgba(229, 231, 235, 0.9)' : 'rgba(75, 85, 99, 1)'
                   }}
                 >
                   PDF, DOC, Images, CSV files supported
@@ -434,41 +431,109 @@ const ChatInput = React.memo(
             </div>
           )}
 
-          {/* Drag & Drop Hint */}
-          <div className={`flex items-center justify-center space-x-2 text-xs py-2 transition-opacity duration-200 ${
-            isDragOver ? 'opacity-0' : 'opacity-100'
-          }`}>
-            <FontAwesomeIcon 
-              icon={faCloudUploadAlt} 
-              className='text-xs'
-              style={{ 
-                color: darkMode ? 'rgba(229, 231, 235, 0.9)' : 'rgba(75, 85, 99, 0.8)' 
-              }}
-            />
-            <span 
-              style={{ 
-                color: darkMode ? 'rgba(229, 231, 235, 0.9)' : 'rgba(75, 85, 99, 0.8)' 
-              }}
+          {/* Streaming Controls */}
+          <div className='flex items-center justify-between text-xs py-2'>
+            {/* Left side - Drag & Drop Hint */}
+            <div
+              className={`flex items-center space-x-2 transition-opacity duration-200 ${
+                isDragOver ? 'opacity-0' : 'opacity-100'
+              }`}
             >
-              {isUploading ? (
-                'Uploading files...'
-              ) : (
-                <>
-                  Drag & drop files here or click
-                  <FontAwesomeIcon 
-                    icon={faPaperclip} 
-                    className='mx-1 text-xs'
-                    style={{ 
-                      color: darkMode ? 'rgba(229, 231, 235, 0.9)' : 'rgba(75, 85, 99, 0.8)' 
-                    }}
-                  />
-                  to upload
-                </>
+              <FontAwesomeIcon
+                icon={faCloudUploadAlt}
+                className='text-xs'
+                style={{
+                  color: darkMode ? 'rgba(229, 231, 235, 0.9)' : 'rgba(75, 85, 99, 0.8)'
+                }}
+              />
+              <span
+                style={{
+                  color: darkMode ? 'rgba(229, 231, 235, 0.9)' : 'rgba(75, 85, 99, 0.8)'
+                }}
+              >
+                {isUploading ? (
+                  'Uploading files...'
+                ) : (
+                  <>
+                    Drag & drop files or click
+                    <FontAwesomeIcon
+                      icon={faPaperclip}
+                      className='mx-1 text-xs'
+                      style={{
+                        color: darkMode ? 'rgba(229, 231, 235, 0.9)' : 'rgba(75, 85, 99, 0.8)'
+                      }}
+                    />
+                    to upload
+                  </>
+                )}
+              </span>
+            </div>
+
+            {/* Right side - Streaming Controls */}
+            <div className='flex items-center space-x-3'>
+              {/* Streaming Status */}
+              {isStreaming && (
+                <div className='flex items-center space-x-2'>
+                  <div className='flex space-x-1'>
+                    <div className='w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse'></div>
+                    <div
+                      className='w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse'
+                      style={{ animationDelay: '0.2s' }}
+                    ></div>
+                    <div
+                      className='w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse'
+                      style={{ animationDelay: '0.4s' }}
+                    ></div>
+                  </div>
+                  <span className='text-emerald-500'>Streaming...</span>
+                  {onCancelStream && (
+                    <Button
+                      type='text'
+                      size='small'
+                      onClick={onCancelStream}
+                      className='!px-2 !py-0 !h-5 text-xs hover:!bg-red-50 dark:hover:!bg-red-900/20'
+                      style={{ color: '#ef4444' }}
+                    >
+                      Cancel
+                    </Button>
+                  )}
+                </div>
               )}
-            </span>
+
+              {/* Streaming Toggle */}
+              {onToggleStreaming && !isStreaming && (
+                <div className='flex items-center space-x-2'>
+                  <span
+                    className='text-xs'
+                    style={{
+                      color: darkMode ? 'rgba(229, 231, 235, 0.9)' : 'rgba(75, 85, 99, 0.8)'
+                    }}
+                  >
+                    Streaming:
+                  </span>
+                  <Button
+                    type='text'
+                    size='small'
+                    onClick={() => onToggleStreaming(!streamingEnabled)}
+                    className={`!px-2 !py-0 !h-5 text-xs transition-colors duration-200 ${
+                      streamingEnabled
+                        ? 'hover:!bg-emerald-50 dark:hover:!bg-emerald-900/20'
+                        : 'hover:!bg-gray-50 dark:hover:!bg-gray-800'
+                    }`}
+                    style={{
+                      color: streamingEnabled
+                        ? colors.emeraldPrimary
+                        : darkMode
+                          ? 'rgba(229, 231, 235, 0.6)'
+                          : 'rgba(75, 85, 99, 0.6)'
+                    }}
+                  >
+                    {streamingEnabled ? '✓ ON' : '✗ OFF'}
+                  </Button>
+                </div>
+              )}
+            </div>
           </div>
-
-
         </div>
       </>
     )

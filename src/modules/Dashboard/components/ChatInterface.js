@@ -356,17 +356,15 @@ ResumePreviewPanel.displayName = 'ResumePreviewPanel'
 
 /**
  * Main ChatInterface component - Integrates AI controller with chat UI
- * Provides a complete chat experience with file uploads and resume preview
+ * Provides a complete chat experience with file uploads, resume preview, and streaming support
  */
 const ChatInterface = React.memo(({ user }) => {
   const { darkMode } = useTheme()
 
-  // Use the new chat hook
+  // Use the new chat hook with streaming support
   const {
     messages,
     isTyping,
-    isLoading,
-    error,
     uploadedFiles,
     isInitialized,
     isChatReady,
@@ -374,12 +372,15 @@ const ChatInterface = React.memo(({ user }) => {
     sendMessage,
     handleFileUpload,
     handleFileRemove,
-    clearChat,
-    getChatStats,
     hasMoreMessages,
     isLoadingMore,
     loadMoreMessages,
-    isLoadingHistorical
+    isLoadingHistorical,
+    // Streaming support
+    isStreaming,
+    streamingEnabled,
+    cancelStreaming,
+    toggleStreaming
   } = useChat(user)
 
   // Internal color palette for Skill Scout
@@ -489,7 +490,8 @@ const ChatInterface = React.memo(({ user }) => {
           <div className='flex items-center justify-between'>
             <div>
               <Title level={4} className='!text-white !mb-0'>
-                <span className="text-blue-500">Skill</span><span className="text-emerald-500">Scout</span> Interview
+                <span className='text-blue-500'>Skill</span>
+                <span className='text-emerald-500'>Scout</span> Interview
               </Title>
               <Text className='text-white/70 text-sm'>AI-powered career assessment and interview preparation</Text>
             </div>
@@ -542,6 +544,7 @@ const ChatInterface = React.memo(({ user }) => {
                 isLoadingMore={isLoadingMore}
                 isLoadingHistorical={isLoadingHistorical}
                 onLoadMoreMessages={loadMoreMessages}
+                streamingEnabled={streamingEnabled}
               />
             </div>
 
@@ -554,6 +557,10 @@ const ChatInterface = React.memo(({ user }) => {
                 disabled={!isChatReady}
                 isTyping={isTyping}
                 isUploading={isUploading}
+                isStreaming={isStreaming}
+                streamingEnabled={streamingEnabled}
+                onToggleStreaming={toggleStreaming}
+                onCancelStream={cancelStreaming}
                 maxLength={4000}
               />
             </div>

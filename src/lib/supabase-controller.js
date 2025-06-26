@@ -446,7 +446,6 @@ export const uploadFileToStorage = async (file, userId, bucketName = 'file-uploa
 
     // Generate unique filename with timestamp
     const timestamp = Date.now()
-    const fileExtension = file.name.split('.').pop()
     const uniqueFileName = `${timestamp}_${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`
     const filePath = `${userId}/${uniqueFileName}`
 

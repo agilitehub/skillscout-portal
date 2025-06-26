@@ -12,24 +12,17 @@ import {
 } from '../../../lib/supabase-controller'
 
 /**
- * Custom hook for chat functionality with AI integration and Supabase file storage
- * Provides a clean interface for chat components with persistent file storage
+ * Custom hook for chat functionality with AI integration, Supabase file storage, and streaming support
+ * Provides a clean interface for chat components with persistent file storage and real-time streaming
  */
 export const useChat = (user = null) => {
   // Configuration - memoized to prevent infinite re-renders
   const config = useMemo(() => getValidatedConfig(), [])
   const mockResponses = useMemo(() => getMockResponses(), [])
 
-  // AI Controller
-  const {
-    isLoading,
-    error,
-    sendMessage: aiSendMessage,
-    loadMessages,
-    resumeThread,
-    clearMessages,
-    controller
-  } = useAIController(config.openai.apiKey, config.assistant.id)
+  // AI Controller with streaming support (using controller directly to avoid dual message state)
+  const { isLoading, error, cancelStream, loadMessages, resumeThread, clearMessages, isStreaming, controller } =
+    useAIController(config.openai.apiKey, config.assistant.id)
 
   // Local state
   const [isTyping, setIsTyping] = useState(false)
@@ -42,6 +35,8 @@ export const useChat = (user = null) => {
   const [isLoadingMore, setIsLoadingMore] = useState(false) // Loading state for pagination
   const [isLoadingHistorical, setIsLoadingHistorical] = useState(false) // Track historical loading
   const [totalMessageCount, setTotalMessageCount] = useState(0) // Track total messages available
+  const [streamingEnabled, setStreamingEnabled] = useState(true) // Control streaming feature
+  const [currentStreamingMessage, setCurrentStreamingMessage] = useState(null) // Local streaming state
   const abortControllerRef = useRef(null)
 
   // Chat initialization with Supabase thread_id
@@ -70,7 +65,7 @@ export const useChat = (user = null) => {
         }
         // 3. Set threadId in controller, then fetch messages
         controller.setThreadId(threadIdFromDb)
-        
+
         // Get messages with the current limit
         const response = await controller.getMessages(messageLimit)
         let formattedMessages = response.data.map(formatMessage)
@@ -80,11 +75,11 @@ export const useChat = (user = null) => {
         // Set total message count based on what we received
         const receivedCount = response.data.length
         setTotalMessageCount(receivedCount)
-        
+
         // Check if there are more messages available using OpenAI's has_more field
         const hasMore = response.has_more || false
         setHasMoreMessages(hasMore)
-        
+
         console.log('Chat initialization:', {
           messageLimit,
           receivedCount,
@@ -121,22 +116,23 @@ export const useChat = (user = null) => {
   useEffect(() => {
     const loadMessagesWithLimit = async () => {
       // Skip if we're currently loading more messages (handled directly in loadMoreMessages)
-      if (!user?.id || !isInitialized || !controller.getThreadId() || config.development.mockResponses || isLoadingMore) return
+      if (!user?.id || !isInitialized || !controller.getThreadId() || config.development.mockResponses || isLoadingMore)
+        return
 
       try {
         const response = await controller.getMessages(messageLimit)
         let formattedMessages = response.data.map(formatMessage)
         formattedMessages.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))
-        
+
         // Update total count with what we actually received
         const receivedCount = response.data.length
         setTotalMessageCount(receivedCount)
-        
+
         // Update hasMoreMessages using OpenAI's has_more field
         const hasMore = response.has_more || false
         setHasMoreMessages(hasMore)
         setChatHistory(formattedMessages)
-        
+
         console.log('Load messages with limit (useEffect):', {
           messageLimit,
           receivedCount,
@@ -161,30 +157,106 @@ export const useChat = (user = null) => {
     }
   }, [error])
 
-  // Send message function
-  const sendMessage = useCallback(
+  // Handle completed streaming messages
+  useEffect(() => {
+    if (currentStreamingMessage && !currentStreamingMessage.isStreaming) {
+      // Streaming completed - add final message to chat history
+      setChatHistory((prev) => {
+        // Make sure we don't duplicate the message
+        const messageExists = prev.some((msg) => msg.id === currentStreamingMessage.id)
+        if (messageExists) {
+          return prev
+        }
+        return [...prev, currentStreamingMessage]
+      })
+
+      // Clear streaming state
+      setTimeout(() => setCurrentStreamingMessage(null), 100)
+    }
+  }, [currentStreamingMessage])
+
+  // Custom streaming handler
+  const handleStreamingMessage = useCallback(
     async (content) => {
+      try {
+        // Initialize streaming message
+        const tempStreamingMessage = {
+          id: `streaming-${Date.now()}`,
+          type: 'assistant',
+          content: '',
+          timestamp: new Date().toISOString(),
+          isStreaming: true
+        }
+        setCurrentStreamingMessage(tempStreamingMessage)
+
+        // Stream the response using controller directly
+        await controller.streamAssistantResponse(
+          content,
+          null,
+          // onChunk callback
+          ({ chunk, fullContent, messageId }) => {
+            setCurrentStreamingMessage((prev) => ({
+              ...prev,
+              id: messageId || prev.id,
+              content: fullContent,
+              isStreaming: true
+            }))
+          },
+          // onComplete callback
+          (finalMessage) => {
+            // Mark the streaming message as complete and set it as final
+            setCurrentStreamingMessage((prev) => ({
+              ...finalMessage,
+              isStreaming: false
+            }))
+            setTotalMessageCount((prev) => prev + 1)
+          },
+          // onError callback
+          (streamError) => {
+            console.error('Streaming error:', streamError)
+            setCurrentStreamingMessage(null)
+            throw streamError
+          }
+        )
+      } catch (error) {
+        setCurrentStreamingMessage(null)
+        throw error
+      }
+    },
+    [controller]
+  )
+
+  // Send message function with streaming support
+  const sendMessage = useCallback(
+    async (content, useStreaming = null) => {
       if (!content.trim()) return
+
+      // Use the streaming preference if not explicitly set
+      const shouldUseStreaming = useStreaming !== null ? useStreaming : streamingEnabled
+
       try {
         controller.setThreadId(controller.getThreadId()) // Ensure correct thread is used (no-op if already set)
-        // Add user message to chat history immediately
-        const userMessage = {
-          id: Date.now().toString(),
-          type: 'user',
-          content: content.trim(),
-          timestamp: new Date().toISOString()
-        }
-        setChatHistory((prev) => [...prev, userMessage])
+
         setIsTyping(true)
-        
-        // Update total message count
-        setTotalMessageCount(prev => prev + 1)
-        
+
+        // Update total message count for user message
+        setTotalMessageCount((prev) => prev + 1)
+
         if (abortControllerRef.current) {
           abortControllerRef.current.abort()
         }
         abortControllerRef.current = new AbortController()
+
         if (config.development.mockResponses) {
+          // Add user message to chat history immediately for mock mode
+          const userMessage = {
+            id: Date.now().toString(),
+            type: 'user',
+            content: content.trim(),
+            timestamp: new Date().toISOString()
+          }
+          setChatHistory((prev) => [...prev, userMessage])
+
           await new Promise((resolve) => setTimeout(resolve, 1500))
           let aiResponse
           const lowerContent = content.toLowerCase()
@@ -204,19 +276,34 @@ export const useChat = (user = null) => {
           }
           aiResponse.id = Date.now().toString()
           setChatHistory((prev) => [...prev, aiResponse])
-          setTotalMessageCount(prev => prev + 1)
+          setTotalMessageCount((prev) => prev + 1)
         } else {
-          // Use real AI controller
-          const aiResponse = await aiSendMessage(content.trim())
-          if (aiResponse) {
-            const assistantMessage = {
-              id: aiResponse.id,
-              type: 'assistant',
-              content: aiResponse.content[0]?.text?.value || 'No response received',
-              timestamp: new Date().toISOString()
+          // Add user message to chat history immediately for both streaming and non-streaming
+          const userMessage = {
+            id: Date.now().toString(),
+            type: 'user',
+            content: content.trim(),
+            timestamp: new Date().toISOString()
+          }
+          setChatHistory((prev) => [...prev, userMessage])
+
+          // Use real AI controller with streaming support
+          if (shouldUseStreaming) {
+            // Handle streaming directly here
+            await handleStreamingMessage(content.trim())
+          } else {
+            // Handle non-streaming
+            const aiResponse = await controller.sendMessageAndGetResponse(content.trim())
+            if (aiResponse) {
+              const assistantMessage = {
+                id: aiResponse.id,
+                type: 'assistant',
+                content: aiResponse.content[0]?.text?.value || 'No response received',
+                timestamp: new Date().toISOString()
+              }
+              setChatHistory((prev) => [...prev, assistantMessage])
+              setTotalMessageCount((prev) => prev + 1) // For assistant message
             }
-            setChatHistory((prev) => [...prev, assistantMessage])
-            setTotalMessageCount(prev => prev + 1)
           }
         }
       } catch (error) {
@@ -225,14 +312,27 @@ export const useChat = (user = null) => {
         }
         console.error('Failed to send message:', error)
         message.error('Failed to send message. Please try again.')
-        setChatHistory((prev) => prev.slice(0, -1))
-        setTotalMessageCount(prev => prev - 1) // Revert count if message failed
+        // Revert message count if message failed
+        setTotalMessageCount((prev) => Math.max(0, prev - (shouldUseStreaming ? 1 : 2)))
+      } finally {
+        setIsTyping(false)
+        abortControllerRef.current = null
       }
-      setIsTyping(false)
-      abortControllerRef.current = null
     },
-    [aiSendMessage, controller, config.development.mockResponses, mockResponses]
+    [controller, config.development.mockResponses, mockResponses, streamingEnabled, handleStreamingMessage]
   )
+
+  // Cancel streaming
+  const cancelStreaming = useCallback(() => {
+    cancelStream()
+    setIsTyping(false)
+  }, [cancelStream])
+
+  // Toggle streaming mode
+  const toggleStreaming = useCallback((enabled) => {
+    setStreamingEnabled(enabled)
+    message.info(`Streaming ${enabled ? 'enabled' : 'disabled'}`)
+  }, [])
 
   // Handle file upload with Supabase storage integration
   const handleFileUpload = useCallback(
@@ -270,7 +370,7 @@ export const useChat = (user = null) => {
             timestamp: new Date().toISOString()
           }
           setChatHistory((prev) => [...prev, fileMessage])
-          setTotalMessageCount(prev => prev + 1)
+          setTotalMessageCount((prev) => prev + 1)
 
           message.success(`Successfully uploaded ${newFiles.length} file(s)`)
 
@@ -388,14 +488,16 @@ export const useChat = (user = null) => {
       assistantMessages,
       totalMessages,
       uploadedFiles: uploadedFiles.length,
-      threadId: controller.getThreadId()
+      threadId: controller.getThreadId(),
+      streamingEnabled,
+      isStreaming
     }
-  }, [chatHistory, uploadedFiles, controller])
+  }, [chatHistory, uploadedFiles, controller, streamingEnabled, isStreaming])
 
   // Check if chat is ready
   const isChatReady = useCallback(() => {
-    return isInitialized && (!config.development.mockResponses ? !!controller.getThreadId() : true)
-  }, [isInitialized, controller, config.development.mockResponses])
+    return isInitialized && (!config.development.mockResponses ? !!controller.getThreadId() : true) && !isStreaming
+  }, [isInitialized, controller, config.development.mockResponses, isStreaming])
 
   // Load more messages - now loads ALL remaining messages
   const loadMoreMessages = useCallback(async () => {
@@ -406,26 +508,25 @@ export const useChat = (user = null) => {
 
     try {
       console.log('Loading all remaining messages...')
-      
+
       // Use the getAllMessages function to fetch all messages
       const response = await controller.getAllMessages(20)
       let formattedMessages = response.data.map(formatMessage)
       formattedMessages.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))
-      
+
       const totalCount = formattedMessages.length
-      
+
       // Update state - since we loaded all messages, there are no more to load
       setTotalMessageCount(totalCount)
       setChatHistory(formattedMessages)
       setHasMoreMessages(false) // No more messages since we loaded them all
       setMessageLimit(totalCount) // Update limit to reflect all messages loaded
-      
+
       console.log('Load all messages result:', {
         totalMessagesLoaded: totalCount,
         hasMoreMessages: false,
         reachedEnd: true
       })
-      
     } catch (error) {
       console.error('Error loading all messages:', error)
       message.error('Failed to load previous messages. Please try again.')
@@ -436,10 +537,18 @@ export const useChat = (user = null) => {
     }
   }, [user?.id, isInitialized, hasMoreMessages, isLoadingMore, controller])
 
+  // Combine chat history with current streaming message for display
+  const allMessages = useMemo(() => {
+    if (currentStreamingMessage && currentStreamingMessage.isStreaming) {
+      return [...chatHistory, currentStreamingMessage]
+    }
+    return chatHistory
+  }, [chatHistory, currentStreamingMessage])
+
   return {
     // State
-    messages: chatHistory,
-    isTyping,
+    messages: allMessages,
+    isTyping: isTyping || isStreaming,
     isLoading,
     error,
     uploadedFiles,
@@ -452,15 +561,25 @@ export const useChat = (user = null) => {
     isLoadingMore,
     isLoadingHistorical,
     totalMessageCount,
+
+    // Streaming state
+    isStreaming,
+    streamingEnabled,
+    streamingMessage: currentStreamingMessage,
+
     // Actions
     sendMessage,
+    cancelStreaming,
+    toggleStreaming,
     handleFileUpload,
     handleFileRemove,
     clearChat,
     resumeConversation,
     loadMoreMessages,
+
     // Utilities
     getChatStats,
+
     // Configuration
     config
   }
