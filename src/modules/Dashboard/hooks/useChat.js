@@ -189,30 +189,71 @@ export const useChat = (user = null) => {
         }
         setCurrentStreamingMessage(tempStreamingMessage)
 
+        // Track current displayed content and typewriter state
+        let currentDisplayedContent = ''
+        let typewriterTimeout = null
+        let latestTargetContent = ''
+        let isStreamingComplete = false
+
+        // Function to animate character-by-character display
+        const animateContent = (targetContent, messageId) => {
+          latestTargetContent = targetContent
+
+          if (typewriterTimeout) {
+            clearTimeout(typewriterTimeout)
+          }
+
+          const animate = () => {
+            if (currentDisplayedContent.length < latestTargetContent.length) {
+              currentDisplayedContent = latestTargetContent.slice(0, currentDisplayedContent.length + 1)
+
+              setCurrentStreamingMessage((prev) => ({
+                ...prev,
+                id: messageId || prev.id,
+                content: currentDisplayedContent,
+                isStreaming: true
+              }))
+
+              typewriterTimeout = setTimeout(animate, 15) // 15ms delay between characters
+            } else if (isStreamingComplete && currentDisplayedContent === latestTargetContent) {
+              // All content displayed and streaming is complete, mark as finished
+              setCurrentStreamingMessage((prev) => ({
+                ...prev,
+                id: messageId || prev.id,
+                content: latestTargetContent,
+                isStreaming: false
+              }))
+            }
+          }
+
+          animate()
+        }
+
         // Stream the response using controller directly
         await controller.streamAssistantResponse(
           content,
           null,
           // onChunk callback
           ({ chunk, fullContent, messageId }) => {
-            setCurrentStreamingMessage((prev) => ({
-              ...prev,
-              id: messageId || prev.id,
-              content: fullContent,
-              isStreaming: true
-            }))
+            animateContent(fullContent, messageId)
           },
           // onComplete callback
           (finalMessage) => {
-            // Mark the streaming message as complete and set it as final
-            setCurrentStreamingMessage((prev) => ({
-              ...finalMessage,
-              isStreaming: false
-            }))
+            // Mark streaming as complete but let typewriter finish
+            isStreamingComplete = true
+            latestTargetContent = finalMessage.content[0]?.text?.value || finalMessage.content || ''
+
+            // Trigger animation to complete any remaining characters
+            animateContent(latestTargetContent, finalMessage.id)
+
             setTotalMessageCount((prev) => prev + 1)
           },
           // onError callback
           (streamError) => {
+            // Clear any pending typewriter timeout
+            if (typewriterTimeout) {
+              clearTimeout(typewriterTimeout)
+            }
             console.error('Streaming error:', streamError)
             setCurrentStreamingMessage(null)
             throw streamError

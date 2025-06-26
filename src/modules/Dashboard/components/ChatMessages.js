@@ -522,14 +522,52 @@ const ChatMessages = React.memo(
       [darkMode]
     )
 
-    // Debug logging
-    console.log('ChatMessages props:', {
-      messagesLength: messages?.length,
-      hasMoreMessages,
-      isLoadingMore,
-      isLoadingHistorical,
-      showLoadMoreButton
-    })
+    const typingIndicator = () => {
+      return (
+        <div className='flex justify-start'>
+          <div
+            className='rounded-lg px-4 py-3 shadow-sm max-w-[75%]'
+            style={{
+              backgroundColor: darkMode ? '#1F2937' : '#F3F4F6',
+              border: `1px solid ${darkMode ? '#374151' : '#E5E7EB'}`
+            }}
+          >
+            <div className='flex items-center space-x-3'>
+              <Avatar
+                size='small'
+                icon={<FontAwesomeIcon icon={faRobot} />}
+                style={{
+                  backgroundColor: colors.emeraldPrimary
+                }}
+              />
+              <div className='flex items-center space-x-1'>
+                <div
+                  className='rounded-full h-2 w-2 animate-pulse'
+                  style={{
+                    backgroundColor: colors.emeraldPrimary,
+                    animationDelay: '0ms'
+                  }}
+                />
+                <div
+                  className='rounded-full h-2 w-2 animate-pulse'
+                  style={{
+                    backgroundColor: colors.emeraldPrimary,
+                    animationDelay: '300ms'
+                  }}
+                />
+                <div
+                  className='rounded-full h-2 w-2 animate-pulse'
+                  style={{
+                    backgroundColor: colors.emeraldPrimary,
+                    animationDelay: '600ms'
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )
+    }
 
     // Validate props
     if (!messages || !Array.isArray(messages)) {
@@ -595,6 +633,10 @@ const ChatMessages = React.memo(
             const messageStyle = getMessageStyle(message.type)
             const isUserMessage = message.type === 'user'
             const isSystemMessage = message.type === 'system'
+
+            if (!message.content && streamingEnabled) {
+              return typingIndicator()
+            }
 
             return (
               <div key={message.id} className={`flex ${isUserMessage ? 'justify-end' : 'justify-start'}`}>
@@ -680,16 +722,6 @@ const ChatMessages = React.memo(
                       className='break-words'
                     >
                       {renderMarkdown(message.content, messageStyle.color)}
-                      {/* Streaming cursor */}
-                      {message.isStreaming && (
-                        <span
-                          className='inline-block w-2 h-4 ml-1 animate-pulse'
-                          style={{
-                            backgroundColor: messageStyle.color,
-                            opacity: 0.7
-                          }}
-                        />
-                      )}
                     </Paragraph>
                   </div>
 
@@ -745,58 +777,7 @@ const ChatMessages = React.memo(
           })}
 
           {/* Typing indicator */}
-          {isTyping && !streamingEnabled && (
-            <div className='flex justify-start'>
-              <div
-                className='rounded-lg px-4 py-3 shadow-sm max-w-[75%]'
-                style={{
-                  backgroundColor: darkMode ? '#1F2937' : '#F3F4F6',
-                  border: `1px solid ${darkMode ? '#374151' : '#E5E7EB'}`
-                }}
-              >
-                <div className='flex items-center space-x-3'>
-                  <Avatar
-                    size='small'
-                    icon={<FontAwesomeIcon icon={faRobot} />}
-                    style={{
-                      backgroundColor: colors.emeraldPrimary
-                    }}
-                  />
-                  <div className='flex items-center space-x-1'>
-                    <div
-                      className='rounded-full h-2 w-2 animate-pulse'
-                      style={{
-                        backgroundColor: colors.emeraldPrimary,
-                        animationDelay: '0ms'
-                      }}
-                    />
-                    <div
-                      className='rounded-full h-2 w-2 animate-pulse'
-                      style={{
-                        backgroundColor: colors.emeraldPrimary,
-                        animationDelay: '300ms'
-                      }}
-                    />
-                    <div
-                      className='rounded-full h-2 w-2 animate-pulse'
-                      style={{
-                        backgroundColor: colors.emeraldPrimary,
-                        animationDelay: '600ms'
-                      }}
-                    />
-                  </div>
-                  <Text
-                    style={{
-                      fontSize: '0.875rem',
-                      color: darkMode ? '#F9FAFB' : '#1F2937'
-                    }}
-                  >
-                    ...
-                  </Text>
-                </div>
-              </div>
-            </div>
-          )}
+          {isTyping && !streamingEnabled && typingIndicator()}
 
           {/* Scroll anchor */}
           <div ref={messagesEndRef} />
