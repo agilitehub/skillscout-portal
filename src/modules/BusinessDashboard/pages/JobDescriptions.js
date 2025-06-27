@@ -1,14 +1,29 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
 import React, { useState, useEffect, useMemo, useCallback } from 'react'
-import { Card, Button, Modal, Form, Input, Select, Tag, Space, Tooltip, List, Avatar, Alert } from 'antd'
+import {
+  Card,
+  Button,
+  Modal,
+  Form,
+  Input,
+  Select,
+  Tag,
+  Space,
+  Tooltip,
+  List,
+  Avatar,
+  Alert,
+  message,
+  Popconfirm
+} from 'antd'
 import { useLocation } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { 
-  faPlus, 
-  faEdit, 
-  faTrash, 
-  faEye, 
+import {
+  faPlus,
+  faEdit,
+  faTrash,
+  faEye,
   faFileText,
   faBuilding,
   faMapMarkerAlt,
@@ -16,10 +31,19 @@ import {
   faUsers,
   faCalendarAlt,
   faCopy,
-  faDownload
+  faDownload,
+  faClone
 } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../ui/ThemeContext'
 import BusinessSidebar from '../components/BusinessSidebar'
+import {
+  getAllJobDescriptions,
+  createJobDescription,
+  updateJobDescription,
+  deleteJobDescription,
+  duplicateJobDescription
+} from '../JobDescriptions/utils.js/controller'
+import { formatListItems, parseListItems } from '../JobDescriptions/utils.js/data-model'
 
 const { TextArea } = Input
 const { Option } = Select
@@ -28,14 +52,14 @@ const { Option } = Select
  * Job Descriptions page for managing detailed job descriptions
  * Allows creation, editing, and management of job description templates
  */
-const JobDescriptions = React.memo(() => {
+const JobDescriptions = React.memo(({ user }) => {
   const { darkMode } = useTheme()
   const location = useLocation()
-  
+
   // Get job context from navigation state
   const jobContext = location.state?.jobContext
   const highlightJobId = location.state?.highlightJobId
-  
+
   // State management
   const [jobDescriptions, setJobDescriptions] = useState([])
   const [loading, setLoading] = useState(false)
@@ -44,181 +68,30 @@ const JobDescriptions = React.memo(() => {
   const [selectedDescription, setSelectedDescription] = useState(null)
   const [form] = Form.useForm()
 
-  // Mock data for job descriptions
-  const mockDescriptions = useMemo(() => [
-    {
-      id: '1',
-      title: 'Senior Software Engineer',
-      company: 'TechCorp Solutions',
-      department: 'Engineering',
-      location: 'San Francisco, CA',
-      type: 'Full-time',
-      salaryRange: '$120,000 - $150,000',
-      remote: true,
-      createdDate: '2024-01-15',
-      lastUpdated: '2024-01-20',
-      status: 'Active',
-      overview: 'We are seeking a highly skilled Senior Software Engineer to join our dynamic engineering team...',
-      responsibilities: [
-        'Design and develop scalable web applications using React and Node.js',
-        'Collaborate with cross-functional teams to define and implement new features',
-        'Mentor junior developers and conduct code reviews',
-        'Optimize application performance and ensure high-quality code standards',
-        'Participate in architectural decisions and technical planning'
-      ],
-      requirements: [
-        'Bachelor\'s degree in Computer Science or related field',
-        '5+ years of experience in full-stack development',
-        'Proficiency in React, Node.js, and modern JavaScript',
-        'Experience with cloud platforms (AWS, Azure, or GCP)',
-        'Strong understanding of software engineering principles'
-      ],
-      benefits: [
-        'Competitive salary and equity package',
-        'Comprehensive health, dental, and vision insurance',
-        'Flexible work arrangements and remote options',
-        'Professional development budget',
-        'Unlimited PTO policy'
-      ],
-      tags: ['React', 'Node.js', 'AWS', 'Full-stack', 'Senior Level']
-    },
-    {
-      id: '2',
-      title: 'Product Manager',
-      company: 'InnovateLab Inc',
-      department: 'Product',
-      location: 'New York, NY',
-      type: 'Full-time',
-      salaryRange: '$100,000 - $130,000',
-      remote: false,
-      createdDate: '2024-01-18',
-      lastUpdated: '2024-01-22',
-      status: 'Active',
-      overview: 'Join our product team as a Product Manager to drive product strategy and execution...',
-      responsibilities: [
-        'Define product roadmap and strategy based on market research',
-        'Work closely with engineering and design teams',
-        'Analyze user feedback and product metrics',
-        'Coordinate product launches and feature releases',
-        'Communicate product vision to stakeholders'
-      ],
-      requirements: [
-        'MBA or equivalent experience in product management',
-        '3+ years of product management experience',
-        'Strong analytical and problem-solving skills',
-        'Experience with Agile development methodologies',
-        'Excellent communication and leadership skills'
-      ],
-      benefits: [
-        'Competitive salary with performance bonuses',
-        'Stock options in a growing company',
-        'Health and wellness benefits',
-        'Learning and development opportunities',
-        'Collaborative work environment'
-      ],
-      tags: ['Product Strategy', 'Agile', 'Analytics', 'Leadership']
-    },
-    {
-      id: '3',
-      title: 'UX/UI Designer',
-      company: 'DesignStudio Pro',
-      department: 'Design',
-      location: 'Austin, TX',
-      type: 'Contract',
-      salaryRange: '$70 - $90/hour',
-      remote: true,
-      createdDate: '2024-01-10',
-      lastUpdated: '2024-01-15',
-      status: 'Paused',
-      overview: 'We are looking for a creative UX/UI designer to enhance user experiences across our digital products. You will work closely with product managers and developers to create intuitive, user-centered designs that drive engagement and conversion.',
-      responsibilities: [
-        'Conduct user research and usability testing to inform design decisions',
-        'Create wireframes, prototypes, and high-fidelity designs using Figma',
-        'Collaborate with product managers to define user requirements and design specifications',
-        'Design responsive interfaces for web and mobile applications',
-        'Maintain and evolve design systems and component libraries',
-        'Present design concepts and rationale to stakeholders',
-        'Iterate on designs based on user feedback and analytics data'
-      ],
-      requirements: [
-        'Bachelor\'s degree in Design, HCI, Psychology, or related field',
-        '2+ years of experience in UX/UI design',
-        'Proficiency in Figma, Sketch, and Adobe Creative Suite',
-        'Strong portfolio showcasing user-centered design process',
-        'Experience with user research methodologies and usability testing',
-        'Understanding of responsive design principles and accessibility standards',
-        'Knowledge of HTML/CSS basics is a plus'
-      ],
-      benefits: [
-        'Competitive hourly rate with flexible scheduling',
-        'Remote work flexibility',
-        'Professional development and conference budget',
-        'Access to design tools and software',
-        'Collaborative and creative work environment',
-        'Opportunity to work on diverse projects'
-      ],
-      tags: ['UX Design', 'UI Design', 'Figma', 'User Research', 'Prototyping']
-    },
-    {
-      id: '4',
-      title: 'Data Scientist',
-      company: 'DataTech Analytics',
-      department: 'Data Science',
-      location: 'Boston, MA',
-      type: 'Full-time',
-      salaryRange: '$110,000 - $140,000',
-      remote: true,
-      createdDate: '2024-01-25',
-      lastUpdated: '2024-01-26',
-      status: 'Active',
-      overview: 'Join our data science team to build predictive models and extract actionable insights from complex datasets. You will work on cutting-edge machine learning projects that directly impact business decisions and drive growth.',
-      responsibilities: [
-        'Develop and deploy machine learning models for predictive analytics',
-        'Analyze large datasets to identify trends, patterns, and business opportunities',
-        'Create data visualizations and dashboards for stakeholder communication',
-        'Collaborate with engineering teams to implement ML models in production',
-        'Design and conduct A/B tests to measure feature impact',
-        'Clean, preprocess, and validate data from multiple sources',
-        'Stay current with latest ML techniques and industry best practices'
-      ],
-      requirements: [
-        'Master\'s degree in Data Science, Statistics, Computer Science, or Mathematics',
-        '5+ years of experience in data science or machine learning',
-        'Proficiency in Python, R, and SQL',
-        'Experience with ML frameworks (TensorFlow, PyTorch, Scikit-learn)',
-        'Strong statistical analysis and modeling skills',
-        'Experience with cloud platforms (AWS, GCP, or Azure)',
-        'Excellent communication skills for presenting technical findings'
-      ],
-      benefits: [
-        'Competitive salary with performance bonuses',
-        'Comprehensive health, dental, and vision insurance',
-        'Flexible remote work policy',
-        'Learning and development stipend for courses and conferences',
-        '401(k) matching program',
-        'Unlimited PTO policy',
-        'State-of-the-art computing equipment and tools'
-      ],
-      tags: ['Python', 'Machine Learning', 'Statistics', 'SQL', 'TensorFlow', 'Data Analysis']
-    }
-  ], [])
-
-  // Load job descriptions
+  // Load job descriptions from database
   useEffect(() => {
     const loadDescriptions = async () => {
       setLoading(true)
       try {
-        await new Promise(resolve => setTimeout(resolve, 800))
-        setJobDescriptions(mockDescriptions)
+        const result = await getAllJobDescriptions()
+        if (result.success) {
+          setJobDescriptions(result.data)
+        } else {
+          console.error('Error loading job descriptions:', result.error)
+          message.error('Failed to load job descriptions: ' + result.error)
+          setJobDescriptions([])
+        }
       } catch (error) {
-        console.error('Error loading job descriptions:', error)
+        console.error('Unexpected error loading job descriptions:', error)
+        message.error('An unexpected error occurred while loading job descriptions')
+        setJobDescriptions([])
       } finally {
         setLoading(false)
       }
     }
 
     loadDescriptions()
-  }, [mockDescriptions])
+  }, [])
 
   // Handle modal operations
   const handleCreateDescription = useCallback(() => {
@@ -228,17 +101,20 @@ const JobDescriptions = React.memo(() => {
     setIsModalVisible(true)
   }, [form])
 
-  const handleEditDescription = useCallback((description) => {
-    setModalMode('edit')
-    setSelectedDescription(description)
-    form.setFieldsValue({
-      ...description,
-      responsibilities: description.responsibilities.join('\n'),
-      requirements: description.requirements.join('\n'),
-      benefits: description.benefits.join('\n')
-    })
-    setIsModalVisible(true)
-  }, [form])
+  const handleEditDescription = useCallback(
+    (description) => {
+      setModalMode('edit')
+      setSelectedDescription(description)
+      form.setFieldsValue({
+        ...description,
+        responsibilities: formatListItems(description.responsibilities),
+        requirements: formatListItems(description.requirements),
+        benefits: formatListItems(description.benefits || [])
+      })
+      setIsModalVisible(true)
+    },
+    [form]
+  )
 
   const handleViewDescription = useCallback((description) => {
     setModalMode('view')
@@ -246,16 +122,20 @@ const JobDescriptions = React.memo(() => {
     setIsModalVisible(true)
   }, [])
 
-  const handleDeleteDescription = useCallback((descriptionId) => {
-    Modal.confirm({
-      title: 'Delete Job Description',
-      content: 'Are you sure you want to delete this job description? This action cannot be undone.',
-      okText: 'Delete',
-      okType: 'danger',
-      onOk: () => {
-        setJobDescriptions(prev => prev.filter(desc => desc.id !== descriptionId))
+  const handleDeleteDescription = useCallback(async (descriptionId) => {
+    try {
+      const result = await deleteJobDescription(descriptionId)
+      if (result.success) {
+        setJobDescriptions((prev) => prev.filter((desc) => desc.id !== descriptionId))
+        message.success('Job description deleted successfully')
+      } else {
+        console.error('Error deleting job description:', result.error)
+        message.error('Failed to delete job description: ' + result.error)
       }
-    })
+    } catch (error) {
+      console.error('Unexpected error deleting job description:', error)
+      message.error('An unexpected error occurred while deleting the job description')
+    }
   }, [])
 
   const handleModalClose = useCallback(() => {
@@ -264,349 +144,397 @@ const JobDescriptions = React.memo(() => {
     form.resetFields()
   }, [form])
 
-  const handleFormSubmit = useCallback(async (values) => {
-    try {
-      const processedValues = {
-        ...values,
-        responsibilities: values.responsibilities.split('\n').filter(item => item.trim()),
-        requirements: values.requirements.split('\n').filter(item => item.trim()),
-        benefits: values.benefits.split('\n').filter(item => item.trim()),
-        tags: values.tags || []
-      }
-
-      if (modalMode === 'create') {
-        const newDescription = {
-          id: Date.now().toString(),
-          ...processedValues,
-          createdDate: new Date().toISOString().split('T')[0],
-          lastUpdated: new Date().toISOString().split('T')[0],
-          status: 'Active'
+  const handleFormSubmit = useCallback(
+    async (values) => {
+      try {
+        const processedValues = {
+          ...values,
+          responsibilities: parseListItems(values.responsibilities),
+          requirements: parseListItems(values.requirements),
+          benefits: parseListItems(values.benefits || ''),
+          tags: values.tags || []
         }
-        setJobDescriptions(prev => [newDescription, ...prev])
-      } else if (modalMode === 'edit') {
-        setJobDescriptions(prev => 
-          prev.map(desc => 
-            desc.id === selectedDescription.id 
-              ? { ...desc, ...processedValues, lastUpdated: new Date().toISOString().split('T')[0] }
-              : desc
-          )
-        )
-      }
-      handleModalClose()
-    } catch (error) {
-      console.error('Error saving job description:', error)
-    }
-  }, [modalMode, selectedDescription, handleModalClose])
 
-  const handleCopyDescription = useCallback((description) => {
-    // Copy description content to clipboard
-    const content = `${description.title}\n\n${description.overview}\n\nResponsibilities:\n${description.responsibilities.map(r => `• ${r}`).join('\n')}\n\nRequirements:\n${description.requirements.map(r => `• ${r}`).join('\n')}`
-    navigator.clipboard.writeText(content)
+        let result
+        if (modalMode === 'create') {
+          result = await createJobDescription(processedValues, user)
+          if (result.success) {
+            setJobDescriptions((prev) => [result.data, ...prev])
+            message.success('Job description created successfully!')
+          } else {
+            console.error('Error creating job description:', result.error)
+            message.error('Failed to create job description: ' + result.error)
+            return
+          }
+        } else if (modalMode === 'edit') {
+          result = await updateJobDescription(selectedDescription.id, processedValues, user)
+          if (result.success) {
+            setJobDescriptions((prev) => prev.map((desc) => (desc.id === selectedDescription.id ? result.data : desc)))
+            message.success('Job description updated successfully!')
+          } else {
+            console.error('Error updating job description:', result.error)
+            message.error('Failed to update job description: ' + result.error)
+            return
+          }
+        }
+        handleModalClose()
+      } catch (error) {
+        console.error('Unexpected error saving job description:', error)
+        message.error('An unexpected error occurred while saving the job description')
+      }
+    },
+    [modalMode, selectedDescription, handleModalClose]
+  )
+
+  const handleCopyDescription = useCallback(async (description) => {
+    try {
+      // Copy description content to clipboard
+      const content = `${description.title}\n\n${description.overview}\n\nResponsibilities:\n${description.responsibilities.map((r) => `• ${r}`).join('\n')}\n\nRequirements:\n${description.requirements.map((r) => `• ${r}`).join('\n')}`
+      await navigator.clipboard.writeText(content)
+      message.success('Job description copied to clipboard!')
+    } catch (error) {
+      console.error('Error copying to clipboard:', error)
+      message.error('Failed to copy job description')
+    }
   }, [])
 
+  const handleDuplicateDescription = useCallback(
+    async (description) => {
+      try {
+        const result = await duplicateJobDescription(description.id, user)
+        if (result.success) {
+          setJobDescriptions((prev) => [result.data, ...prev])
+          message.success('Job description duplicated successfully!')
+        } else {
+          console.error('Error duplicating job description:', result.error)
+          message.error('Failed to duplicate job description: ' + result.error)
+        }
+      } catch (error) {
+        console.error('Unexpected error duplicating job description:', error)
+        message.error('An unexpected error occurred while duplicating the job description')
+      }
+    },
+    [user]
+  )
+
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-800 relative overflow-hidden">
+    <div className='min-h-screen bg-gray-50 dark:bg-gray-800 relative overflow-hidden'>
       {/* Background Elements */}
-      <div className="fixed inset-0 pointer-events-none">
+      <div className='fixed inset-0 pointer-events-none'>
         {darkMode ? (
           <>
-            <div 
-              className="absolute -top-[10%] -right-[10%] w-1/2 h-1/2 rounded-full blur-3xl"
+            <div
+              className='absolute -top-[10%] -right-[10%] w-1/2 h-1/2 rounded-full blur-3xl'
               style={{ background: 'radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%)' }}
             />
-            <div 
-              className="absolute -bottom-[10%] -left-[10%] w-1/2 h-1/2 rounded-full blur-3xl"
+            <div
+              className='absolute -bottom-[10%] -left-[10%] w-1/2 h-1/2 rounded-full blur-3xl'
               style={{ background: 'radial-gradient(circle, rgba(34, 197, 94, 0.12) 0%, transparent 70%)' }}
             />
-            <div 
-              className="absolute top-1/3 left-1/3 w-1/4 h-1/4 rounded-full blur-3xl"
+            <div
+              className='absolute top-1/3 left-1/3 w-1/4 h-1/4 rounded-full blur-3xl'
               style={{ background: 'radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, transparent 70%)' }}
             />
           </>
         ) : (
           <>
-            <div className="absolute top-0 right-0 w-2/3 h-2/3 bg-gradient-to-bl from-blue-400/30 to-transparent rounded-full blur-3xl opacity-80" />
-            <div className="absolute bottom-0 left-0 w-2/3 h-2/3 bg-gradient-to-tr from-blue-500/30 to-transparent rounded-full blur-3xl opacity-80" />
-            <div className="absolute top-1/4 left-1/4 w-1/3 h-1/3 bg-gradient-to-br from-amber-400/30 to-transparent rounded-full blur-3xl opacity-80" />
+            <div className='absolute top-0 right-0 w-2/3 h-2/3 bg-gradient-to-bl from-blue-400/30 to-transparent rounded-full blur-3xl opacity-80' />
+            <div className='absolute bottom-0 left-0 w-2/3 h-2/3 bg-gradient-to-tr from-blue-500/30 to-transparent rounded-full blur-3xl opacity-80' />
+            <div className='absolute top-1/4 left-1/4 w-1/3 h-1/3 bg-gradient-to-br from-amber-400/30 to-transparent rounded-full blur-3xl opacity-80' />
           </>
         )}
       </div>
 
       <BusinessSidebar />
-      <div className="p-6 ml-64 relative z-10">
-      {/* Header */}
-      <div className="mb-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
-          <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">
-              Job Descriptions
-            </h1>
-            <p className="text-gray-600 dark:text-gray-300">
-              Create and manage detailed job descriptions for your positions
-            </p>
+      <div className='p-6 ml-64 relative z-10'>
+        {/* Header */}
+        <div className='mb-6'>
+          <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4'>
+            <div>
+              <h1 className='text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2'>Job Descriptions</h1>
+              <p className='text-gray-600 dark:text-gray-300'>
+                Create and manage detailed job descriptions for your positions
+              </p>
+            </div>
+            <Button
+              type='primary'
+              size='large'
+              icon={<FontAwesomeIcon icon={faPlus} />}
+              onClick={handleCreateDescription}
+              style={{
+                background: darkMode ? '#059669' : '#10b981',
+                borderColor: darkMode ? '#059669' : '#10b981'
+              }}
+            >
+              Create Description
+            </Button>
           </div>
-          <Button
-            type="primary"
-            size="large"
-            icon={<FontAwesomeIcon icon={faPlus} />}
-            onClick={handleCreateDescription}
-            style={{
-              background: darkMode ? '#059669' : '#10b981',
-              borderColor: darkMode ? '#059669' : '#10b981'
-            }}
-          >
-            Create Description
-          </Button>
         </div>
-      </div>
 
-      {/* Job Context Alert */}
-      {jobContext && (
-        <Alert
-          message={`Viewing descriptions related to: ${jobContext.title} at ${jobContext.company}`}
-          description={`You navigated here from the job listing. Related job descriptions for "${jobContext.title}" will be highlighted.`}
-          type="info"
-          showIcon
-          closable
-          className="mb-6"
-          style={{
-            backgroundColor: darkMode ? '#374151' : '#e6f3ff',
-            borderColor: darkMode ? '#4b5563' : '#91d5ff',
-            color: darkMode ? '#e5e7eb' : '#1f2937'
-          }}
-        />
-      )}
+        {/* Job Context Alert */}
+        {jobContext && (
+          <Alert
+            message={`Viewing descriptions related to: ${jobContext.title} at ${jobContext.company}`}
+            description={`You navigated here from the job listing. Related job descriptions for "${jobContext.title}" will be highlighted.`}
+            type='info'
+            showIcon
+            closable
+            className='mb-6'
+            style={{
+              backgroundColor: darkMode ? '#374151' : '#e6f3ff',
+              borderColor: darkMode ? '#4b5563' : '#91d5ff',
+              color: darkMode ? '#e5e7eb' : '#1f2937'
+            }}
+          />
+        )}
 
-      {/* Job Descriptions List */}
-      <div className="grid gap-6">
-        {jobDescriptions.map((description) => {
-          const isRelated = jobContext && (
-            description.title.toLowerCase().includes(jobContext.title.toLowerCase()) ||
-            description.company.toLowerCase().includes(jobContext.company.toLowerCase())
-          )
-          
-          return (
-          <Card
-            key={description.id}
-            className={`${darkMode ? 'bg-gray-700 border-gray-600' : ''} ${
-              isRelated ? 'ring-2 ring-blue-500 ring-opacity-50' : ''
-            } shadow-lg hover:shadow-xl transition-all duration-200`}
-            loading={loading}
-          >
-            <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between">
-              <div className="flex-1">
-                {/* Header */}
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-center">
-                    <Avatar
-                      size={48}
-                      style={{
-                        background: darkMode 
-                          ? 'linear-gradient(135deg, #059669, #047857)' 
-                          : 'linear-gradient(135deg, #10b981, #059669)'
-                      }}
-                      icon={<FontAwesomeIcon icon={faFileText} />}
-                    />
-                    <div className="ml-4">
-                      <h3 className={`text-lg font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                        {description.title}
-                      </h3>
-                      <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
-                        <FontAwesomeIcon icon={faBuilding} className="mr-1" />
-                        {description.company}
-                        <span className="mx-2">•</span>
-                        <FontAwesomeIcon icon={faMapMarkerAlt} className="mr-1" />
-                        {description.location}
-                        {description.remote && <Tag color="green" size="small" className="ml-2">Remote</Tag>}
+        {/* Job Descriptions List */}
+        <div className='grid gap-6'>
+          {jobDescriptions.map((description) => {
+            const isRelated =
+              jobContext &&
+              (description.title.toLowerCase().includes(jobContext.title.toLowerCase()) ||
+                description.company.toLowerCase().includes(jobContext.company.toLowerCase()))
+
+            return (
+              <Card
+                key={description.id}
+                className={`${darkMode ? 'bg-gray-700 border-gray-600' : ''} ${
+                  isRelated ? 'ring-2 ring-blue-500 ring-opacity-50' : ''
+                } shadow-lg hover:shadow-xl transition-all duration-200`}
+                loading={loading}
+              >
+                <div className='flex flex-col lg:flex-row lg:items-start lg:justify-between'>
+                  <div className='flex-1'>
+                    {/* Header */}
+                    <div className='flex items-start justify-between mb-4'>
+                      <div className='flex items-center'>
+                        <Avatar
+                          size={48}
+                          style={{
+                            background: darkMode
+                              ? 'linear-gradient(135deg, #059669, #047857)'
+                              : 'linear-gradient(135deg, #10b981, #059669)'
+                          }}
+                          icon={<FontAwesomeIcon icon={faFileText} />}
+                        />
+                        <div className='ml-4'>
+                          <h3 className={`text-lg font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                            {description.title}
+                          </h3>
+                          <div className='flex items-center text-sm text-gray-500 dark:text-gray-400'>
+                            <FontAwesomeIcon icon={faBuilding} className='mr-1' />
+                            {description.company}
+                            <span className='mx-2'>•</span>
+                            <FontAwesomeIcon icon={faMapMarkerAlt} className='mr-1' />
+                            {description.location}
+                            {description.remote && (
+                              <Tag color='green' size='small' className='ml-2'>
+                                Remote
+                              </Tag>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                      <Tag color={description.status === 'Active' ? 'green' : 'orange'}>{description.status}</Tag>
+                    </div>
+
+                    {/* Overview */}
+                    <p className={`text-sm mb-4 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                      {description.overview}
+                    </p>
+
+                    {/* Tags */}
+                    <div className='flex flex-wrap gap-1 mb-4'>
+                      {description.tags.map((tag, index) => (
+                        <Tag key={index} color='blue' size='small'>
+                          {tag}
+                        </Tag>
+                      ))}
+                    </div>
+
+                    {/* Meta Information */}
+                    <div className='grid grid-cols-2 md:grid-cols-4 gap-4 text-xs'>
+                      <div>
+                        <span className={`font-medium ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                          Department:
+                        </span>
+                        <div className={`${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                          {description.department}
+                        </div>
+                      </div>
+                      <div>
+                        <span className={`font-medium ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Type:</span>
+                        <div className={`${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{description.type}</div>
+                      </div>
+                      <div>
+                        <span className={`font-medium ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Salary:</span>
+                        <div className={`${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                          {description.salaryRange}
+                        </div>
+                      </div>
+                      <div>
+                        <span className={`font-medium ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Updated:</span>
+                        <div className={`${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                          {new Date(description.lastUpdated).toLocaleDateString()}
+                        </div>
                       </div>
                     </div>
                   </div>
-                  <Tag color={description.status === 'Active' ? 'green' : 'orange'}>
-                    {description.status}
-                  </Tag>
+
+                  {/* Actions */}
+                  <div className='flex lg:flex-col gap-2 mt-4 lg:mt-0 lg:ml-4'>
+                    <Tooltip title='View Details'>
+                      <Button
+                        type='text'
+                        icon={<FontAwesomeIcon icon={faEye} />}
+                        onClick={() => handleViewDescription(description)}
+                        className='text-blue-500 hover:text-blue-700'
+                      />
+                    </Tooltip>
+                    <Tooltip title='Edit Description'>
+                      <Button
+                        type='text'
+                        icon={<FontAwesomeIcon icon={faEdit} />}
+                        onClick={() => handleEditDescription(description)}
+                        className='text-green-500 hover:text-green-700'
+                      />
+                    </Tooltip>
+                    <Tooltip title='Copy to Clipboard'>
+                      <Button
+                        type='text'
+                        icon={<FontAwesomeIcon icon={faCopy} />}
+                        onClick={() => handleCopyDescription(description)}
+                        className='text-purple-500 hover:text-purple-700'
+                      />
+                    </Tooltip>
+                    <Tooltip title='Duplicate'>
+                      <Button
+                        type='text'
+                        icon={<FontAwesomeIcon icon={faClone} />}
+                        onClick={() => handleDuplicateDescription(description)}
+                        className='text-orange-500 hover:text-orange-700'
+                      />
+                    </Tooltip>
+                    <Popconfirm
+                      title='Delete Job Description'
+                      description='Are you sure you want to delete this job description? This action cannot be undone.'
+                      onConfirm={() => handleDeleteDescription(description.id)}
+                      okText='Delete'
+                      cancelText='Cancel'
+                      okType='danger'
+                      placement='topRight'
+                    >
+                      <Tooltip title='Delete'>
+                        <Button
+                          type='text'
+                          icon={<FontAwesomeIcon icon={faTrash} />}
+                          className='text-red-500 hover:text-red-700'
+                        />
+                      </Tooltip>
+                    </Popconfirm>
+                  </div>
                 </div>
+              </Card>
+            )
+          })}
+        </div>
 
-                {/* Overview */}
-                <p className={`text-sm mb-4 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                  {description.overview}
-                </p>
-
-                {/* Tags */}
-                <div className="flex flex-wrap gap-1 mb-4">
-                  {description.tags.map((tag, index) => (
-                    <Tag key={index} color="blue" size="small">
-                      {tag}
-                    </Tag>
-                  ))}
-                </div>
-
-                {/* Meta Information */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
-                  <div>
-                    <span className={`font-medium ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                      Department:
-                    </span>
-                    <div className={`${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                      {description.department}
-                    </div>
-                  </div>
-                  <div>
-                    <span className={`font-medium ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                      Type:
-                    </span>
-                    <div className={`${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                      {description.type}
-                    </div>
-                  </div>
-                  <div>
-                    <span className={`font-medium ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                      Salary:
-                    </span>
-                    <div className={`${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                      {description.salaryRange}
-                    </div>
-                  </div>
-                  <div>
-                    <span className={`font-medium ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                      Updated:
-                    </span>
-                    <div className={`${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                      {new Date(description.lastUpdated).toLocaleDateString()}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Actions */}
-              <div className="flex lg:flex-col gap-2 mt-4 lg:mt-0 lg:ml-4">
-                <Tooltip title="View Details">
-                  <Button
-                    type="text"
-                    icon={<FontAwesomeIcon icon={faEye} />}
-                    onClick={() => handleViewDescription(description)}
-                    className="text-blue-500 hover:text-blue-700"
-                  />
-                </Tooltip>
-                <Tooltip title="Edit Description">
-                  <Button
-                    type="text"
-                    icon={<FontAwesomeIcon icon={faEdit} />}
-                    onClick={() => handleEditDescription(description)}
-                    className="text-green-500 hover:text-green-700"
-                  />
-                </Tooltip>
-                <Tooltip title="Copy to Clipboard">
-                  <Button
-                    type="text"
-                    icon={<FontAwesomeIcon icon={faCopy} />}
-                    onClick={() => handleCopyDescription(description)}
-                    className="text-purple-500 hover:text-purple-700"
-                  />
-                </Tooltip>
-                <Tooltip title="Delete">
-                  <Button
-                    type="text"
-                    icon={<FontAwesomeIcon icon={faTrash} />}
-                    onClick={() => handleDeleteDescription(description.id)}
-                    className="text-red-500 hover:text-red-700"
-                  />
-                </Tooltip>
-              </div>
-            </div>
-          </Card>
-          )
-        })}
-      </div>
-
-      {/* Job Description Modal */}
-      <Modal
-        title={
-          <span className={darkMode ? 'text-white' : 'text-gray-900'}>
-            {modalMode === 'create' ? 'Create Job Description' : modalMode === 'edit' ? 'Edit Job Description' : 'Job Description Details'}
-          </span>
-        }
-        open={isModalVisible}
-        onCancel={handleModalClose}
-        footer={modalMode === 'view' ? [
-          <Button key="close" onClick={handleModalClose}>Close</Button>
-        ] : [
-          <Button key="cancel" onClick={handleModalClose}>Cancel</Button>,
-          <Button 
-            key="submit" 
-            type="primary" 
-            onClick={() => form.submit()}
-            style={{
-              background: darkMode ? '#059669' : '#10b981',
-              borderColor: darkMode ? '#059669' : '#10b981'
-            }}
-          >
-            {modalMode === 'create' ? 'Create Description' : 'Update Description'}
-          </Button>
-        ]}
-        width={900}
-        className={darkMode ? 'ant-modal-dark' : ''}
-        styles={{
-          content: { backgroundColor: darkMode ? '#374151' : '#ffffff' },
-          body: { backgroundColor: darkMode ? '#374151' : '#ffffff' },
-          header: {
-            backgroundColor: darkMode ? '#374151' : '#ffffff',
-            borderBottom: darkMode ? '1px solid #4B5563' : '1px solid #e5e7eb'
-          },
-          footer: {
-            backgroundColor: darkMode ? '#374151' : '#ffffff',
-            borderTop: darkMode ? '1px solid #4B5563' : '1px solid #e5e7eb'
+        {/* Job Description Modal */}
+        <Modal
+          title={
+            <span className={darkMode ? 'text-white' : 'text-gray-900'}>
+              {modalMode === 'create'
+                ? 'Create Job Description'
+                : modalMode === 'edit'
+                  ? 'Edit Job Description'
+                  : 'Job Description Details'}
+            </span>
           }
-        }}
-      >
-        {modalMode === 'view' && selectedDescription ? (
-          <div className="space-y-6">
-            <div>
-              <h3 className={`text-xl font-semibold mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                {selectedDescription.title}
-              </h3>
-              <p className={`${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                {selectedDescription.overview}
-              </p>
-            </div>
-            
-            <div>
-              <h4 className={`font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                Key Responsibilities:
-              </h4>
-              <ul className={`list-disc list-inside space-y-1 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                {selectedDescription.responsibilities.map((resp, index) => (
-                  <li key={index}>{resp}</li>
-                ))}
-              </ul>
-            </div>
+          open={isModalVisible}
+          onCancel={handleModalClose}
+          footer={
+            modalMode === 'view'
+              ? [
+                  <Button key='close' onClick={handleModalClose}>
+                    Close
+                  </Button>
+                ]
+              : [
+                  <Button key='cancel' onClick={handleModalClose}>
+                    Cancel
+                  </Button>,
+                  <Button
+                    key='submit'
+                    type='primary'
+                    onClick={() => form.submit()}
+                    style={{
+                      background: darkMode ? '#059669' : '#10b981',
+                      borderColor: darkMode ? '#059669' : '#10b981'
+                    }}
+                  >
+                    {modalMode === 'create' ? 'Create Description' : 'Update Description'}
+                  </Button>
+                ]
+          }
+          width={900}
+          className={darkMode ? 'ant-modal-dark' : ''}
+          styles={{
+            content: { backgroundColor: darkMode ? '#374151' : '#ffffff' },
+            body: { backgroundColor: darkMode ? '#374151' : '#ffffff' },
+            header: {
+              backgroundColor: darkMode ? '#374151' : '#ffffff',
+              borderBottom: darkMode ? '1px solid #4B5563' : '1px solid #e5e7eb'
+            },
+            footer: {
+              backgroundColor: darkMode ? '#374151' : '#ffffff',
+              borderTop: darkMode ? '1px solid #4B5563' : '1px solid #e5e7eb'
+            }
+          }}
+        >
+          {modalMode === 'view' && selectedDescription ? (
+            <div className='space-y-6'>
+              <div>
+                <h3 className={`text-xl font-semibold mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                  {selectedDescription.title}
+                </h3>
+                <p className={`${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>{selectedDescription.overview}</p>
+              </div>
 
-            <div>
-              <h4 className={`font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                Requirements:
-              </h4>
-              <ul className={`list-disc list-inside space-y-1 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                {selectedDescription.requirements.map((req, index) => (
-                  <li key={index}>{req}</li>
-                ))}
-              </ul>
-            </div>
+              <div>
+                <h4 className={`font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                  Key Responsibilities:
+                </h4>
+                <ul className={`list-disc list-inside space-y-1 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                  {selectedDescription.responsibilities.map((resp, index) => (
+                    <li key={index}>{resp}</li>
+                  ))}
+                </ul>
+              </div>
 
-            <div>
-              <h4 className={`font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                Benefits:
-              </h4>
-              <ul className={`list-disc list-inside space-y-1 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                {selectedDescription.benefits.map((benefit, index) => (
-                  <li key={index}>{benefit}</li>
-                ))}
-              </ul>
+              <div>
+                <h4 className={`font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Requirements:</h4>
+                <ul className={`list-disc list-inside space-y-1 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                  {selectedDescription.requirements.map((req, index) => (
+                    <li key={index}>{req}</li>
+                  ))}
+                </ul>
+              </div>
+
+              <div>
+                <h4 className={`font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Benefits:</h4>
+                <ul className={`list-disc list-inside space-y-1 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                  {selectedDescription.benefits.map((benefit, index) => (
+                    <li key={index}>{benefit}</li>
+                  ))}
+                </ul>
+              </div>
             </div>
-          </div>
-        ) : (
-          <>
-            {darkMode && (
-              <style>
-                {`
+          ) : (
+            <>
+              {darkMode && (
+                <style>
+                  {`
                   .dark-form .ant-form-item-label > label {
                     color: #E5E7EB !important;
                   }
@@ -644,115 +572,95 @@ const JobDescriptions = React.memo(() => {
                     box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
                   }
                 `}
-              </style>
-            )}
-            <Form
-              form={form}
-              layout="vertical"
-              onFinish={handleFormSubmit}
-              className={darkMode ? 'dark-form' : ''}
-            >
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Form.Item
-                label={<span className={darkMode ? 'text-gray-300' : ''}>Job Title</span>}
-                name="title"
-                rules={[{ required: true, message: 'Please enter job title' }]}
-              >
-                <Input placeholder="e.g. Senior Software Engineer" />
-              </Form.Item>
+                </style>
+              )}
+              <Form form={form} layout='vertical' onFinish={handleFormSubmit} className={darkMode ? 'dark-form' : ''}>
+                <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                  <Form.Item
+                    label={<span className={darkMode ? 'text-gray-300' : ''}>Job Title</span>}
+                    name='title'
+                    rules={[{ required: true, message: 'Please enter job title' }]}
+                  >
+                    <Input placeholder='e.g. Senior Software Engineer' />
+                  </Form.Item>
 
-              <Form.Item
-                label={<span className={darkMode ? 'text-gray-300' : ''}>Company</span>}
-                name="company"
-                rules={[{ required: true, message: 'Please enter company name' }]}
-              >
-                <Input placeholder="e.g. TechCorp Solutions" />
-              </Form.Item>
+                  <Form.Item
+                    label={<span className={darkMode ? 'text-gray-300' : ''}>Company</span>}
+                    name='company'
+                    rules={[{ required: true, message: 'Please enter company name' }]}
+                  >
+                    <Input placeholder='e.g. TechCorp Solutions' />
+                  </Form.Item>
 
-              <Form.Item
-                label={<span className={darkMode ? 'text-gray-300' : ''}>Department</span>}
-                name="department"
-                rules={[{ required: true, message: 'Please enter department' }]}
-              >
-                <Input placeholder="e.g. Engineering" />
-              </Form.Item>
+                  <Form.Item
+                    label={<span className={darkMode ? 'text-gray-300' : ''}>Department</span>}
+                    name='department'
+                    rules={[{ required: true, message: 'Please enter department' }]}
+                  >
+                    <Input placeholder='e.g. Engineering' />
+                  </Form.Item>
 
-              <Form.Item
-                label={<span className={darkMode ? 'text-gray-300' : ''}>Location</span>}
-                name="location"
-                rules={[{ required: true, message: 'Please enter location' }]}
-              >
-                <Input placeholder="e.g. San Francisco, CA" />
-              </Form.Item>
+                  <Form.Item
+                    label={<span className={darkMode ? 'text-gray-300' : ''}>Location</span>}
+                    name='location'
+                    rules={[{ required: true, message: 'Please enter location' }]}
+                  >
+                    <Input placeholder='e.g. San Francisco, CA' />
+                  </Form.Item>
 
-              <Form.Item
-                label={<span className={darkMode ? 'text-gray-300' : ''}>Job Type</span>}
-                name="type"
-                rules={[{ required: true, message: 'Please select job type' }]}
-              >
-                <Select placeholder="Select job type">
-                  <Option value="Full-time">Full-time</Option>
-                  <Option value="Part-time">Part-time</Option>
-                  <Option value="Contract">Contract</Option>
-                  <Option value="Internship">Internship</Option>
-                </Select>
-              </Form.Item>
+                  <Form.Item
+                    label={<span className={darkMode ? 'text-gray-300' : ''}>Job Type</span>}
+                    name='type'
+                    rules={[{ required: true, message: 'Please select job type' }]}
+                  >
+                    <Select placeholder='Select job type'>
+                      <Option value='Full-time'>Full-time</Option>
+                      <Option value='Part-time'>Part-time</Option>
+                      <Option value='Contract'>Contract</Option>
+                      <Option value='Internship'>Internship</Option>
+                    </Select>
+                  </Form.Item>
 
-              <Form.Item
-                label={<span className={darkMode ? 'text-gray-300' : ''}>Salary Range</span>}
-                name="salaryRange"
-                rules={[{ required: true, message: 'Please enter salary range' }]}
-              >
-                <Input placeholder="e.g. $120,000 - $150,000" />
-              </Form.Item>
-            </div>
+                  <Form.Item
+                    label={<span className={darkMode ? 'text-gray-300' : ''}>Salary Range</span>}
+                    name='salaryRange'
+                    rules={[{ required: true, message: 'Please enter salary range' }]}
+                  >
+                    <Input placeholder='e.g. $120,000 - $150,000' />
+                  </Form.Item>
+                </div>
 
-            <Form.Item
-              label={<span className={darkMode ? 'text-gray-300' : ''}>Job Overview</span>}
-              name="overview"
-              rules={[{ required: true, message: 'Please enter job overview' }]}
-            >
-              <TextArea 
-                rows={3} 
-                placeholder="Brief overview of the role and what you're looking for..."
-              />
-            </Form.Item>
+                <Form.Item
+                  label={<span className={darkMode ? 'text-gray-300' : ''}>Job Overview</span>}
+                  name='overview'
+                  rules={[{ required: true, message: 'Please enter job overview' }]}
+                >
+                  <TextArea rows={3} placeholder="Brief overview of the role and what you're looking for..." />
+                </Form.Item>
 
-            <Form.Item
-              label={<span className={darkMode ? 'text-gray-300' : ''}>Key Responsibilities</span>}
-              name="responsibilities"
-              rules={[{ required: true, message: 'Please enter key responsibilities' }]}
-            >
-              <TextArea 
-                rows={5} 
-                placeholder="Enter each responsibility on a new line..."
-              />
-            </Form.Item>
+                <Form.Item
+                  label={<span className={darkMode ? 'text-gray-300' : ''}>Key Responsibilities</span>}
+                  name='responsibilities'
+                  rules={[{ required: true, message: 'Please enter key responsibilities' }]}
+                >
+                  <TextArea rows={5} placeholder='Enter each responsibility on a new line...' />
+                </Form.Item>
 
-            <Form.Item
-              label={<span className={darkMode ? 'text-gray-300' : ''}>Requirements</span>}
-              name="requirements"
-              rules={[{ required: true, message: 'Please enter requirements' }]}
-            >
-              <TextArea 
-                rows={5} 
-                placeholder="Enter each requirement on a new line..."
-              />
-            </Form.Item>
+                <Form.Item
+                  label={<span className={darkMode ? 'text-gray-300' : ''}>Requirements</span>}
+                  name='requirements'
+                  rules={[{ required: true, message: 'Please enter requirements' }]}
+                >
+                  <TextArea rows={5} placeholder='Enter each requirement on a new line...' />
+                </Form.Item>
 
-            <Form.Item
-              label={<span className={darkMode ? 'text-gray-300' : ''}>Benefits</span>}
-              name="benefits"
-            >
-              <TextArea 
-                rows={4} 
-                placeholder="Enter each benefit on a new line..."
-              />
-            </Form.Item>
-                      </Form>
-          </>
-        )}
-      </Modal>
+                <Form.Item label={<span className={darkMode ? 'text-gray-300' : ''}>Benefits</span>} name='benefits'>
+                  <TextArea rows={4} placeholder='Enter each benefit on a new line...' />
+                </Form.Item>
+              </Form>
+            </>
+          )}
+        </Modal>
       </div>
     </div>
   )
@@ -760,4 +668,4 @@ const JobDescriptions = React.memo(() => {
 
 JobDescriptions.displayName = 'JobDescriptions'
 
-export default JobDescriptions 
+export default JobDescriptions
