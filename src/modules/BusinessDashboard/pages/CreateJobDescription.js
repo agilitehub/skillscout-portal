@@ -139,32 +139,72 @@ const CreateJobDescription = React.memo(({ user }) => {
               .dark-form .ant-form-item-label > label {
                 color: #E5E7EB !important;
               }
-              .dark-form .ant-input {
-                background-color: #4B5563 !important;
-                border-color: #6B7280 !important;
-                color: #F9FAFB !important;
-              }
-              .dark-form .ant-input:focus {
-                border-color: #059669 !important;
-                box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
-              }
-              .dark-form .ant-input::placeholder {
+              .dark-form .ant-form-item-extra {
                 color: #9CA3AF !important;
               }
-              .dark-form .ant-select-selector {
+              .dark-form .ant-input,
+              .dark-form input.ant-input,
+              .dark-form input[type="text"],
+              .dark-form input {
                 background-color: #4B5563 !important;
                 border-color: #6B7280 !important;
                 color: #F9FAFB !important;
               }
-              .dark-form .ant-select-focused .ant-select-selector {
+              .dark-form .ant-input:focus,
+              .dark-form input.ant-input:focus,
+              .dark-form input[type="text"]:focus,
+              .dark-form input:focus {
                 border-color: #059669 !important;
                 box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
+                background-color: #4B5563 !important;
+                color: #F9FAFB !important;
+              }
+              .dark-form .ant-input::placeholder,
+              .dark-form input::placeholder {
+                color: #9CA3AF !important;
+              }
+              .dark-form textarea.ant-input,
+              .dark-form textarea {
+                background-color: #4B5563 !important;
+                border-color: #6B7280 !important;
+                color: #F9FAFB !important;
+              }
+              .dark-form textarea.ant-input:focus,
+              .dark-form textarea:focus {
+                border-color: #059669 !important;
+                box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
+                background-color: #4B5563 !important;
+                color: #F9FAFB !important;
+              }
+              .dark-form textarea.ant-input::placeholder,
+              .dark-form textarea::placeholder {
+                color: #9CA3AF !important;
+              }
+              .dark-form .ant-input-show-count-suffix {
+                color: #9CA3AF !important;
+              }
+              .dark-form .ant-select,
+              .dark-form .ant-select-selector,
+              .dark-form .ant-select-single .ant-select-selector {
+                background-color: #4B5563 !important;
+                border-color: #6B7280 !important;
+                color: #F9FAFB !important;
+              }
+              .dark-form .ant-select-focused .ant-select-selector,
+              .dark-form .ant-select:focus .ant-select-selector {
+                border-color: #059669 !important;
+                box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
+                background-color: #4B5563 !important;
               }
               .dark-form .ant-select-selection-placeholder {
                 color: #9CA3AF !important;
               }
               .dark-form .ant-select-selection-item {
                 color: #F9FAFB !important;
+                background-color: transparent !important;
+              }
+              .dark-form .ant-select-arrow {
+                color: #9CA3AF !important;
               }
               .dark-form .ant-select-multiple .ant-select-selection-item {
                 background-color: #374151 !important;
@@ -175,6 +215,15 @@ const CreateJobDescription = React.memo(({ user }) => {
                 color: #9CA3AF !important;
               }
               .dark-form .ant-select-multiple .ant-select-selection-item-remove:hover {
+                color: #F9FAFB !important;
+              }
+              .dark-form .ant-switch {
+                background-color: #6B7280 !important;
+              }
+              .dark-form .ant-switch-checked {
+                background-color: #10B981 !important;
+              }
+              .dark-form .ant-switch-inner {
                 color: #F9FAFB !important;
               }
             `}
@@ -208,6 +257,80 @@ const CreateJobDescription = React.memo(({ user }) => {
                 .dark-tabs .ant-tabs-content-holder {
                   background-color: transparent !important;
                 }
+                
+                /* Dropdown Options */
+                .ant-select-dropdown {
+                  background-color: #374151 !important;
+                }
+                .ant-select-item {
+                  color: #F9FAFB !important;
+                }
+                .ant-select-item:hover {
+                  background-color: #4B5563 !important;
+                }
+                .ant-select-item-option-selected {
+                  background-color: #10B981 !important;
+                  color: #FFFFFF !important;
+                }
+                
+                /* Switch Labels */
+                .ant-switch-inner {
+                  color: #FFFFFF !important;
+                  font-weight: 500 !important;
+                }
+                
+                /* Form validation messages */
+                .ant-form-item-explain-error {
+                  color: #F87171 !important;
+                }
+                
+                /* Character count */
+                .ant-input-data-count {
+                  color: #9CA3AF !important;
+                }
+                
+                /* Additional comprehensive styling */
+                .dark-form .ant-form-item-control-input {
+                  background-color: transparent !important;
+                }
+                .dark-form .ant-form-item-control-input-content input {
+                  background-color: #4B5563 !important;
+                  color: #F9FAFB !important;
+                  border-color: #6B7280 !important;
+                }
+                .dark-form .ant-form-item-control-input-content textarea {
+                  background-color: #4B5563 !important;
+                  color: #F9FAFB !important;
+                  border-color: #6B7280 !important;
+                }
+                .dark-form .ant-form-item-control-input-content .ant-select-selector {
+                  background-color: #4B5563 !important;
+                  color: #F9FAFB !important;
+                  border-color: #6B7280 !important;
+                }
+                
+                /* Ultimate override for any remaining light elements */
+                .dark-form * {
+                  scrollbar-color: #6B7280 #374151;
+                }
+                .dark-form .ant-form-item input,
+                .dark-form .ant-form-item textarea,
+                .dark-form .ant-form-item .ant-select-selector {
+                  background-color: #4B5563 !important;
+                  color: #F9FAFB !important;
+                  border-color: #6B7280 !important;
+                }
+                .dark-form .ant-form-item .ant-input-affix-wrapper {
+                  background-color: #4B5563 !important;
+                  border-color: #6B7280 !important;
+                }
+                .dark-form .ant-form-item .ant-input-affix-wrapper input {
+                  background-color: transparent !important;
+                  color: #F9FAFB !important;
+                }
+                .dark-form .ant-form-item .ant-input-prefix {
+                  color: #9CA3AF !important;
+                }
               `}
             </style>
           )}
@@ -231,11 +354,11 @@ const CreateJobDescription = React.memo(({ user }) => {
                 <Col span={12}>
                   <div className='space-y-4'>
                     <Form.Item
-                      label={<span className={darkMode ? 'text-gray-300' : ''}>Status</span>}
+                      label={<span className={darkMode ? 'text-gray-300' : 'text-gray-900'}>Status</span>}
                       name="status"
                       valuePropName="checked"
                       initialValue={true}
-                      extra="Turn on to make this job description active"
+                      extra={<span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>Turn on to make this job description active</span>}
                     >
                       <Switch
                         checkedChildren="Active"
@@ -244,7 +367,7 @@ const CreateJobDescription = React.memo(({ user }) => {
                     </Form.Item>
 
                     <Form.Item
-                      label={<span className={darkMode ? 'text-gray-300' : ''}>Job Title</span>}
+                      label={<span className={darkMode ? 'text-gray-300' : 'text-gray-900'}>Job Title</span>}
                       name="title"
                       rules={[
                         { required: true, message: 'Please enter job title' },
@@ -258,7 +381,7 @@ const CreateJobDescription = React.memo(({ user }) => {
                     </Form.Item>
 
                     <Form.Item
-                      label={<span className={darkMode ? 'text-gray-300' : ''}>Department</span>}
+                      label={<span className={darkMode ? 'text-gray-300' : 'text-gray-900'}>Department</span>}
                       name="department"
                       rules={[
                         { required: true, message: 'Please enter department' },
@@ -272,7 +395,7 @@ const CreateJobDescription = React.memo(({ user }) => {
                     </Form.Item>
 
                     <Form.Item
-                      label={<span className={darkMode ? 'text-gray-300' : ''}>Job Type</span>}
+                      label={<span className={darkMode ? 'text-gray-300' : 'text-gray-900'}>Job Type</span>}
                       name="type"
                       rules={[{ required: true, message: 'Please select job type' }]}
                     >
@@ -284,11 +407,15 @@ const CreateJobDescription = React.memo(({ user }) => {
                       </Select>
                     </Form.Item>
 
+                  </div>
+                </Col>
+                <Col span={12}>
+                  <div className='space-y-4'>
                     <Form.Item
-                      label={<span className={darkMode ? 'text-gray-300' : ''}>Job Overview</span>}
+                      label={<span className={darkMode ? 'text-gray-300' : 'text-gray-900'}>Job Overview</span>}
                       name="overview"
                       rules={[{ required: true, message: 'Please enter job overview' }]}
-                      extra="Provide a compelling overview of the role and what makes it attractive to candidates"
+                      extra={<span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>Provide a compelling overview of the role and what makes it attractive to candidates</span>}
                     >
                       <TextArea
                         rows={4}
@@ -297,12 +424,9 @@ const CreateJobDescription = React.memo(({ user }) => {
                         maxLength={2000}
                       />
                     </Form.Item>
-                  </div>
-                </Col>
-                <Col span={12}>
-                  <div className='space-y-4'>
+
                     <Form.Item
-                      label={<span className={darkMode ? 'text-gray-300' : ''}>Experience Level</span>}
+                      label={<span className={darkMode ? 'text-gray-300' : 'text-gray-900'}>Experience Level</span>}
                       name="experienceLevel"
                     >
                       <Select placeholder="Select experience level" allowClear>
@@ -314,7 +438,7 @@ const CreateJobDescription = React.memo(({ user }) => {
                     </Form.Item>
 
                     <Form.Item
-                      label={<span className={darkMode ? 'text-gray-300' : ''}>Salary Range</span>}
+                      label={<span className={darkMode ? 'text-gray-300' : 'text-gray-900'}>Salary Range</span>}
                       name="salaryRange"
                       rules={[{ required: true, message: 'Please enter salary range' }]}
                     >
@@ -344,13 +468,13 @@ const CreateJobDescription = React.memo(({ user }) => {
                     <Form.Item
                       label={
                         <Space>
-                          <span className={darkMode ? 'text-gray-300' : ''}>Responsibilities</span>
+                          <span className={darkMode ? 'text-gray-300' : 'text-gray-900'}>Responsibilities</span>
                           <FontAwesomeIcon icon={faTasks} className="text-gray-400" />
                         </Space>
                       }
                       name="responsibilities"
                       rules={[{ required: true, message: 'Please enter job responsibilities' }]}
-                      extra="Enter each responsibility on a new line. Bullet points will be automatically formatted."
+                      extra={<span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>Enter each responsibility on a new line. Bullet points will be automatically formatted.</span>}
                     >
                       <TextArea
                         rows={10}
@@ -368,13 +492,13 @@ const CreateJobDescription = React.memo(({ user }) => {
                     <Form.Item
                       label={
                         <Space>
-                          <span className={darkMode ? 'text-gray-300' : ''}>Requirements</span>
+                          <span className={darkMode ? 'text-gray-300' : 'text-gray-900'}>Requirements</span>
                           <FontAwesomeIcon icon={faClipboardList} className="text-gray-400" />
                         </Space>
                       }
                       name="requirements"
                       rules={[{ required: true, message: 'Please enter job requirements' }]}
-                      extra="List the essential skills, qualifications, and experience needed for this role"
+                      extra={<span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>List the essential skills, qualifications, and experience needed for this role</span>}
                     >
                       <TextArea
                         rows={10}
@@ -389,12 +513,12 @@ const CreateJobDescription = React.memo(({ user }) => {
                     <Form.Item
                       label={
                         <Space>
-                          <span className={darkMode ? 'text-gray-300' : ''}>Benefits</span>
+                          <span className={darkMode ? 'text-gray-300' : 'text-gray-900'}>Benefits</span>
                           <FontAwesomeIcon icon={faGift} className="text-gray-400" />
                         </Space>
                       }
                       name="benefits"
-                      extra="List the benefits and perks offered with this position"
+                      extra={<span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>List the benefits and perks offered with this position</span>}
                     >
                       <TextArea
                         rows={10}
@@ -424,9 +548,9 @@ const CreateJobDescription = React.memo(({ user }) => {
                 <Col span={24}>
                   <div className='space-y-4'>
                     <Form.Item
-                      label={<span className={darkMode ? 'text-gray-300' : ''}>Keywords</span>}
+                      label={<span className={darkMode ? 'text-gray-300' : 'text-gray-900'}>Keywords</span>}
                       name="searchKeywords"
-                      extra="Add relevant keywords to help with categorization and search"
+                      extra={<span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>Add relevant keywords to help with categorization and search</span>}
                     >
                       <Select
                         mode="tags"
