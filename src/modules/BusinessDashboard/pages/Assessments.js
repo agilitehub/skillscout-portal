@@ -5,9 +5,6 @@ import {
   Card,
   Button,
   Modal,
-  Form,
-  Input,
-  Select,
   Tag,
   Space,
   Tooltip,
@@ -19,7 +16,7 @@ import {
   message,
   Popconfirm
 } from 'antd'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faPlus,
@@ -42,15 +39,11 @@ import { useTheme } from '../../../ui/ThemeContext'
 import BusinessSidebar from '../components/BusinessSidebar'
 import {
   getAllAssessments,
-  createAssessment,
   updateAssessment,
   deleteAssessment,
   duplicateAssessment
 } from '../Assessments/utils.js/controller'
-import { formatSkills, parseSkills } from '../Assessments/utils.js/data-model'
-
-const { TextArea } = Input
-const { Option } = Select
+import { formatSkills } from '../Assessments/utils.js/data-model'
 
 /**
  * Assessments page for managing skill assessments and candidate testing
@@ -59,6 +52,7 @@ const { Option } = Select
 const Assessments = React.memo(({ user }) => {
   const { darkMode } = useTheme()
   const location = useLocation()
+  const navigate = useNavigate()
 
   // Get job context from navigation state
   const jobContext = location.state?.jobContext
@@ -67,10 +61,8 @@ const Assessments = React.memo(({ user }) => {
   // State management
   const [assessments, setAssessments] = useState([])
   const [loading, setLoading] = useState(false)
-  const [isModalVisible, setIsModalVisible] = useState(false)
-  const [modalMode, setModalMode] = useState('create')
+  const [isViewModalVisible, setIsViewModalVisible] = useState(false)
   const [selectedAssessment, setSelectedAssessment] = useState(null)
-  const [form] = Form.useForm()
 
   // Load assessments from database
   useEffect(() => {
@@ -97,31 +89,22 @@ const Assessments = React.memo(({ user }) => {
     loadAssessments()
   }, [])
 
-  // Handle modal operations
+  // Handle create assessment navigation
   const handleCreateAssessment = useCallback(() => {
-    setModalMode('create')
-    setSelectedAssessment(null)
-    form.resetFields()
-    setIsModalVisible(true)
-  }, [form])
+    navigate('/business-dashboard/assessments/create')
+  }, [navigate])
 
   const handleEditAssessment = useCallback(
     (assessment) => {
-      setModalMode('edit')
-      setSelectedAssessment(assessment)
-      form.setFieldsValue({
-        ...assessment,
-        skills: formatSkills(assessment.skills)
-      })
-      setIsModalVisible(true)
+      // Navigate to edit page (to be implemented later)
+      message.info('Edit functionality will be implemented in a future update')
     },
-    [form]
+    []
   )
 
   const handleViewAssessment = useCallback((assessment) => {
-    setModalMode('view')
     setSelectedAssessment(assessment)
-    setIsModalVisible(true)
+    setIsViewModalVisible(true)
   }, [])
 
   const handleDeleteAssessment = useCallback(async (assessmentId) => {
@@ -159,50 +142,10 @@ const Assessments = React.memo(({ user }) => {
     [user]
   )
 
-  const handleModalClose = useCallback(() => {
-    setIsModalVisible(false)
+  const handleViewModalClose = useCallback(() => {
+    setIsViewModalVisible(false)
     setSelectedAssessment(null)
-    form.resetFields()
-  }, [form])
-
-  const handleFormSubmit = useCallback(
-    async (values) => {
-      try {
-        const processedValues = {
-          ...values,
-          skills: parseSkills(values.skills)
-        }
-
-        if (modalMode === 'create') {
-          const result = await createAssessment(processedValues, user)
-          if (result.success) {
-            setAssessments((prev) => [result.data, ...prev])
-            message.success('Assessment created successfully')
-            handleModalClose()
-          } else {
-            console.error('Error creating assessment:', result.error)
-            message.error('Failed to create assessment: ' + result.error)
-          }
-        } else if (modalMode === 'edit') {
-          const result = await updateAssessment(selectedAssessment.id, processedValues, user)
-          if (result.success) {
-            setAssessments((prev) =>
-              prev.map((assessment) => (assessment.id === selectedAssessment.id ? result.data : assessment))
-            )
-            message.success('Assessment updated successfully')
-            handleModalClose()
-          } else {
-            console.error('Error updating assessment:', result.error)
-            message.error('Failed to update assessment: ' + result.error)
-          }
-        }
-      } catch (error) {
-        console.error('Unexpected error saving assessment:', error)
-        message.error('An unexpected error occurred while saving the assessment')
-      }
-    },
-    [modalMode, selectedAssessment, handleModalClose, user]
-  )
+  }, [])
 
   // Get assessment type icon
   const getTypeIcon = (type) => {
@@ -554,59 +497,36 @@ const Assessments = React.memo(({ user }) => {
           })}
         </div>
 
-        {/* Assessment Modal */}
-        <Modal
-          title={
-            <span className={darkMode ? 'text-white' : 'text-gray-900'}>
-              {modalMode === 'create'
-                ? 'Create Assessment'
-                : modalMode === 'edit'
-                  ? 'Edit Assessment'
-                  : 'Assessment Details'}
-            </span>
-          }
-          open={isModalVisible}
-          onCancel={handleModalClose}
-          footer={
-            modalMode === 'view'
-              ? [
-                  <Button key='close' onClick={handleModalClose}>
-                    Close
-                  </Button>
-                ]
-              : [
-                  <Button key='cancel' onClick={handleModalClose}>
-                    Cancel
-                  </Button>,
-                  <Button
-                    key='submit'
-                    type='primary'
-                    onClick={() => form.submit()}
-                    style={{
-                      background: darkMode ? '#059669' : '#10b981',
-                      borderColor: darkMode ? '#059669' : '#10b981'
-                    }}
-                  >
-                    {modalMode === 'create' ? 'Create Assessment' : 'Update Assessment'}
-                  </Button>
-                ]
-          }
-          width={800}
-          className={darkMode ? 'ant-modal-dark' : ''}
-          styles={{
-            content: { backgroundColor: darkMode ? '#374151' : '#ffffff' },
-            body: { backgroundColor: darkMode ? '#374151' : '#ffffff' },
-            header: {
-              backgroundColor: darkMode ? '#374151' : '#ffffff',
-              borderBottom: darkMode ? '1px solid #4B5563' : '1px solid #e5e7eb'
-            },
-            footer: {
-              backgroundColor: darkMode ? '#374151' : '#ffffff',
-              borderTop: darkMode ? '1px solid #4B5563' : '1px solid #e5e7eb'
+        {/* Assessment Details Modal */}
+        {selectedAssessment && (
+          <Modal
+            title={
+              <span className={darkMode ? 'text-white' : 'text-gray-900'}>
+                Assessment Details
+              </span>
             }
-          }}
-        >
-          {modalMode === 'view' && selectedAssessment ? (
+            open={isViewModalVisible}
+            onCancel={handleViewModalClose}
+            footer={[
+              <Button key='close' onClick={handleViewModalClose}>
+                Close
+              </Button>
+            ]}
+            width={800}
+            className={darkMode ? 'ant-modal-dark' : ''}
+            styles={{
+              content: { backgroundColor: darkMode ? '#374151' : '#ffffff' },
+              body: { backgroundColor: darkMode ? '#374151' : '#ffffff' },
+              header: {
+                backgroundColor: darkMode ? '#374151' : '#ffffff',
+                borderBottom: darkMode ? '1px solid #4B5563' : '1px solid #e5e7eb'
+              },
+              footer: {
+                backgroundColor: darkMode ? '#374151' : '#ffffff',
+                borderTop: darkMode ? '1px solid #4B5563' : '1px solid #e5e7eb'
+              }
+            }}
+          >
             <div className='space-y-6'>
               <div>
                 <h3 className={`text-xl font-semibold mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
@@ -672,149 +592,8 @@ const Assessments = React.memo(({ user }) => {
                 </div>
               </div>
             </div>
-          ) : (
-            <>
-              {darkMode && (
-                <style>
-                  {`
-                  .dark-form .ant-form-item-label > label {
-                    color: #E5E7EB !important;
-                  }
-                  .dark-form .ant-input {
-                    background-color: #4B5563 !important;
-                    border-color: #6B7280 !important;
-                    color: #F9FAFB !important;
-                  }
-                  .dark-form .ant-input:focus {
-                    border-color: #059669 !important;
-                    box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
-                  }
-                  .dark-form .ant-input::placeholder {
-                    color: #9CA3AF !important;
-                  }
-                  .dark-form .ant-select-selector {
-                    background-color: #4B5563 !important;
-                    border-color: #6B7280 !important;
-                    color: #F9FAFB !important;
-                  }
-                  .dark-form .ant-select-focused .ant-select-selector {
-                    border-color: #059669 !important;
-                    box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
-                  }
-                  .dark-form .ant-select-selection-placeholder {
-                    color: #9CA3AF !important;
-                  }
-                  .dark-form .ant-input-number {
-                    background-color: #4B5563 !important;
-                    border-color: #6B7280 !important;
-                    color: #F9FAFB !important;
-                  }
-                  .dark-form .ant-input-number:focus {
-                    border-color: #059669 !important;
-                    box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
-                  }
-                `}
-                </style>
-              )}
-              <Form form={form} layout='vertical' onFinish={handleFormSubmit} className={darkMode ? 'dark-form' : ''}>
-                <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                  <Form.Item
-                    label={<span className={darkMode ? 'text-gray-300' : ''}>Assessment Title</span>}
-                    name='title'
-                    rules={[{ required: true, message: 'Please enter assessment title' }]}
-                  >
-                    <Input placeholder='e.g. React Developer Assessment' />
-                  </Form.Item>
-
-                  <Form.Item
-                    label={<span className={darkMode ? 'text-gray-300' : ''}>Category</span>}
-                    name='category'
-                    rules={[{ required: true, message: 'Please enter category' }]}
-                  >
-                    <Input placeholder='e.g. Frontend Development' />
-                  </Form.Item>
-
-                  <Form.Item
-                    label={<span className={darkMode ? 'text-gray-300' : ''}>Assessment Type</span>}
-                    name='type'
-                    rules={[{ required: true, message: 'Please select assessment type' }]}
-                  >
-                    <Select placeholder='Select assessment type'>
-                      <Option value='Technical'>Technical</Option>
-                      <Option value='Behavioral'>Behavioral</Option>
-                      <Option value='Portfolio'>Portfolio</Option>
-                      <Option value='Cognitive'>Cognitive</Option>
-                    </Select>
-                  </Form.Item>
-
-                  <Form.Item
-                    label={<span className={darkMode ? 'text-gray-300' : ''}>Difficulty Level</span>}
-                    name='difficulty'
-                    rules={[{ required: true, message: 'Please select difficulty level' }]}
-                  >
-                    <Select placeholder='Select difficulty'>
-                      <Option value='Beginner'>Beginner</Option>
-                      <Option value='Intermediate'>Intermediate</Option>
-                      <Option value='Advanced'>Advanced</Option>
-                    </Select>
-                  </Form.Item>
-
-                  <Form.Item
-                    label={<span className={darkMode ? 'text-gray-300' : ''}>Duration (minutes)</span>}
-                    name='duration'
-                    rules={[{ required: true, message: 'Please enter duration' }]}
-                  >
-                    <Input type='number' placeholder='60' />
-                  </Form.Item>
-
-                  <Form.Item
-                    label={<span className={darkMode ? 'text-gray-300' : ''}>Number of Questions</span>}
-                    name='questions'
-                    rules={[{ required: true, message: 'Please enter number of questions' }]}
-                  >
-                    <Input type='number' placeholder='25' />
-                  </Form.Item>
-
-                  <Form.Item
-                    label={<span className={darkMode ? 'text-gray-300' : ''}>Passing Score (%)</span>}
-                    name='passingScore'
-                    rules={[{ required: true, message: 'Please enter passing score' }]}
-                  >
-                    <Input type='number' placeholder='70' />
-                  </Form.Item>
-
-                  <Form.Item
-                    label={<span className={darkMode ? 'text-gray-300' : ''}>Status</span>}
-                    name='status'
-                    rules={[{ required: true, message: 'Please select status' }]}
-                  >
-                    <Select placeholder='Select status'>
-                      <Option value='Draft'>Draft</Option>
-                      <Option value='Active'>Active</Option>
-                      <Option value='Inactive'>Inactive</Option>
-                    </Select>
-                  </Form.Item>
-                </div>
-
-                <Form.Item
-                  label={<span className={darkMode ? 'text-gray-300' : ''}>Description</span>}
-                  name='description'
-                  rules={[{ required: true, message: 'Please enter assessment description' }]}
-                >
-                  <TextArea rows={3} placeholder='Describe what this assessment evaluates...' />
-                </Form.Item>
-
-                <Form.Item
-                  label={<span className={darkMode ? 'text-gray-300' : ''}>Skills (comma-separated)</span>}
-                  name='skills'
-                  rules={[{ required: true, message: 'Please enter skills assessed' }]}
-                >
-                  <Input placeholder='React, JavaScript, Node.js, AWS' />
-                </Form.Item>
-              </Form>
-            </>
-          )}
-        </Modal>
+          </Modal>
+        )}
       </div>
     </div>
   )

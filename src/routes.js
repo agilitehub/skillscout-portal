@@ -4,7 +4,9 @@ import Login from './modules/Login'
 import Dashboard from './modules/Dashboard'
 import BusinessDashboard from './modules/BusinessDashboard'
 import JobDescriptions from './modules/BusinessDashboard/pages/JobDescriptions'
+import CreateJobDescription from './modules/BusinessDashboard/pages/CreateJobDescription'
 import Assessments from './modules/BusinessDashboard/pages/Assessments'
+import CreateAssessment from './modules/BusinessDashboard/pages/CreateAssessment'
 import CreateJobPosting from './modules/BusinessDashboard/pages/CreateJobPosting'
 import Header from './ui/layout/Header'
 import { useAuth } from './ui/AuthContext'
@@ -115,11 +117,37 @@ const AppRoutes = () => {
       />
 
       <Route
+        path='/business-dashboard/job-descriptions/create'
+        element={
+          user ? (
+            <DashboardLayout user={user}>
+              <CreateJobDescription user={user} />
+            </DashboardLayout>
+          ) : (
+            <Navigate to='/' replace state={{ from: location }} />
+          )
+        }
+      />
+
+      <Route
         path='/business-dashboard/assessments'
         element={
           user ? (
             <DashboardLayout user={user}>
               <Assessments user={user} />
+            </DashboardLayout>
+          ) : (
+            <Navigate to='/' replace state={{ from: location }} />
+          )
+        }
+      />
+
+      <Route
+        path='/business-dashboard/assessments/create'
+        element={
+          user ? (
+            <DashboardLayout user={user}>
+              <CreateAssessment user={user} />
             </DashboardLayout>
           ) : (
             <Navigate to='/' replace state={{ from: location }} />

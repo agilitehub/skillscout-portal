@@ -5,9 +5,6 @@ import {
   Card,
   Button,
   Modal,
-  Form,
-  Input,
-  Select,
   Tag,
   Space,
   Tooltip,
@@ -17,7 +14,7 @@ import {
   message,
   Popconfirm
 } from 'antd'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faPlus,
@@ -38,15 +35,10 @@ import { useTheme } from '../../../ui/ThemeContext'
 import BusinessSidebar from '../components/BusinessSidebar'
 import {
   getAllJobDescriptions,
-  createJobDescription,
-  updateJobDescription,
   deleteJobDescription,
   duplicateJobDescription
 } from '../JobDescriptions/utils.js/controller'
-import { formatListItems, parseListItems } from '../JobDescriptions/utils.js/data-model'
-
-const { TextArea } = Input
-const { Option } = Select
+import { formatListItems } from '../JobDescriptions/utils.js/data-model'
 
 /**
  * Job Descriptions page for managing detailed job descriptions
@@ -55,6 +47,7 @@ const { Option } = Select
 const JobDescriptions = React.memo(({ user }) => {
   const { darkMode } = useTheme()
   const location = useLocation()
+  const navigate = useNavigate()
 
   // Get job context from navigation state
   const jobContext = location.state?.jobContext
@@ -63,10 +56,8 @@ const JobDescriptions = React.memo(({ user }) => {
   // State management
   const [jobDescriptions, setJobDescriptions] = useState([])
   const [loading, setLoading] = useState(false)
-  const [isModalVisible, setIsModalVisible] = useState(false)
-  const [modalMode, setModalMode] = useState('create')
+  const [isViewModalVisible, setIsViewModalVisible] = useState(false)
   const [selectedDescription, setSelectedDescription] = useState(null)
-  const [form] = Form.useForm()
 
   // Load job descriptions from database
   useEffect(() => {
@@ -93,33 +84,22 @@ const JobDescriptions = React.memo(({ user }) => {
     loadDescriptions()
   }, [])
 
-  // Handle modal operations
+  // Handle navigation operations
   const handleCreateDescription = useCallback(() => {
-    setModalMode('create')
-    setSelectedDescription(null)
-    form.resetFields()
-    setIsModalVisible(true)
-  }, [form])
+    navigate('/business-dashboard/job-descriptions/create')
+  }, [navigate])
 
   const handleEditDescription = useCallback(
     (description) => {
-      setModalMode('edit')
-      setSelectedDescription(description)
-      form.setFieldsValue({
-        ...description,
-        responsibilities: formatListItems(description.responsibilities),
-        requirements: formatListItems(description.requirements),
-        benefits: formatListItems(description.benefits || [])
-      })
-      setIsModalVisible(true)
+      // Navigate to edit page (to be implemented later)
+      message.info('Edit functionality will be implemented in a future update')
     },
-    [form]
+    []
   )
 
   const handleViewDescription = useCallback((description) => {
-    setModalMode('view')
     setSelectedDescription(description)
-    setIsModalVisible(true)
+    setIsViewModalVisible(true)
   }, [])
 
   const handleDeleteDescription = useCallback(async (descriptionId) => {
@@ -138,53 +118,10 @@ const JobDescriptions = React.memo(({ user }) => {
     }
   }, [])
 
-  const handleModalClose = useCallback(() => {
-    setIsModalVisible(false)
+  const handleViewModalClose = useCallback(() => {
+    setIsViewModalVisible(false)
     setSelectedDescription(null)
-    form.resetFields()
-  }, [form])
-
-  const handleFormSubmit = useCallback(
-    async (values) => {
-      try {
-        const processedValues = {
-          ...values,
-          responsibilities: parseListItems(values.responsibilities),
-          requirements: parseListItems(values.requirements),
-          benefits: parseListItems(values.benefits || ''),
-          tags: values.tags || []
-        }
-
-        let result
-        if (modalMode === 'create') {
-          result = await createJobDescription(processedValues, user)
-          if (result.success) {
-            setJobDescriptions((prev) => [result.data, ...prev])
-            message.success('Job description created successfully!')
-          } else {
-            console.error('Error creating job description:', result.error)
-            message.error('Failed to create job description: ' + result.error)
-            return
-          }
-        } else if (modalMode === 'edit') {
-          result = await updateJobDescription(selectedDescription.id, processedValues, user)
-          if (result.success) {
-            setJobDescriptions((prev) => prev.map((desc) => (desc.id === selectedDescription.id ? result.data : desc)))
-            message.success('Job description updated successfully!')
-          } else {
-            console.error('Error updating job description:', result.error)
-            message.error('Failed to update job description: ' + result.error)
-            return
-          }
-        }
-        handleModalClose()
-      } catch (error) {
-        console.error('Unexpected error saving job description:', error)
-        message.error('An unexpected error occurred while saving the job description')
-      }
-    },
-    [modalMode, selectedDescription, handleModalClose]
-  )
+  }, [])
 
   const handleCopyDescription = useCallback(async (description) => {
     try {
@@ -440,59 +377,36 @@ const JobDescriptions = React.memo(({ user }) => {
           })}
         </div>
 
-        {/* Job Description Modal */}
-        <Modal
-          title={
-            <span className={darkMode ? 'text-white' : 'text-gray-900'}>
-              {modalMode === 'create'
-                ? 'Create Job Description'
-                : modalMode === 'edit'
-                  ? 'Edit Job Description'
-                  : 'Job Description Details'}
-            </span>
-          }
-          open={isModalVisible}
-          onCancel={handleModalClose}
-          footer={
-            modalMode === 'view'
-              ? [
-                  <Button key='close' onClick={handleModalClose}>
-                    Close
-                  </Button>
-                ]
-              : [
-                  <Button key='cancel' onClick={handleModalClose}>
-                    Cancel
-                  </Button>,
-                  <Button
-                    key='submit'
-                    type='primary'
-                    onClick={() => form.submit()}
-                    style={{
-                      background: darkMode ? '#059669' : '#10b981',
-                      borderColor: darkMode ? '#059669' : '#10b981'
-                    }}
-                  >
-                    {modalMode === 'create' ? 'Create Description' : 'Update Description'}
-                  </Button>
-                ]
-          }
-          width={900}
-          className={darkMode ? 'ant-modal-dark' : ''}
-          styles={{
-            content: { backgroundColor: darkMode ? '#374151' : '#ffffff' },
-            body: { backgroundColor: darkMode ? '#374151' : '#ffffff' },
-            header: {
-              backgroundColor: darkMode ? '#374151' : '#ffffff',
-              borderBottom: darkMode ? '1px solid #4B5563' : '1px solid #e5e7eb'
-            },
-            footer: {
-              backgroundColor: darkMode ? '#374151' : '#ffffff',
-              borderTop: darkMode ? '1px solid #4B5563' : '1px solid #e5e7eb'
+        {/* Job Description Details Modal */}
+        {selectedDescription && (
+          <Modal
+            title={
+              <span className={darkMode ? 'text-white' : 'text-gray-900'}>
+                Job Description Details
+              </span>
             }
-          }}
-        >
-          {modalMode === 'view' && selectedDescription ? (
+            open={isViewModalVisible}
+            onCancel={handleViewModalClose}
+            footer={[
+              <Button key='close' onClick={handleViewModalClose}>
+                Close
+              </Button>
+            ]}
+            width={900}
+            className={darkMode ? 'ant-modal-dark' : ''}
+            styles={{
+              content: { backgroundColor: darkMode ? '#374151' : '#ffffff' },
+              body: { backgroundColor: darkMode ? '#374151' : '#ffffff' },
+              header: {
+                backgroundColor: darkMode ? '#374151' : '#ffffff',
+                borderBottom: darkMode ? '1px solid #4B5563' : '1px solid #e5e7eb'
+              },
+              footer: {
+                backgroundColor: darkMode ? '#374151' : '#ffffff',
+                borderTop: darkMode ? '1px solid #4B5563' : '1px solid #e5e7eb'
+              }
+            }}
+          >
             <div className='space-y-6'>
               <div>
                 <h3 className={`text-xl font-semibold mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
@@ -521,146 +435,19 @@ const JobDescriptions = React.memo(({ user }) => {
                 </ul>
               </div>
 
-              <div>
-                <h4 className={`font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Benefits:</h4>
-                <ul className={`list-disc list-inside space-y-1 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                  {selectedDescription.benefits.map((benefit, index) => (
-                    <li key={index}>{benefit}</li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          ) : (
-            <>
-              {darkMode && (
-                <style>
-                  {`
-                  .dark-form .ant-form-item-label > label {
-                    color: #E5E7EB !important;
-                  }
-                  .dark-form .ant-input {
-                    background-color: #4B5563 !important;
-                    border-color: #6B7280 !important;
-                    color: #F9FAFB !important;
-                  }
-                  .dark-form .ant-input:focus {
-                    border-color: #059669 !important;
-                    box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
-                  }
-                  .dark-form .ant-input::placeholder {
-                    color: #9CA3AF !important;
-                  }
-                  .dark-form .ant-select-selector {
-                    background-color: #4B5563 !important;
-                    border-color: #6B7280 !important;
-                    color: #F9FAFB !important;
-                  }
-                  .dark-form .ant-select-focused .ant-select-selector {
-                    border-color: #059669 !important;
-                    box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
-                  }
-                  .dark-form .ant-select-selection-placeholder {
-                    color: #9CA3AF !important;
-                  }
-                  .dark-form .ant-input-number {
-                    background-color: #4B5563 !important;
-                    border-color: #6B7280 !important;
-                    color: #F9FAFB !important;
-                  }
-                  .dark-form .ant-input-number:focus {
-                    border-color: #059669 !important;
-                    box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
-                  }
-                `}
-                </style>
-              )}
-              <Form form={form} layout='vertical' onFinish={handleFormSubmit} className={darkMode ? 'dark-form' : ''}>
-                <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                  <Form.Item
-                    label={<span className={darkMode ? 'text-gray-300' : ''}>Job Title</span>}
-                    name='title'
-                    rules={[{ required: true, message: 'Please enter job title' }]}
-                  >
-                    <Input placeholder='e.g. Senior Software Engineer' />
-                  </Form.Item>
-
-                  <Form.Item
-                    label={<span className={darkMode ? 'text-gray-300' : ''}>Company</span>}
-                    name='company'
-                    rules={[{ required: true, message: 'Please enter company name' }]}
-                  >
-                    <Input placeholder='e.g. TechCorp Solutions' />
-                  </Form.Item>
-
-                  <Form.Item
-                    label={<span className={darkMode ? 'text-gray-300' : ''}>Department</span>}
-                    name='department'
-                    rules={[{ required: true, message: 'Please enter department' }]}
-                  >
-                    <Input placeholder='e.g. Engineering' />
-                  </Form.Item>
-
-                  <Form.Item
-                    label={<span className={darkMode ? 'text-gray-300' : ''}>Location</span>}
-                    name='location'
-                    rules={[{ required: true, message: 'Please enter location' }]}
-                  >
-                    <Input placeholder='e.g. San Francisco, CA' />
-                  </Form.Item>
-
-                  <Form.Item
-                    label={<span className={darkMode ? 'text-gray-300' : ''}>Job Type</span>}
-                    name='type'
-                    rules={[{ required: true, message: 'Please select job type' }]}
-                  >
-                    <Select placeholder='Select job type'>
-                      <Option value='Full-time'>Full-time</Option>
-                      <Option value='Part-time'>Part-time</Option>
-                      <Option value='Contract'>Contract</Option>
-                      <Option value='Internship'>Internship</Option>
-                    </Select>
-                  </Form.Item>
-
-                  <Form.Item
-                    label={<span className={darkMode ? 'text-gray-300' : ''}>Salary Range</span>}
-                    name='salaryRange'
-                    rules={[{ required: true, message: 'Please enter salary range' }]}
-                  >
-                    <Input placeholder='e.g. $120,000 - $150,000' />
-                  </Form.Item>
+              {selectedDescription.benefits && selectedDescription.benefits.length > 0 && (
+                <div>
+                  <h4 className={`font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Benefits:</h4>
+                  <ul className={`list-disc list-inside space-y-1 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                    {selectedDescription.benefits.map((benefit, index) => (
+                      <li key={index}>{benefit}</li>
+                    ))}
+                  </ul>
                 </div>
-
-                <Form.Item
-                  label={<span className={darkMode ? 'text-gray-300' : ''}>Job Overview</span>}
-                  name='overview'
-                  rules={[{ required: true, message: 'Please enter job overview' }]}
-                >
-                  <TextArea rows={3} placeholder="Brief overview of the role and what you're looking for..." />
-                </Form.Item>
-
-                <Form.Item
-                  label={<span className={darkMode ? 'text-gray-300' : ''}>Key Responsibilities</span>}
-                  name='responsibilities'
-                  rules={[{ required: true, message: 'Please enter key responsibilities' }]}
-                >
-                  <TextArea rows={5} placeholder='Enter each responsibility on a new line...' />
-                </Form.Item>
-
-                <Form.Item
-                  label={<span className={darkMode ? 'text-gray-300' : ''}>Requirements</span>}
-                  name='requirements'
-                  rules={[{ required: true, message: 'Please enter requirements' }]}
-                >
-                  <TextArea rows={5} placeholder='Enter each requirement on a new line...' />
-                </Form.Item>
-
-                <Form.Item label={<span className={darkMode ? 'text-gray-300' : ''}>Benefits</span>} name='benefits'>
-                  <TextArea rows={4} placeholder='Enter each benefit on a new line...' />
-                </Form.Item>
-              </Form>
-            </>
-          )}
-        </Modal>
+              )}
+            </div>
+          </Modal>
+        )}
       </div>
     </div>
   )
