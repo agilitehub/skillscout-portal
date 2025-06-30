@@ -1,42 +1,77 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
-import React from 'react'
+import React, { useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { 
   faBriefcase, 
   faFileText, 
   faClipboardCheck,
-  faTachometerAlt 
+  faTachometerAlt,
+  faChevronDown,
+  faChevronRight,
+  faCog,
+  faCogs,
+  faList
 } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../ui/ThemeContext'
 
 /**
  * Business Dashboard Sidebar Navigation
- * Provides navigation for job management, descriptions, and assessments
+ * Provides categorized navigation for job management, descriptions, and assessments
  */
 const BusinessSidebar = React.memo(() => {
   const { darkMode } = useTheme()
+  const [expandedCategories, setExpandedCategories] = useState(['operations'])
 
-  // Navigation items for business dashboard
-  const navigationItems = [
+  // Toggle category expansion
+  const toggleCategory = (categoryKey) => {
+    setExpandedCategories(prev => 
+      prev.includes(categoryKey) 
+        ? prev.filter(key => key !== categoryKey)
+        : [...prev, categoryKey]
+    )
+  }
+
+  // Navigation categories and items
+  const navigationCategories = [
     {
-      path: '/business-dashboard',
-      icon: faTachometerAlt,
-      label: 'Job Listings',
-      exact: true
+      key: 'operations',
+      label: 'Operations',
+      icon: faCog,
+      items: [
+        {
+          path: '/business-dashboard',
+          icon: faTachometerAlt,
+          label: 'Job Listings',
+          exact: true
+        },
+        {
+          path: '/business-dashboard/assessments',
+          icon: faClipboardCheck,
+          label: 'Assessments',
+          exact: false
+        },
+        {
+          path: '/business-dashboard/job-descriptions',
+          icon: faFileText,
+          label: 'Job Descriptions',
+          exact: false
+        }
+      ]
     },
     {
-      path: '/business-dashboard/assessments',
-      icon: faClipboardCheck,
-      label: 'Assessments',
-      exact: false
-    },
-    {
-      path: '/business-dashboard/job-descriptions',
-      icon: faFileText,
-      label: 'Job Descriptions',
-      exact: false
+      key: 'settings',
+      label: 'Settings',
+      icon: faCogs,
+      items: [
+        {
+          path: '/business-dashboard/lookups',
+          icon: faList,
+          label: 'Lookups',
+          exact: false
+        }
+      ]
     }
   ]
 
@@ -76,57 +111,96 @@ const BusinessSidebar = React.memo(() => {
       </div>
 
       {/* Navigation Menu */}
-      <nav className="p-4 space-y-1">
-        {navigationItems.map((item) => (
-          <NavLink
-            key={item.path}
-            to={item.path}
-            end={item.exact}
-            className={({ isActive }) =>
-              `flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
-                isActive
-                  ? darkMode
-                    ? 'bg-emerald-700 text-white shadow-lg'
-                    : 'bg-emerald-50 text-emerald-700 shadow-md border-l-4 border-emerald-500'
-                  : darkMode
-                    ? 'text-gray-300 hover:bg-gray-800 hover:text-white'
-                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-              }`
-            }
-          >
-            {({ isActive }) => (
-              <>
-                <div 
-                  className={`w-8 h-8 rounded-md flex items-center justify-center mr-3 transition-all duration-200 ${
-                    isActive
-                      ? darkMode
-                        ? 'bg-emerald-600'
-                        : 'bg-emerald-100'
-                      : darkMode
-                        ? 'bg-gray-800'
-                        : 'bg-gray-100'
-                  }`}
-                >
-                  <FontAwesomeIcon 
-                    icon={item.icon} 
-                    className={`text-xs ${
-                      isActive
-                        ? darkMode
-                          ? 'text-white'
-                          : 'text-emerald-700'
-                        : darkMode
-                          ? 'text-gray-400'
-                          : 'text-gray-500'
-                    }`} 
-                  />
-                </div>
-                <span>{item.label}</span>
-                {isActive && (
-                  <div className="ml-auto w-2 h-2 bg-emerald-500 rounded-full"></div>
-                )}
-              </>
+      <nav className="p-4 space-y-3">
+        {navigationCategories.map((category) => (
+          <div key={category.key} className="space-y-1">
+            {/* Category Header */}
+            <button
+              onClick={() => toggleCategory(category.key)}
+              className={`w-full flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                darkMode
+                  ? 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+              }`}
+            >
+              <div 
+                className={`w-7 h-7 rounded-md flex items-center justify-center mr-3 transition-all duration-200 ${
+                  darkMode ? 'bg-gray-800' : 'bg-gray-100'
+                }`}
+              >
+                <FontAwesomeIcon 
+                  icon={category.icon} 
+                  className={`text-xs ${
+                    darkMode ? 'text-gray-400' : 'text-gray-500'
+                  }`} 
+                />
+              </div>
+              <span className="flex-1 text-left">{category.label}</span>
+              <FontAwesomeIcon 
+                icon={expandedCategories.includes(category.key) ? faChevronDown : faChevronRight}
+                className={`text-xs transition-transform duration-200 ${
+                  darkMode ? 'text-gray-500' : 'text-gray-400'
+                }`}
+              />
+            </button>
+
+            {/* Category Items */}
+            {expandedCategories.includes(category.key) && (
+              <div className="ml-4 space-y-1">
+                {category.items.map((item) => (
+                  <NavLink
+                    key={item.path}
+                    to={item.path}
+                    end={item.exact}
+                    className={({ isActive }) =>
+                      `flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+                        isActive
+                          ? darkMode
+                            ? 'bg-emerald-700 text-white shadow-lg'
+                            : 'bg-emerald-50 text-emerald-700 shadow-md border-l-4 border-emerald-500'
+                          : darkMode
+                            ? 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                      }`
+                    }
+                  >
+                    {({ isActive }) => (
+                      <>
+                        <div 
+                          className={`w-7 h-7 rounded-md flex items-center justify-center mr-3 transition-all duration-200 ${
+                            isActive
+                              ? darkMode
+                                ? 'bg-emerald-600'
+                                : 'bg-emerald-100'
+                              : darkMode
+                                ? 'bg-gray-800'
+                                : 'bg-gray-100'
+                          }`}
+                        >
+                          <FontAwesomeIcon 
+                            icon={item.icon} 
+                            className={`text-xs ${
+                              isActive
+                                ? darkMode
+                                  ? 'text-white'
+                                  : 'text-emerald-700'
+                                : darkMode
+                                  ? 'text-gray-400'
+                                  : 'text-gray-500'
+                            }`} 
+                          />
+                        </div>
+                        <span>{item.label}</span>
+                        {isActive && (
+                          <div className="ml-auto w-2 h-2 bg-emerald-500 rounded-full"></div>
+                        )}
+                      </>
+                    )}
+                  </NavLink>
+                ))}
+              </div>
             )}
-          </NavLink>
+          </div>
         ))}
       </nav>
 
