@@ -1,6 +1,6 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTheme } from '../../../ui/ThemeContext'
 import BusinessSidebar from '../components/BusinessSidebar'
@@ -12,11 +12,6 @@ import {
   faEdit,
   faTrash,
   faSearch,
-  faTags,
-  faBuilding,
-  faMapMarkerAlt,
-  faBriefcase,
-  faCog,
   faFilter,
   faArrowLeft,
   faTimes
@@ -31,7 +26,6 @@ import {
   Form, 
   message, 
   Space,
-  Tag,
   Popconfirm,
   Tooltip,
   Switch,
@@ -62,74 +56,44 @@ const Lookups = React.memo(({ user }) => {
   const [profileData, setProfileData] = useState([
     {
       id: 1,
-      profileKey: 'git_repos',
-      groupName: 'Open Source Projects',
+      profileKey: 'Gender',
+      groupName: '',
       solutions: [],
       isActive: true,
       labelValuePairs: [
-        { label: 'Repository URL', value: 'https://github.com' },
-        { label: 'Access Level', value: 'Public' },
-        { label: 'Language', value: 'JavaScript' }
+        { label: 'Male', value: 'gender_1' },
+        { label: 'Female', value: 'gender_2' }
       ]
     },
     {
       id: 2,
-      profileKey: 'npm_modules',
-      groupName: 'Open Source Projects',
+      profileKey: 'Industry',
+      groupName: '',
       solutions: [],
       isActive: true,
       labelValuePairs: [
-        { label: 'Package Manager', value: 'NPM' },
-        { label: 'Registry', value: 'https://npmjs.com' },
-        { label: 'Scope', value: 'Public' }
+        { label: 'Technology', value: 'tech' },
+        { label: 'Healthcare', value: 'healthcare' },
+        { label: 'Finance', value: 'finance' },
+        { label: 'Education', value: 'education' },
+        { label: 'Manufacturing', value: 'manufacturing' },
+        { label: 'Retail', value: 'retail' },
+        { label: 'Consulting', value: 'consulting' }
       ]
     },
     {
       id: 3,
-      profileKey: 'leave_type',
-      groupName: 'Internal Systems',
-      solutions: [],
-      isActive: true,
-      labelValuePairs: [
-        { label: 'Annual Leave', value: '25 days' },
-        { label: 'Sick Leave', value: '10 days' },
-        { label: 'Personal Leave', value: '5 days' }
-      ]
-    },
-    {
-      id: 4,
-      profileKey: 'currencies',
+      profileKey: 'Role',
       groupName: '',
       solutions: [],
       isActive: true,
       labelValuePairs: [
-        { label: 'USD', value: 'US Dollar' },
-        { label: 'EUR', value: 'Euro' },
-        { label: 'GBP', value: 'British Pound' }
-      ]
-    },
-    {
-      id: 5,
-      profileKey: 'branches',
-      groupName: 'Internal Systems',
-      solutions: [],
-      isActive: true,
-      labelValuePairs: [
-        { label: 'Main', value: 'Headquarters' },
-        { label: 'West', value: 'West Coast Office' },
-        { label: 'East', value: 'East Coast Office' }
-      ]
-    },
-    {
-      id: 6,
-      profileKey: 'status',
-      groupName: '',
-      solutions: [],
-      isActive: true,
-      labelValuePairs: [
-        { label: 'Active', value: 'Currently Active' },
-        { label: 'Inactive', value: 'Temporarily Inactive' },
-        { label: 'Pending', value: 'Awaiting Approval' }
+        { label: 'Software Engineer', value: 'swe' },
+        { label: 'Product Manager', value: 'pm' },
+        { label: 'Designer', value: 'designer' },
+        { label: 'Data Scientist', value: 'ds' },
+        { label: 'Sales Manager', value: 'sales' },
+        { label: 'Marketing Specialist', value: 'marketing' }
       ]
     }
   ])
@@ -148,22 +112,33 @@ const Lookups = React.memo(({ user }) => {
     return matchesSearch && matchesGroup
   })
 
-  // Handle add/edit profile
-  const handleAddEdit = useCallback(() => {
+  // Handle add new profile
+  const handleAdd = useCallback(() => {
     setIsModalVisible(true)
-    if (editingProfile) {
-      form.setFieldsValue({
-        profileKey: editingProfile.profileKey,
-        groupName: editingProfile.groupName,
-        solutions: editingProfile.solutions,
-        isActive: editingProfile.isActive
-      })
-      setLabelValuePairs(editingProfile.labelValuePairs || [{ label: '', value: '' }])
-    } else {
-      form.resetFields()
-      setLabelValuePairs([{ label: '', value: '' }])
-    }
-  }, [editingProfile, form])
+    setEditingProfile(null)
+    form.resetFields()
+    setLabelValuePairs([{ label: '', value: '' }])
+  }, [form])
+
+  // Handle edit existing profile  
+  const handleEdit = useCallback((profile) => {
+    setEditingProfile(profile)
+    setIsModalVisible(true)
+    
+    // Populate form with existing data
+    form.setFieldsValue({
+      profileKey: profile.profileKey,
+      groupName: profile.groupName,
+      solutions: profile.solutions || [],
+      isActive: profile.isActive
+    })
+    
+    // Set existing label-value pairs
+    setLabelValuePairs(profile.labelValuePairs && profile.labelValuePairs.length > 0 
+      ? profile.labelValuePairs 
+      : [{ label: '', value: '' }]
+    )
+  }, [form])
 
   // Handle form submission
   const handleSubmit = useCallback(async (values) => {
@@ -224,62 +199,75 @@ const Lookups = React.memo(({ user }) => {
     }
   }, [labelValuePairs.length])
 
+  // Group data by categories and calculate stats
+  const groupedData = useMemo(() => {
+    const groups = {}
+    
+    filteredData.forEach(profile => {
+      const category = profile.profileKey || 'Uncategorized'
+      
+      if (!groups[category]) {
+        groups[category] = {
+          key: category,
+          category: category,
+          profiles: [],
+          isActive: true,
+          totalItems: 0
+        }
+      }
+      
+      groups[category].profiles.push(profile)
+      groups[category].totalItems += profile.labelValuePairs?.length || 0
+      
+      // Set category as inactive if any profile is inactive
+      if (!profile.isActive) {
+        groups[category].isActive = false
+      }
+    })
+    
+    return Object.values(groups)
+  }, [filteredData])
+
   // Table columns
   const columns = [
     {
-      title: 'Profile Key',
-      dataIndex: 'profileKey',
-      key: 'profileKey',
-      sorter: (a, b) => a.profileKey.localeCompare(b.profileKey),
+      title: 'CATEGORY',
+      dataIndex: 'category',
+      key: 'category',
       render: (text) => (
-        <span className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+        <span className={`font-medium text-sm uppercase tracking-wide ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
           {text}
         </span>
       )
     },
     {
-      title: 'Group Name',
-      dataIndex: 'groupName',
-      key: 'groupName',
-      filters: groupNames.map(name => ({ text: name, value: name })),
-      onFilter: (value, record) => record.groupName === value,
-      render: (text) => (
-        <span className={darkMode ? 'text-gray-300' : 'text-gray-600'}>
-          {text || '-'}
-        </span>
-      )
-    },
-    {
-      title: 'Solution(s)',
-      dataIndex: 'solutions',
-      key: 'solutions',
-      render: (solutions) => (
-        <span className={darkMode ? 'text-gray-300' : 'text-gray-600'}>
-          {solutions && solutions.length > 0 ? solutions.join(', ') : '-'}
-        </span>
-      )
-    },
-    {
-      title: 'Is Active',
+      title: 'STATUS',
       dataIndex: 'isActive',
       key: 'isActive',
-      filters: [
-        { text: 'Yes', value: true },
-        { text: 'No', value: false }
-      ],
-      onFilter: (value, record) => record.isActive === value,
       render: (isActive) => (
-        <span className={`font-medium ${
+        <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
           isActive 
-            ? (darkMode ? 'text-green-400' : 'text-green-600')
-            : (darkMode ? 'text-red-400' : 'text-red-600')
+            ? 'bg-green-100 text-green-800' 
+            : 'bg-red-100 text-red-800'
         }`}>
-          {isActive ? 'Yes' : 'No'}
+          {isActive ? 'Active' : 'Inactive'}
         </span>
-      )
+      ),
+      width: 100
     },
     {
-      title: 'Actions',
+      title: 'ITEMS',
+      dataIndex: 'totalItems',
+      key: 'totalItems',
+      render: (count) => (
+        <span className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+          {count}
+        </span>
+      ),
+      width: 80
+    },
+    {
+      title: 'ACTIONS',
       key: 'actions',
       render: (_, record) => (
         <Space>
@@ -288,15 +276,25 @@ const Lookups = React.memo(({ user }) => {
               size="small"
               icon={<FontAwesomeIcon icon={faEdit} />}
               onClick={() => {
-                setEditingProfile(record)
-                handleAddEdit()
+                // Edit the first profile in the category for now
+                if (record.profiles.length > 0) {
+                  handleEdit(record.profiles[0])
+                }
               }}
-              className={darkMode ? 'border-gray-600 text-gray-300' : ''}
+              style={{
+                backgroundColor: 'transparent',
+                borderColor: darkMode ? '#6b7280' : '#d1d5db',
+                color: darkMode ? '#9ca3af' : '#6b7280'
+              }}
             />
           </Tooltip>
           <Popconfirm
-            title="Are you sure you want to delete this profile?"
-            onConfirm={() => handleDelete(record.id)}
+            title="Are you sure you want to delete this category?"
+            description="This will delete all profiles in this category."
+            onConfirm={() => {
+              // Delete all profiles in the category
+              record.profiles.forEach(profile => handleDelete(profile.id))
+            }}
             okText="Yes"
             cancelText="No"
           >
@@ -309,15 +307,22 @@ const Lookups = React.memo(({ user }) => {
             </Tooltip>
           </Popconfirm>
         </Space>
-      )
+      ),
+      width: 100
     }
   ]
 
   // Expandable row content
   const expandedRowRender = (record) => {
-    const pairs = record.labelValuePairs || []
+    // Collect all label-value pairs from all profiles in this category
+    const allPairs = []
+    record.profiles.forEach(profile => {
+      if (profile.labelValuePairs && profile.labelValuePairs.length > 0) {
+        allPairs.push(...profile.labelValuePairs)
+      }
+    })
     
-    if (pairs.length === 0) {
+    if (allPairs.length === 0) {
       return (
         <div className={`p-4 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
           No label-value pairs defined
@@ -326,27 +331,44 @@ const Lookups = React.memo(({ user }) => {
     }
 
     return (
-      <div className="p-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {pairs.map((pair, index) => (
-            <div 
-              key={index}
-              className={`p-3 rounded-lg border ${
-                darkMode 
-                  ? 'bg-gray-700 border-gray-600' 
-                  : 'bg-gray-50 border-gray-200'
-              }`}
-            >
-              <div className={`text-xs font-medium uppercase tracking-wide mb-1 ${
-                darkMode ? 'text-gray-400' : 'text-gray-500'
-              }`}>
-                {pair.label}
-              </div>
-              <div className={`text-sm ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                {pair.value}
-              </div>
-            </div>
-          ))}
+      <div className="px-4 pb-4">
+        <div className={`overflow-hidden rounded-lg border ${
+          darkMode ? 'border-gray-600' : 'border-gray-200'
+        }`}>
+          <table className="min-w-full">
+            <thead className={`${darkMode ? 'bg-gray-700' : 'bg-gray-50'}`}>
+              <tr>
+                <th className={`px-4 py-3 text-left text-xs font-medium uppercase tracking-wide ${
+                  darkMode ? 'text-gray-300' : 'text-gray-500'
+                }`}>
+                  LABEL
+                </th>
+                <th className={`px-4 py-3 text-left text-xs font-medium uppercase tracking-wide ${
+                  darkMode ? 'text-gray-300' : 'text-gray-500'
+                }`}>
+                  VALUE
+                </th>
+              </tr>
+            </thead>
+            <tbody className={`${darkMode ? 'bg-gray-800' : 'bg-white'} divide-y ${
+              darkMode ? 'divide-gray-600' : 'divide-gray-200'
+            }`}>
+              {allPairs.map((pair, index) => (
+                <tr key={index}>
+                  <td className={`px-4 py-3 text-sm ${
+                    darkMode ? 'text-gray-300' : 'text-gray-900'
+                  }`}>
+                    {pair.label}
+                  </td>
+                  <td className={`px-4 py-3 text-sm ${
+                    darkMode ? 'text-gray-300' : 'text-gray-900'
+                  }`}>
+                    {pair.value}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
     )
@@ -370,23 +392,48 @@ const Lookups = React.memo(({ user }) => {
             border-color: #6b7280 !important;
           }
           .dark-select .ant-select-selector {
-            background-color: #374151 !important;
-            border-color: #10b981 !important;
+            background-color: #4b5563 !important;
+            border-color: #6b7280 !important;
             color: #ffffff !important;
             font-weight: 500 !important;
             font-size: 14px !important;
           }
           .dark-select .ant-select-selection-item {
-            background-color: #059669 !important;
+            background-color: transparent !important;
             color: #ffffff !important;
-            border-color: #047857 !important;
+            border: none !important;
           }
           .dark-select .ant-select-arrow {
-            color: #10b981 !important;
+            color: #9ca3af !important;
+          }
+          .dark-select .ant-select:focus .ant-select-selector {
+            border-color: #6b7280 !important;
+            box-shadow: none !important;
           }
           .dark-select .ant-select-selection-placeholder {
             color: #9ca3af !important;
             opacity: 0.8 !important;
+          }
+          /* Dropdown menu styles */
+          .dark-select .ant-select-dropdown {
+            background-color: #374151 !important;
+            border-color: #4b5563 !important;
+          }
+          .dark-select .ant-select-item {
+            background-color: #374151 !important;
+            color: #ffffff !important;
+          }
+          .dark-select .ant-select-item:hover {
+            background-color: #4b5563 !important;
+            color: #ffffff !important;
+          }
+          .dark-select .ant-select-item-option-selected {
+            background-color: #059669 !important;
+            color: #ffffff !important;
+          }
+          .dark-select .ant-select-item-option-active {
+            background-color: #4b5563 !important;
+            color: #ffffff !important;
           }
           .light-select .ant-select-selector {
             background-color: #ffffff !important;
@@ -523,6 +570,36 @@ const Lookups = React.memo(({ user }) => {
             color: #ffffff !important;
             background-color: #374151 !important;
           }
+          
+          /* Global dropdown styles for dark mode */
+          .ant-select-dropdown {
+            background-color: ${darkMode ? '#374151' : '#ffffff'} !important;
+          }
+          .ant-select-item {
+            background-color: ${darkMode ? '#374151' : '#ffffff'} !important;
+            color: ${darkMode ? '#ffffff' : '#000000'} !important;
+          }
+          .ant-select-item:hover {
+            background-color: ${darkMode ? '#4b5563' : '#f5f5f5'} !important;
+            color: ${darkMode ? '#ffffff' : '#000000'} !important;
+          }
+          .ant-select-item-option-selected {
+            background-color: ${darkMode ? '#059669' : '#e6f7ff'} !important;
+            color: ${darkMode ? '#ffffff' : '#1890ff'} !important;
+          }
+          .ant-select-item-option-active {
+            background-color: ${darkMode ? '#4b5563' : '#f5f5f5'} !important;
+            color: ${darkMode ? '#ffffff' : '#000000'} !important;
+          }
+          
+          /* Button styling fixes */
+          .ant-btn {
+            transition: all 0.2s ease !important;
+          }
+          .ant-btn:focus {
+            outline: none !important;
+            box-shadow: none !important;
+          }
         `}</style>
       )}
       
@@ -563,13 +640,19 @@ const Lookups = React.memo(({ user }) => {
             <Button
               icon={<FontAwesomeIcon icon={faArrowLeft} />}
               onClick={() => navigate('/business-dashboard')}
-              className={`mr-3 ${
-                darkMode 
-                  ? 'border-gray-500 text-gray-200 hover:bg-gray-700 hover:border-gray-400' 
-                  : 'border-gray-300 text-gray-600 hover:bg-gray-50'
-              }`}
               style={{
-                backgroundColor: darkMode ? '#374151' : '#ffffff'
+                backgroundColor: darkMode ? '#374151' : '#ffffff',
+                borderColor: darkMode ? '#6b7280' : '#d1d5db',
+                color: darkMode ? '#e5e7eb' : '#6b7280',
+                marginRight: '12px'
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.backgroundColor = darkMode ? '#4b5563' : '#f9fafb'
+                e.target.style.borderColor = darkMode ? '#4b5563' : '#9ca3af'
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.backgroundColor = darkMode ? '#374151' : '#ffffff'
+                e.target.style.borderColor = darkMode ? '#6b7280' : '#d1d5db'
               }}
             >
               Back to Dashboard
@@ -586,7 +669,7 @@ const Lookups = React.memo(({ user }) => {
             }`}
             style={{
               background: darkMode 
-                ? 'linear-gradient(135deg, #374151 0%, #1f2937 100%)'
+                ? 'linear-gradient(135deg, #065f46 0%, #047857 50%, #059669 100%)'
                 : 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
             }}
           >
@@ -630,23 +713,45 @@ const Lookups = React.memo(({ user }) => {
                 <Button
                   type="primary"
                   icon={<FontAwesomeIcon icon={faPlus} />}
-                  onClick={handleAddEdit}
-                  className={
-                    darkMode 
-                      ? "bg-emerald-600 text-white border-emerald-600 hover:bg-emerald-700 hover:border-emerald-700 font-medium"
-                      : "bg-white text-emerald-600 border-white hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-100 font-medium"
-                  }
+                  onClick={handleAdd}
+                  style={{
+                    backgroundColor: darkMode ? '#059669' : '#ffffff',
+                    borderColor: darkMode ? '#059669' : '#ffffff',
+                    color: darkMode ? '#ffffff' : '#059669',
+                    fontWeight: '500'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.backgroundColor = darkMode ? '#047857' : '#f0fdf4'
+                    e.target.style.borderColor = darkMode ? '#047857' : '#059669'
+                    e.target.style.color = darkMode ? '#ffffff' : '#047857'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.backgroundColor = darkMode ? '#059669' : '#ffffff'
+                    e.target.style.borderColor = darkMode ? '#059669' : '#ffffff'
+                    e.target.style.color = darkMode ? '#ffffff' : '#059669'
+                  }}
                 >
                   Create New
                 </Button>
                 
                 <Button
                   icon={<FontAwesomeIcon icon={faFilter} />}
-                  className={
-                    darkMode
-                      ? "bg-gray-600 text-gray-200 border-gray-600 hover:bg-gray-500 hover:border-gray-500"
-                      : "bg-white/10 text-white border-white/20 hover:bg-white/20 hover:border-white/30"
-                  }
+                  style={{
+                    backgroundColor: darkMode ? '#4b5563' : 'rgba(255, 255, 255, 0.1)',
+                    borderColor: darkMode ? '#6b7280' : 'rgba(255, 255, 255, 0.2)',
+                    color: darkMode ? '#e5e7eb' : '#ffffff',
+                    fontWeight: '500'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.backgroundColor = darkMode ? '#374151' : 'rgba(255, 255, 255, 0.2)'
+                    e.target.style.borderColor = darkMode ? '#4b5563' : 'rgba(255, 255, 255, 0.3)'
+                    e.target.style.color = darkMode ? '#ffffff' : '#ffffff'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.backgroundColor = darkMode ? '#4b5563' : 'rgba(255, 255, 255, 0.1)'
+                    e.target.style.borderColor = darkMode ? '#6b7280' : 'rgba(255, 255, 255, 0.2)'
+                    e.target.style.color = darkMode ? '#e5e7eb' : '#ffffff'
+                  }}
                 >
                   Filter
                 </Button>
@@ -658,6 +763,13 @@ const Lookups = React.memo(({ user }) => {
                   className={`w-64 ${darkMode ? 'dark-search' : ''}`}
                   style={{
                     backgroundColor: darkMode ? '#4b5563' : 'rgba(255, 255, 255, 0.1)',
+                  }}
+                  styles={{
+                    input: {
+                      backgroundColor: darkMode ? '#4b5563' : 'rgba(255, 255, 255, 0.1)',
+                      borderColor: darkMode ? '#6b7280' : 'rgba(255, 255, 255, 0.2)',
+                      color: darkMode ? '#ffffff' : '#ffffff'
+                    }
                   }}
                 />
               </div>
@@ -674,14 +786,14 @@ const Lookups = React.memo(({ user }) => {
           >
             <Table
               columns={columns}
-              dataSource={filteredData}
-              rowKey="id"
+              dataSource={groupedData}
+              rowKey="key"
               expandable={{
                 expandedRowRender,
-                rowExpandable: (record) => record.labelValuePairs && record.labelValuePairs.length > 0,
+                rowExpandable: (record) => record.totalItems > 0,
                 expandRowByClick: false,
                 expandIcon: ({ expanded, onExpand, record }) =>
-                  record.labelValuePairs && record.labelValuePairs.length > 0 ? (
+                  record.totalItems > 0 ? (
                     <Button
                       type="text"
                       size="small"
@@ -694,12 +806,12 @@ const Lookups = React.memo(({ user }) => {
                   )
               }}
               pagination={{
-                total: filteredData.length,
+                total: groupedData.length,
                 pageSize: 10,
                 showSizeChanger: true,
                 showQuickJumper: true,
                 showTotal: (total, range) => 
-                  `${range[0]}-${range[1]} of ${total} profiles`
+                  `${range[0]}-${range[1]} of ${total} categories`
               }}
               className={darkMode ? 'dark-table' : ''}
               style={{
@@ -752,7 +864,7 @@ const Lookups = React.memo(({ user }) => {
       <Modal
         title={
           <span className="text-white font-semibold text-lg">
-            {`${editingProfile ? 'Edit' : 'New'} Lookup Profile`}
+            {editingProfile ? `Edit Lookup Profile - ${editingProfile.profileKey}` : 'New Lookup Profile'}
           </span>
         }
         open={isModalVisible}
