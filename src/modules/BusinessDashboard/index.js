@@ -80,13 +80,13 @@ const BusinessDashboard = React.memo(({ user }) => {
   }, [])
 
   // Handle navigation operations
-  const handleCreateJob = useCallback(() => {
-    navigate('/business-dashboard/create-job')
+  const handleCreateJobListing = useCallback(() => {
+    navigate('/business-dashboard/create-job-listing')
   }, [navigate])
 
   const handleEditJob = useCallback(
     (job) => {
-      navigate(`/business-dashboard/create-job?id=${job.id}`, {
+      navigate(`/business-dashboard/create-job-listing?id=${job.id}`, {
         state: { jobData: job }
       })
     },
@@ -324,7 +324,7 @@ const BusinessDashboard = React.memo(({ user }) => {
   }, [jobOpportunities])
 
   return (
-    <div className='min-h-screen bg-gray-50 dark:bg-gray-800 relative overflow-hidden'>
+    <div className={`min-h-screen ${darkMode ? 'bg-gray-800' : 'bg-gray-50'}`}>
       {/* Background Elements */}
       <div className='fixed inset-0 pointer-events-none'>
         {darkMode ? (
@@ -362,19 +362,20 @@ const BusinessDashboard = React.memo(({ user }) => {
                 Manage your job opportunities and recruitment activities
               </p>
             </div>
-            <Button
-              type='primary'
-              size='large'
-              icon={<FontAwesomeIcon icon={faPlus} />}
-              onClick={handleCreateJob}
-              className='mt-4 sm:mt-0'
-              style={{
-                background: darkMode ? '#059669' : '#10b981',
-                borderColor: darkMode ? '#059669' : '#10b981'
-              }}
-            >
-              Post New Job
-            </Button>
+            <div className='flex flex-col sm:flex-row gap-3 mt-4 sm:mt-0'>
+              <Button
+                type='primary'
+                size='large'
+                icon={<FontAwesomeIcon icon={faPlus} />}
+                onClick={handleCreateJobListing}
+                style={{
+                  background: darkMode ? '#059669' : '#10b981',
+                  borderColor: darkMode ? '#059669' : '#10b981'
+                }}
+              >
+                Post Job Listing
+              </Button>
+            </div>
           </div>
 
           {/* Statistics Cards */}

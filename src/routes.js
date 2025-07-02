@@ -7,7 +7,7 @@ import JobDescriptions from './modules/BusinessDashboard/pages/JobDescriptions'
 import CreateJobDescription from './modules/BusinessDashboard/pages/CreateJobDescription'
 import Assessments from './modules/BusinessDashboard/pages/Assessments'
 import CreateAssessment from './modules/BusinessDashboard/pages/CreateAssessment'
-import CreateJobPosting from './modules/BusinessDashboard/pages/CreateJobPosting'
+import CreateJobListing from './modules/BusinessDashboard/pages/CreateJobListing'
 import Lookups from './modules/BusinessDashboard/pages/Lookups'
 import Header from './ui/layout/Header'
 import { useAuth } from './ui/AuthContext'
@@ -60,6 +60,11 @@ const AppRoutes = () => {
       setUser(null)
     }
   }, [currentUser, isAuthenticated])
+
+  // Track page views
+  useEffect(() => {
+    // Analytics tracking would go here
+  }, [location])
 
   return (
     <Routes>
@@ -157,24 +162,11 @@ const AppRoutes = () => {
       />
 
       <Route
-        path='/business-dashboard/create-job'
+        path='/business-dashboard/create-job-listing'
         element={
           user ? (
             <DashboardLayout user={user}>
-              <CreateJobPosting user={user} />
-            </DashboardLayout>
-          ) : (
-            <Navigate to='/' replace state={{ from: location }} />
-          )
-        }
-      />
-
-      <Route
-        path='/business-dashboard/edit-job'
-        element={
-          user ? (
-            <DashboardLayout user={user}>
-              <CreateJobPosting user={user} />
+              <CreateJobListing user={user} />
             </DashboardLayout>
           ) : (
             <Navigate to='/' replace state={{ from: location }} />
