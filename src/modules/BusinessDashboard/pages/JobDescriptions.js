@@ -4,38 +4,32 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react'
 import {
   Card,
   Button,
-  Modal,
   Tag,
-  Space,
   Tooltip,
   Table,
   message,
-  Popconfirm
+  Popconfirm,
+  Input
 } from 'antd'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
-  faPlus,
-  faEdit,
+  faPlus,  
   faTrash,
-  faEye,
-  faFileText,
   faBuilding,
-  faMapMarkerAlt,
-  faDollarSign,
   faUsers,
   faCalendarAlt,
-  faCopy,
-  faClone,
-  faClipboardCheck
+  faClipboardCheck,
+  faFileText
 } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../ui/ThemeContext'
 import BusinessSidebar from '../components/BusinessSidebar'
 import {
   getAllJobDescriptions,
-  deleteJobDescription,
-  duplicateJobDescription
+  deleteJobDescription
 } from '../JobDescriptions/utils.js/controller'
+
+const { Search } = Input
 
 /**
  * Job Descriptions page for managing detailed job descriptions
@@ -48,13 +42,11 @@ const JobDescriptions = React.memo(({ user }) => {
 
   // Get job context from navigation state
   const jobContext = location.state?.jobContext
-  const highlightJobId = location.state?.highlightJobId
 
   // State management
   const [jobDescriptions, setJobDescriptions] = useState([])
   const [loading, setLoading] = useState(false)
-  const [isViewModalVisible, setIsViewModalVisible] = useState(false)
-  const [selectedDescription, setSelectedDescription] = useState(null)
+  const [searchTerm, setSearchTerm] = useState('')
 
   // Load job descriptions from database
   useEffect(() => {
@@ -88,16 +80,16 @@ const JobDescriptions = React.memo(({ user }) => {
 
   const handleEditDescription = useCallback(
     (description) => {
-      // Navigate to edit page (to be implemented later)
-      message.info('Edit functionality will be implemented in a future update')
+      navigate('/business-dashboard/job-descriptions/create', {
+        state: { 
+          jobDescription: description,
+          isEdit: true,
+          editId: description.id 
+        }
+      })
     },
-    []
+    [navigate]
   )
-
-  const handleViewDescription = useCallback((description) => {
-    setSelectedDescription(description)
-    setIsViewModalVisible(true)
-  }, [])
 
   const handleDeleteDescription = useCallback(async (descriptionId) => {
     try {
@@ -115,42 +107,6 @@ const JobDescriptions = React.memo(({ user }) => {
     }
   }, [])
 
-  const handleViewModalClose = useCallback(() => {
-    setIsViewModalVisible(false)
-    setSelectedDescription(null)
-  }, [])
-
-  const handleCopyDescription = useCallback(async (description) => {
-    try {
-      // Copy description content to clipboard
-      const content = `${description.title}\n\n${description.overview}\n\nResponsibilities:\n${description.responsibilities.map((r) => `• ${r}`).join('\n')}\n\nRequirements:\n${description.requirements.map((r) => `• ${r}`).join('\n')}`
-      await navigator.clipboard.writeText(content)
-      message.success('Job description copied to clipboard!')
-    } catch (error) {
-      console.error('Error copying to clipboard:', error)
-      message.error('Failed to copy job description')
-    }
-  }, [])
-
-  const handleDuplicateDescription = useCallback(
-    async (description) => {
-      try {
-        const result = await duplicateJobDescription(description.id, user)
-        if (result.success) {
-          setJobDescriptions((prev) => [result.data, ...prev])
-          message.success('Job description duplicated successfully!')
-        } else {
-          console.error('Error duplicating job description:', result.error)
-          message.error('Failed to duplicate job description: ' + result.error)
-        }
-      } catch (error) {
-        console.error('Unexpected error duplicating job description:', error)
-        message.error('An unexpected error occurred while duplicating the job description')
-      }
-    },
-    [user]
-  )
-
   // Table columns configuration
   const columns = useMemo(
     () => [
@@ -160,7 +116,12 @@ const JobDescriptions = React.memo(({ user }) => {
         key: 'title',
         render: (text, record) => (
           <div>
-            <div className='font-semibold text-gray-900 dark:text-white'>{text}</div>
+            <div 
+              className='font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 cursor-pointer transition-colors duration-200'
+              onClick={() => handleEditDescription(record)}
+            >
+              {text}
+            </div>
             <div className='text-sm text-gray-500 dark:text-gray-400 flex items-center'>
               <FontAwesomeIcon icon={faBuilding} className='mr-1' />
               {record.company}
@@ -180,6 +141,7 @@ const JobDescriptions = React.memo(({ user }) => {
             {text}
           </div>
         ),
+        sorter: (a, b) => a.department.localeCompare(b.department),
         filters: [
           { text: 'Engineering', value: 'Engineering' },
           { text: 'Marketing', value: 'Marketing' },
@@ -191,27 +153,9 @@ const JobDescriptions = React.memo(({ user }) => {
         onFilter: (value, record) => record.department === value,
         width: 150
       },
+
       {
-        title: 'Location',
-        dataIndex: 'location',
-        key: 'location',
-        render: (text, record) => (
-          <div className='flex items-center'>
-            <FontAwesomeIcon icon={faMapMarkerAlt} className='mr-2 text-gray-400' />
-            <div>
-              <div>{text}</div>
-              {record.remote && (
-                <Tag color='green' size='small'>
-                  Remote
-                </Tag>
-              )}
-            </div>
-          </div>
-        ),
-        width: 180
-      },
-      {
-        title: 'Type',
+        title: 'Job Type',
         dataIndex: 'type',
         key: 'type',
         render: (type) => (
@@ -226,18 +170,7 @@ const JobDescriptions = React.memo(({ user }) => {
         onFilter: (value, record) => record.type === value,
         width: 120
       },
-      {
-        title: 'Salary Range',
-        dataIndex: 'salaryRange',
-        key: 'salaryRange',
-        render: (salary) => (
-          <div className='flex items-center'>
-            <FontAwesomeIcon icon={faDollarSign} className='mr-1 text-green-500' />
-            {salary}
-          </div>
-        ),
-        width: 150
-      },
+
       {
         title: 'Status',
         dataIndex: 'status',
@@ -271,71 +204,65 @@ const JobDescriptions = React.memo(({ user }) => {
         title: 'Actions',
         key: 'actions',
         render: (_, record) => (
-          <Space size='small' wrap>
-            <Tooltip title='View Details'>
+          <Popconfirm
+            title='Delete Job Description'
+            description='Are you sure you want to delete this job description? This action cannot be undone.'
+            onConfirm={() => handleDeleteDescription(record.id)}
+            okText='Delete'
+            cancelText='Cancel'
+            okType='danger'
+            placement='topRight'
+          >
+            <Tooltip title='Delete'>
               <Button
                 type='text'
                 size='small'
-                icon={<FontAwesomeIcon icon={faEye} />}
-                onClick={() => handleViewDescription(record)}
-                className='text-blue-500 hover:text-blue-700'
+                icon={<FontAwesomeIcon icon={faTrash} />}
+                className='text-red-500 hover:text-red-700'
               />
             </Tooltip>
-            <Tooltip title='Edit Description'>
-              <Button
-                type='text'
-                size='small'
-                icon={<FontAwesomeIcon icon={faEdit} />}
-                onClick={() => handleEditDescription(record)}
-                className='text-green-500 hover:text-green-700'
-              />
-            </Tooltip>
-            <Tooltip title='Copy to Clipboard'>
-              <Button
-                type='text'
-                size='small'
-                icon={<FontAwesomeIcon icon={faCopy} />}
-                onClick={() => handleCopyDescription(record)}
-                className='text-purple-500 hover:text-purple-700'
-              />
-            </Tooltip>
-            <Tooltip title='Duplicate'>
-              <Button
-                type='text'
-                size='small'
-                icon={<FontAwesomeIcon icon={faClone} />}
-                onClick={() => handleDuplicateDescription(record)}
-                className='text-orange-500 hover:text-orange-700'
-              />
-            </Tooltip>
-            <Popconfirm
-              title='Delete Job Description'
-              description='Are you sure you want to delete this job description? This action cannot be undone.'
-              onConfirm={() => handleDeleteDescription(record.id)}
-              okText='Delete'
-              cancelText='Cancel'
-              okType='danger'
-              placement='topRight'
-            >
-              <Tooltip title='Delete'>
-                <Button
-                  type='text'
-                  size='small'
-                  icon={<FontAwesomeIcon icon={faTrash} />}
-                  className='text-red-500 hover:text-red-700'
-                />
-              </Tooltip>
-            </Popconfirm>
-          </Space>
+          </Popconfirm>
         ),
-        width: 200,
+        width: 80,
         fixed: 'right'
       }
     ],
-    [handleViewDescription, handleEditDescription, handleCopyDescription, handleDuplicateDescription, handleDeleteDescription]
+    [handleEditDescription, handleDeleteDescription]
   )
 
+  // Filter data based on search term
+  const filteredJobDescriptions = useMemo(() => {
+    if (!searchTerm) return jobDescriptions
+    
+    return jobDescriptions.filter(description => 
+      description.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      description.company?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      description.department?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      description.type?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      description.status?.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  }, [jobDescriptions, searchTerm])
+
   return (
+    <>
+      {/* Dark Mode Styles */}
+      {darkMode && (
+        <style jsx global>{`
+          .dark-search .ant-input {
+            background-color: #4b5563 !important;
+            border-color: #6b7280 !important;
+            color: #ffffff !important;
+          }
+          .dark-search .ant-input::placeholder {
+            color: #9ca3af !important;
+          }
+          .dark-search .ant-input-search-button {
+            background-color: #6b7280 !important;
+            border-color: #6b7280 !important;
+          }
+        `}</style>
+      )}
+      
     <div className='min-h-screen bg-gray-50 dark:bg-gray-800 relative overflow-hidden'>
       {/* Background Elements */}
       <div className='fixed inset-0 pointer-events-none'>
@@ -365,27 +292,67 @@ const JobDescriptions = React.memo(({ user }) => {
 
       <BusinessSidebar />
       <div className='p-6 ml-64 relative z-10'>
-        {/* Header */}
-        <div className='mb-6'>
-          <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4'>
-            <div>
-              <h1 className='text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2'>Job Descriptions</h1>
-              <p className='text-gray-600 dark:text-gray-300'>
-                Create and manage detailed job descriptions for your positions
-              </p>
+        {/* Toolbar */}
+        <div 
+          className={`rounded-lg mb-6 px-6 py-4 shadow-lg ${
+            darkMode ? 'bg-gray-800 border border-gray-700' : ''
+          }`}
+          style={{
+            background: darkMode 
+              ? 'linear-gradient(135deg, #065f46 0%, #047857 50%, #059669 100%)'
+              : 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
+          }}
+        >
+          <div className="flex items-center justify-between">
+            {/* Left Side - Title and Description */}
+            <div className="flex items-center">
+              <div className="flex items-center mr-6">
+                <FontAwesomeIcon 
+                  icon={faFileText} 
+                  className={`text-lg mr-3 ${
+                    darkMode ? 'text-emerald-400' : 'text-white'
+                  }`} 
+                />
+                <div>
+                  <h1 className={`text-xl font-bold ${
+                    darkMode ? 'text-white' : 'text-white'
+                  }`}>
+                    Job Descriptions
+                  </h1>
+                  <p className={`text-sm mt-1 ${
+                    darkMode ? 'text-gray-300' : 'text-white/90'
+                  }`}>
+                    Create and manage detailed job descriptions
+                  </p>
+                </div>
+              </div>
             </div>
-            <Button
-              type='primary'
-              size='large'
-              icon={<FontAwesomeIcon icon={faPlus} />}
-              onClick={handleCreateDescription}
-              style={{
-                background: darkMode ? '#059669' : '#10b981',
-                borderColor: darkMode ? '#059669' : '#10b981'
-              }}
-            >
-              Create Description
-            </Button>
+
+            {/* Right Side - Actions */}
+            <div className="flex items-center space-x-3">
+              <Search
+                placeholder="Search job descriptions..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className={`w-64 ${darkMode ? 'dark-search' : ''}`}
+                style={{
+                  backgroundColor: darkMode ? '#4b5563' : 'rgba(255, 255, 255, 0.1)',
+                }}
+              />
+              <Button
+                type="primary"
+                icon={<FontAwesomeIcon icon={faPlus} />}
+                onClick={handleCreateDescription}
+                size="large"
+                className={
+                  darkMode 
+                    ? "bg-emerald-600 text-white border-emerald-600 hover:bg-emerald-700 hover:border-emerald-700 font-medium"
+                    : "bg-white text-emerald-600 border-white hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-100 font-medium"
+                }
+              >
+                Create Description
+              </Button>
+            </div>
           </div>
         </div>
 
@@ -412,7 +379,7 @@ const JobDescriptions = React.memo(({ user }) => {
         <Card className={`${darkMode ? 'bg-gray-700 border-gray-600' : ''} shadow-lg`}>
           <Table
             columns={columns}
-            dataSource={jobDescriptions}
+            dataSource={filteredJobDescriptions}
             loading={loading}
             rowKey='id'
             pagination={{
@@ -518,77 +485,7 @@ const JobDescriptions = React.memo(({ user }) => {
           />
         </Card>
 
-        {/* Job Description Details Modal */}
-        {selectedDescription && (
-          <Modal
-            title={
-              <span className={darkMode ? 'text-white' : 'text-gray-900'}>
-                Job Description Details
-              </span>
-            }
-            open={isViewModalVisible}
-            onCancel={handleViewModalClose}
-            footer={[
-              <Button key='close' onClick={handleViewModalClose}>
-                Close
-              </Button>
-            ]}
-            width={900}
-            className={darkMode ? 'ant-modal-dark' : ''}
-            styles={{
-              content: { backgroundColor: darkMode ? '#374151' : '#ffffff' },
-              body: { backgroundColor: darkMode ? '#374151' : '#ffffff' },
-              header: {
-                backgroundColor: darkMode ? '#374151' : '#ffffff',
-                borderBottom: darkMode ? '1px solid #4B5563' : '1px solid #e5e7eb'
-              },
-              footer: {
-                backgroundColor: darkMode ? '#374151' : '#ffffff',
-                borderTop: darkMode ? '1px solid #4B5563' : '1px solid #e5e7eb'
-              }
-            }}
-          >
-            <div className='space-y-6'>
-              <div>
-                <h3 className={`text-xl font-semibold mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                  {selectedDescription.title}
-                </h3>
-                <p className={`${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>{selectedDescription.overview}</p>
-              </div>
 
-              <div>
-                <h4 className={`font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                  Key Responsibilities:
-                </h4>
-                <ul className={`list-disc list-inside space-y-1 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                  {selectedDescription.responsibilities.map((resp, index) => (
-                    <li key={index}>{resp}</li>
-                  ))}
-                </ul>
-              </div>
-
-              <div>
-                <h4 className={`font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Requirements:</h4>
-                <ul className={`list-disc list-inside space-y-1 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                  {selectedDescription.requirements.map((req, index) => (
-                    <li key={index}>{req}</li>
-                  ))}
-                </ul>
-              </div>
-
-              {selectedDescription.benefits && selectedDescription.benefits.length > 0 && (
-                <div>
-                  <h4 className={`font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Benefits:</h4>
-                  <ul className={`list-disc list-inside space-y-1 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                    {selectedDescription.benefits.map((benefit, index) => (
-                      <li key={index}>{benefit}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </div>
-          </Modal>
-        )}
       </div>
 
       {/* Dark mode table styles */}
@@ -619,6 +516,7 @@ const JobDescriptions = React.memo(({ user }) => {
         }
       `}</style>
     </div>
+    </>
   )
 })
 

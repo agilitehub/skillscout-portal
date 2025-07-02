@@ -1,6 +1,6 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
-import React, { useState } from 'react'
+import React from 'react'
 import { NavLink } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { 
@@ -8,8 +8,6 @@ import {
   faFileText, 
   faClipboardCheck,
   faTachometerAlt,
-  faChevronDown,
-  faChevronRight,
   faCog,
   faCogs,
   faList
@@ -22,16 +20,6 @@ import { useTheme } from '../../../ui/ThemeContext'
  */
 const BusinessSidebar = React.memo(() => {
   const { darkMode } = useTheme()
-  const [expandedCategories, setExpandedCategories] = useState(['operations'])
-
-  // Toggle category expansion
-  const toggleCategory = (categoryKey) => {
-    setExpandedCategories(prev => 
-      prev.includes(categoryKey) 
-        ? prev.filter(key => key !== categoryKey)
-        : [...prev, categoryKey]
-    )
-  }
 
   // Navigation categories and items
   const navigationCategories = [
@@ -115,12 +103,11 @@ const BusinessSidebar = React.memo(() => {
         {navigationCategories.map((category) => (
           <div key={category.key} className="space-y-1">
             {/* Category Header */}
-            <button
-              onClick={() => toggleCategory(category.key)}
-              className={`w-full flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+            <div
+              className={`w-full flex items-center px-3 py-2 rounded-lg text-sm font-medium ${
                 darkMode
-                  ? 'text-gray-300 hover:bg-gray-800 hover:text-white'
-                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                  ? 'text-gray-300'
+                  : 'text-gray-600'
               }`}
             >
               <div 
@@ -136,70 +123,62 @@ const BusinessSidebar = React.memo(() => {
                 />
               </div>
               <span className="flex-1 text-left">{category.label}</span>
-              <FontAwesomeIcon 
-                icon={expandedCategories.includes(category.key) ? faChevronDown : faChevronRight}
-                className={`text-xs transition-transform duration-200 ${
-                  darkMode ? 'text-gray-500' : 'text-gray-400'
-                }`}
-              />
-            </button>
+            </div>
 
             {/* Category Items */}
-            {expandedCategories.includes(category.key) && (
-              <div className="ml-4 space-y-1">
-                {category.items.map((item) => (
-                  <NavLink
-                    key={item.path}
-                    to={item.path}
-                    end={item.exact}
-                    className={({ isActive }) =>
-                      `flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
-                        isActive
-                          ? darkMode
-                            ? 'bg-emerald-700 text-white shadow-lg'
-                            : 'bg-emerald-50 text-emerald-700 shadow-md border-l-4 border-emerald-500'
-                          : darkMode
-                            ? 'text-gray-300 hover:bg-gray-800 hover:text-white'
-                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                      }`
-                    }
-                  >
-                    {({ isActive }) => (
-                      <>
-                        <div 
-                          className={`w-7 h-7 rounded-md flex items-center justify-center mr-3 transition-all duration-200 ${
+            <div className="ml-4 space-y-1">
+              {category.items.map((item) => (
+                <NavLink
+                  key={item.path}
+                  to={item.path}
+                  end={item.exact}
+                  className={({ isActive }) =>
+                    `flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+                      isActive
+                        ? darkMode
+                          ? 'bg-emerald-700 text-white shadow-lg'
+                          : 'bg-emerald-50 text-emerald-700 shadow-md border-l-4 border-emerald-500'
+                        : darkMode
+                          ? 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                          : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                    }`
+                  }
+                >
+                  {({ isActive }) => (
+                    <>
+                      <div 
+                        className={`w-7 h-7 rounded-md flex items-center justify-center mr-3 transition-all duration-200 ${
+                          isActive
+                            ? darkMode
+                              ? 'bg-emerald-600'
+                              : 'bg-emerald-100'
+                            : darkMode
+                              ? 'bg-gray-800'
+                              : 'bg-gray-100'
+                        }`}
+                      >
+                        <FontAwesomeIcon 
+                          icon={item.icon} 
+                          className={`text-xs ${
                             isActive
                               ? darkMode
-                                ? 'bg-emerald-600'
-                                : 'bg-emerald-100'
+                                ? 'text-white'
+                                : 'text-emerald-700'
                               : darkMode
-                                ? 'bg-gray-800'
-                                : 'bg-gray-100'
-                          }`}
-                        >
-                          <FontAwesomeIcon 
-                            icon={item.icon} 
-                            className={`text-xs ${
-                              isActive
-                                ? darkMode
-                                  ? 'text-white'
-                                  : 'text-emerald-700'
-                                : darkMode
-                                  ? 'text-gray-400'
-                                  : 'text-gray-500'
-                            }`} 
-                          />
-                        </div>
-                        <span>{item.label}</span>
-                        {isActive && (
-                          <div className="ml-auto w-2 h-2 bg-emerald-500 rounded-full"></div>
-                        )}
-                      </>
-                    )}
-                  </NavLink>
-                ))}
-              </div>
-            )}
+                                ? 'text-gray-400'
+                                : 'text-gray-500'
+                          }`} 
+                        />
+                      </div>
+                      <span>{item.label}</span>
+                      {isActive && (
+                        <div className="ml-auto w-2 h-2 bg-emerald-500 rounded-full"></div>
+                      )}
+                    </>
+                  )}
+                </NavLink>
+              ))}
+            </div>
           </div>
         ))}
       </nav>

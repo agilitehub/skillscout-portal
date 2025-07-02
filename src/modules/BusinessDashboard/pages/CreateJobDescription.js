@@ -23,12 +23,11 @@ import {
   faFileText,
   faBuilding,
   faMapMarkerAlt,
-  faDollarSign,
   faUsers,
   faTasks,
   faClipboardList,
   faGift,
-  faCog
+  faArrowLeft
 } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../ui/ThemeContext'
 import BusinessSidebar from '../components/BusinessSidebar'
@@ -116,22 +115,91 @@ const CreateJobDescription = React.memo(({ user }) => {
       {/* Business Sidebar */}
       <BusinessSidebar />
 
-      {/* Header */}
-      <div
-        className={`sticky top-0 z-10 ${darkMode ? 'bg-gray-700' : 'bg-white'} border-b ${darkMode ? 'border-gray-600' : 'border-gray-200'} px-6 py-4 ml-64`}
-      >
-        <div>
-          <h1 className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-            Create New Job Description
-          </h1>
-          <p className={`${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-            Create a comprehensive job description to attract the right candidates
-          </p>
-        </div>
-      </div>
+      {/* Main Content */}
+      <div className='p-6 ml-64 relative z-10'>
+        {/* Toolbar */}
+        <div 
+          className={`rounded-lg mb-6 px-6 py-4 shadow-lg ${
+            darkMode ? 'bg-gray-800 border border-gray-700' : ''
+          }`}
+          style={{
+            background: darkMode 
+              ? 'linear-gradient(135deg, #065f46 0%, #047857 50%, #059669 100%)'
+              : 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
+          }}
+        >
+          <div className="flex items-center justify-between">
+            {/* Left Side - Back Button, Title and Description */}
+            <div className="flex items-center">
+              <Button
+                icon={<FontAwesomeIcon icon={faArrowLeft} />}
+                onClick={handleGoBack}
+                className={`mr-4 ${
+                  darkMode 
+                    ? 'border-gray-500 text-gray-200 hover:bg-gray-700 hover:border-gray-400' 
+                    : 'border-white/30 text-white hover:bg-white/10 hover:border-white/50'
+                }`}
+                style={{
+                  backgroundColor: darkMode ? '#4B5563' : 'rgba(255, 255, 255, 0.1)'
+                }}
+              >
+                Back
+              </Button>
+              <div className="flex items-center mr-6">
+                <FontAwesomeIcon 
+                  icon={faFileText} 
+                  className={`text-lg mr-3 ${
+                    darkMode ? 'text-emerald-400' : 'text-white'
+                  }`} 
+                />
+                <div>
+                  <h1 className={`text-xl font-bold ${
+                    darkMode ? 'text-white' : 'text-white'
+                  }`}>
+                    Create New Job Description
+                  </h1>
+                  <p className={`text-sm mt-1 ${
+                    darkMode ? 'text-gray-300' : 'text-white/90'
+                  }`}>
+                    Create a comprehensive job description to attract the right candidates
+                  </p>
+                </div>
+              </div>
+            </div>
 
-      {/* Main Content - Three Column Layout */}
-      <div className='p-6 relative z-10 ml-64'>
+            {/* Right Side - Actions */}
+            <div className="flex items-center space-x-3">
+              <Button
+                icon={<FontAwesomeIcon icon={faTimes} />}
+                onClick={handleGoBack}
+                size="large"
+                className={
+                  darkMode 
+                    ? "bg-red-600 text-white border-red-600 hover:bg-red-700 hover:border-red-700 font-medium"
+                    : "bg-white/10 text-white border-white/20 hover:bg-white/20 hover:border-white/30 font-medium"
+                }
+              >
+                Cancel
+              </Button>
+              <Button
+                type="primary"
+                icon={<FontAwesomeIcon icon={faSave} />}
+                onClick={() => form.submit()}
+                loading={loading}
+                size="large"
+                className={
+                  darkMode 
+                    ? "bg-emerald-600 text-white border-emerald-600 hover:bg-emerald-700 hover:border-emerald-700 font-medium"
+                    : "bg-white text-emerald-600 border-white hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-100 font-medium"
+                }
+              >
+                Save Job Description
+              </Button>
+            </div>
+          </div>
+        </div>
+
+
         {/* Dark Mode Form Styling */}
         {darkMode && (
           <style>
@@ -230,12 +298,19 @@ const CreateJobDescription = React.memo(({ user }) => {
           </style>
         )}
 
-        <Form
-          form={form}
-          layout='vertical'
-          onFinish={handleFormSubmit}
-          className={`max-w-7xl mx-auto ${darkMode ? 'dark-form' : ''}`}
+        <Card 
+          className={`max-w-7xl mx-auto shadow-xl ${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-200'}`}
+          style={{
+            backgroundColor: darkMode ? '#374151' : '#ffffff',
+            borderColor: darkMode ? '#4B5563' : '#e5e7eb'
+          }}
         >
+          <Form
+            form={form}
+            layout='vertical'
+            onFinish={handleFormSubmit}
+            className={`${darkMode ? 'dark-form' : ''}`}
+          >
           {/* Dark Mode Tab Styling */}
           {darkMode && (
             <style>
@@ -352,7 +427,16 @@ const CreateJobDescription = React.memo(({ user }) => {
             >
               <Row gutter={32}>
                 <Col span={12}>
-                  <div className='space-y-4'>
+                  <div 
+                    className={`space-y-4 p-6 rounded-lg border ${
+                      darkMode 
+                        ? 'bg-gray-800 border-gray-600' 
+                        : 'bg-gray-50 border-gray-200'
+                    }`}
+                  >
+                    <div className={`mb-4 pb-2 border-b ${darkMode ? 'border-gray-600' : 'border-gray-200'}`}>
+                      <h3 className={`text-lg font-semibold ${darkMode ? 'text-gray-200' : 'text-gray-800'}`}>Basic Details</h3>
+                    </div>
                     <Form.Item
                       label={<span className={darkMode ? 'text-gray-300' : 'text-gray-900'}>Status</span>}
                       name="status"
@@ -381,37 +465,6 @@ const CreateJobDescription = React.memo(({ user }) => {
                     </Form.Item>
 
                     <Form.Item
-                      label={<span className={darkMode ? 'text-gray-300' : 'text-gray-900'}>Department</span>}
-                      name="department"
-                      rules={[
-                        { required: true, message: 'Please enter department' },
-                        { max: 255, message: 'Department must be 255 characters or less' }
-                      ]}
-                    >
-                      <Input 
-                        placeholder="e.g. Engineering"
-                        prefix={<FontAwesomeIcon icon={faUsers} className="text-gray-400" />}
-                      />
-                    </Form.Item>
-
-                    <Form.Item
-                      label={<span className={darkMode ? 'text-gray-300' : 'text-gray-900'}>Job Type</span>}
-                      name="type"
-                      rules={[{ required: true, message: 'Please select job type' }]}
-                    >
-                      <Select placeholder="Select job type">
-                        <Option value="Full-time">Full-time</Option>
-                        <Option value="Part-time">Part-time</Option>
-                        <Option value="Contract">Contract</Option>
-                        <Option value="Internship">Internship</Option>
-                      </Select>
-                    </Form.Item>
-
-                  </div>
-                </Col>
-                <Col span={12}>
-                  <div className='space-y-4'>
-                    <Form.Item
                       label={<span className={darkMode ? 'text-gray-300' : 'text-gray-900'}>Job Overview</span>}
                       name="overview"
                       rules={[{ required: true, message: 'Please enter job overview' }]}
@@ -422,6 +475,61 @@ const CreateJobDescription = React.memo(({ user }) => {
                         placeholder="Describe the role, its importance to the company, and what the successful candidate will achieve..."
                         showCount
                         maxLength={2000}
+                      />
+                    </Form.Item>
+
+                    <Form.Item
+                      label={<span className={darkMode ? 'text-gray-300' : 'text-gray-900'}>Company</span>}
+                      name="company"
+                      rules={[
+                        { required: true, message: 'Please enter company name' },
+                        { max: 255, message: 'Company name must be 255 characters or less' }
+                      ]}
+                    >
+                      <Input 
+                        placeholder="e.g. Tech Corp"
+                        prefix={<FontAwesomeIcon icon={faBuilding} className="text-gray-400" />}
+                      />
+                    </Form.Item>
+
+                    <Form.Item
+                      label={<span className={darkMode ? 'text-gray-300' : 'text-gray-900'}>Location</span>}
+                      name="location"
+                      rules={[
+                        { required: true, message: 'Please enter location' },
+                        { max: 255, message: 'Location must be 255 characters or less' }
+                      ]}
+                    >
+                      <Input 
+                        placeholder="e.g. San Francisco, CA"
+                        prefix={<FontAwesomeIcon icon={faMapMarkerAlt} className="text-gray-400" />}
+                      />
+                    </Form.Item>
+
+                  </div>
+                </Col>
+                <Col span={12}>
+                  <div 
+                    className={`space-y-4 p-6 rounded-lg border ${
+                      darkMode 
+                        ? 'bg-gray-800 border-gray-600' 
+                        : 'bg-gray-50 border-gray-200'
+                    }`}
+                  >
+                    <div className={`mb-4 pb-2 border-b ${darkMode ? 'border-gray-600' : 'border-gray-200'}`}>
+                      <h3 className={`text-lg font-semibold ${darkMode ? 'text-gray-200' : 'text-gray-800'}`}>Job Details</h3>
+                    </div>
+                    <Form.Item
+                      label={<span className={darkMode ? 'text-gray-300' : 'text-gray-900'}>Department</span>}
+                      name="department"
+                      rules={[
+                        { required: true, message: 'Please enter department' },
+                        { max: 255, message: 'Department must be 255 characters or less' }
+                      ]}
+                    >
+                      <Input 
+                        placeholder="e.g. Engineering"
+                        prefix={<FontAwesomeIcon icon={faUsers} className="text-gray-400" />}
                       />
                     </Form.Item>
 
@@ -438,13 +546,14 @@ const CreateJobDescription = React.memo(({ user }) => {
                     </Form.Item>
 
                     <Form.Item
-                      label={<span className={darkMode ? 'text-gray-300' : 'text-gray-900'}>Salary Range</span>}
-                      name="salaryRange"
-                      rules={[{ required: true, message: 'Please enter salary range' }]}
+                      label={<span className={darkMode ? 'text-gray-300' : 'text-gray-900'}>Keywords</span>}
+                      name="searchKeywords"
+                      extra={<span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>Add relevant keywords to help with categorization and search</span>}
                     >
-                      <Input 
-                        placeholder="e.g. $80,000 - $120,000"
-                        prefix={<FontAwesomeIcon icon={faDollarSign} className="text-gray-400" />}
+                      <Select
+                        mode="tags"
+                        placeholder="Add keywords like: javascript, react, senior, remote, frontend, engineer"
+                        tokenSeparators={[',']}
                       />
                     </Form.Item>
                   </div>
@@ -452,19 +561,29 @@ const CreateJobDescription = React.memo(({ user }) => {
               </Row>
             </TabPane>
 
-            {/* Tab 2: Job Content & Requirements */}
+            {/* Tab 2: Detailed Information */}
             <TabPane 
               tab={
                 <span className="flex items-center space-x-2">
                   <FontAwesomeIcon icon={faTasks} />
-                  <span>Job Content & Requirements</span>
+                  <span>Detailed Information</span>
                 </span>
               }
               key="2"
             >
               <Row gutter={32}>
-                <Col span={12}>
-                  <div className='space-y-4'>
+                <Col span={24}>
+                  <div 
+                    className={`space-y-6 p-6 rounded-lg border ${
+                      darkMode 
+                        ? 'bg-gray-800 border-gray-600' 
+                        : 'bg-gray-50 border-gray-200'
+                    }`}
+                  >
+                    <div className={`mb-4 pb-2 border-b ${darkMode ? 'border-gray-600' : 'border-gray-200'}`}>
+                      <h3 className={`text-lg font-semibold ${darkMode ? 'text-gray-200' : 'text-gray-800'}`}>Detailed Information</h3>
+                    </div>
+                    
                     <Form.Item
                       label={
                         <Space>
@@ -477,7 +596,7 @@ const CreateJobDescription = React.memo(({ user }) => {
                       extra={<span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>Enter each responsibility on a new line. Bullet points will be automatically formatted.</span>}
                     >
                       <TextArea
-                        rows={10}
+                        rows={8}
                         placeholder={`• Lead development of new features and products
 • Collaborate with cross-functional teams
 • Mentor junior developers
@@ -485,10 +604,7 @@ const CreateJobDescription = React.memo(({ user }) => {
                         showCount
                       />
                     </Form.Item>
-                  </div>
-                </Col>
-                <Col span={12}>
-                  <div className='space-y-4'>
+
                     <Form.Item
                       label={
                         <Space>
@@ -501,7 +617,7 @@ const CreateJobDescription = React.memo(({ user }) => {
                       extra={<span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>List the essential skills, qualifications, and experience needed for this role</span>}
                     >
                       <TextArea
-                        rows={10}
+                        rows={8}
                         placeholder={`• 5+ years of experience with React and modern JavaScript
 • Strong understanding of software engineering principles
 • Experience with REST APIs and database design
@@ -521,7 +637,7 @@ const CreateJobDescription = React.memo(({ user }) => {
                       extra={<span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>List the benefits and perks offered with this position</span>}
                     >
                       <TextArea
-                        rows={10}
+                        rows={8}
                         placeholder={`• Competitive salary and equity package
 • Comprehensive health, dental, and vision insurance
 • Flexible PTO and work-from-home options
@@ -534,62 +650,10 @@ const CreateJobDescription = React.memo(({ user }) => {
               </Row>
             </TabPane>
 
-            {/* Tab 3: Additional Information & Settings */}
-            <TabPane 
-              tab={
-                <span className="flex items-center space-x-2">
-                  <FontAwesomeIcon icon={faCog} />
-                  <span>Additional Information</span>
-                </span>
-              }
-              key="3"
-            >
-                            <Row gutter={32}>
-                <Col span={24}>
-                  <div className='space-y-4'>
-                    <Form.Item
-                      label={<span className={darkMode ? 'text-gray-300' : 'text-gray-900'}>Keywords</span>}
-                      name="searchKeywords"
-                      extra={<span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>Add relevant keywords to help with categorization and search</span>}
-                    >
-                      <Select
-                        mode="tags"
-                        placeholder="Add keywords like: javascript, react, senior, remote, frontend, engineer"
-                        tokenSeparators={[',']}
-                      />
-                    </Form.Item>
-                  </div>
-                </Col>
-              </Row>
-            </TabPane>
-          </Tabs>
-        </Form>
 
-        {/* Footer */}
-        <div className={`sticky bottom-0 z-10 ${darkMode ? 'bg-gray-700' : 'bg-white'} border-t ${darkMode ? 'border-gray-600' : 'border-gray-200'} px-6 py-4 mt-8`}>
-          <div className='flex justify-end space-x-3'>
-            <Button
-              icon={<FontAwesomeIcon icon={faTimes} />}
-              onClick={handleGoBack}
-              size="large"
-            >
-              Cancel
-            </Button>
-            <Button
-              type='primary'
-              icon={<FontAwesomeIcon icon={faSave} />}
-              onClick={() => form.submit()}
-              loading={loading}
-              size="large"
-              style={{
-                background: darkMode ? '#059669' : '#10b981',
-                borderColor: darkMode ? '#059669' : '#10b981'
-              }}
-            >
-              Save Job Description
-            </Button>
-          </div>
-        </div>
+          </Tabs>
+          </Form>
+        </Card>
       </div>
     </div>
   )
