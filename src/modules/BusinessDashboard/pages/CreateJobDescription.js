@@ -478,33 +478,7 @@ const CreateJobDescription = React.memo(({ user }) => {
                       />
                     </Form.Item>
 
-                    <Form.Item
-                      label={<span className={darkMode ? 'text-gray-300' : 'text-gray-900'}>Company</span>}
-                      name="company"
-                      rules={[
-                        { required: true, message: 'Please enter company name' },
-                        { max: 255, message: 'Company name must be 255 characters or less' }
-                      ]}
-                    >
-                      <Input 
-                        placeholder="e.g. Tech Corp"
-                        prefix={<FontAwesomeIcon icon={faBuilding} className="text-gray-400" />}
-                      />
-                    </Form.Item>
 
-                    <Form.Item
-                      label={<span className={darkMode ? 'text-gray-300' : 'text-gray-900'}>Location</span>}
-                      name="location"
-                      rules={[
-                        { required: true, message: 'Please enter location' },
-                        { max: 255, message: 'Location must be 255 characters or less' }
-                      ]}
-                    >
-                      <Input 
-                        placeholder="e.g. San Francisco, CA"
-                        prefix={<FontAwesomeIcon icon={faMapMarkerAlt} className="text-gray-400" />}
-                      />
-                    </Form.Item>
 
                   </div>
                 </Col>
