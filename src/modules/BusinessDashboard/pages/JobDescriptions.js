@@ -330,6 +330,18 @@ const JobDescriptions = React.memo(({ user }) => {
 
             {/* Right Side - Actions */}
             <div className="flex items-center space-x-3">
+              <Button
+                type="primary"
+                icon={<FontAwesomeIcon icon={faPlus} />}
+                onClick={handleCreateDescription}
+                className={`w-64 ${
+                  darkMode 
+                    ? "bg-emerald-600 text-white border-emerald-600 hover:bg-emerald-700 hover:border-emerald-700 font-medium"
+                    : "bg-white text-emerald-600 border-white hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-100 font-medium"
+                }`}
+              >
+                Create Description
+              </Button>
               <Search
                 placeholder="Search job descriptions..."
                 value={searchTerm}
@@ -339,19 +351,6 @@ const JobDescriptions = React.memo(({ user }) => {
                   backgroundColor: darkMode ? '#4b5563' : 'rgba(255, 255, 255, 0.1)',
                 }}
               />
-              <Button
-                type="primary"
-                icon={<FontAwesomeIcon icon={faPlus} />}
-                onClick={handleCreateDescription}
-                size="large"
-                className={
-                  darkMode 
-                    ? "bg-emerald-600 text-white border-emerald-600 hover:bg-emerald-700 hover:border-emerald-700 font-medium"
-                    : "bg-white text-emerald-600 border-white hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-100 font-medium"
-                }
-              >
-                Create Description
-              </Button>
             </div>
           </div>
         </div>
@@ -452,20 +451,6 @@ const JobDescriptions = React.memo(({ user }) => {
                         borderBottom: darkMode ? '1px solid #4b5563' : '1px solid #f0f0f0',
                         ...props.style
                       }}
-                      onMouseEnter={(e) => {
-                        if (isRelated) {
-                          e.currentTarget.style.backgroundColor = darkMode ? '#1e40af' : '#bfdbfe'
-                        } else {
-                          e.currentTarget.style.backgroundColor = darkMode ? '#4b5563' : '#fafafa'
-                        }
-                      }}
-                      onMouseLeave={(e) => {
-                        if (isRelated) {
-                          e.currentTarget.style.backgroundColor = darkMode ? '#1e3a8a' : '#dbeafe'
-                        } else {
-                          e.currentTarget.style.backgroundColor = darkMode ? '#374151' : '#ffffff'
-                        }
-                      }}
                     />
                   )
                 },
@@ -500,9 +485,7 @@ const JobDescriptions = React.memo(({ user }) => {
           color: #ffffff !important;
           border-bottom: 1px solid #4b5563 !important;
         }
-        .dark-table .ant-table-tbody > tr:hover > td {
-          background-color: #4b5563 !important;
-        }
+
         .dark-pagination .ant-pagination-item {
           background-color: #4b5563 !important;
           border-color: #6b7280 !important;

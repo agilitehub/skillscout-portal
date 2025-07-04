@@ -1,601 +1,1020 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
-import React, { useState, useEffect, useMemo, useCallback } from 'react'
-import {
-  Card,
-  Button,
-  Modal,
-  Tag,
-  Space,
-  Tooltip,
-  Progress,
-  Statistic,
-  Row,
-  Col,
-  Alert,
-  message,
-  Popconfirm
-} from 'antd'
-import { useLocation, useNavigate } from 'react-router-dom'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {
-  faPlus,
-  faEdit,
-  faTrash,
-  faEye,
-  faClipboardCheck,
-  faCode,
-  faBrain,
-  faUsers,
-  faChartBar,
-  faClock,
-  faCheckCircle,
-  faTimesCircle,
-  faPlay,
-  faPause,
-  faCopy
-} from '@fortawesome/free-solid-svg-icons'
+import React, { useState, useCallback } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useTheme } from '../../../ui/ThemeContext'
 import BusinessSidebar from '../components/BusinessSidebar'
-import {
-  getAllAssessments,
-  updateAssessment,
-  deleteAssessment,
-  duplicateAssessment
-} from '../Assessments/utils.js/controller'
-import { formatSkills } from '../Assessments/utils.js/data-model'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { 
+  faClipboardCheck,
+  faPlus,
+  faMinus,
+  faEdit,
+  faTrash,
+  faFilter,
+  faArrowLeft,
+  faEye,
+  faCheckCircle,
+  faTimesCircle
+} from '@fortawesome/free-solid-svg-icons'
+import { 
+  Card, 
+  Table, 
+  Button, 
+  Input, 
+  Select, 
+  Modal, 
+  Form, 
+  message, 
+  Space,
+  Popconfirm,
+  Tooltip,
+  Switch,
+  Row,
+  Col,
+  Tag
+} from 'antd'
+
+const { Search } = Input
+const { Option } = Select
+const { TextArea } = Input
 
 /**
- * Assessments page for managing skill assessments and candidate testing
- * Allows creation and management of various assessment types
+ * Assessments Management Page
+ * Manages assessments with Question, Context, and Preferred Feedback fields
  */
 const Assessments = React.memo(({ user }) => {
   const { darkMode } = useTheme()
-  const location = useLocation()
   const navigate = useNavigate()
-
-  // Get job context from navigation state
-  const jobContext = location.state?.jobContext
-  const highlightJobId = location.state?.highlightJobId
-
+  const [form] = Form.useForm()
+  
   // State management
-  const [assessments, setAssessments] = useState([])
-  const [loading, setLoading] = useState(false)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [selectedStatus, setSelectedStatus] = useState('all')
+  const [isModalVisible, setIsModalVisible] = useState(false)
+  const [editingAssessment, setEditingAssessment] = useState(null)
   const [isViewModalVisible, setIsViewModalVisible] = useState(false)
   const [selectedAssessment, setSelectedAssessment] = useState(null)
 
-  // Load assessments from database
-  useEffect(() => {
-    const loadAssessments = async () => {
-      setLoading(true)
-      try {
-        const result = await getAllAssessments()
-        if (result.success) {
-          setAssessments(result.data)
-        } else {
-          console.error('Error loading assessments:', result.error)
-          message.error('Failed to load assessments: ' + result.error)
-          setAssessments([])
-        }
-      } catch (error) {
-        console.error('Unexpected error loading assessments:', error)
-        message.error('An unexpected error occurred while loading assessments')
-        setAssessments([])
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    loadAssessments()
-  }, [])
-
-  // Handle create assessment navigation
-  const handleCreateAssessment = useCallback(() => {
-    navigate('/business-dashboard/assessments/create')
-  }, [navigate])
-
-  const handleEditAssessment = useCallback(
-    (assessment) => {
-      // Navigate to edit page (to be implemented later)
-      message.info('Edit functionality will be implemented in a future update')
+  // Sample assessment data - in real app this would come from API
+  const [assessmentData, setAssessmentData] = useState([
+    {
+      id: 1,
+      question: 'Describe your experience with React and modern JavaScript frameworks',
+      context: 'This question is designed to assess a candidate\'s frontend development skills, particularly their understanding of React concepts like components, state management, hooks, and the overall React ecosystem.',
+      preferredFeedback: 'Look for mentions of component-based architecture, state management solutions (Redux, Context API), hooks usage, and understanding of React lifecycle. Good answers should demonstrate practical experience with real projects.',
+      status: 'Active',
+      isActive: true,
+      category: 'Technical',
+      tags: ['React', 'JavaScript', 'Frontend'],
+      completions: 45,
+      totalAttempts: 52,
+      averageScore: 78
     },
-    []
-  )
+    {
+      id: 2,
+      question: 'Tell me about a challenging project you worked on and how you overcame obstacles',
+      context: 'This behavioral question evaluates problem-solving skills, resilience, and communication abilities. It helps understand how candidates handle pressure and work through complex situations.',
+      preferredFeedback: 'Assess the candidate\'s ability to structure their response using STAR method (Situation, Task, Action, Result). Look for evidence of problem-solving, collaboration, and learning from challenges.',
+      status: 'Active',
+      isActive: true,
+      category: 'Behavioral',
+      tags: ['Problem Solving', 'Communication', 'Leadership'],
+      completions: 38,
+      totalAttempts: 41,
+      averageScore: 85
+    },
+    {
+      id: 3,
+      question: 'Design a database schema for an e-commerce platform',
+      context: 'This technical question tests database design skills, understanding of relationships, normalization, and scalability considerations for a complex system.',
+      preferredFeedback: 'Evaluate understanding of entity relationships, proper normalization, indexing strategies, and consideration of scalability. Look for discussion of user tables, product catalogs, orders, and payment systems.',
+      status: 'Draft',
+      isActive: false,
+      category: 'Technical',
+      tags: ['Database', 'System Design', 'Architecture'],
+      completions: 0,
+      totalAttempts: 0,
+      averageScore: 0
+    },
+    {
+      id: 4,
+      question: 'How do you handle working with difficult team members?',
+      context: 'This question assesses interpersonal skills, conflict resolution abilities, and emotional intelligence in professional settings.',
+      preferredFeedback: 'Look for mature approaches to conflict resolution, empathy, communication skills, and ability to maintain professionalism. Good answers show understanding of different perspectives and collaborative problem-solving.',
+      status: 'Active',
+      isActive: true,
+      category: 'Behavioral',
+      tags: ['Team Work', 'Conflict Resolution', 'Communication'],
+      completions: 29,
+      totalAttempts: 33,
+      averageScore: 72
+    }
+  ])
 
-  const handleViewAssessment = useCallback((assessment) => {
+  // Filter data based on search and status
+  const filteredData = assessmentData.filter(assessment => {
+    const matchesSearch = searchTerm === '' || 
+      assessment.question.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      assessment.context.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      assessment.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      assessment.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+    
+    const matchesStatus = selectedStatus === 'all' || assessment.status === selectedStatus
+    
+    return matchesSearch && matchesStatus
+  })
+
+  // Handle add new assessment
+  const handleAdd = useCallback(() => {
+    setIsModalVisible(true)
+    setEditingAssessment(null)
+    form.resetFields()
+  }, [form])
+
+  // Handle edit existing assessment  
+  const handleEdit = useCallback((assessment) => {
+    setEditingAssessment(assessment)
+    setIsModalVisible(true)
+    
+    // Populate form with existing data
+    form.setFieldsValue({
+      question: assessment.question,
+      context: assessment.context,
+      preferredFeedback: assessment.preferredFeedback,
+      status: assessment.status,
+      isActive: assessment.isActive,
+      category: assessment.category,
+      tags: assessment.tags || []
+    })
+  }, [form])
+
+  // Handle view assessment
+  const handleView = useCallback((assessment) => {
     setSelectedAssessment(assessment)
     setIsViewModalVisible(true)
   }, [])
 
-  const handleDeleteAssessment = useCallback(async (assessmentId) => {
+  // Handle form submission
+  const handleSubmit = useCallback(async (values) => {
     try {
-      const result = await deleteAssessment(assessmentId)
-      if (result.success) {
-        setAssessments((prev) => prev.filter((assessment) => assessment.id !== assessmentId))
-        message.success('Assessment deleted successfully')
-      } else {
-        console.error('Error deleting assessment:', result.error)
-        message.error('Failed to delete assessment: ' + result.error)
+      const newAssessment = {
+        ...values,
+        id: editingAssessment ? editingAssessment.id : Date.now(),
+        completions: editingAssessment ? editingAssessment.completions : 0,
+        totalAttempts: editingAssessment ? editingAssessment.totalAttempts : 0,
+        averageScore: editingAssessment ? editingAssessment.averageScore : 0
       }
+
+      setAssessmentData(prev => 
+        editingAssessment
+          ? prev.map(assessment => assessment.id === editingAssessment.id ? newAssessment : assessment)
+          : [...prev, newAssessment]
+      )
+
+      message.success(`${editingAssessment ? 'Updated' : 'Added'} assessment successfully`)
+      setIsModalVisible(false)
+      setEditingAssessment(null)
+      form.resetFields()
     } catch (error) {
-      console.error('Unexpected error deleting assessment:', error)
-      message.error('An unexpected error occurred while deleting the assessment')
+      message.error('Failed to save assessment')
     }
+  }, [editingAssessment, form])
+
+  // Handle delete
+  const handleDelete = useCallback((id) => {
+    setAssessmentData(prev => prev.filter(assessment => assessment.id !== id))
+    message.success('Assessment deleted successfully')
   }, [])
 
-  const handleDuplicateAssessment = useCallback(
-    async (assessmentId) => {
-      try {
-        const result = await duplicateAssessment(assessmentId, user)
-        if (result.success) {
-          setAssessments((prev) => [result.data, ...prev])
-          message.success('Assessment duplicated successfully')
-        } else {
-          console.error('Error duplicating assessment:', result.error)
-          message.error('Failed to duplicate assessment: ' + result.error)
-        }
-      } catch (error) {
-        console.error('Unexpected error duplicating assessment:', error)
-        message.error('An unexpected error occurred while duplicating the assessment')
-      }
+  // Truncate text for display
+  const truncateText = (text, maxLength = 100) => {
+    if (!text || text.length <= maxLength) return text || ''
+    return text.substring(0, maxLength) + '...'
+  }
+
+  // Table columns
+  const columns = [
+    {
+      title: 'QUESTION',
+      dataIndex: 'question',
+      key: 'question',
+      render: (text) => (
+        <div className={`font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+          {truncateText(text, 80)}
+        </div>
+      )
     },
-    [user]
-  )
-
-  const handleViewModalClose = useCallback(() => {
-    setIsViewModalVisible(false)
-    setSelectedAssessment(null)
-  }, [])
-
-  // Get assessment type icon
-  const getTypeIcon = (type) => {
-    switch (type) {
-      case 'Technical':
-        return faCode
-      case 'Behavioral':
-        return faBrain
-      case 'Portfolio':
-        return faClipboardCheck
-      default:
-        return faClipboardCheck
-    }
-  }
-
-  // Get difficulty color
-  const getDifficultyColor = (difficulty) => {
-    switch (difficulty) {
-      case 'Beginner':
-        return 'green'
-      case 'Intermediate':
-        return 'orange'
-      case 'Advanced':
-        return 'red'
-      default:
-        return 'blue'
-    }
-  }
-
-  // Calculate overall stats
-  const overallStats = useMemo(() => {
-    const activeAssessments = assessments.filter((a) => a.status === 'Active')
-    const totalCompletions = assessments.reduce((sum, a) => sum + a.completions, 0)
-    const totalAttempts = assessments.reduce((sum, a) => sum + a.totalAttempts, 0)
-    const avgSuccessRate =
-      assessments.length > 0
-        ? Math.round(assessments.reduce((sum, a) => sum + a.successRate, 0) / assessments.length)
-        : 0
-
-    return {
-      totalAssessments: assessments.length,
-      activeAssessments: activeAssessments.length,
-      totalCompletions,
-      avgSuccessRate
-    }
-  }, [assessments])
-
-  return (
-    <div className='min-h-screen bg-gray-50 dark:bg-gray-800 relative overflow-hidden'>
-      {/* Background Elements */}
-      <div className='fixed inset-0 pointer-events-none'>
-        {darkMode ? (
-          <>
-            <div
-              className='absolute -top-[10%] -right-[10%] w-1/2 h-1/2 rounded-full blur-3xl'
-              style={{ background: 'radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%)' }}
-            />
-            <div
-              className='absolute -bottom-[10%] -left-[10%] w-1/2 h-1/2 rounded-full blur-3xl'
-              style={{ background: 'radial-gradient(circle, rgba(34, 197, 94, 0.12) 0%, transparent 70%)' }}
-            />
-            <div
-              className='absolute top-1/3 left-1/3 w-1/4 h-1/4 rounded-full blur-3xl'
-              style={{ background: 'radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, transparent 70%)' }}
-            />
-          </>
-        ) : (
-          <>
-            <div className='absolute top-0 right-0 w-2/3 h-2/3 bg-gradient-to-bl from-blue-400/30 to-transparent rounded-full blur-3xl opacity-80' />
-            <div className='absolute bottom-0 left-0 w-2/3 h-2/3 bg-gradient-to-tr from-blue-500/30 to-transparent rounded-full blur-3xl opacity-80' />
-            <div className='absolute top-1/4 left-1/4 w-1/3 h-1/3 bg-gradient-to-br from-amber-400/30 to-transparent rounded-full blur-3xl opacity-80' />
-          </>
-        )}
-      </div>
-
-      <BusinessSidebar />
-      <div className='p-6 ml-64 relative z-10'>
-        {/* Header */}
-        <div className='mb-6'>
-          <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4'>
-            <div>
-              <h1 className='text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2'>Assessments</h1>
-              <p className='text-gray-600 dark:text-gray-300'>
-                Create and manage skill assessments for candidate evaluation
-              </p>
-            </div>
+    {
+      title: 'CATEGORY',
+      dataIndex: 'category',
+      key: 'category',
+      render: (text) => (
+        <Tag color={text === 'Technical' ? 'blue' : 'green'}>
+          {text}
+        </Tag>
+      ),
+      width: 120
+    },
+    {
+      title: 'STATUS',
+      dataIndex: 'status',
+      key: 'status',
+      render: (status, record) => (
+        <span className={`inline-flex items-center px-2 py-1 text-xs font-medium rounded-full ${
+          status === 'Active' 
+            ? 'bg-green-100 text-green-800' 
+            : 'bg-yellow-100 text-yellow-800'
+        }`}>
+          <FontAwesomeIcon 
+            icon={status === 'Active' ? faCheckCircle : faTimesCircle} 
+            className="mr-1"
+          />
+          {status}
+        </span>
+      ),
+      width: 100
+    },
+    {
+      title: 'COMPLETIONS',
+      dataIndex: 'completions',
+      key: 'completions',
+      render: (count) => (
+        <span className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+          {count}
+        </span>
+      ),
+      width: 100
+    },
+    {
+      title: 'AVG SCORE',
+      dataIndex: 'averageScore',
+      key: 'averageScore',
+      render: (score) => (
+        <span className={`font-medium ${
+          score >= 80 ? 'text-green-600' :
+          score >= 60 ? 'text-yellow-600' :
+          'text-red-600'
+        }`}>
+          {score}%
+        </span>
+      ),
+      width: 100
+    },
+    {
+      title: 'ACTIONS',
+      key: 'actions',
+      render: (_, record) => (
+        <Space>
+          <Tooltip title="View">
             <Button
-              type='primary'
-              size='large'
-              icon={<FontAwesomeIcon icon={faPlus} />}
-              onClick={handleCreateAssessment}
+              size="small"
+              icon={<FontAwesomeIcon icon={faEye} />}
+              onClick={() => handleView(record)}
               style={{
-                background: darkMode ? '#059669' : '#10b981',
-                borderColor: darkMode ? '#059669' : '#10b981'
+                backgroundColor: 'transparent',
+                borderColor: darkMode ? '#6b7280' : '#d1d5db',
+                color: darkMode ? '#9ca3af' : '#6b7280'
               }}
-            >
-              Create Assessment
-            </Button>
+            />
+          </Tooltip>
+          <Tooltip title="Edit">
+            <Button
+              size="small"
+              icon={<FontAwesomeIcon icon={faEdit} />}
+              onClick={() => handleEdit(record)}
+              style={{
+                backgroundColor: 'transparent',
+                borderColor: darkMode ? '#6b7280' : '#d1d5db',
+                color: darkMode ? '#9ca3af' : '#6b7280'
+              }}
+            />
+          </Tooltip>
+          <Popconfirm
+            title="Are you sure you want to delete this assessment?"
+            onConfirm={() => handleDelete(record.id)}
+            okText="Yes"
+            cancelText="No"
+          >
+            <Tooltip title="Delete">
+              <Button
+                size="small"
+                danger
+                icon={<FontAwesomeIcon icon={faTrash} />}
+              />
+            </Tooltip>
+          </Popconfirm>
+        </Space>
+      ),
+      width: 120
+    }
+  ]
+
+  // Expandable row content
+  const expandedRowRender = (record) => {
+    return (
+      <div className="px-4 pb-4">
+        <div className={`space-y-4 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+          <div>
+            <h4 className={`font-semibold mb-2 ${darkMode ? 'text-emerald-400' : 'text-emerald-700'}`}>
+              Context:
+            </h4>
+            <p className="text-sm leading-relaxed">
+              {record.context}
+            </p>
+          </div>
+          
+          <div>
+            <h4 className={`font-semibold mb-2 ${darkMode ? 'text-emerald-400' : 'text-emerald-700'}`}>
+              Preferred Feedback:
+            </h4>
+            <p className="text-sm leading-relaxed">
+              {record.preferredFeedback}
+            </p>
           </div>
 
-          {/* Statistics Cards */}
-          <Row gutter={16} className='mb-6'>
-            <Col xs={12} sm={6}>
-              <Card className={darkMode ? 'bg-gray-700 border-gray-600' : ''}>
-                <Statistic
-                  title={<span className={darkMode ? 'text-gray-300' : ''}>Total Assessments</span>}
-                  value={overallStats.totalAssessments}
-                  prefix={<FontAwesomeIcon icon={faClipboardCheck} className='text-blue-500' />}
-                  valueStyle={{ color: darkMode ? '#ffffff' : '#1f2937' }}
-                />
-              </Card>
-            </Col>
-            <Col xs={12} sm={6}>
-              <Card className={darkMode ? 'bg-gray-700 border-gray-600' : ''}>
-                <Statistic
-                  title={<span className={darkMode ? 'text-gray-300' : ''}>Active</span>}
-                  value={overallStats.activeAssessments}
-                  prefix={<FontAwesomeIcon icon={faCode} className='text-green-500' />}
-                  valueStyle={{ color: darkMode ? '#ffffff' : '#1f2937' }}
-                />
-              </Card>
-            </Col>
-            <Col xs={12} sm={6}>
-              <Card className={darkMode ? 'bg-gray-700 border-gray-600' : ''}>
-                <Statistic
-                  title={<span className={darkMode ? 'text-gray-300' : ''}>Completions</span>}
-                  value={overallStats.totalCompletions}
-                  prefix={<FontAwesomeIcon icon={faUsers} className='text-purple-500' />}
-                  valueStyle={{ color: darkMode ? '#ffffff' : '#1f2937' }}
-                />
-              </Card>
-            </Col>
-            <Col xs={12} sm={6}>
-              <Card className={darkMode ? 'bg-gray-700 border-gray-600' : ''}>
-                <Statistic
-                  title={<span className={darkMode ? 'text-gray-300' : ''}>Success Rate</span>}
-                  value={overallStats.avgSuccessRate}
-                  suffix='%'
-                  prefix={<FontAwesomeIcon icon={faChartBar} className='text-orange-500' />}
-                  valueStyle={{ color: darkMode ? '#ffffff' : '#1f2937' }}
-                />
-              </Card>
-            </Col>
-          </Row>
+          {record.tags && record.tags.length > 0 && (
+            <div>
+              <h4 className={`font-semibold mb-2 ${darkMode ? 'text-emerald-400' : 'text-emerald-700'}`}>
+                Tags:
+              </h4>
+              <div className="flex flex-wrap gap-2">
+                {record.tags.map((tag, index) => (
+                  <Tag key={index} color="blue" className="text-xs">
+                    {tag}
+                  </Tag>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <>
+      {/* Dark Mode Styles */}
+      {darkMode && (
+        <style jsx global>{`
+          .dark-search .ant-input {
+            background-color: #4b5563 !important;
+            border-color: #6b7280 !important;
+            color: #ffffff !important;
+          }
+          .dark-search .ant-input::placeholder {
+            color: #9ca3af !important;
+          }
+          .dark-search .ant-input-search-button {
+            background-color: #6b7280 !important;
+            border-color: #6b7280 !important;
+          }
+          .dark-select .ant-select-selector {
+            background-color: #4b5563 !important;
+            border-color: #6b7280 !important;
+            color: #ffffff !important;
+            font-weight: 500 !important;
+            font-size: 14px !important;
+          }
+          .dark-select .ant-select-selection-item {
+            background-color: transparent !important;
+            color: #ffffff !important;
+            border: none !important;
+          }
+          .dark-select .ant-select-arrow {
+            color: #9ca3af !important;
+          }
+          .dark-table .ant-table-thead > tr > th {
+            background-color: #374151 !important;
+            color: #ffffff !important;
+            border-bottom: 1px solid #4b5563 !important;
+          }
+          .dark-table .ant-table-tbody > tr > td {
+            background-color: #1f2937 !important;
+            color: #e5e7eb !important;
+            border-bottom: 1px solid #374151 !important;
+          }
+          .dark-table .ant-table-tbody > tr:hover > td {
+            background-color: #374151 !important;
+          }
+          .dark-modal .ant-modal-content {
+            background-color: #1f2937 !important;
+          }
+          .dark-modal .ant-modal-header {
+            background-color: #1f2937 !important;
+            border-bottom: 1px solid #374151 !important;
+          }
+          .dark-modal .ant-modal-title {
+            color: #ffffff !important;
+          }
+          .dark-input .ant-input {
+            background-color: #374151 !important;
+            border-color: #10b981 !important;
+            color: #ffffff !important;
+            font-weight: 500 !important;
+            font-size: 14px !important;
+          }
+          .dark-input .ant-input::placeholder {
+            color: #d1d5db !important;
+            opacity: 0.7 !important;
+          }
+          .dark-input .ant-input:focus {
+            border-color: #059669 !important;
+            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.3) !important;
+            background-color: #374151 !important;
+            color: #ffffff !important;
+          }
+          .dark-input textarea {
+            background-color: #374151 !important;
+            border-color: #10b981 !important;
+            color: #ffffff !important;
+            font-weight: 500 !important;
+            font-size: 14px !important;
+          }
+          .dark-input textarea::placeholder {
+            color: #d1d5db !important;
+            opacity: 0.7 !important;
+          }
+          .dark-input textarea:focus {
+            border-color: #059669 !important;
+            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.3) !important;
+            background-color: #374151 !important;
+            color: #ffffff !important;
+          }
+          .ant-select-dropdown {
+            background-color: ${darkMode ? '#374151' : '#ffffff'} !important;
+          }
+          .ant-select-item {
+            background-color: ${darkMode ? '#374151' : '#ffffff'} !important;
+            color: ${darkMode ? '#ffffff' : '#000000'} !important;
+          }
+          .ant-select-item:hover {
+            background-color: ${darkMode ? '#4b5563' : '#f5f5f5'} !important;
+            color: ${darkMode ? '#ffffff' : '#000000'} !important;
+          }
+          .ant-select-item-option-selected {
+            background-color: ${darkMode ? '#059669' : '#e6f7ff'} !important;
+            color: ${darkMode ? '#ffffff' : '#1890ff'} !important;
+          }
+          .ant-select-item-option-active {
+            background-color: ${darkMode ? '#4b5563' : '#f5f5f5'} !important;
+            color: ${darkMode ? '#ffffff' : '#000000'} !important;
+          }
+        `}</style>
+      )}
+      
+      <div className={`min-h-screen relative overflow-hidden ${
+        darkMode ? 'bg-gray-900' : 'bg-gray-50'
+      }`}>
+        {/* Background Elements */}
+        <div className='fixed inset-0 pointer-events-none'>
+          {darkMode ? (
+            <>
+              <div
+                className='absolute -top-[10%] -right-[10%] w-1/2 h-1/2 rounded-full blur-3xl'
+                style={{ background: 'radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%)' }}
+              />
+              <div
+                className='absolute -bottom-[10%] -left-[10%] w-1/2 h-1/2 rounded-full blur-3xl'
+                style={{ background: 'radial-gradient(circle, rgba(34, 197, 94, 0.12) 0%, transparent 70%)' }}
+              />
+              <div
+                className='absolute top-1/3 left-1/3 w-1/4 h-1/4 rounded-full blur-3xl'
+                style={{ background: 'radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, transparent 70%)' }}
+              />
+            </>
+          ) : (
+            <>
+              <div className='absolute top-0 right-0 w-2/3 h-2/3 bg-gradient-to-bl from-blue-400/30 to-transparent rounded-full blur-3xl opacity-80' />
+              <div className='absolute bottom-0 left-0 w-2/3 h-2/3 bg-gradient-to-tr from-blue-500/30 to-transparent rounded-full blur-3xl opacity-80' />
+              <div className='absolute top-1/4 left-1/4 w-1/3 h-1/3 bg-gradient-to-br from-amber-400/30 to-transparent rounded-full blur-3xl opacity-80' />
+            </>
+          )}
         </div>
 
-        {/* Job Context Alert */}
-        {jobContext && (
-          <Alert
-            message={`Viewing assessments related to: ${jobContext.title} at ${jobContext.company}`}
-            description={`You navigated here from the job listing. Assessments suitable for "${jobContext.title}" will be highlighted.`}
-            type='info'
-            showIcon
-            closable
-            className='mb-6'
-            style={{
-              backgroundColor: darkMode ? '#374151' : '#e6f3ff',
-              borderColor: darkMode ? '#4b5563' : '#91d5ff',
-              color: darkMode ? '#e5e7eb' : '#1f2937'
-            }}
-          />
-        )}
-
-        {/* Assessments Grid */}
-        <div className='grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6'>
-          {assessments.map((assessment) => {
-            const isRelated =
-              jobContext &&
-              (assessment.title.toLowerCase().includes(jobContext.title.toLowerCase()) ||
-                assessment.category.toLowerCase().includes(jobContext.title.toLowerCase()) ||
-                assessment.skills.some(
-                  (skill) =>
-                    jobContext.title.toLowerCase().includes(skill.toLowerCase()) ||
-                    skill.toLowerCase().includes(jobContext.title.toLowerCase())
-                ))
-
-            return (
-              <Card
-                key={assessment.id}
-                className={`${darkMode ? 'bg-gray-700 border-gray-600' : ''} ${
-                  isRelated ? 'ring-2 ring-blue-500 ring-opacity-50' : ''
-                } shadow-lg hover:shadow-xl transition-all duration-200`}
-                loading={loading}
+        <BusinessSidebar />
+        <div className='p-6 ml-64 relative z-10'>
+          <div className="max-w-7xl mx-auto">
+            {/* Breadcrumb Navigation */}
+            <div className="flex items-center mb-4">
+              <Button
+                icon={<FontAwesomeIcon icon={faArrowLeft} />}
+                onClick={() => navigate('/business-dashboard')}
+                style={{
+                  backgroundColor: darkMode ? '#374151' : '#ffffff',
+                  borderColor: darkMode ? '#6b7280' : '#d1d5db',
+                  color: darkMode ? '#e5e7eb' : '#6b7280',
+                  marginRight: '12px'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.backgroundColor = darkMode ? '#4b5563' : '#f9fafb'
+                  e.target.style.borderColor = darkMode ? '#4b5563' : '#9ca3af'
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.backgroundColor = darkMode ? '#374151' : '#ffffff'
+                  e.target.style.borderColor = darkMode ? '#6b7280' : '#d1d5db'
+                }}
               >
-                {/* Header */}
-                <div className='flex items-start justify-between mb-4'>
-                  <div className='flex items-center'>
-                    <div
-                      className='w-10 h-10 rounded-lg flex items-center justify-center mr-3'
+                Back to Dashboard
+              </Button>
+              <div className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                Business Dashboard / Assessments
+              </div>
+            </div>
+
+            {/* Toolbar */}
+            <div 
+              className={`rounded-lg mb-6 px-6 py-4 shadow-lg ${
+                darkMode ? 'bg-gray-800 border border-gray-700' : ''
+              }`}
+              style={{
+                background: darkMode 
+                  ? 'linear-gradient(135deg, #065f46 0%, #047857 50%, #059669 100%)'
+                  : 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
+              }}
+            >
+              <div className="flex items-center justify-between">
+                {/* Left Side - Title and Status Filter */}
+                <div className="flex items-center">
+                  <div className="flex items-center mr-6">
+                    <FontAwesomeIcon 
+                      icon={faClipboardCheck} 
+                      className={`text-lg mr-3 ${
+                        darkMode ? 'text-emerald-400' : 'text-white'
+                      }`} 
+                    />
+                    <h1 className={`text-xl font-bold ${
+                      darkMode ? 'text-white' : 'text-white'
+                    }`}>
+                      Assessments
+                    </h1>
+                  </div>
+                  
+                  <Select
+                    value={selectedStatus}
+                    onChange={setSelectedStatus}
+                    className={`w-48 ${darkMode ? 'dark-select' : ''}`}
+                    style={{ 
+                      backgroundColor: darkMode ? '#4b5563' : 'rgba(255, 255, 255, 0.1)',
+                    }}
+                  >
+                    <Option value="all">All Status</Option>
+                    <Option value="Active">Active</Option>
+                    <Option value="Draft">Draft</Option>
+                    <Option value="Inactive">Inactive</Option>
+                    <Option value="Archived">Archived</Option>
+                  </Select>
+                </div>
+
+                {/* Right Side - Actions */}
+                <div className="flex items-center space-x-3">
+                  <Button
+                    type="primary"
+                    icon={<FontAwesomeIcon icon={faPlus} />}
+                    onClick={handleAdd}
+                    style={{
+                      backgroundColor: darkMode ? '#059669' : '#ffffff',
+                      borderColor: darkMode ? '#059669' : '#ffffff',
+                      color: darkMode ? '#ffffff' : '#059669',
+                      fontWeight: '500'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.target.style.backgroundColor = darkMode ? '#047857' : '#f0fdf4'
+                      e.target.style.borderColor = darkMode ? '#047857' : '#059669'
+                      e.target.style.color = darkMode ? '#ffffff' : '#047857'
+                    }}
+                    onMouseLeave={(e) => {
+                      e.target.style.backgroundColor = darkMode ? '#059669' : '#ffffff'
+                      e.target.style.borderColor = darkMode ? '#059669' : '#ffffff'
+                      e.target.style.color = darkMode ? '#ffffff' : '#059669'
+                    }}
+                  >
+                    Create New
+                  </Button>
+                  
+                  <Button
+                    icon={<FontAwesomeIcon icon={faFilter} />}
+                    style={{
+                      backgroundColor: darkMode ? '#4b5563' : 'rgba(255, 255, 255, 0.1)',
+                      borderColor: darkMode ? '#6b7280' : 'rgba(255, 255, 255, 0.2)',
+                      color: darkMode ? '#e5e7eb' : '#ffffff',
+                      fontWeight: '500'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.target.style.backgroundColor = darkMode ? '#374151' : 'rgba(255, 255, 255, 0.2)'
+                      e.target.style.borderColor = darkMode ? '#4b5563' : 'rgba(255, 255, 255, 0.3)'
+                      e.target.style.color = darkMode ? '#ffffff' : '#ffffff'
+                    }}
+                    onMouseLeave={(e) => {
+                      e.target.style.backgroundColor = darkMode ? '#4b5563' : 'rgba(255, 255, 255, 0.1)'
+                      e.target.style.borderColor = darkMode ? '#6b7280' : 'rgba(255, 255, 255, 0.2)'
+                      e.target.style.color = darkMode ? '#e5e7eb' : '#ffffff'
+                    }}
+                  >
+                    Filter
+                  </Button>
+                  
+                  <Search
+                    placeholder="Search assessments..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className={`w-64 ${darkMode ? 'dark-search' : ''}`}
+                    style={{
+                      backgroundColor: darkMode ? '#4b5563' : 'rgba(255, 255, 255, 0.1)',
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Assessment Data Table */}
+            <Card 
+              className={`${darkMode ? 'bg-gray-800 border-gray-600' : 'bg-white border-gray-200'} shadow-lg`}
+              bodyStyle={{ 
+                padding: '24px',
+                backgroundColor: darkMode ? '#1f2937' : '#ffffff'
+              }}
+            >
+              <Table
+                columns={columns}
+                dataSource={filteredData}
+                rowKey="id"
+                expandable={{
+                  expandedRowRender,
+                  expandRowByClick: false,
+                  expandIcon: ({ expanded, onExpand, record }) => (
+                    <Button
+                      type="text"
+                      size="small"
+                      icon={<FontAwesomeIcon icon={expanded ? faMinus : faPlus} />}
+                      onClick={e => onExpand(record, e)}
+                      className={`${darkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`}
+                    />
+                  )
+                }}
+                pagination={{
+                  total: filteredData.length,
+                  pageSize: 10,
+                  showSizeChanger: true,
+                  showQuickJumper: true,
+                  showTotal: (total, range) => 
+                    `${range[0]}-${range[1]} of ${total} assessments`
+                }}
+                className={darkMode ? 'dark-table' : ''}
+                style={{
+                  backgroundColor: darkMode ? '#1f2937' : '#ffffff'
+                }}
+              />
+            </Card>
+          </div>
+        </div>
+
+        {/* Add/Edit Modal */}
+        <Modal
+          title={
+            <span className="text-white font-semibold text-lg">
+              {editingAssessment ? 'Edit Assessment' : 'New Assessment'}
+            </span>
+          }
+          open={isModalVisible}
+          onCancel={() => {
+            setIsModalVisible(false)
+            setEditingAssessment(null)
+            form.resetFields()
+          }}
+          footer={null}
+          width={800}
+          styles={{
+            content: {
+              backgroundColor: darkMode ? '#1f2937' : '#ffffff',
+              borderRadius: '12px',
+              border: `2px solid ${darkMode ? '#059669' : '#10b981'}`
+            },
+            header: {
+              backgroundColor: darkMode ? '#059669' : '#10b981',
+              borderBottom: 'none',
+              borderRadius: '12px 12px 0 0',
+              padding: '20px 24px'
+            }
+          }}
+          className={darkMode ? 'dark-modal' : ''}
+        >
+          <div className={`p-6 ${darkMode ? 'bg-gray-800' : 'bg-gray-50'} rounded-lg mb-4`}>
+            <Form
+              form={form}
+              layout="vertical"
+              onFinish={handleSubmit}
+              initialValues={{ isActive: true, status: 'Draft' }}
+            >
+              {/* Active Toggle */}
+              <div className="mb-6">
+                <Form.Item name="isActive" valuePropName="checked">
+                  <div className="flex items-center">
+                    <Switch 
+                      defaultChecked={true}
+                      className="mr-3"
                       style={{
-                        background: darkMode
-                          ? 'linear-gradient(135deg, #059669, #047857)'
-                          : 'linear-gradient(135deg, #10b981, #059669)'
+                        backgroundColor: darkMode ? '#059669' : '#10b981'
+                      }}
+                    />
+                    <span className={`text-base font-medium ${darkMode ? 'text-emerald-100' : 'text-emerald-800'}`}>
+                      Active
+                    </span>
+                  </div>
+                </Form.Item>
+              </div>
+
+              <Row gutter={16}>
+                <Col span={16}>
+                  <Form.Item
+                    name="status"
+                    label={
+                      <span className={`font-medium ${darkMode ? 'text-emerald-100' : 'text-emerald-800'}`}>
+                        Status
+                      </span>
+                    }
+                    rules={[{ required: true, message: 'Please select a status' }]}
+                  >
+                    <Select 
+                      placeholder="Select status"
+                      className={darkMode ? 'dark-select' : ''}
+                      style={{
+                        backgroundColor: darkMode ? '#374151' : '#ffffff',
+                        color: darkMode ? '#ffffff' : '#111827'
                       }}
                     >
-                      <FontAwesomeIcon icon={getTypeIcon(assessment.type)} className='text-white text-sm' />
-                    </div>
-                    <div>
-                      <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                        {assessment.title}
-                      </h3>
-                      <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{assessment.category}</p>
-                    </div>
-                  </div>
-                  <Tag
-                    color={assessment.status === 'Active' ? 'green' : assessment.status === 'Draft' ? 'orange' : 'red'}
-                  >
-                    {assessment.status}
-                  </Tag>
-                </div>
-
-                {/* Description */}
-                <p className={`text-sm mb-4 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                  {assessment.description}
-                </p>
-
-                {/* Stats */}
-                <div className='grid grid-cols-2 gap-4 mb-4'>
-                  <div className='text-center'>
-                    <div className={`text-lg font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                      {assessment.duration}m
-                    </div>
-                    <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Duration</div>
-                  </div>
-                  <div className='text-center'>
-                    <div className={`text-lg font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                      {assessment.questions}
-                    </div>
-                    <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Questions</div>
-                  </div>
-                  <div className='text-center'>
-                    <div className={`text-lg font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                      {assessment.completions}
-                    </div>
-                    <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Completed</div>
-                  </div>
-                  <div className='text-center'>
-                    <div className={`text-lg font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                      {assessment.averageScore}%
-                    </div>
-                    <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Avg Score</div>
-                  </div>
-                </div>
-
-                {/* Success Rate Progress */}
-                {assessment.totalAttempts > 0 && (
-                  <div className='mb-4'>
-                    <div className='flex justify-between items-center mb-1'>
-                      <span className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Success Rate</span>
-                      <span className={`text-xs ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                        {assessment.successRate}%
+                      <Option value="Draft">Draft</Option>
+                      <Option value="Active">Active</Option>
+                      <Option value="Inactive">Inactive</Option>
+                      <Option value="Archived">Archived</Option>
+                    </Select>
+                  </Form.Item>
+                </Col>
+                <Col span={8}>
+                  <Form.Item
+                    name="category"
+                    label={
+                      <span className={`font-medium ${darkMode ? 'text-emerald-100' : 'text-emerald-800'}`}>
+                        Category
                       </span>
+                    }
+                  >
+                    <Select 
+                      placeholder="Select category"
+                      className={darkMode ? 'dark-select' : ''}
+                      style={{
+                        backgroundColor: darkMode ? '#374151' : '#ffffff',
+                        color: darkMode ? '#ffffff' : '#111827'
+                      }}
+                    >
+                      <Option value="Technical">Technical</Option>
+                      <Option value="Behavioral">Behavioral</Option>
+                      <Option value="Cognitive">Cognitive</Option>
+                      <Option value="Portfolio">Portfolio</Option>
+                    </Select>
+                  </Form.Item>
+                </Col>
+              </Row>
+
+              <Form.Item
+                name="question"
+                label={
+                  <span className={`font-medium ${darkMode ? 'text-emerald-100' : 'text-emerald-800'}`}>
+                    Question
+                  </span>
+                }
+                rules={[{ required: true, message: 'Please enter a question' }]}
+              >
+                <TextArea 
+                  rows={3}
+                  placeholder="Enter the assessment question..."
+                  className={darkMode ? 'dark-input' : ''}
+                  style={{
+                    backgroundColor: darkMode ? '#374151' : '#ffffff',
+                    borderColor: darkMode ? '#10b981' : '#10b981',
+                    color: darkMode ? '#ffffff' : '#111827'
+                  }}
+                />
+              </Form.Item>
+
+              <Form.Item
+                name="context"
+                label={
+                  <span className={`font-medium ${darkMode ? 'text-emerald-100' : 'text-emerald-800'}`}>
+                    Context
+                  </span>
+                }
+                rules={[{ required: true, message: 'Please enter the context' }]}
+              >
+                <TextArea 
+                  rows={4}
+                  placeholder="Provide context about what this question assesses..."
+                  className={darkMode ? 'dark-input' : ''}
+                  style={{
+                    backgroundColor: darkMode ? '#374151' : '#ffffff',
+                    borderColor: darkMode ? '#10b981' : '#10b981',
+                    color: darkMode ? '#ffffff' : '#111827'
+                  }}
+                />
+              </Form.Item>
+
+              <Form.Item
+                name="preferredFeedback"
+                label={
+                  <span className={`font-medium ${darkMode ? 'text-emerald-100' : 'text-emerald-800'}`}>
+                    Preferred Feedback
+                  </span>
+                }
+                rules={[{ required: true, message: 'Please enter preferred feedback guidelines' }]}
+              >
+                <TextArea 
+                  rows={4}
+                  placeholder="Describe what to look for in good answers and how to evaluate responses..."
+                  className={darkMode ? 'dark-input' : ''}
+                  style={{
+                    backgroundColor: darkMode ? '#374151' : '#ffffff',
+                    borderColor: darkMode ? '#10b981' : '#10b981',
+                    color: darkMode ? '#ffffff' : '#111827'
+                  }}
+                />
+              </Form.Item>
+
+              <Form.Item
+                name="tags"
+                label={
+                  <span className={`font-medium ${darkMode ? 'text-emerald-100' : 'text-emerald-800'}`}>
+                    Tags
+                  </span>
+                }
+              >
+                <Select 
+                  mode="tags"
+                  placeholder="Add tags (press Enter to add)"
+                  className={darkMode ? 'dark-select' : ''}
+                  style={{
+                    backgroundColor: darkMode ? '#374151' : '#ffffff',
+                    color: darkMode ? '#ffffff' : '#111827'
+                  }}
+                />
+              </Form.Item>
+
+              <div className="flex justify-end space-x-3 mt-8">
+                <Button 
+                  onClick={() => {
+                    setIsModalVisible(false)
+                    setEditingAssessment(null)
+                    form.resetFields()
+                  }}
+                  className={`px-6 py-2 font-medium rounded-lg transition-all duration-200 ${
+                    darkMode 
+                      ? 'bg-red-600 text-white hover:bg-red-700 border-red-600 hover:border-red-700' 
+                      : 'bg-red-500 text-white hover:bg-red-600 border-red-500'
+                  }`}
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  type="primary"
+                  htmlType="submit"
+                  className={`px-6 py-2 font-medium rounded-lg transition-all duration-200 ${
+                    darkMode 
+                      ? 'bg-emerald-600 text-white hover:bg-emerald-700 border-emerald-600 hover:border-emerald-700' 
+                      : 'bg-emerald-500 text-white hover:bg-emerald-600 border-emerald-500'
+                  }`}
+                >
+                  {editingAssessment ? 'Update' : 'Create'}
+                </Button>
+              </div>
+            </Form>
+          </div>
+        </Modal>
+
+        {/* View Modal */}
+        <Modal
+          title={
+            <span className="text-white font-semibold text-lg">
+              Assessment Details
+            </span>
+          }
+          open={isViewModalVisible}
+          onCancel={() => setIsViewModalVisible(false)}
+          footer={null}
+          width={800}
+          styles={{
+            content: {
+              backgroundColor: darkMode ? '#1f2937' : '#ffffff',
+              borderRadius: '12px',
+              border: `2px solid ${darkMode ? '#059669' : '#10b981'}`
+            },
+            header: {
+              backgroundColor: darkMode ? '#059669' : '#10b981',
+              borderBottom: 'none',
+              borderRadius: '12px 12px 0 0',
+              padding: '20px 24px'
+            }
+          }}
+          className={darkMode ? 'dark-modal' : ''}
+        >
+          {selectedAssessment && (
+            <div className={`p-6 ${darkMode ? 'bg-gray-800' : 'bg-gray-50'} rounded-lg`}>
+              <div className="space-y-6">
+                <div>
+                  <h3 className={`text-lg font-semibold mb-3 ${darkMode ? 'text-emerald-400' : 'text-emerald-700'}`}>
+                    Question
+                  </h3>
+                  <p className={`text-base leading-relaxed ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                    {selectedAssessment.question}
+                  </p>
+                </div>
+
+                <div>
+                  <h3 className={`text-lg font-semibold mb-3 ${darkMode ? 'text-emerald-400' : 'text-emerald-700'}`}>
+                    Context
+                  </h3>
+                  <p className={`text-base leading-relaxed ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                    {selectedAssessment.context}
+                  </p>
+                </div>
+
+                <div>
+                  <h3 className={`text-lg font-semibold mb-3 ${darkMode ? 'text-emerald-400' : 'text-emerald-700'}`}>
+                    Preferred Feedback
+                  </h3>
+                  <p className={`text-base leading-relaxed ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                    {selectedAssessment.preferredFeedback}
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <h4 className={`font-medium mb-2 ${darkMode ? 'text-emerald-400' : 'text-emerald-700'}`}>
+                      Category
+                    </h4>
+                    <Tag color={selectedAssessment.category === 'Technical' ? 'blue' : 'green'}>
+                      {selectedAssessment.category}
+                    </Tag>
+                  </div>
+                  <div>
+                    <h4 className={`font-medium mb-2 ${darkMode ? 'text-emerald-400' : 'text-emerald-700'}`}>
+                      Status
+                    </h4>
+                    <Tag color={selectedAssessment.status === 'Active' ? 'green' : 'orange'}>
+                      {selectedAssessment.status}
+                    </Tag>
+                  </div>
+                </div>
+
+                {selectedAssessment.tags && selectedAssessment.tags.length > 0 && (
+                  <div>
+                    <h4 className={`font-medium mb-2 ${darkMode ? 'text-emerald-400' : 'text-emerald-700'}`}>
+                      Tags
+                    </h4>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedAssessment.tags.map((tag, index) => (
+                        <Tag key={index} color="blue">
+                          {tag}
+                        </Tag>
+                      ))}
                     </div>
-                    <Progress
-                      percent={assessment.successRate}
-                      size='small'
-                      strokeColor={
-                        assessment.successRate >= 70 ? '#10b981' : assessment.successRate >= 50 ? '#f59e0b' : '#ef4444'
-                      }
-                      showInfo={false}
-                    />
                   </div>
                 )}
 
-                {/* Tags */}
-                <div className='flex flex-wrap gap-1 mb-4'>
-                  <Tag color={getDifficultyColor(assessment.difficulty)} size='small'>
-                    {assessment.difficulty}
-                  </Tag>
-                  <Tag color='blue' size='small'>
-                    {assessment.type}
-                  </Tag>
-                </div>
-
-                {/* Skills */}
-                <div className='mb-4'>
-                  <div className={`text-xs font-medium mb-2 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                    Skills Assessed:
+                <div className="grid grid-cols-3 gap-4 mt-6">
+                  <div className={`text-center p-4 rounded-lg ${darkMode ? 'bg-gray-700' : 'bg-white'}`}>
+                    <div className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                      {selectedAssessment.completions}
+                    </div>
+                    <div className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                      Completions
+                    </div>
                   </div>
-                  <div className='flex flex-wrap gap-1'>
-                    {assessment.skills.slice(0, 3).map((skill, index) => (
-                      <Tag key={index} size='small' color='purple'>
-                        {skill}
-                      </Tag>
-                    ))}
-                    {assessment.skills.length > 3 && (
-                      <Tag size='small' color='default'>
-                        +{assessment.skills.length - 3} more
-                      </Tag>
-                    )}
+                  <div className={`text-center p-4 rounded-lg ${darkMode ? 'bg-gray-700' : 'bg-white'}`}>
+                    <div className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                      {selectedAssessment.totalAttempts}
+                    </div>
+                    <div className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                      Total Attempts
+                    </div>
                   </div>
-                </div>
-
-                {/* Actions */}
-                <div className='flex justify-between items-center pt-4 border-t border-gray-200 dark:border-gray-700'>
-                  <div className='flex gap-2'>
-                    <Tooltip title='View Details'>
-                      <Button
-                        type='text'
-                        size='small'
-                        icon={<FontAwesomeIcon icon={faEye} />}
-                        onClick={() => handleViewAssessment(assessment)}
-                        className='text-blue-500 hover:text-blue-700'
-                      />
-                    </Tooltip>
-                    <Tooltip title='Edit Assessment'>
-                      <Button
-                        type='text'
-                        size='small'
-                        icon={<FontAwesomeIcon icon={faEdit} />}
-                        onClick={() => handleEditAssessment(assessment)}
-                        className='text-green-500 hover:text-green-700'
-                      />
-                    </Tooltip>
-                    <Tooltip title='Duplicate Assessment'>
-                      <Button
-                        type='text'
-                        size='small'
-                        icon={<FontAwesomeIcon icon={faCopy} />}
-                        onClick={() => handleDuplicateAssessment(assessment.id)}
-                        className='text-orange-500 hover:text-orange-700'
-                      />
-                    </Tooltip>
-                    <Tooltip title='Delete'>
-                      <Popconfirm
-                        title='Delete Assessment'
-                        description='Are you sure you want to delete this assessment? This action cannot be undone.'
-                        onConfirm={() => handleDeleteAssessment(assessment.id)}
-                        okText='Delete'
-                        cancelText='Cancel'
-                        okType='danger'
-                        placement='topRight'
-                      >
-                        <Button
-                          type='text'
-                          size='small'
-                          icon={<FontAwesomeIcon icon={faTrash} />}
-                          className='text-red-500 hover:text-red-700'
-                        />
-                      </Popconfirm>
-                    </Tooltip>
+                  <div className={`text-center p-4 rounded-lg ${darkMode ? 'bg-gray-700' : 'bg-white'}`}>
+                    <div className={`text-2xl font-bold ${
+                      selectedAssessment.averageScore >= 80 ? 'text-green-500' :
+                      selectedAssessment.averageScore >= 60 ? 'text-yellow-500' :
+                      'text-red-500'
+                    }`}>
+                      {selectedAssessment.averageScore}%
+                    </div>
+                    <div className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                      Average Score
+                    </div>
                   </div>
-                  <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                    Updated {new Date(assessment.lastUpdated).toLocaleDateString()}
-                  </div>
-                </div>
-              </Card>
-            )
-          })}
-        </div>
-
-        {/* Assessment Details Modal */}
-        {selectedAssessment && (
-          <Modal
-            title={
-              <span className={darkMode ? 'text-white' : 'text-gray-900'}>
-                Assessment Details
-              </span>
-            }
-            open={isViewModalVisible}
-            onCancel={handleViewModalClose}
-            footer={[
-              <Button key='close' onClick={handleViewModalClose}>
-                Close
-              </Button>
-            ]}
-            width={800}
-            className={darkMode ? 'ant-modal-dark' : ''}
-            styles={{
-              content: { backgroundColor: darkMode ? '#374151' : '#ffffff' },
-              body: { backgroundColor: darkMode ? '#374151' : '#ffffff' },
-              header: {
-                backgroundColor: darkMode ? '#374151' : '#ffffff',
-                borderBottom: darkMode ? '1px solid #4B5563' : '1px solid #e5e7eb'
-              },
-              footer: {
-                backgroundColor: darkMode ? '#374151' : '#ffffff',
-                borderTop: darkMode ? '1px solid #4B5563' : '1px solid #e5e7eb'
-              }
-            }}
-          >
-            <div className='space-y-6'>
-              <div>
-                <h3 className={`text-xl font-semibold mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                  {selectedAssessment.title}
-                </h3>
-                <p className={`${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>{selectedAssessment.description}</p>
-              </div>
-
-              <div className='grid grid-cols-2 gap-4'>
-                <div>
-                  <span className={`font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Type:</span>
-                  <span className={`ml-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{selectedAssessment.type}</span>
-                </div>
-                <div>
-                  <span className={`font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Category:</span>
-                  <span className={`ml-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                    {selectedAssessment.category}
-                  </span>
-                </div>
-                <div>
-                  <span className={`font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Difficulty:</span>
-                  <Tag color={getDifficultyColor(selectedAssessment.difficulty)} className='ml-2'>
-                    {selectedAssessment.difficulty}
-                  </Tag>
-                </div>
-                <div>
-                  <span className={`font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Duration:</span>
-                  <span className={`ml-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                    {selectedAssessment.duration} minutes
-                  </span>
-                </div>
-              </div>
-
-              <div>
-                <h4 className={`font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Skills Assessed:</h4>
-                <div className='flex flex-wrap gap-1'>
-                  {selectedAssessment.skills.map((skill, index) => (
-                    <Tag key={index} color='purple'>
-                      {skill}
-                    </Tag>
-                  ))}
-                </div>
-              </div>
-
-              <div className='grid grid-cols-3 gap-4 text-center'>
-                <div>
-                  <div className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                    {selectedAssessment.completions}
-                  </div>
-                  <div className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Completions</div>
-                </div>
-                <div>
-                  <div className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                    {selectedAssessment.averageScore}%
-                  </div>
-                  <div className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Average Score</div>
-                </div>
-                <div>
-                  <div className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                    {selectedAssessment.successRate}%
-                  </div>
-                  <div className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Success Rate</div>
                 </div>
               </div>
             </div>
-          </Modal>
-        )}
+          )}
+        </Modal>
       </div>
-    </div>
+    </>
   )
 })
 

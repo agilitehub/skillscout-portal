@@ -10,45 +10,26 @@
  */
 export const AssessmentSchema = {
   // Basic Information (Required)
-  title: { type: 'string', required: true, maxLength: 255 },
-  category: { type: 'string', required: true, maxLength: 255 },
-  type: { type: 'string', required: true, enum: ['Technical', 'Behavioral', 'Portfolio', 'Cognitive'] },
-  difficulty: { type: 'string', required: true, enum: ['Beginner', 'Intermediate', 'Advanced'] },
-
-  // Assessment Configuration (Required)
-  duration: { type: 'number', required: true, min: 1, max: 480 }, // 1 minute to 8 hours
-  questions: { type: 'number', required: true, min: 1, max: 200 },
-  passingScore: { type: 'number', required: true, min: 0, max: 100 },
-
-  // Content (Required)
-  description: { type: 'string', required: true, maxLength: 2000 },
-  skills: { type: 'array', required: true, minItems: 1 },
+  question: { type: 'string', required: true, maxLength: 1000 },
+  context: { type: 'string', required: true, maxLength: 2000 },
+  preferredFeedback: { type: 'string', required: true, maxLength: 2000 },
 
   // Status and Visibility
   status: { type: 'string', required: false, enum: ['Draft', 'Active', 'Inactive', 'Archived'], default: 'Draft' },
+  isActive: { type: 'boolean', required: false, default: true },
 
+  // Metadata
+  category: { type: 'string', required: false, maxLength: 255 },
+  tags: { type: 'array', required: false },
+  searchKeywords: { type: 'string', required: false },
+  
   // Statistics (Auto-calculated)
   completions: { type: 'number', required: false, default: 0 },
   totalAttempts: { type: 'number', required: false, default: 0 },
   averageScore: { type: 'number', required: false, default: 0 },
-  successRate: { type: 'number', required: false, default: 0 },
-
-  // Assessment Content and Configuration
-  assessmentContent: { type: 'object', required: false },
-  timeLimitEnabled: { type: 'boolean', required: false, default: true },
-  randomizeQuestions: { type: 'boolean', required: false, default: false },
-  showResultsImmediately: { type: 'boolean', required: false, default: true },
-  allowRetakes: { type: 'boolean', required: false, default: false },
-  maxRetakes: { type: 'number', required: false, default: 0 },
-
-  // Access Control
-  isPublic: { type: 'boolean', required: false, default: false },
-  requiresInvitation: { type: 'boolean', required: false, default: true },
-
+  
   // Related Data
-  jobOpportunityIds: { type: 'array', required: false },
-  searchKeywords: { type: 'string', required: false },
-  tags: { type: 'array', required: false }
+  jobOpportunityIds: { type: 'array', required: false }
 }
 
 /**
@@ -69,60 +50,20 @@ export const validateAssessment = (assessmentData) => {
   })
 
   // Type-specific validation
-  if (assessmentData.title && assessmentData.title.length > AssessmentSchema.title.maxLength) {
-    errors.push(`Title must be ${AssessmentSchema.title.maxLength} characters or less`)
+  if (assessmentData.question && assessmentData.question.length > AssessmentSchema.question.maxLength) {
+    errors.push(`Question must be ${AssessmentSchema.question.maxLength} characters or less`)
+  }
+
+  if (assessmentData.context && assessmentData.context.length > AssessmentSchema.context.maxLength) {
+    errors.push(`Context must be ${AssessmentSchema.context.maxLength} characters or less`)
+  }
+
+  if (assessmentData.preferredFeedback && assessmentData.preferredFeedback.length > AssessmentSchema.preferredFeedback.maxLength) {
+    errors.push(`Preferred feedback must be ${AssessmentSchema.preferredFeedback.maxLength} characters or less`)
   }
 
   if (assessmentData.category && assessmentData.category.length > AssessmentSchema.category.maxLength) {
     errors.push(`Category must be ${AssessmentSchema.category.maxLength} characters or less`)
-  }
-
-  if (assessmentData.type && !AssessmentSchema.type.enum.includes(assessmentData.type)) {
-    errors.push(`Type must be one of: ${AssessmentSchema.type.enum.join(', ')}`)
-  }
-
-  if (assessmentData.difficulty && !AssessmentSchema.difficulty.enum.includes(assessmentData.difficulty)) {
-    errors.push(`Difficulty must be one of: ${AssessmentSchema.difficulty.enum.join(', ')}`)
-  }
-
-  if (assessmentData.duration) {
-    const duration = Number(assessmentData.duration)
-    if (isNaN(duration) || duration < AssessmentSchema.duration.min || duration > AssessmentSchema.duration.max) {
-      errors.push(
-        `Duration must be between ${AssessmentSchema.duration.min} and ${AssessmentSchema.duration.max} minutes`
-      )
-    }
-  }
-
-  if (assessmentData.questions) {
-    const questions = Number(assessmentData.questions)
-    if (isNaN(questions) || questions < AssessmentSchema.questions.min || questions > AssessmentSchema.questions.max) {
-      errors.push(`Questions must be between ${AssessmentSchema.questions.min} and ${AssessmentSchema.questions.max}`)
-    }
-  }
-
-  if (assessmentData.passingScore) {
-    const passingScore = Number(assessmentData.passingScore)
-    if (
-      isNaN(passingScore) ||
-      passingScore < AssessmentSchema.passingScore.min ||
-      passingScore > AssessmentSchema.passingScore.max
-    ) {
-      errors.push(
-        `Passing score must be between ${AssessmentSchema.passingScore.min} and ${AssessmentSchema.passingScore.max}`
-      )
-    }
-  }
-
-  if (assessmentData.description && assessmentData.description.length > AssessmentSchema.description.maxLength) {
-    errors.push(`Description must be ${AssessmentSchema.description.maxLength} characters or less`)
-  }
-
-  if (
-    assessmentData.skills &&
-    (!Array.isArray(assessmentData.skills) || assessmentData.skills.length < AssessmentSchema.skills.minItems)
-  ) {
-    errors.push('At least one skill must be specified')
   }
 
   if (assessmentData.status && !AssessmentSchema.status.enum.includes(assessmentData.status)) {
@@ -148,50 +89,26 @@ export const transformToDatabase = (formData, options = {}) => {
 
   const transformed = {
     // Basic Information
-    title: formData.title?.trim(),
-    category: formData.category?.trim(),
-    type: formData.type,
-    difficulty: formData.difficulty,
-
-    // Assessment Configuration
-    duration: parseInt(formData.duration, 10),
-    questions: parseInt(formData.questions, 10),
-    passing_score: parseInt(formData.passingScore, 10),
-
-    // Content
-    description: formData.description?.trim(),
-    skills: Array.isArray(formData.skills)
-      ? formData.skills.filter((skill) => skill && skill.trim())
-      : formData.skills
-          ?.split(',')
-          .map((skill) => skill.trim())
-          .filter((skill) => skill) || [],
+    question: formData.question?.trim(),
+    context: formData.context?.trim(),
+    preferred_feedback: formData.preferredFeedback?.trim(),
 
     // Status and Visibility
     status: formData.status || 'Draft',
+    is_active: formData.isActive !== undefined ? formData.isActive : true,
+
+    // Metadata
+    category: formData.category?.trim() || null,
+    tags: Array.isArray(formData.tags) ? formData.tags : [],
+    search_keywords: formData.searchKeywords?.trim() || null,
 
     // Statistics (preserve existing values for updates, default for creates)
     completions: formData.completions || 0,
     total_attempts: formData.totalAttempts || 0,
     average_score: parseFloat(formData.averageScore) || 0.0,
-    success_rate: parseFloat(formData.successRate) || 0.0,
-
-    // Assessment Configuration
-    assessment_content: formData.assessmentContent || null,
-    time_limit_enabled: formData.timeLimitEnabled !== undefined ? formData.timeLimitEnabled : true,
-    randomize_questions: formData.randomizeQuestions !== undefined ? formData.randomizeQuestions : false,
-    show_results_immediately: formData.showResultsImmediately !== undefined ? formData.showResultsImmediately : true,
-    allow_retakes: formData.allowRetakes !== undefined ? formData.allowRetakes : false,
-    max_retakes: parseInt(formData.maxRetakes, 10) || 0,
-
-    // Access Control
-    is_public: formData.isPublic !== undefined ? formData.isPublic : false,
-    requires_invitation: formData.requiresInvitation !== undefined ? formData.requiresInvitation : true,
 
     // Related Data
-    job_opportunity_ids: Array.isArray(formData.jobOpportunityIds) ? formData.jobOpportunityIds : [],
-    search_keywords: formData.searchKeywords?.trim() || null,
-    tags: Array.isArray(formData.tags) ? formData.tags : []
+    job_opportunity_ids: Array.isArray(formData.jobOpportunityIds) ? formData.jobOpportunityIds : []
   }
 
   // Add user context for audit fields
@@ -225,45 +142,26 @@ export const transformFromDatabase = (dbData) => {
   return {
     // Basic Information
     id: dbData.id,
-    title: dbData.title,
-    category: dbData.category,
-    type: dbData.type,
-    difficulty: dbData.difficulty,
-
-    // Assessment Configuration
-    duration: dbData.duration,
-    questions: dbData.questions,
-    passingScore: dbData.passing_score,
-
-    // Content
-    description: dbData.description,
-    skills: dbData.skills || [],
+    question: dbData.question,
+    context: dbData.context,
+    preferredFeedback: dbData.preferred_feedback,
 
     // Status and Visibility
     status: dbData.status,
+    isActive: dbData.is_active,
+
+    // Metadata
+    category: dbData.category,
+    tags: dbData.tags || [],
+    searchKeywords: dbData.search_keywords,
 
     // Statistics
     completions: dbData.completions || 0,
     totalAttempts: dbData.total_attempts || 0,
     averageScore: parseFloat(dbData.average_score) || 0,
-    successRate: parseFloat(dbData.success_rate) || 0,
-
-    // Assessment Configuration
-    assessmentContent: dbData.assessment_content,
-    timeLimitEnabled: dbData.time_limit_enabled,
-    randomizeQuestions: dbData.randomize_questions,
-    showResultsImmediately: dbData.show_results_immediately,
-    allowRetakes: dbData.allow_retakes,
-    maxRetakes: dbData.max_retakes,
-
-    // Access Control
-    isPublic: dbData.is_public,
-    requiresInvitation: dbData.requires_invitation,
 
     // Related Data
     jobOpportunityIds: dbData.job_opportunity_ids || [],
-    searchKeywords: dbData.search_keywords,
-    tags: dbData.tags || [],
 
     // Audit Fields
     createdBy: dbData.created_by,
@@ -285,22 +183,30 @@ export const transformFromDatabase = (dbData) => {
 export const generateSearchKeywords = (assessmentData) => {
   const keywords = []
 
-  if (assessmentData.title) keywords.push(assessmentData.title.toLowerCase())
-  if (assessmentData.category) keywords.push(assessmentData.category.toLowerCase())
-  if (assessmentData.type) keywords.push(assessmentData.type.toLowerCase())
-  if (assessmentData.difficulty) keywords.push(assessmentData.difficulty.toLowerCase())
-  if (assessmentData.description) {
-    // Extract meaningful words from description
-    const descWords = assessmentData.description
+  if (assessmentData.question) {
+    // Extract meaningful words from question
+    const questionWords = assessmentData.question
       .toLowerCase()
       .replace(/[^\w\s]/gi, '')
       .split(/\s+/)
       .filter((word) => word.length > 3)
-    keywords.push(...descWords)
+    keywords.push(...questionWords)
   }
 
-  if (Array.isArray(assessmentData.skills)) {
-    keywords.push(...assessmentData.skills.map((skill) => skill.toLowerCase()))
+  if (assessmentData.context) {
+    // Extract meaningful words from context
+    const contextWords = assessmentData.context
+      .toLowerCase()
+      .replace(/[^\w\s]/gi, '')
+      .split(/\s+/)
+      .filter((word) => word.length > 3)
+    keywords.push(...contextWords)
+  }
+
+  if (assessmentData.category) keywords.push(assessmentData.category.toLowerCase())
+
+  if (Array.isArray(assessmentData.tags)) {
+    keywords.push(...assessmentData.tags.map((tag) => tag.toLowerCase()))
   }
 
   // Remove duplicates and join
@@ -308,102 +214,94 @@ export const generateSearchKeywords = (assessmentData) => {
 }
 
 /**
- * Format skills array for display
- * @param {Array} skills - Array of skills
- * @returns {string} Formatted skills string
+ * Format tags array for display
+ * @param {Array} tags - Array of tags
+ * @returns {string} Formatted tags string
  */
-export const formatSkills = (skills) => {
-  if (!Array.isArray(skills)) return ''
-  return skills.join(', ')
+export const formatTags = (tags) => {
+  if (!Array.isArray(tags)) return ''
+  return tags.join(', ')
 }
 
 /**
- * Parse skills string into array
- * @param {string} skillsString - Comma-separated skills string
- * @returns {Array} Array of skills
+ * Parse tags string into array
+ * @param {string} tagsString - Comma-separated tags string
+ * @returns {Array} Array of tags
  */
-export const parseSkills = (skillsString) => {
-  if (!skillsString || typeof skillsString !== 'string') return []
-  return skillsString
+export const parseTags = (tagsString) => {
+  if (!tagsString || typeof tagsString !== 'string') return []
+  return tagsString
     .split(',')
-    .map((skill) => skill.trim())
-    .filter((skill) => skill)
+    .map((tag) => tag.trim())
+    .filter((tag) => tag)
 }
 
 /**
- * Get assessment type display properties
- * @param {string} type - Assessment type
- * @returns {Object} Display properties for the type
+ * Get assessment status display properties
+ * @param {string} status - Assessment status
+ * @returns {Object} Display properties for the status
  */
-export const getTypeDisplayProperties = (type) => {
-  const typeMap = {
-    Technical: {
-      color: 'blue',
-      icon: 'code',
-      description: 'Evaluates technical skills and knowledge'
+export const getStatusDisplayProperties = (status) => {
+  const statusMap = {
+    Draft: {
+      color: 'gray',
+      description: 'Assessment is in draft mode'
     },
-    Behavioral: {
+    Active: {
       color: 'green',
-      icon: 'brain',
-      description: 'Assesses soft skills and behavioral competencies'
+      description: 'Assessment is active and available'
     },
-    Portfolio: {
-      color: 'purple',
-      icon: 'clipboard-check',
-      description: 'Reviews work samples and portfolio pieces'
-    },
-    Cognitive: {
+    Inactive: {
       color: 'orange',
-      icon: 'puzzle-piece',
-      description: 'Tests cognitive abilities and problem-solving'
-    }
-  }
-
-  return typeMap[type] || { color: 'default', icon: 'question', description: 'Assessment type' }
-}
-
-/**
- * Get difficulty level display properties
- * @param {string} difficulty - Difficulty level
- * @returns {Object} Display properties for the difficulty
- */
-export const getDifficultyDisplayProperties = (difficulty) => {
-  const difficultyMap = {
-    Beginner: {
-      color: 'green',
-      level: 1,
-      description: 'Entry-level knowledge required'
+      description: 'Assessment is temporarily inactive'
     },
-    Intermediate: {
-      color: 'orange',
-      level: 2,
-      description: 'Moderate experience needed'
-    },
-    Advanced: {
+    Archived: {
       color: 'red',
-      level: 3,
-      description: 'Expert-level skills required'
+      description: 'Assessment is archived'
     }
   }
 
-  return difficultyMap[difficulty] || { color: 'default', level: 0, description: 'Unknown difficulty' }
+  return statusMap[status] || { color: 'default', description: 'Unknown status' }
 }
 
 /**
- * Calculate assessment completion time estimate
- * @param {number} questions - Number of questions
- * @param {number} duration - Duration in minutes
- * @returns {Object} Time estimates
+ * Truncate text for display
+ * @param {string} text - Text to truncate
+ * @param {number} maxLength - Maximum length
+ * @returns {string} Truncated text
  */
-export const calculateTimeEstimates = (questions, duration) => {
-  const avgTimePerQuestion = Math.round(duration / questions)
-  const quickTime = Math.round(duration * 0.7)
-  const extendedTime = Math.round(duration * 1.2)
-
-  return {
-    avgTimePerQuestion,
-    quickTime,
-    extendedTime,
-    totalDuration: duration
-  }
+export const truncateText = (text, maxLength = 100) => {
+  if (!text || text.length <= maxLength) return text || ''
+  return text.substring(0, maxLength) + '...'
 }
+
+/**
+ * Calculate assessment statistics
+ * @param {Array} assessments - Array of assessments
+ * @returns {Object} Statistics summary
+ */
+export const calculateAssessmentStats = (assessments) => {
+  if (!Array.isArray(assessments) || assessments.length === 0) {
+    return {
+      totalAssessments: 0,
+      activeAssessments: 0,
+      draftAssessments: 0,
+      totalCompletions: 0,
+      averageScore: 0
+    }
+  }
+
+  const stats = {
+    totalAssessments: assessments.length,
+    activeAssessments: assessments.filter(a => a.status === 'Active').length,
+    draftAssessments: assessments.filter(a => a.status === 'Draft').length,
+    totalCompletions: assessments.reduce((sum, a) => sum + (a.completions || 0), 0),
+    averageScore: 0
+  }
+
+  const totalScore = assessments.reduce((sum, a) => sum + (a.averageScore || 0), 0)
+  stats.averageScore = assessments.length > 0 ? Math.round(totalScore / assessments.length) : 0
+
+  return stats
+}
+

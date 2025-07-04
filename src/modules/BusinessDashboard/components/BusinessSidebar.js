@@ -104,20 +104,20 @@ const BusinessSidebar = React.memo(() => {
           <div key={category.key} className="space-y-1">
             {/* Category Header */}
             <div
-              className={`w-full flex items-center px-3 py-2 rounded-lg text-sm font-medium ${
+              className={`w-full flex items-center px-3 py-2 rounded-lg text-base font-bold ${
                 darkMode
                   ? 'text-gray-300'
                   : 'text-gray-600'
               }`}
             >
               <div 
-                className={`w-7 h-7 rounded-md flex items-center justify-center mr-3 transition-all duration-200 ${
+                className={`w-8 h-8 rounded-md flex items-center justify-center mr-3 transition-all duration-200 ${
                   darkMode ? 'bg-gray-800' : 'bg-gray-100'
                 }`}
               >
                 <FontAwesomeIcon 
                   icon={category.icon} 
-                  className={`text-xs ${
+                  className={`text-sm ${
                     darkMode ? 'text-gray-400' : 'text-gray-500'
                   }`} 
                 />
@@ -133,7 +133,7 @@ const BusinessSidebar = React.memo(() => {
                   to={item.path}
                   end={item.exact}
                   className={({ isActive }) =>
-                    `flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+                    `flex items-center px-3 py-3 rounded-lg text-base font-medium transition-all duration-200 ${
                       isActive
                         ? darkMode
                           ? 'bg-emerald-700 text-white shadow-lg'
@@ -147,7 +147,7 @@ const BusinessSidebar = React.memo(() => {
                   {({ isActive }) => (
                     <>
                       <div 
-                        className={`w-7 h-7 rounded-md flex items-center justify-center mr-3 transition-all duration-200 ${
+                        className={`w-8 h-8 rounded-md flex items-center justify-center mr-3 transition-all duration-200 ${
                           isActive
                             ? darkMode
                               ? 'bg-emerald-600'
@@ -159,7 +159,7 @@ const BusinessSidebar = React.memo(() => {
                       >
                         <FontAwesomeIcon 
                           icon={item.icon} 
-                          className={`text-xs ${
+                          className={`text-sm ${
                             isActive
                               ? darkMode
                                 ? 'text-white'
