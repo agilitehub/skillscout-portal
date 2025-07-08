@@ -3,113 +3,57 @@
 /**
  * Data Model for Job Descriptions
  * Provides validation, transformation, and mapping functions
+ * Updated for new Supabase schema with lookup table references
  */
 
 /**
  * Job Description data structure definition
+ * Matches the new Supabase PostgreSQL schema
  */
 export const JobDescriptionSchema = {
   // Basic Information (Required)
   title: { type: 'string', required: true, maxLength: 255 },
-  company: { type: 'string', required: true, maxLength: 255 },
-  department: { type: 'string', required: true, maxLength: 255 },
-  location: { type: 'string', required: true, maxLength: 255 },
-  type: { type: 'string', required: true, enum: ['Full-time', 'Part-time', 'Contract', 'Internship'] },
-  salaryRange: { type: 'string', required: true, maxLength: 100 },
-
-  // Work Arrangement
-  remote: { type: 'boolean', required: false, default: false },
-  workArrangement: { type: 'string', required: false, enum: ['On-site', 'Remote', 'Hybrid', 'Flexible'] },
-
-  // Job Content (Main Description Fields)
   overview: { type: 'string', required: true },
-  responsibilities: { type: 'array', required: true },
-  requirements: { type: 'array', required: true },
-  benefits: { type: 'array', required: false },
+  department: { type: 'uuid', required: true }, // References lookup_details.id
+  experience_level: { type: 'uuid', required: true }, // References lookup_details.id
+  keywords: { type: 'array', required: true, itemType: 'string' }, // Array of strings
+  responsibilities: { type: 'string', required: true },
+  requirements: { type: 'string', required: true },
+  benefits: { type: 'string', required: true },
 
-  // Skills and Tags
-  tags: { type: 'array', required: false, default: [] },
-
-  // Status and Visibility
-  status: { type: 'string', required: false, enum: ['Active', 'Paused', 'Draft', 'Archived'], default: 'Active' },
-
-  // Additional Details
-  experienceLevel: { type: 'string', required: false, enum: ['Entry', 'Mid', 'Senior', 'Executive'] },
-  employmentTypes: { type: 'array', required: false },
-
-  // Related Job Opportunity (optional foreign key)
-  jobOpportunityId: { type: 'string', required: false },
-
-  // Search and SEO
-  searchKeywords: { type: 'string', required: false }
+  // Auto-managed audit fields (handled by triggers)
+  created_at: { type: 'timestamp', auto: true },
+  modified_at: { type: 'timestamp', auto: true },
+  created_by: { type: 'uuid', auto: true }, // References auth.users.id
+  modified_by: { type: 'uuid', auto: true } // References auth.users.id
 }
 
 /**
  * Transform form data to database format
  * @param {Object} formData - Data from the form
- * @param {Object} options - Additional options including user context
- * @param {Object} options.user - Current user information
- * @param {boolean} options.isUpdate - Whether this is an update operation
+ * @param {Object} options - Additional options
  * @returns {Object} Transformed data for database insertion
  */
 export const transformToDatabase = (formData, options = {}) => {
-  const { user, isUpdate = false } = options
-
   const transformed = {
     // Basic Information
     title: formData.title?.trim(),
-    company: formData.company?.trim(),
-    department: formData.department?.trim(),
-    location: formData.location?.trim(),
-    type: formData.type,
-    salary_range: formData.salaryRange?.trim(),
-
-    // Work Arrangement
-    remote: formData.remote !== undefined ? formData.remote : false,
-    work_arrangement: formData.workArrangement || null,
-
-    // Job Content (Main Description Fields)
     overview: formData.overview?.trim(),
-    responsibilities: Array.isArray(formData.responsibilities)
-      ? formData.responsibilities.filter((item) => item && item.trim())
-      : formData.responsibilities?.split('\n').filter((item) => item && item.trim()) || [],
-    requirements: Array.isArray(formData.requirements)
-      ? formData.requirements.filter((item) => item && item.trim())
-      : formData.requirements?.split('\n').filter((item) => item && item.trim()) || [],
-    benefits: Array.isArray(formData.benefits)
-      ? formData.benefits.filter((item) => item && item.trim())
-      : formData.benefits?.split('\n').filter((item) => item && item.trim()) || [],
+    department: formData.department, // UUID from lookup table
+    experience_level: formData.experienceLevel || formData.experience_level, // UUID from lookup table
 
-    // Skills and Tags
-    tags: Array.isArray(formData.tags) ? formData.tags : [],
+    // Keywords as array of strings
+    keywords: Array.isArray(formData.keywords) ? formData.keywords.filter((keyword) => keyword && keyword.trim()) : [],
 
-    // Status and Visibility
-    status: formData.status || 'Active',
-
-    // Additional Details
-    experience_level: formData.experienceLevel || null,
-    employment_types: Array.isArray(formData.employmentTypes) ? formData.employmentTypes : [],
-
-    // Related Job Opportunity
-    job_opportunity_id: formData.jobOpportunityId || null,
-
-    // Search and SEO
-    search_keywords: formData.searchKeywords?.trim() || null
-  }
-
-  // Add user context for audit fields
-  if (user && user.id) {
-    if (!isUpdate) {
-      // Set created_by only for new records
-      transformed.created_by = user.id
-    }
-    // Always set modified_by for both create and update operations
-    transformed.modified_by = user.id
+    // Text content fields
+    responsibilities: formData.responsibilities?.trim() || '',
+    requirements: formData.requirements?.trim() || '',
+    benefits: formData.benefits?.trim() || ''
   }
 
   // Remove undefined values
   Object.keys(transformed).forEach((key) => {
-    if (transformed[key] === undefined) {
+    if (transformed[key] === undefined || transformed[key] === null) {
       delete transformed[key]
     }
   })
@@ -126,48 +70,26 @@ export const transformFromDatabase = (dbData) => {
   if (!dbData) return null
 
   return {
-    // Basic Information
+    // Core fields
     id: dbData.id,
     title: dbData.title,
-    company: dbData.company,
-    department: dbData.department,
-    location: dbData.location,
-    type: dbData.type,
-    salaryRange: dbData.salary_range,
-
-    // Work Arrangement
-    remote: dbData.remote,
-    workArrangement: dbData.work_arrangement,
-
-    // Job Content (Main Description Fields)
     overview: dbData.overview,
-    responsibilities: dbData.responsibilities || [],
-    requirements: dbData.requirements || [],
-    benefits: dbData.benefits || [],
-
-    // Skills and Tags
-    tags: dbData.tags || [],
-
-    // Status and Visibility
-    status: dbData.status,
-
-    // Additional Details
+    department: dbData.department,
     experienceLevel: dbData.experience_level,
-    employmentTypes: dbData.employment_types || [],
+    keywords: dbData.keywords || [],
+    responsibilities: dbData.responsibilities,
+    requirements: dbData.requirements,
+    benefits: dbData.benefits,
 
-    // Related Job Opportunity
-    jobOpportunityId: dbData.job_opportunity_id,
-
-    // Search and SEO
-    searchKeywords: dbData.search_keywords,
-
-    // Metadata
-    createdDate: dbData.created_at?.split('T')[0],
-    lastUpdated: dbData.modified_at?.split('T')[0],
+    // Audit fields for display
     createdAt: dbData.created_at,
     modifiedAt: dbData.modified_at,
     createdBy: dbData.created_by,
-    modifiedBy: dbData.modified_by
+    modifiedBy: dbData.modified_by,
+
+    // Formatted dates for display
+    createdDate: dbData.created_at ? new Date(dbData.created_at).toLocaleDateString() : null,
+    lastUpdated: dbData.modified_at ? new Date(dbData.modified_at).toLocaleDateString() : null
   }
 }
 
@@ -182,64 +104,40 @@ export const validateJobDescription = (data) => {
   // Required field validation
   const requiredFields = [
     { field: 'title', message: 'Job title is required' },
-    { field: 'company', message: 'Company name is required' },
-    { field: 'department', message: 'Department is required' },
-    { field: 'location', message: 'Location is required' },
-    { field: 'type', message: 'Job type is required' },
-    { field: 'salaryRange', message: 'Salary range is required' },
     { field: 'overview', message: 'Job overview is required' },
+    { field: 'department', message: 'Department is required' },
+    { field: 'experienceLevel', message: 'Experience level is required' },
     { field: 'responsibilities', message: 'Responsibilities are required' },
-    { field: 'requirements', message: 'Requirements are required' }
+    { field: 'requirements', message: 'Requirements are required' },
+    { field: 'benefits', message: 'Benefits are required' }
   ]
 
   requiredFields.forEach(({ field, message }) => {
-    if (
-      !data[field] ||
-      (Array.isArray(data[field]) && data[field].length === 0) ||
-      (typeof data[field] === 'string' && data[field].trim().length === 0)
-    ) {
+    const value = data[field] || data[field === 'experienceLevel' ? 'experience_level' : field]
+    if (!value || (typeof value === 'string' && value.trim().length === 0)) {
       errors.push(message)
+    }
+  })
+
+  // Keywords validation
+  if (!data.keywords || !Array.isArray(data.keywords) || data.keywords.length === 0) {
+    errors.push('At least one keyword is required')
+  }
+
+  // UUID validation (basic format check)
+  const uuidFields = ['department', 'experienceLevel']
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+
+  uuidFields.forEach((field) => {
+    const value = data[field] || data[field === 'experienceLevel' ? 'experience_level' : field]
+    if (value && !uuidRegex.test(value)) {
+      errors.push(`Invalid ${field} format`)
     }
   })
 
   // String length validation
   if (data.title && data.title.length > 255) {
     errors.push('Job title must be less than 255 characters')
-  }
-
-  if (data.company && data.company.length > 255) {
-    errors.push('Company name must be less than 255 characters')
-  }
-
-  if (data.department && data.department.length > 255) {
-    errors.push('Department must be less than 255 characters')
-  }
-
-  if (data.location && data.location.length > 255) {
-    errors.push('Location must be less than 255 characters')
-  }
-
-  // Enum validation
-  const enumValidations = [
-    { field: 'type', values: ['Full-time', 'Part-time', 'Contract', 'Internship'] },
-    { field: 'workArrangement', values: ['On-site', 'Remote', 'Hybrid', 'Flexible'] },
-    { field: 'status', values: ['Active', 'Paused', 'Draft', 'Archived'] },
-    { field: 'experienceLevel', values: ['Entry', 'Mid', 'Senior', 'Executive'] }
-  ]
-
-  enumValidations.forEach(({ field, values }) => {
-    if (data[field] && !values.includes(data[field])) {
-      errors.push(`Invalid ${field}: ${data[field]}`)
-    }
-  })
-
-  // Array validation
-  if (data.responsibilities && Array.isArray(data.responsibilities) && data.responsibilities.length === 0) {
-    errors.push('At least one responsibility is required')
-  }
-
-  if (data.requirements && Array.isArray(data.requirements) && data.requirements.length === 0) {
-    errors.push('At least one requirement is required')
   }
 
   return {
@@ -254,71 +152,78 @@ export const validateJobDescription = (data) => {
  */
 export const createDefaultJobDescription = () => ({
   title: '',
-  company: '',
-  department: '',
-  location: '',
-  type: 'Full-time',
-  salaryRange: '',
-  remote: false,
-  workArrangement: 'On-site',
   overview: '',
-  responsibilities: [],
-  requirements: [],
-  benefits: [],
-  tags: [],
-  status: 'Active',
-  experienceLevel: '',
-  employmentTypes: [],
-  jobOpportunityId: null,
-  searchKeywords: ''
+  department: null,
+  experienceLevel: null,
+  keywords: [],
+  responsibilities: '',
+  requirements: '',
+  benefits: ''
 })
 
 /**
- * Generate search keywords from job description data
- * @param {Object} data - Job description data
- * @returns {string} Generated search keywords
+ * Parse keywords from text input (comma or newline separated)
+ * @param {string} text - Comma or newline separated keywords
+ * @returns {Array} Array of keyword strings
  */
-export const generateSearchKeywords = (data) => {
-  const keywords = []
-
-  if (data.title) keywords.push(data.title)
-  if (data.company) keywords.push(data.company)
-  if (data.department) keywords.push(data.department)
-  if (data.location) keywords.push(data.location)
-  if (data.type) keywords.push(data.type)
-  if (data.tags && Array.isArray(data.tags)) keywords.push(...data.tags)
-  if (data.experienceLevel) keywords.push(data.experienceLevel)
-
-  return keywords.join(' ').toLowerCase()
-}
-
-/**
- * Parse responsibilities/requirements/benefits from text input
- * @param {string} text - Multi-line text input
- * @returns {Array} Array of individual items
- */
-export const parseListItems = (text) => {
+export const parseKeywords = (text) => {
   if (!text || typeof text !== 'string') return []
 
   return text
-    .split('\n')
-    .map((item) => item.trim())
-    .filter((item) => item.length > 0)
-    .map((item) => {
-      // Remove common list prefixes (bullets, numbers, dashes)
-      return item
-        .replace(/^[-•*+]\s*/, '')
-        .replace(/^\d+\.\s*/, '')
-        .trim()
-    })
+    .split(/[,\n]/)
+    .map((keyword) => keyword.trim())
+    .filter((keyword) => keyword.length > 0)
+    .map((keyword) => keyword.toLowerCase())
 }
 
 /**
- * Format list items for display
- * @param {Array} items - Array of items
- * @returns {string} Formatted text with line breaks
+ * Format keywords for display
+ * @param {Array} keywords - Array of keyword strings
+ * @returns {string} Comma-separated keywords
  */
-export const formatListItems = (items) => {
-  if (!Array.isArray(items)) return ''
-  return items.join('\n')
+export const formatKeywords = (keywords) => {
+  if (!Array.isArray(keywords)) return ''
+  return keywords.join(', ')
+}
+
+/**
+ * Generate search terms from job description data
+ * @param {Object} data - Job description data
+ * @returns {Array} Array of search terms
+ */
+export const generateSearchTerms = (data) => {
+  const terms = []
+
+  if (data.title) terms.push(data.title.toLowerCase())
+  if (data.overview) terms.push(...data.overview.toLowerCase().split(' '))
+  if (data.keywords && Array.isArray(data.keywords)) {
+    terms.push(...data.keywords.map((k) => k.toLowerCase()))
+  }
+  if (data.responsibilities) {
+    terms.push(...data.responsibilities.toLowerCase().split(' '))
+  }
+  if (data.requirements) {
+    terms.push(...data.requirements.toLowerCase().split(' '))
+  }
+
+  // Remove duplicates and filter out short words
+  return [...new Set(terms)].filter((term) => term.length > 2)
+}
+
+/**
+ * Prepare job description for export/sharing
+ * @param {Object} data - Job description data
+ * @returns {Object} Formatted data for export
+ */
+export const prepareForExport = (data) => {
+  return {
+    title: data.title,
+    overview: data.overview,
+    keywords: Array.isArray(data.keywords) ? data.keywords.join(', ') : '',
+    responsibilities: data.responsibilities,
+    requirements: data.requirements,
+    benefits: data.benefits,
+    createdDate: data.createdDate,
+    lastUpdated: data.lastUpdated
+  }
 }

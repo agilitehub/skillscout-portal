@@ -109,70 +109,71 @@ const JobDescriptions = React.memo(({ user }) => {
             >
               {text}
             </div>
-            <div className='text-sm text-gray-500 dark:text-gray-400 flex items-center'>
-              <FontAwesomeIcon icon={faBuilding} className='mr-1' />
-              {record.company}
+            <div className='text-sm text-gray-500 dark:text-gray-400 mt-1'>
+              {record.overview && record.overview.length > 100
+                ? `${record.overview.substring(0, 100)}...`
+                : record.overview}
             </div>
           </div>
         ),
         sorter: (a, b) => a.title.localeCompare(b.title),
-        width: 250
+        width: 300
       },
       {
         title: 'Department',
-        dataIndex: 'department',
-        key: 'department',
-        render: (text) => (
+        dataIndex: 'departmentName',
+        key: 'departmentName',
+        render: (text, record) => (
           <div className='flex items-center'>
             <FontAwesomeIcon icon={faUsers} className='mr-2 text-gray-400' />
-            {text}
+            {text || 'Not specified'}
           </div>
         ),
-        sorter: (a, b) => a.department.localeCompare(b.department),
-        filters: [
-          { text: 'Engineering', value: 'Engineering' },
-          { text: 'Marketing', value: 'Marketing' },
-          { text: 'Sales', value: 'Sales' },
-          { text: 'Design', value: 'Design' },
-          { text: 'Product', value: 'Product' },
-          { text: 'Operations', value: 'Operations' }
-        ],
-        onFilter: (value, record) => record.department === value,
+        sorter: (a, b) => (a.departmentName || '').localeCompare(b.departmentName || ''),
         width: 150
       },
-
       {
-        title: 'Job Type',
-        dataIndex: 'type',
-        key: 'type',
-        render: (type) => (
-          <Tag color={type === 'Full-time' ? 'blue' : type === 'Part-time' ? 'orange' : 'purple'}>{type}</Tag>
+        title: 'Experience Level',
+        dataIndex: 'experienceLevelName',
+        key: 'experienceLevelName',
+        render: (text) => (
+          <Tag
+            color={
+              text === 'Entry Level'
+                ? 'green'
+                : text === 'Mid Level'
+                  ? 'blue'
+                  : text === 'Senior Level'
+                    ? 'purple'
+                    : text === 'Executive'
+                      ? 'red'
+                      : 'default'
+            }
+          >
+            {text || 'Not specified'}
+          </Tag>
         ),
-        filters: [
-          { text: 'Full-time', value: 'Full-time' },
-          { text: 'Part-time', value: 'Part-time' },
-          { text: 'Contract', value: 'Contract' },
-          { text: 'Internship', value: 'Internship' }
-        ],
-        onFilter: (value, record) => record.type === value,
         width: 120
       },
-
       {
-        title: 'Status',
-        dataIndex: 'status',
-        key: 'status',
-        render: (status) => (
-          <Tag color={status === 'Active' ? 'green' : status === 'Draft' ? 'orange' : 'red'}>{status}</Tag>
+        title: 'Keywords',
+        dataIndex: 'keywords',
+        key: 'keywords',
+        render: (keywords) => (
+          <div className='flex flex-wrap gap-1'>
+            {(keywords || []).slice(0, 3).map((keyword, index) => (
+              <Tag key={index} size='small' color='blue'>
+                {keyword}
+              </Tag>
+            ))}
+            {(keywords || []).length > 3 && (
+              <Tag size='small' color='default'>
+                +{(keywords || []).length - 3} more
+              </Tag>
+            )}
+          </div>
         ),
-        filters: [
-          { text: 'Active', value: 'Active' },
-          { text: 'Draft', value: 'Draft' },
-          { text: 'Paused', value: 'Paused' },
-          { text: 'Archived', value: 'Archived' }
-        ],
-        onFilter: (value, record) => record.status === value,
-        width: 100
+        width: 200
       },
       {
         title: 'Last Updated',
@@ -181,10 +182,10 @@ const JobDescriptions = React.memo(({ user }) => {
         render: (date) => (
           <div className='flex items-center'>
             <FontAwesomeIcon icon={faCalendarAlt} className='mr-1 text-gray-400' />
-            {new Date(date).toLocaleDateString()}
+            {date || 'N/A'}
           </div>
         ),
-        sorter: (a, b) => new Date(a.lastUpdated) - new Date(b.lastUpdated),
+        sorter: (a, b) => new Date(a.modifiedAt || 0) - new Date(b.modifiedAt || 0),
         width: 130
       },
       {

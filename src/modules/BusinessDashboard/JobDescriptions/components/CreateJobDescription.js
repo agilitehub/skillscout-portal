@@ -1,9 +1,9 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
 
-import React, { useState, useCallback } from 'react'
-import { Card, Button, Form, Input, Select, Switch, Space, message, Row, Col, Tabs } from 'antd'
-import { useNavigate } from 'react-router-dom'
+import React, { useState, useCallback, useEffect } from 'react'
+import { Card, Button, Form, Input, Select, Space, message, Row, Col, Tabs, Spin } from 'antd'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faSave,
@@ -14,26 +14,119 @@ import {
   faTasks,
   faClipboardList,
   faGift,
-  faArrowLeft
+  faArrowLeft,
+  faEdit
 } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../../ui/ThemeContext'
 import BusinessSidebar from '../../components/BusinessSidebar'
-import { createJobDescription } from '../utils/controller'
-import { parseListItems } from '../utils/data-model'
+import {
+  createJobDescription,
+  updateJobDescription,
+  getJobDescriptionById,
+  getDepartments,
+  getExperienceLevels
+} from '../utils/controller'
+import { parseKeywords } from '../utils/data-model'
 
 const { TextArea } = Input
 const { Option } = Select
 const { TabPane } = Tabs
 
 /**
- * CreateJobDescription page for creating new job descriptions
+ * CreateJobDescription page for creating new job descriptions and editing existing ones
  * Features a three-column layout for better organization of comprehensive form fields
  */
 const CreateJobDescription = React.memo(({ user }) => {
   const { darkMode } = useTheme()
   const navigate = useNavigate()
+  const location = useLocation()
   const [form] = Form.useForm()
   const [loading, setLoading] = useState(false)
+  const [departments, setDepartments] = useState([])
+  const [experienceLevels, setExperienceLevels] = useState([])
+  const [lookupsLoading, setLookupsLoading] = useState(true)
+  const [initialDataLoading, setInitialDataLoading] = useState(false)
+
+  // Check if we're in edit mode
+  const isEditMode = location.state?.isEdit
+  const editId = location.state?.editId
+  const existingJobDescription = location.state?.jobDescription
+
+  // Load lookup data on component mount
+  useEffect(() => {
+    loadLookupData()
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Load existing data when in edit mode
+  useEffect(() => {
+    if (isEditMode && editId) {
+      loadExistingJobDescription(editId)
+    }
+  }, [isEditMode, editId]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Load existing job description data for editing
+  const loadExistingJobDescription = useCallback(
+    async (id) => {
+      try {
+        setInitialDataLoading(true)
+        const result = await getJobDescriptionById(id)
+
+        if (result.success && result.data) {
+          // Populate form with existing data
+          form.setFieldsValue({
+            title: result.data.title,
+            overview: result.data.overview,
+            department: result.data.department,
+            experienceLevel: result.data.experienceLevel,
+            keywords: result.data.keywords || [],
+            responsibilities: result.data.responsibilities,
+            requirements: result.data.requirements,
+            benefits: result.data.benefits
+          })
+        } else {
+          console.error('Error loading job description for edit:', result.error)
+          message.error('Failed to load job description data: ' + result.error)
+          // Navigate back to list if we can't load the data
+          navigate('/business-dashboard/job-descriptions')
+        }
+      } catch (error) {
+        console.error('Unexpected error loading job description for edit:', error)
+        message.error('An unexpected error occurred while loading the job description')
+        navigate('/business-dashboard/job-descriptions')
+      } finally {
+        setInitialDataLoading(false)
+      }
+    },
+    [form, navigate]
+  )
+
+  // Load departments and experience levels
+  const loadLookupData = useCallback(async () => {
+    try {
+      setLookupsLoading(true)
+
+      const [departmentsResult, experienceLevelsResult] = await Promise.all([getDepartments(), getExperienceLevels()])
+
+      if (departmentsResult.success) {
+        setDepartments(departmentsResult.data)
+      } else {
+        console.error('Error loading departments:', departmentsResult.error)
+        message.error('Failed to load departments')
+      }
+
+      if (experienceLevelsResult.success) {
+        setExperienceLevels(experienceLevelsResult.data)
+      } else {
+        console.error('Error loading experience levels:', experienceLevelsResult.error)
+        message.error('Failed to load experience levels')
+      }
+    } catch (error) {
+      console.error('Error loading lookup data:', error)
+      message.error('Failed to load lookup data')
+    } finally {
+      setLookupsLoading(false)
+    }
+  }, [])
 
   // Handle navigation back to job descriptions list
   const handleGoBack = useCallback(() => {
@@ -46,30 +139,46 @@ const CreateJobDescription = React.memo(({ user }) => {
       setLoading(true)
       try {
         const processedValues = {
-          ...values,
-          responsibilities: parseListItems(values.responsibilities),
-          requirements: parseListItems(values.requirements),
-          benefits: parseListItems(values.benefits || ''),
-          searchKeywords: values.searchKeywords || [],
-          status: values.status ? 'Active' : 'Draft'
+          title: values.title?.trim(),
+          overview: values.overview?.trim(),
+          department: values.department,
+          experienceLevel: values.experienceLevel,
+          keywords: typeof values.keywords === 'string' ? parseKeywords(values.keywords) : values.keywords || [],
+          responsibilities: values.responsibilities?.trim() || '',
+          requirements: values.requirements?.trim() || '',
+          benefits: values.benefits?.trim() || ''
         }
 
-        const result = await createJobDescription(processedValues, user)
-        if (result.success) {
-          message.success('Job description created successfully!')
-          navigate('/business-dashboard/job-descriptions')
+        let result
+        if (isEditMode && editId) {
+          // Update existing job description
+          result = await updateJobDescription(editId, processedValues, user)
+          if (result.success) {
+            message.success('Job description updated successfully!')
+            navigate('/business-dashboard/job-descriptions')
+          } else {
+            console.error('Error updating job description:', result.error)
+            message.error('Failed to update job description: ' + result.error)
+          }
         } else {
-          console.error('Error creating job description:', result.error)
-          message.error('Failed to create job description: ' + result.error)
+          // Create new job description
+          result = await createJobDescription(processedValues, user)
+          if (result.success) {
+            message.success('Job description created successfully!')
+            navigate('/business-dashboard/job-descriptions')
+          } else {
+            console.error('Error creating job description:', result.error)
+            message.error('Failed to create job description: ' + result.error)
+          }
         }
       } catch (error) {
-        console.error('Unexpected error creating job description:', error)
-        message.error('An unexpected error occurred while creating the job description')
+        console.error('Unexpected error submitting job description:', error)
+        message.error('An unexpected error occurred while saving the job description')
       } finally {
         setLoading(false)
       }
     },
-    [user, navigate]
+    [user, navigate, isEditMode, editId]
   )
 
   return (
@@ -133,15 +242,17 @@ const CreateJobDescription = React.memo(({ user }) => {
               </Button>
               <div className='flex items-center mr-6'>
                 <FontAwesomeIcon
-                  icon={faFileText}
+                  icon={isEditMode ? faEdit : faFileText}
                   className={`text-lg mr-3 ${darkMode ? 'text-emerald-400' : 'text-white'}`}
                 />
                 <div>
                   <h1 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-white'}`}>
-                    Create New Job Description
+                    {isEditMode ? 'Edit Job Description' : 'Create New Job Description'}
                   </h1>
                   <p className={`text-sm mt-1 ${darkMode ? 'text-gray-300' : 'text-white/90'}`}>
-                    Create a comprehensive job description to attract the right candidates
+                    {isEditMode
+                      ? 'Update the job description details below'
+                      : 'Create a comprehensive job description to attract the right candidates'}
                   </p>
                 </div>
               </div>
@@ -166,6 +277,7 @@ const CreateJobDescription = React.memo(({ user }) => {
                 icon={<FontAwesomeIcon icon={faSave} />}
                 onClick={() => form.submit()}
                 loading={loading}
+                disabled={initialDataLoading}
                 size='large'
                 className={
                   darkMode
@@ -173,7 +285,7 @@ const CreateJobDescription = React.memo(({ user }) => {
                     : 'bg-white text-emerald-600 border-white hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-100 font-medium'
                 }
               >
-                Save Job Description
+                {isEditMode ? 'Update Job Description' : 'Save Job Description'}
               </Button>
             </div>
           </div>
@@ -284,335 +396,364 @@ const CreateJobDescription = React.memo(({ user }) => {
             borderColor: darkMode ? '#4B5563' : '#e5e7eb'
           }}
         >
-          <Form form={form} layout='vertical' onFinish={handleFormSubmit} className={`${darkMode ? 'dark-form' : ''}`}>
-            {/* Dark Mode Tab Styling */}
-            {darkMode && (
-              <style>
-                {`
-                .dark-tabs .ant-tabs-tab {
-                  color: #9CA3AF !important;
-                  border-color: #4B5563 !important;
-                }
-                .dark-tabs .ant-tabs-tab-active {
-                  color: #10B981 !important;
-                  border-bottom-color: #10B981 !important;
-                }
-                .dark-tabs .ant-tabs-tab:hover {
-                  color: #34D399 !important;
-                }
-                .dark-tabs .ant-tabs-ink-bar {
-                  background: #10B981 !important;
-                }
-                .dark-tabs .ant-tabs-content-holder {
-                  background-color: transparent !important;
-                }
-                
-                /* Dropdown Options */
-                .ant-select-dropdown {
-                  background-color: #374151 !important;
-                }
-                .ant-select-item {
-                  color: #F9FAFB !important;
-                }
-                .ant-select-item:hover {
-                  background-color: #4B5563 !important;
-                }
-                .ant-select-item-option-selected {
-                  background-color: #10B981 !important;
-                  color: #FFFFFF !important;
-                }
-                
-                /* Switch Labels */
-                .ant-switch-inner {
-                  color: #FFFFFF !important;
-                  font-weight: 500 !important;
-                }
-                
-                /* Form validation messages */
-                .ant-form-item-explain-error {
-                  color: #F87171 !important;
-                }
-                
-                /* Character count */
-                .ant-input-data-count {
-                  color: #9CA3AF !important;
-                }
-                
-                /* Additional comprehensive styling */
-                .dark-form .ant-form-item-control-input {
-                  background-color: transparent !important;
-                }
-                .dark-form .ant-form-item-control-input-content input {
-                  background-color: #4B5563 !important;
-                  color: #F9FAFB !important;
-                  border-color: #6B7280 !important;
-                }
-                .dark-form .ant-form-item-control-input-content textarea {
-                  background-color: #4B5563 !important;
-                  color: #F9FAFB !important;
-                  border-color: #6B7280 !important;
-                }
-                .dark-form .ant-form-item-control-input-content .ant-select-selector {
-                  background-color: #4B5563 !important;
-                  color: #F9FAFB !important;
-                  border-color: #6B7280 !important;
-                }
-                
-                /* Ultimate override for any remaining light elements */
-                .dark-form * {
-                  scrollbar-color: #6B7280 #374151;
-                }
-                .dark-form .ant-form-item input,
-                .dark-form .ant-form-item textarea,
-                .dark-form .ant-form-item .ant-select-selector {
-                  background-color: #4B5563 !important;
-                  color: #F9FAFB !important;
-                  border-color: #6B7280 !important;
-                }
-                .dark-form .ant-form-item .ant-input-affix-wrapper {
-                  background-color: #4B5563 !important;
-                  border-color: #6B7280 !important;
-                }
-                .dark-form .ant-form-item .ant-input-affix-wrapper input {
-                  background-color: transparent !important;
-                  color: #F9FAFB !important;
-                }
-                .dark-form .ant-form-item .ant-input-prefix {
-                  color: #9CA3AF !important;
-                }
-              `}
-              </style>
-            )}
+          {/* Show loading spinner while loading initial data */}
+          {initialDataLoading ? (
+            <div className='flex justify-center items-center py-20'>
+              <Spin size='large' />
+              <span className={`ml-3 text-lg ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                Loading job description data...
+              </span>
+            </div>
+          ) : (
+            <Form
+              form={form}
+              layout='vertical'
+              onFinish={handleFormSubmit}
+              className={`${darkMode ? 'dark-form' : ''}`}
+            >
+              {/* Dark Mode Tab Styling */}
+              {darkMode && (
+                <style>
+                  {`
+                  .dark-tabs .ant-tabs-tab {
+                    color: #9CA3AF !important;
+                    border-color: #4B5563 !important;
+                  }
+                  .dark-tabs .ant-tabs-tab-active {
+                    color: #10B981 !important;
+                    border-bottom-color: #10B981 !important;
+                  }
+                  .dark-tabs .ant-tabs-tab:hover {
+                    color: #34D399 !important;
+                  }
+                  .dark-tabs .ant-tabs-ink-bar {
+                    background: #10B981 !important;
+                  }
+                  .dark-tabs .ant-tabs-content-holder {
+                    background-color: transparent !important;
+                  }
+                  
+                  /* Dropdown Options */
+                  .ant-select-dropdown {
+                    background-color: #374151 !important;
+                  }
+                  .ant-select-item {
+                    color: #F9FAFB !important;
+                  }
+                  .ant-select-item:hover {
+                    background-color: #4B5563 !important;
+                  }
+                  .ant-select-item-option-selected {
+                    background-color: #10B981 !important;
+                    color: #FFFFFF !important;
+                  }
+                  
+                  /* Switch Labels */
+                  .ant-switch-inner {
+                    color: #FFFFFF !important;
+                    font-weight: 500 !important;
+                  }
+                  
+                  /* Form validation messages */
+                  .ant-form-item-explain-error {
+                    color: #F87171 !important;
+                  }
+                  
+                  /* Character count */
+                  .ant-input-data-count {
+                    color: #9CA3AF !important;
+                  }
+                  
+                  /* Additional comprehensive styling */
+                  .dark-form .ant-form-item-control-input {
+                    background-color: transparent !important;
+                  }
+                  .dark-form .ant-form-item-control-input-content input {
+                    background-color: #4B5563 !important;
+                    color: #F9FAFB !important;
+                    border-color: #6B7280 !important;
+                  }
+                  .dark-form .ant-form-item-control-input-content textarea {
+                    background-color: #4B5563 !important;
+                    color: #F9FAFB !important;
+                    border-color: #6B7280 !important;
+                  }
+                  .dark-form .ant-form-item-control-input-content .ant-select-selector {
+                    background-color: #4B5563 !important;
+                    color: #F9FAFB !important;
+                    border-color: #6B7280 !important;
+                  }
+                  
+                  /* Ultimate override for any remaining light elements */
+                  .dark-form * {
+                    scrollbar-color: #6B7280 #374151;
+                  }
+                  .dark-form .ant-form-item input,
+                  .dark-form .ant-form-item textarea,
+                  .dark-form .ant-form-item .ant-select-selector {
+                    background-color: #4B5563 !important;
+                    color: #F9FAFB !important;
+                    border-color: #6B7280 !important;
+                  }
+                  .dark-form .ant-form-item .ant-input-affix-wrapper {
+                    background-color: #4B5563 !important;
+                    border-color: #6B7280 !important;
+                  }
+                  .dark-form .ant-form-item .ant-input-affix-wrapper input {
+                    background-color: transparent !important;
+                    color: #F9FAFB !important;
+                  }
+                  .dark-form .ant-form-item .ant-input-prefix {
+                    color: #9CA3AF !important;
+                  }
+                `}
+                </style>
+              )}
 
-            <Tabs defaultActiveKey='1' size='large' className={`${darkMode ? 'dark-tabs' : ''}`}>
-              {/* Tab 1: Basic Information & Job Details */}
-              <TabPane
-                tab={
-                  <span className='flex items-center space-x-2'>
-                    <FontAwesomeIcon icon={faBuilding} />
-                    <span>Basic Information</span>
-                  </span>
-                }
-                key='1'
-              >
-                <Row gutter={32}>
-                  <Col span={12}>
-                    <div
-                      className={`space-y-4 p-6 rounded-lg border ${
-                        darkMode ? 'bg-gray-800 border-gray-600' : 'bg-gray-50 border-gray-200'
-                      }`}
-                    >
-                      <div className={`mb-4 pb-2 border-b ${darkMode ? 'border-gray-600' : 'border-gray-200'}`}>
-                        <h3 className={`text-lg font-semibold ${darkMode ? 'text-gray-200' : 'text-gray-800'}`}>
-                          Basic Details
-                        </h3>
+              <Tabs defaultActiveKey='1' size='large' className={`${darkMode ? 'dark-tabs' : ''}`}>
+                {/* Tab 1: Basic Information & Job Details */}
+                <TabPane
+                  tab={
+                    <span className='flex items-center space-x-2'>
+                      <FontAwesomeIcon icon={faBuilding} />
+                      <span>Basic Information</span>
+                    </span>
+                  }
+                  key='1'
+                >
+                  <Row gutter={32}>
+                    <Col span={12}>
+                      <div
+                        className={`space-y-4 p-6 rounded-lg border ${
+                          darkMode ? 'bg-gray-800 border-gray-600' : 'bg-gray-50 border-gray-200'
+                        }`}
+                      >
+                        <div className={`mb-4 pb-2 border-b ${darkMode ? 'border-gray-600' : 'border-gray-200'}`}>
+                          <h3 className={`text-lg font-semibold ${darkMode ? 'text-gray-200' : 'text-gray-800'}`}>
+                            Basic Details
+                          </h3>
+                        </div>
+
+                        <Form.Item
+                          label={<span className={darkMode ? 'text-gray-300' : 'text-gray-900'}>Job Title</span>}
+                          name='title'
+                          rules={[
+                            { required: true, message: 'Please enter job title' },
+                            { max: 255, message: 'Job title must be 255 characters or less' }
+                          ]}
+                        >
+                          <Input
+                            placeholder='e.g. Senior React Developer'
+                            prefix={<FontAwesomeIcon icon={faFileText} className='text-gray-400' />}
+                          />
+                        </Form.Item>
+
+                        <Form.Item
+                          label={<span className={darkMode ? 'text-gray-300' : 'text-gray-900'}>Job Overview</span>}
+                          name='overview'
+                          rules={[{ required: true, message: 'Please enter job overview' }]}
+                          extra={
+                            <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
+                              Provide a compelling overview of the role and what makes it attractive to candidates
+                            </span>
+                          }
+                        >
+                          <TextArea
+                            rows={4}
+                            placeholder='Describe the role, its importance to the company, and what the successful candidate will achieve...'
+                            showCount
+                            maxLength={2000}
+                          />
+                        </Form.Item>
                       </div>
-                      <Form.Item
-                        label={<span className={darkMode ? 'text-gray-300' : 'text-gray-900'}>Status</span>}
-                        name='status'
-                        valuePropName='checked'
-                        initialValue={true}
-                        extra={
-                          <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
-                            Turn on to make this job description active
-                          </span>
-                        }
+                    </Col>
+                    <Col span={12}>
+                      <div
+                        className={`space-y-4 p-6 rounded-lg border ${
+                          darkMode ? 'bg-gray-800 border-gray-600' : 'bg-gray-50 border-gray-200'
+                        }`}
                       >
-                        <Switch checkedChildren='Active' unCheckedChildren='Draft' />
-                      </Form.Item>
+                        <div className={`mb-4 pb-2 border-b ${darkMode ? 'border-gray-600' : 'border-gray-200'}`}>
+                          <h3 className={`text-lg font-semibold ${darkMode ? 'text-gray-200' : 'text-gray-800'}`}>
+                            Job Details
+                          </h3>
+                        </div>
+                        <Form.Item
+                          label={<span className={darkMode ? 'text-gray-300' : 'text-gray-900'}>Department</span>}
+                          name='department'
+                          rules={[{ required: true, message: 'Please select a department' }]}
+                          extra={
+                            <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
+                              Select the department this role belongs to
+                            </span>
+                          }
+                        >
+                          <Select
+                            placeholder={lookupsLoading ? 'Loading departments...' : 'Select department'}
+                            allowClear
+                            loading={lookupsLoading}
+                            disabled={lookupsLoading}
+                            notFoundContent={lookupsLoading ? <Spin size='small' /> : 'No departments found'}
+                          >
+                            {departments.map((dept) => (
+                              <Option key={dept.id} value={dept.id}>
+                                {dept.label}
+                              </Option>
+                            ))}
+                          </Select>
+                        </Form.Item>
 
-                      <Form.Item
-                        label={<span className={darkMode ? 'text-gray-300' : 'text-gray-900'}>Job Title</span>}
-                        name='title'
-                        rules={[
-                          { required: true, message: 'Please enter job title' },
-                          { max: 255, message: 'Job title must be 255 characters or less' }
-                        ]}
-                      >
-                        <Input
-                          placeholder='e.g. Senior React Developer'
-                          prefix={<FontAwesomeIcon icon={faFileText} className='text-gray-400' />}
-                        />
-                      </Form.Item>
+                        <Form.Item
+                          label={<span className={darkMode ? 'text-gray-300' : 'text-gray-900'}>Experience Level</span>}
+                          name='experienceLevel'
+                          rules={[{ required: true, message: 'Please select an experience level' }]}
+                          extra={
+                            <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
+                              Select the required experience level for this role
+                            </span>
+                          }
+                        >
+                          <Select
+                            placeholder={lookupsLoading ? 'Loading experience levels...' : 'Select experience level'}
+                            allowClear
+                            loading={lookupsLoading}
+                            disabled={lookupsLoading}
+                            notFoundContent={lookupsLoading ? <Spin size='small' /> : 'No experience levels found'}
+                          >
+                            {experienceLevels.map((level) => (
+                              <Option key={level.id} value={level.id}>
+                                {level.label}
+                              </Option>
+                            ))}
+                          </Select>
+                        </Form.Item>
 
-                      <Form.Item
-                        label={<span className={darkMode ? 'text-gray-300' : 'text-gray-900'}>Job Overview</span>}
-                        name='overview'
-                        rules={[{ required: true, message: 'Please enter job overview' }]}
-                        extra={
-                          <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
-                            Provide a compelling overview of the role and what makes it attractive to candidates
-                          </span>
-                        }
-                      >
-                        <TextArea
-                          rows={4}
-                          placeholder='Describe the role, its importance to the company, and what the successful candidate will achieve...'
-                          showCount
-                          maxLength={2000}
-                        />
-                      </Form.Item>
-                    </div>
-                  </Col>
-                  <Col span={12}>
-                    <div
-                      className={`space-y-4 p-6 rounded-lg border ${
-                        darkMode ? 'bg-gray-800 border-gray-600' : 'bg-gray-50 border-gray-200'
-                      }`}
-                    >
-                      <div className={`mb-4 pb-2 border-b ${darkMode ? 'border-gray-600' : 'border-gray-200'}`}>
-                        <h3 className={`text-lg font-semibold ${darkMode ? 'text-gray-200' : 'text-gray-800'}`}>
-                          Job Details
-                        </h3>
+                        <Form.Item
+                          label={<span className={darkMode ? 'text-gray-300' : 'text-gray-900'}>Keywords</span>}
+                          name='keywords'
+                          rules={[{ required: true, message: 'Please add at least one keyword' }]}
+                          extra={
+                            <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
+                              Add relevant keywords to help with categorization and search. Press Enter or comma to
+                              separate.
+                            </span>
+                          }
+                        >
+                          <Select
+                            mode='tags'
+                            placeholder='Add keywords like: javascript, react, senior, remote, frontend, engineer'
+                            tokenSeparators={[',', '\n']}
+                          />
+                        </Form.Item>
                       </div>
-                      <Form.Item
-                        label={<span className={darkMode ? 'text-gray-300' : 'text-gray-900'}>Department</span>}
-                        name='department'
-                        rules={[
-                          { required: true, message: 'Please enter department' },
-                          { max: 255, message: 'Department must be 255 characters or less' }
-                        ]}
-                      >
-                        <Input
-                          placeholder='e.g. Engineering'
-                          prefix={<FontAwesomeIcon icon={faUsers} className='text-gray-400' />}
-                        />
-                      </Form.Item>
+                    </Col>
+                  </Row>
+                </TabPane>
 
-                      <Form.Item
-                        label={<span className={darkMode ? 'text-gray-300' : 'text-gray-900'}>Experience Level</span>}
-                        name='experienceLevel'
+                {/* Tab 2: Detailed Information */}
+                <TabPane
+                  tab={
+                    <span className='flex items-center space-x-2'>
+                      <FontAwesomeIcon icon={faTasks} />
+                      <span>Detailed Information</span>
+                    </span>
+                  }
+                  key='2'
+                >
+                  <Row gutter={32}>
+                    <Col span={24}>
+                      <div
+                        className={`space-y-6 p-6 rounded-lg border ${
+                          darkMode ? 'bg-gray-800 border-gray-600' : 'bg-gray-50 border-gray-200'
+                        }`}
                       >
-                        <Select placeholder='Select experience level' allowClear>
-                          <Option value='Entry'>Entry Level</Option>
-                          <Option value='Mid'>Mid Level</Option>
-                          <Option value='Senior'>Senior Level</Option>
-                          <Option value='Executive'>Executive</Option>
-                        </Select>
-                      </Form.Item>
+                        <div className={`mb-4 pb-2 border-b ${darkMode ? 'border-gray-600' : 'border-gray-200'}`}>
+                          <h3 className={`text-lg font-semibold ${darkMode ? 'text-gray-200' : 'text-gray-800'}`}>
+                            Detailed Information
+                          </h3>
+                        </div>
 
-                      <Form.Item
-                        label={<span className={darkMode ? 'text-gray-300' : 'text-gray-900'}>Keywords</span>}
-                        name='searchKeywords'
-                        extra={
-                          <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
-                            Add relevant keywords to help with categorization and search
-                          </span>
-                        }
-                      >
-                        <Select
-                          mode='tags'
-                          placeholder='Add keywords like: javascript, react, senior, remote, frontend, engineer'
-                          tokenSeparators={[',']}
-                        />
-                      </Form.Item>
-                    </div>
-                  </Col>
-                </Row>
-              </TabPane>
-
-              {/* Tab 2: Detailed Information */}
-              <TabPane
-                tab={
-                  <span className='flex items-center space-x-2'>
-                    <FontAwesomeIcon icon={faTasks} />
-                    <span>Detailed Information</span>
-                  </span>
-                }
-                key='2'
-              >
-                <Row gutter={32}>
-                  <Col span={24}>
-                    <div
-                      className={`space-y-6 p-6 rounded-lg border ${
-                        darkMode ? 'bg-gray-800 border-gray-600' : 'bg-gray-50 border-gray-200'
-                      }`}
-                    >
-                      <div className={`mb-4 pb-2 border-b ${darkMode ? 'border-gray-600' : 'border-gray-200'}`}>
-                        <h3 className={`text-lg font-semibold ${darkMode ? 'text-gray-200' : 'text-gray-800'}`}>
-                          Detailed Information
-                        </h3>
-                      </div>
-
-                      <Form.Item
-                        label={
-                          <Space>
-                            <span className={darkMode ? 'text-gray-300' : 'text-gray-900'}>Responsibilities</span>
-                            <FontAwesomeIcon icon={faTasks} className='text-gray-400' />
-                          </Space>
-                        }
-                        name='responsibilities'
-                        rules={[{ required: true, message: 'Please enter job responsibilities' }]}
-                        extra={
-                          <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
-                            Enter each responsibility on a new line. Bullet points will be automatically formatted.
-                          </span>
-                        }
-                      >
-                        <TextArea
-                          rows={8}
-                          placeholder={`• Lead development of new features and products
+                        <Form.Item
+                          label={
+                            <Space>
+                              <span className={darkMode ? 'text-gray-300' : 'text-gray-900'}>Responsibilities</span>
+                              <FontAwesomeIcon icon={faTasks} className='text-gray-400' />
+                            </Space>
+                          }
+                          name='responsibilities'
+                          rules={[{ required: true, message: 'Please enter job responsibilities' }]}
+                          extra={
+                            <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
+                              Enter each responsibility on a new line. Bullet points will be automatically formatted.
+                            </span>
+                          }
+                        >
+                          <TextArea
+                            rows={8}
+                            placeholder={`• Lead development of new features and products
 • Collaborate with cross-functional teams
 • Mentor junior developers
 • Participate in code reviews and architecture decisions`}
-                          showCount
-                        />
-                      </Form.Item>
+                            showCount
+                          />
+                        </Form.Item>
 
-                      <Form.Item
-                        label={
-                          <Space>
-                            <span className={darkMode ? 'text-gray-300' : 'text-gray-900'}>Requirements</span>
-                            <FontAwesomeIcon icon={faClipboardList} className='text-gray-400' />
-                          </Space>
-                        }
-                        name='requirements'
-                        rules={[{ required: true, message: 'Please enter job requirements' }]}
-                        extra={
-                          <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
-                            List the essential skills, qualifications, and experience needed for this role
-                          </span>
-                        }
-                      >
-                        <TextArea
-                          rows={8}
-                          placeholder={`• 5+ years of experience with React and modern JavaScript
+                        <Form.Item
+                          label={
+                            <Space>
+                              <span className={darkMode ? 'text-gray-300' : 'text-gray-900'}>Requirements</span>
+                              <FontAwesomeIcon icon={faClipboardList} className='text-gray-400' />
+                            </Space>
+                          }
+                          name='requirements'
+                          rules={[{ required: true, message: 'Please enter job requirements' }]}
+                          extra={
+                            <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
+                              List the essential skills, qualifications, and experience needed for this role
+                            </span>
+                          }
+                        >
+                          <TextArea
+                            rows={8}
+                            placeholder={`• 5+ years of experience with React and modern JavaScript
 • Strong understanding of software engineering principles
 • Experience with REST APIs and database design
 • Excellent communication and collaboration skills`}
-                          showCount
-                        />
-                      </Form.Item>
+                            showCount
+                          />
+                        </Form.Item>
 
-                      <Form.Item
-                        label={
-                          <Space>
-                            <span className={darkMode ? 'text-gray-300' : 'text-gray-900'}>Benefits</span>
-                            <FontAwesomeIcon icon={faGift} className='text-gray-400' />
-                          </Space>
-                        }
-                        name='benefits'
-                        extra={
-                          <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
-                            List the benefits and perks offered with this position
-                          </span>
-                        }
-                      >
-                        <TextArea
-                          rows={8}
-                          placeholder={`• Competitive salary and equity package
+                        <Form.Item
+                          label={
+                            <Space>
+                              <span className={darkMode ? 'text-gray-300' : 'text-gray-900'}>Benefits</span>
+                              <FontAwesomeIcon icon={faGift} className='text-gray-400' />
+                            </Space>
+                          }
+                          name='benefits'
+                          rules={[{ required: true, message: 'Please enter job benefits' }]}
+                          extra={
+                            <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
+                              List the benefits and perks offered with this position
+                            </span>
+                          }
+                        >
+                          <TextArea
+                            rows={8}
+                            placeholder={`• Competitive salary and equity package
 • Comprehensive health, dental, and vision insurance
 • Flexible PTO and work-from-home options
 • Professional development budget`}
-                          showCount
-                        />
-                      </Form.Item>
-                    </div>
-                  </Col>
-                </Row>
-              </TabPane>
-            </Tabs>
-          </Form>
+                            showCount
+                          />
+                        </Form.Item>
+                      </div>
+                    </Col>
+                  </Row>
+                </TabPane>
+              </Tabs>
+            </Form>
+          )}
         </Card>
       </div>
     </div>
