@@ -1,44 +1,23 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
 import React, { useState, useEffect, useMemo, useCallback } from 'react'
-import {
-  Table,
-  Button,
-  Modal,
-  Form,
-  Input,
-  Select,
-  DatePicker,
-  Tag,
-  Space,
-  Tooltip,
-  Card,
-  Statistic,
-  message,
-  Popconfirm
-} from 'antd'
+import { Button, Modal, Tag, Card, Statistic, message } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faPlus,
-  faEdit,
-  faTrash,
-  faEye,
   faBriefcase,
   faUsers,
   faMapMarkerAlt,
   faDollarSign,
   faCalendarAlt,
-  faBuilding,
-  faFileText,
-  faClipboardCheck
+  faBuilding
 } from '@fortawesome/free-solid-svg-icons'
-import { useTheme } from '../../ui/ThemeContext'
+import { useTheme } from '../../../../ui/ThemeContext'
 import { useNavigate } from 'react-router-dom'
-import BusinessSidebar from './components/BusinessSidebar'
-import { getAllJobOpportunities, deleteJobOpportunity } from './JobOpportunities/utils/controller'
-
-const { Option } = Select
-const { TextArea } = Input
+import BusinessSidebar from '../../components/BusinessSidebar'
+import { getAllJobOpportunities, deleteJobOpportunity } from '../utils/controller'
+import TableView from '../../../../core/View/TableView'
+import TableActions from '../../../../core/View/TableActions'
 
 /**
  * Business Dashboard component for Recruiters and Employers
@@ -247,62 +226,38 @@ const BusinessDashboard = React.memo(({ user }) => {
         title: 'Actions',
         key: 'actions',
         render: (_, record) => (
-          <Space size='small' wrap>
-            <Tooltip title='View Details'>
-              <Button
-                type='text'
-                size='small'
-                icon={<FontAwesomeIcon icon={faEye} />}
-                onClick={() => handleViewJob(record)}
-                className='text-blue-500 hover:text-blue-700'
-              />
-            </Tooltip>
-            <Tooltip title='View Job Description'>
-              <Button
-                type='text'
-                size='small'
-                icon={<FontAwesomeIcon icon={faFileText} />}
-                onClick={() => handleViewJobDescription(record)}
-                className='text-purple-500 hover:text-purple-700'
-              />
-            </Tooltip>
-            <Tooltip title='View Assessment'>
-              <Button
-                type='text'
-                size='small'
-                icon={<FontAwesomeIcon icon={faClipboardCheck} />}
-                onClick={() => handleViewJobAssessment(record)}
-                className='text-orange-500 hover:text-orange-700'
-              />
-            </Tooltip>
-            <Tooltip title='Edit Job'>
-              <Button
-                type='text'
-                size='small'
-                icon={<FontAwesomeIcon icon={faEdit} />}
-                onClick={() => handleEditJob(record)}
-                className='text-green-500 hover:text-green-700'
-              />
-            </Tooltip>
-            <Popconfirm
-              title='Delete Job Opportunity'
-              description='Are you sure you want to delete this job opportunity? This action cannot be undone.'
-              onConfirm={() => handleDeleteJob(record.id)}
-              okText='Delete'
-              cancelText='Cancel'
-              okType='danger'
-              placement='topRight'
-            >
-              <Tooltip title='Delete Job'>
-                <Button
-                  type='text'
-                  size='small'
-                  icon={<FontAwesomeIcon icon={faTrash} />}
-                  className='text-red-500 hover:text-red-700'
-                />
-              </Tooltip>
-            </Popconfirm>
-          </Space>
+          <TableActions
+            record={record}
+            actions={[
+              {
+                key: 'view',
+                onClick: handleViewJob
+              },
+              {
+                key: 'description',
+                onClick: handleViewJobDescription
+              },
+              {
+                key: 'assessment',
+                onClick: handleViewJobAssessment
+              },
+              {
+                key: 'edit',
+                onClick: handleEditJob
+              },
+              {
+                key: 'delete',
+                onClick: (record) => handleDeleteJob(record.id),
+                confirm: {
+                  title: 'Delete Job Opportunity',
+                  description: 'Are you sure you want to delete this job opportunity? This action cannot be undone.',
+                  okText: 'Delete',
+                  cancelText: 'Cancel',
+                  okType: 'danger'
+                }
+              }
+            ]}
+          />
         )
       }
     ],
@@ -416,106 +371,17 @@ const BusinessDashboard = React.memo(({ user }) => {
         </div>
 
         {/* Job Opportunities Table */}
-        <Card className={`${darkMode ? 'bg-gray-700 border-gray-600' : ''} shadow-lg`}>
-          <Table
-            columns={columns}
-            dataSource={jobOpportunities}
-            loading={loading}
-            rowKey='id'
-            pagination={{
-              pageSize: 10,
-              showSizeChanger: true,
-              showQuickJumper: true,
-              showTotal: (total, range) => (
-                <span style={{ color: darkMode ? '#ffffff' : '#000000' }}>
-                  {`${range[0]}-${range[1]} of ${total} jobs`}
-                </span>
-              ),
-              className: darkMode ? 'dark-pagination' : '',
-              itemRender: (current, type, originalElement) => {
-                if (type === 'prev' || type === 'next' || type === 'jump-prev' || type === 'jump-next') {
-                  return React.cloneElement(originalElement, {
-                    style: {
-                      ...originalElement.props.style,
-                      color: darkMode ? '#ffffff' : '#000000',
-                      backgroundColor: darkMode ? '#4b5563' : '#ffffff',
-                      borderColor: darkMode ? '#6b7280' : '#d9d9d9'
-                    }
-                  })
-                }
-                if (type === 'page') {
-                  return React.cloneElement(originalElement, {
-                    style: {
-                      ...originalElement.props.style,
-                      color: darkMode ? '#ffffff' : '#000000',
-                      backgroundColor: darkMode ? '#4b5563' : '#ffffff',
-                      borderColor: darkMode ? '#6b7280' : '#d9d9d9'
-                    }
-                  })
-                }
-                return originalElement
-              }
-            }}
-            className={darkMode ? 'dark-table' : ''}
-            scroll={{ x: 1200 }}
-            style={{
-              backgroundColor: darkMode ? '#374151' : '#ffffff'
-            }}
-            components={{
-              header: {
-                cell: (props) => (
-                  <th
-                    {...props}
-                    style={{
-                      backgroundColor: darkMode ? '#4b5563' : '#fafafa',
-                      color: darkMode ? '#ffffff' : '#000000',
-                      borderBottom: darkMode ? '1px solid #6b7280' : '1px solid #f0f0f0',
-                      ...props.style
-                    }}
-                  />
-                )
-              },
-              body: {
-                row: (props) => (
-                  <tr
-                    {...props}
-                    style={{
-                      backgroundColor: darkMode ? '#374151' : '#ffffff',
-                      color: darkMode ? '#ffffff' : '#000000',
-                      borderBottom: darkMode ? '1px solid #4b5563' : '1px solid #f0f0f0',
-                      ...props.style
-                    }}
-                    onMouseEnter={(e) => {
-                      if (darkMode) {
-                        e.currentTarget.style.backgroundColor = '#4b5563'
-                      } else {
-                        e.currentTarget.style.backgroundColor = '#fafafa'
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (darkMode) {
-                        e.currentTarget.style.backgroundColor = '#374151'
-                      } else {
-                        e.currentTarget.style.backgroundColor = '#ffffff'
-                      }
-                    }}
-                  />
-                ),
-                cell: (props) => (
-                  <td
-                    {...props}
-                    style={{
-                      backgroundColor: 'transparent',
-                      color: darkMode ? '#ffffff' : '#000000',
-                      borderBottom: darkMode ? '1px solid #4b5563' : '1px solid #f0f0f0',
-                      ...props.style
-                    }}
-                  />
-                )
-              }
-            }}
-          />
-        </Card>
+        <TableView
+          columns={columns}
+          dataSource={jobOpportunities}
+          loading={loading}
+          rowKey='id'
+          pagination={{
+            pageSize: 10,
+            showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} jobs`
+          }}
+          emptyText='No job opportunities found'
+        />
 
         {/* Job Modal */}
         <Modal
