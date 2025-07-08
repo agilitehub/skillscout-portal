@@ -16,24 +16,10 @@ import {
   faArrowLeft,
   faTimes
 } from '@fortawesome/free-solid-svg-icons'
-import {
-  Card,
-  Table,
-  Button,
-  Input,
-  Select,
-  Modal,
-  Form,
-  message,
-  Space,
-  Popconfirm,
-  Tooltip,
-  Switch,
-  Row,
-  Col
-} from 'antd'
+import { Button, Input, Select, Modal, Form, message, Switch, Row, Col } from 'antd'
+import TableView from '../../../../core/View/TableView'
+import TableActions from '../../../../core/View/TableActions'
 
-const { Search } = Input
 const { Option } = Select
 
 /**
@@ -273,39 +259,34 @@ const Lookups = React.memo(({ user }) => {
       title: 'ACTIONS',
       key: 'actions',
       render: (_, record) => (
-        <Space>
-          <Tooltip title='Edit'>
-            <Button
-              size='small'
-              icon={<FontAwesomeIcon icon={faEdit} />}
-              onClick={() => {
+        <TableActions
+          record={record}
+          actions={[
+            {
+              key: 'edit',
+              onClick: () => {
                 // Edit the first profile in the category for now
                 if (record.profiles.length > 0) {
                   handleEdit(record.profiles[0])
                 }
-              }}
-              style={{
-                backgroundColor: 'transparent',
-                borderColor: darkMode ? '#6b7280' : '#d1d5db',
-                color: darkMode ? '#9ca3af' : '#6b7280'
-              }}
-            />
-          </Tooltip>
-          <Popconfirm
-            title='Are you sure you want to delete this category?'
-            description='This will delete all profiles in this category.'
-            onConfirm={() => {
-              // Delete all profiles in the category
-              record.profiles.forEach((profile) => handleDelete(profile.id))
-            }}
-            okText='Yes'
-            cancelText='No'
-          >
-            <Tooltip title='Delete'>
-              <Button size='small' danger icon={<FontAwesomeIcon icon={faTrash} />} />
-            </Tooltip>
-          </Popconfirm>
-        </Space>
+              }
+            },
+            {
+              key: 'delete',
+              onClick: () => {
+                // Delete all profiles in the category
+                record.profiles.forEach((profile) => handleDelete(profile.id))
+              },
+              confirm: {
+                title: 'Delete Category',
+                description:
+                  'Are you sure you want to delete this category? This will delete all profiles in this category.',
+                okText: 'Yes',
+                cancelText: 'No'
+              }
+            }
+          ]}
+        />
       ),
       width: 100
     }
@@ -367,231 +348,74 @@ const Lookups = React.memo(({ user }) => {
 
   return (
     <>
-      {/* Dark Mode Styles */}
+      {/* Dark Mode Styles for Select Component */}
       {darkMode && (
-        <style jsx global>{`
-          .dark-search .ant-input {
-            background-color: #4b5563 !important;
-            border-color: #6b7280 !important;
-            color: #ffffff !important;
-          }
-          .dark-search .ant-input::placeholder {
-            color: #9ca3af !important;
-          }
-          .dark-search .ant-input-search-button {
-            background-color: #6b7280 !important;
-            border-color: #6b7280 !important;
-          }
-          .dark-select .ant-select-selector {
-            background-color: #4b5563 !important;
-            border-color: #6b7280 !important;
-            color: #ffffff !important;
-            font-weight: 500 !important;
-            font-size: 14px !important;
-          }
-          .dark-select .ant-select-selection-item {
-            background-color: transparent !important;
-            color: #ffffff !important;
-            border: none !important;
-          }
-          .dark-select .ant-select-arrow {
-            color: #9ca3af !important;
-          }
-          .dark-select .ant-select:focus .ant-select-selector {
-            border-color: #6b7280 !important;
-            box-shadow: none !important;
-          }
-          .dark-select .ant-select-selection-placeholder {
-            color: #9ca3af !important;
-            opacity: 0.8 !important;
-          }
-          /* Dropdown menu styles */
-          .dark-select .ant-select-dropdown {
-            background-color: #374151 !important;
-            border-color: #4b5563 !important;
-          }
-          .dark-select .ant-select-item {
-            background-color: #374151 !important;
-            color: #ffffff !important;
-          }
-          .dark-select .ant-select-item:hover {
-            background-color: #4b5563 !important;
-            color: #ffffff !important;
-          }
-          .dark-select .ant-select-item-option-selected {
-            background-color: #059669 !important;
-            color: #ffffff !important;
-          }
-          .dark-select .ant-select-item-option-active {
-            background-color: #4b5563 !important;
-            color: #ffffff !important;
-          }
-          .light-select .ant-select-selector {
-            background-color: #ffffff !important;
-            border-color: #10b981 !important;
-            color: #111827 !important;
-            font-weight: 500 !important;
-            font-size: 14px !important;
-          }
-          .light-select .ant-select-selection-item {
-            background-color: #10b981 !important;
-            color: #ffffff !important;
-            border-color: #059669 !important;
-          }
-          .light-select .ant-select-arrow {
-            color: #059669 !important;
-          }
-          .light-select .ant-select-selection-placeholder {
-            color: #6b7280 !important;
-            opacity: 0.8 !important;
-          }
-          .dark-table .ant-table-thead > tr > th {
-            background-color: #374151 !important;
-            color: #ffffff !important;
-            border-bottom: 1px solid #4b5563 !important;
-          }
-          .dark-table .ant-table-tbody > tr > td {
-            background-color: #1f2937 !important;
-            color: #e5e7eb !important;
-            border-bottom: 1px solid #374151 !important;
-          }
-          .dark-table .ant-table-tbody > tr:hover > td {
-            background-color: #374151 !important;
-          }
-          .dark-modal .ant-modal-content {
-            background-color: #1f2937 !important;
-          }
-          .dark-modal .ant-modal-header {
-            background-color: #1f2937 !important;
-            border-bottom: 1px solid #374151 !important;
-          }
-          .dark-modal .ant-modal-title {
-            color: #ffffff !important;
-          }
-          .dark-input.ant-input {
-            background-color: #374151 !important;
-            border-color: #10b981 !important;
-            color: #ffffff !important;
-            font-weight: 500 !important;
-            font-size: 14px !important;
-          }
-          .dark-input .ant-input {
-            background-color: #374151 !important;
-            border-color: #10b981 !important;
-            color: #ffffff !important;
-            font-weight: 500 !important;
-            font-size: 14px !important;
-          }
-          .dark-input input {
-            background-color: #374151 !important;
-            border-color: #10b981 !important;
-            color: #ffffff !important;
-            font-weight: 500 !important;
-            font-size: 14px !important;
-          }
-          .dark-input .ant-input::placeholder {
-            color: #d1d5db !important;
-            opacity: 0.7 !important;
-          }
-          .dark-input input::placeholder {
-            color: #d1d5db !important;
-            opacity: 0.7 !important;
-          }
-          .dark-input .ant-input:focus {
-            border-color: #059669 !important;
-            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.3) !important;
-            background-color: #374151 !important;
-            color: #ffffff !important;
-          }
-          .dark-input input:focus {
-            border-color: #059669 !important;
-            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.3) !important;
-            background-color: #374151 !important;
-            color: #ffffff !important;
-          }
-          .light-input .ant-input {
-            background-color: #ffffff !important;
-            border-color: #10b981 !important;
-            color: #111827 !important;
-            font-weight: 500 !important;
-            font-size: 14px !important;
-          }
-          .light-input .ant-input::placeholder {
-            color: #6b7280 !important;
-            opacity: 0.8 !important;
-          }
-          .light-input .ant-input:focus {
-            border-color: #059669 !important;
-            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2) !important;
-            background-color: #ffffff !important;
-            color: #111827 !important;
-          }
-
-          /* Additional overrides for input text color */
-          .dark-input * {
-            color: #ffffff !important;
-          }
-          .dark-input .ant-input-affix-wrapper input {
-            color: #ffffff !important;
-            background-color: #374151 !important;
-          }
-          .dark-input .ant-input-affix-wrapper {
-            background-color: #374151 !important;
-            border-color: #10b981 !important;
-          }
-
-          /* Force white text in all dark mode inputs */
-          .dark-input input[type='text'],
-          .dark-input input[type='password'],
-          .dark-input input[type='email'],
-          .dark-input input,
-          .dark-input textarea {
-            color: #ffffff !important;
-            background-color: #374151 !important;
-            border-color: #10b981 !important;
-          }
-
-          /* Ant Design specific overrides */
-          .ant-modal .dark-input .ant-input {
-            color: #ffffff !important;
-            background-color: #374151 !important;
-          }
-
-          .ant-modal .dark-input input {
-            color: #ffffff !important;
-            background-color: #374151 !important;
-          }
-
-          /* Global dropdown styles for dark mode */
-          .ant-select-dropdown {
-            background-color: ${darkMode ? '#374151' : '#ffffff'} !important;
-          }
-          .ant-select-item {
-            background-color: ${darkMode ? '#374151' : '#ffffff'} !important;
-            color: ${darkMode ? '#ffffff' : '#000000'} !important;
-          }
-          .ant-select-item:hover {
-            background-color: ${darkMode ? '#4b5563' : '#f5f5f5'} !important;
-            color: ${darkMode ? '#ffffff' : '#000000'} !important;
-          }
-          .ant-select-item-option-selected {
-            background-color: ${darkMode ? '#059669' : '#e6f7ff'} !important;
-            color: ${darkMode ? '#ffffff' : '#1890ff'} !important;
-          }
-          .ant-select-item-option-active {
-            background-color: ${darkMode ? '#4b5563' : '#f5f5f5'} !important;
-            color: ${darkMode ? '#ffffff' : '#000000'} !important;
-          }
-
-          /* Button styling fixes */
-          .ant-btn {
-            transition: all 0.2s ease !important;
-          }
-          .ant-btn:focus {
-            outline: none !important;
-            box-shadow: none !important;
-          }
-        `}</style>
+        <style jsx global>
+          {`
+            .dark-select .ant-select-selector {
+              background-color: #4b5563 !important;
+              border-color: #6b7280 !important;
+              color: #ffffff !important;
+              font-weight: 500 !important;
+              font-size: 14px !important;
+            }
+            .dark-select .ant-select-selection-item {
+              background-color: transparent !important;
+              color: #ffffff !important;
+              border: none !important;
+            }
+            .dark-select .ant-select-arrow {
+              color: #9ca3af !important;
+            }
+            .dark-select .ant-select:focus .ant-select-selector {
+              border-color: #6b7280 !important;
+              box-shadow: none !important;
+            }
+            .dark-select .ant-select-selection-placeholder {
+              color: #9ca3af !important;
+              opacity: 0.8 !important;
+            }
+            .dark-select .ant-select-dropdown {
+              background-color: #374151 !important;
+              border-color: #4b5563 !important;
+            }
+            .dark-select .ant-select-item {
+              background-color: #374151 !important;
+              color: #ffffff !important;
+            }
+            .dark-select .ant-select-item:hover {
+              background-color: #4b5563 !important;
+              color: #ffffff !important;
+            }
+            .dark-select .ant-select-item-option-selected {
+              background-color: #059669 !important;
+              color: #ffffff !important;
+            }
+            .dark-select .ant-select-item-option-active {
+              background-color: #4b5563 !important;
+              color: #ffffff !important;
+            }
+            .light-select .ant-select-selector {
+              background-color: rgba(255, 255, 255, 0.9) !important;
+              border-color: rgba(255, 255, 255, 0.3) !important;
+              color: #374151 !important;
+              font-weight: 500 !important;
+              font-size: 14px !important;
+            }
+            .light-select .ant-select-selection-item {
+              background-color: transparent !important;
+              color: #374151 !important;
+              border: none !important;
+            }
+            .light-select .ant-select-arrow {
+              color: #6b7280 !important;
+            }
+            .light-select .ant-select-selection-placeholder {
+              color: #6b7280 !important;
+              opacity: 0.8 !important;
+            }
+          `}
+        </style>
       )}
 
       <div className={`min-h-screen relative overflow-hidden ${darkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
@@ -651,7 +475,7 @@ const Lookups = React.memo(({ user }) => {
               </div>
             </div>
 
-            {/* Toolbar */}
+            {/* Header */}
             <div
               className={`rounded-lg mb-6 px-6 py-4 shadow-lg ${darkMode ? 'bg-gray-800 border border-gray-700' : ''}`}
               style={{
@@ -661,22 +485,32 @@ const Lookups = React.memo(({ user }) => {
               }}
             >
               <div className='flex items-center justify-between'>
-                {/* Left Side - Title and View Selector */}
                 <div className='flex items-center'>
-                  <div className='flex items-center mr-6'>
+                  <FontAwesomeIcon
+                    icon={faList}
+                    className={`text-lg mr-3 ${darkMode ? 'text-emerald-400' : 'text-white'}`}
+                  />
+                  <h1 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-white'}`}>Lookups</h1>
+                </div>
+
+                <div className='flex items-center space-x-4'>
+                  <div className='flex items-center space-x-2'>
                     <FontAwesomeIcon
-                      icon={faList}
-                      className={`text-lg mr-3 ${darkMode ? 'text-emerald-400' : 'text-white'}`}
+                      icon={faFilter}
+                      className={`text-sm ${darkMode ? 'text-emerald-400' : 'text-white'}`}
                     />
-                    <h1 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-white'}`}>Lookups</h1>
+                    <span className={`text-sm font-medium ${darkMode ? 'text-white' : 'text-white'}`}>
+                      Group Filter:
+                    </span>
                   </div>
 
                   <Select
                     value={selectedGroup}
                     onChange={setSelectedGroup}
-                    className={`w-48 ${darkMode ? 'dark-select' : ''}`}
+                    className={`w-48 ${darkMode ? 'dark-select' : 'light-select'}`}
+                    placeholder='Filter by group'
                     style={{
-                      backgroundColor: darkMode ? '#4b5563' : 'rgba(255, 255, 255, 0.1)'
+                      backgroundColor: darkMode ? '#4b5563' : 'rgba(255, 255, 255, 0.9)'
                     }}
                     dropdownStyle={{
                       backgroundColor: darkMode ? '#374151' : '#ffffff'
@@ -690,155 +524,30 @@ const Lookups = React.memo(({ user }) => {
                     ))}
                   </Select>
                 </div>
-
-                {/* Right Side - Actions */}
-                <div className='flex items-center space-x-3'>
-                  <Button
-                    type='primary'
-                    icon={<FontAwesomeIcon icon={faPlus} />}
-                    onClick={handleAdd}
-                    style={{
-                      backgroundColor: darkMode ? '#059669' : '#ffffff',
-                      borderColor: darkMode ? '#059669' : '#ffffff',
-                      color: darkMode ? '#ffffff' : '#059669',
-                      fontWeight: '500'
-                    }}
-                    onMouseEnter={(e) => {
-                      e.target.style.backgroundColor = darkMode ? '#047857' : '#f0fdf4'
-                      e.target.style.borderColor = darkMode ? '#047857' : '#059669'
-                      e.target.style.color = darkMode ? '#ffffff' : '#047857'
-                    }}
-                    onMouseLeave={(e) => {
-                      e.target.style.backgroundColor = darkMode ? '#059669' : '#ffffff'
-                      e.target.style.borderColor = darkMode ? '#059669' : '#ffffff'
-                      e.target.style.color = darkMode ? '#ffffff' : '#059669'
-                    }}
-                  >
-                    Create New
-                  </Button>
-
-                  <Button
-                    icon={<FontAwesomeIcon icon={faFilter} />}
-                    style={{
-                      backgroundColor: darkMode ? '#4b5563' : 'rgba(255, 255, 255, 0.1)',
-                      borderColor: darkMode ? '#6b7280' : 'rgba(255, 255, 255, 0.2)',
-                      color: darkMode ? '#e5e7eb' : '#ffffff',
-                      fontWeight: '500'
-                    }}
-                    onMouseEnter={(e) => {
-                      e.target.style.backgroundColor = darkMode ? '#374151' : 'rgba(255, 255, 255, 0.2)'
-                      e.target.style.borderColor = darkMode ? '#4b5563' : 'rgba(255, 255, 255, 0.3)'
-                      e.target.style.color = darkMode ? '#ffffff' : '#ffffff'
-                    }}
-                    onMouseLeave={(e) => {
-                      e.target.style.backgroundColor = darkMode ? '#4b5563' : 'rgba(255, 255, 255, 0.1)'
-                      e.target.style.borderColor = darkMode ? '#6b7280' : 'rgba(255, 255, 255, 0.2)'
-                      e.target.style.color = darkMode ? '#e5e7eb' : '#ffffff'
-                    }}
-                  >
-                    Filter
-                  </Button>
-
-                  <Search
-                    placeholder='Search lookups...'
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className={`w-64 ${darkMode ? 'dark-search' : ''}`}
-                    style={{
-                      backgroundColor: darkMode ? '#4b5563' : 'rgba(255, 255, 255, 0.1)'
-                    }}
-                    styles={{
-                      input: {
-                        backgroundColor: darkMode ? '#4b5563' : 'rgba(255, 255, 255, 0.1)',
-                        borderColor: darkMode ? '#6b7280' : 'rgba(255, 255, 255, 0.2)',
-                        color: darkMode ? '#ffffff' : '#ffffff'
-                      }
-                    }}
-                  />
-                </div>
               </div>
             </div>
 
             {/* Profile Data Table */}
-            <Card
-              className={`${darkMode ? 'bg-gray-800 border-gray-600' : 'bg-white border-gray-200'} shadow-lg`}
-              bodyStyle={{
-                padding: '24px',
-                backgroundColor: darkMode ? '#1f2937' : '#ffffff'
+            <TableView
+              columns={columns}
+              dataSource={groupedData}
+              rowKey='key'
+              expandedRowRender={expandedRowRender}
+              searchTerm={searchTerm}
+              onSearch={setSearchTerm}
+              searchPlaceholder='Search lookups...'
+              toolbarActions={[
+                <Button key='create' type='primary' icon={<FontAwesomeIcon icon={faPlus} />} onClick={handleAdd}>
+                  Create New
+                </Button>
+              ]}
+              pagination={{
+                total: groupedData.length,
+                pageSize: 10,
+                showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} categories`
               }}
-            >
-              <Table
-                columns={columns}
-                dataSource={groupedData}
-                rowKey='key'
-                expandable={{
-                  expandedRowRender,
-                  rowExpandable: (record) => record.totalItems > 0,
-                  expandRowByClick: false,
-                  expandIcon: ({ expanded, onExpand, record }) =>
-                    record.totalItems > 0 ? (
-                      <Button
-                        type='text'
-                        size='small'
-                        icon={<FontAwesomeIcon icon={expanded ? faMinus : faPlus} />}
-                        onClick={(e) => onExpand(record, e)}
-                        className={`${darkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`}
-                      />
-                    ) : (
-                      <div className='w-6' />
-                    )
-                }}
-                pagination={{
-                  total: groupedData.length,
-                  pageSize: 10,
-                  showSizeChanger: true,
-                  showQuickJumper: true,
-                  showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} categories`
-                }}
-                className={darkMode ? 'dark-table' : ''}
-                style={{
-                  backgroundColor: darkMode ? '#1f2937' : '#ffffff'
-                }}
-                components={{
-                  header: {
-                    cell: (props) => (
-                      <th
-                        {...props}
-                        style={{
-                          ...props.style,
-                          backgroundColor: darkMode ? '#374151' : '#f9fafb',
-                          color: darkMode ? '#ffffff' : '#374151',
-                          borderBottom: `1px solid ${darkMode ? '#4b5563' : '#e5e7eb'}`
-                        }}
-                      />
-                    )
-                  },
-                  body: {
-                    row: (props) => (
-                      <tr
-                        {...props}
-                        style={{
-                          ...props.style,
-                          backgroundColor: darkMode ? '#1f2937' : '#ffffff',
-                          borderBottom: `1px solid ${darkMode ? '#374151' : '#f3f4f6'}`
-                        }}
-                      />
-                    ),
-                    cell: (props) => (
-                      <td
-                        {...props}
-                        style={{
-                          ...props.style,
-                          backgroundColor: darkMode ? '#1f2937' : '#ffffff',
-                          color: darkMode ? '#e5e7eb' : '#374151',
-                          borderBottom: `1px solid ${darkMode ? '#374151' : '#f3f4f6'}`
-                        }}
-                      />
-                    )
-                  }
-                }}
-              />
-            </Card>
+              emptyText='No lookup categories found'
+            />
           </div>
         </div>
 
@@ -898,17 +607,9 @@ const Lookups = React.memo(({ user }) => {
                   <Form.Item
                     name='profileKey'
                     label={
-                      <div className='flex items-center'>
-                        <span className={`font-medium ${darkMode ? 'text-emerald-100' : 'text-emerald-800'}`}>
-                          Profile Key
-                        </span>
-                        <Tooltip title='Provide a unique Profile Key'>
-                          <FontAwesomeIcon
-                            icon={faSearch}
-                            className={`ml-2 text-xs ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}
-                          />
-                        </Tooltip>
-                      </div>
+                      <span className={`font-medium ${darkMode ? 'text-emerald-100' : 'text-emerald-800'}`}>
+                        Profile Key
+                      </span>
                     }
                     rules={[{ required: true, message: 'Please enter a profile key' }]}
                   >
