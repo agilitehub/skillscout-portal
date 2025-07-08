@@ -1,24 +1,15 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
-import React, { useState, useCallback, useMemo } from 'react'
+import React, { useState, useCallback, useMemo, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTheme } from '../../../../ui/ThemeContext'
 import BusinessSidebar from '../../components/BusinessSidebar'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {
-  faList,
-  faPlus,
-  faMinus,
-  faEdit,
-  faTrash,
-  faSearch,
-  faFilter,
-  faArrowLeft,
-  faTimes
-} from '@fortawesome/free-solid-svg-icons'
-import { Button, Input, Select, Modal, Form, message, Switch, Row, Col } from 'antd'
+import { faList, faPlus, faFilter, faArrowLeft, faTimes, faSpinner } from '@fortawesome/free-solid-svg-icons'
+import { Button, Input, Select, Modal, Form, message, Switch, Row, Col, Spin } from 'antd'
 import TableView from '../../../../core/View/TableView'
 import TableActions from '../../../../core/View/TableActions'
+import { getAllLookups, createLookup, updateLookup, deleteLookup } from '../utils/controller'
 
 const { Option } = Select
 
@@ -37,66 +28,60 @@ const Lookups = React.memo(({ user }) => {
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [editingProfile, setEditingProfile] = useState(null)
   const [labelValuePairs, setLabelValuePairs] = useState([{ label: '', value: '' }])
+  const [profileData, setProfileData] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [modalLoading, setModalLoading] = useState(false)
 
-  // Sample profile data - in real app this would come from API
-  const [profileData, setProfileData] = useState([
-    {
-      id: 1,
-      profileKey: 'Gender',
-      groupName: '',
-      solutions: [],
-      isActive: true,
-      labelValuePairs: [
-        { label: 'Male', value: 'gender_1' },
-        { label: 'Female', value: 'gender_2' }
-      ]
-    },
-    {
-      id: 2,
-      profileKey: 'Industry',
-      groupName: '',
-      solutions: [],
-      isActive: true,
-      labelValuePairs: [
-        { label: 'Technology', value: 'tech' },
-        { label: 'Healthcare', value: 'healthcare' },
-        { label: 'Finance', value: 'finance' },
-        { label: 'Education', value: 'education' },
-        { label: 'Manufacturing', value: 'manufacturing' },
-        { label: 'Retail', value: 'retail' },
-        { label: 'Consulting', value: 'consulting' }
-      ]
-    },
-    {
-      id: 3,
-      profileKey: 'Role',
-      groupName: '',
-      solutions: [],
-      isActive: true,
-      labelValuePairs: [
-        { label: 'Software Engineer', value: 'swe' },
-        { label: 'Product Manager', value: 'pm' },
-        { label: 'Designer', value: 'designer' },
-        { label: 'Data Scientist', value: 'ds' },
-        { label: 'Sales Manager', value: 'sales' },
-        { label: 'Marketing Specialist', value: 'marketing' }
-      ]
+  // Load lookups data on component mount
+  useEffect(() => {
+    loadLookups()
+  }, [])
+
+  // Load lookups from API
+  const loadLookups = useCallback(async (filters = {}) => {
+    try {
+      setLoading(true)
+      const result = await getAllLookups(filters)
+
+      if (result.success) {
+        setProfileData(result.data)
+      } else {
+        message.error(result.error || 'Failed to load lookups')
+        setProfileData([])
+      }
+    } catch (error) {
+      console.error('Error loading lookups:', error)
+      message.error('An unexpected error occurred while loading lookups')
+      setProfileData([])
+    } finally {
+      setLoading(false)
     }
-  ])
+  }, [])
+
+  // Client-side search - no API calls needed
+  const filteredProfileData = useMemo(() => {
+    if (!searchTerm || searchTerm.trim() === '') {
+      return profileData
+    }
+
+    const term = searchTerm.toLowerCase()
+    return profileData.filter(
+      (profile) =>
+        profile.profileKey?.toLowerCase().includes(term) ||
+        profile.groupName?.toLowerCase().includes(term) ||
+        profile.labelValuePairs?.some(
+          (pair) => pair.label?.toLowerCase().includes(term) || pair.value?.toLowerCase().includes(term)
+        )
+    )
+  }, [profileData, searchTerm])
 
   // Get unique group names for filter
   const groupNames = [...new Set(profileData.map((p) => p.groupName).filter(Boolean))]
 
   // Filter data based on search and group
-  const filteredData = profileData.filter((profile) => {
-    const matchesSearch =
-      searchTerm === '' ||
-      profile.profileKey.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      profile.groupName.toLowerCase().includes(searchTerm.toLowerCase())
-
+  const filteredData = filteredProfileData.filter((profile) => {
     const matchesGroup = selectedGroup === 'all' || profile.groupName === selectedGroup
-
-    return matchesSearch && matchesGroup
+    return matchesGroup
   })
 
   // Handle add new profile
@@ -135,42 +120,74 @@ const Lookups = React.memo(({ user }) => {
   const handleSubmit = useCallback(
     async (values) => {
       try {
-        const validPairs = labelValuePairs.filter((pair) => pair.label.trim() && pair.value.trim())
+        setModalLoading(true)
+
+        const validPairs = labelValuePairs.filter((pair) => pair.label && pair.label.trim())
 
         if (validPairs.length === 0) {
           message.error('Please add at least one label-value pair')
           return
         }
 
-        const newProfile = {
+        const lookupData = {
           ...values,
-          id: editingProfile ? editingProfile.id : Date.now(),
-          labelValuePairs: validPairs
+          labelValuePairs: validPairs.map((pair, index) => ({
+            ...pair,
+            sortOrder: index + 1
+          }))
         }
 
-        setProfileData((prev) =>
-          editingProfile
-            ? prev.map((profile) => (profile.id === editingProfile.id ? newProfile : profile))
-            : [...prev, newProfile]
-        )
+        let result
+        if (editingProfile) {
+          result = await updateLookup(editingProfile.id, lookupData, user)
+        } else {
+          result = await createLookup(lookupData, user)
+        }
 
-        message.success(`${editingProfile ? 'Updated' : 'Added'} profile successfully`)
-        setIsModalVisible(false)
-        setEditingProfile(null)
-        form.resetFields()
-        setLabelValuePairs([{ label: '', value: '' }])
+        if (result.success) {
+          message.success(`${editingProfile ? 'Updated' : 'Created'} lookup successfully`)
+          setIsModalVisible(false)
+          setEditingProfile(null)
+          form.resetFields()
+          setLabelValuePairs([{ label: '', value: '' }])
+
+          // Reload data to get fresh state
+          await loadLookups()
+        } else {
+          message.error(result.error || `Failed to ${editingProfile ? 'update' : 'create'} lookup`)
+        }
       } catch (error) {
-        message.error('Failed to save profile')
+        console.error('Error saving lookup:', error)
+        message.error('An unexpected error occurred while saving')
+      } finally {
+        setModalLoading(false)
       }
     },
-    [editingProfile, labelValuePairs, form]
+    [editingProfile, labelValuePairs, form, user, loadLookups]
   )
 
   // Handle delete
-  const handleDelete = useCallback((id) => {
-    setProfileData((prev) => prev.filter((profile) => profile.id !== id))
-    message.success('Profile deleted successfully')
-  }, [])
+  const handleDelete = useCallback(
+    async (id) => {
+      try {
+        setLoading(true)
+        const result = await deleteLookup(id)
+
+        if (result.success) {
+          message.success('Lookup deleted successfully')
+          await loadLookups()
+        } else {
+          message.error(result.error || 'Failed to delete lookup')
+        }
+      } catch (error) {
+        console.error('Error deleting lookup:', error)
+        message.error('An unexpected error occurred while deleting')
+      } finally {
+        setLoading(false)
+      }
+    },
+    [loadLookups]
+  )
 
   // Handle label-value pair changes
   const handleLabelValueChange = useCallback((index, field, value) => {
@@ -528,26 +545,28 @@ const Lookups = React.memo(({ user }) => {
             </div>
 
             {/* Profile Data Table */}
-            <TableView
-              columns={columns}
-              dataSource={groupedData}
-              rowKey='key'
-              expandedRowRender={expandedRowRender}
-              searchTerm={searchTerm}
-              onSearch={setSearchTerm}
-              searchPlaceholder='Search lookups...'
-              toolbarActions={[
-                <Button key='create' type='primary' icon={<FontAwesomeIcon icon={faPlus} />} onClick={handleAdd}>
-                  Create New
-                </Button>
-              ]}
-              pagination={{
-                total: groupedData.length,
-                pageSize: 10,
-                showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} categories`
-              }}
-              emptyText='No lookup categories found'
-            />
+            <Spin spinning={loading} indicator={<FontAwesomeIcon icon={faSpinner} spin />}>
+              <TableView
+                columns={columns}
+                dataSource={groupedData}
+                rowKey='key'
+                expandedRowRender={expandedRowRender}
+                searchTerm={searchTerm}
+                onSearch={setSearchTerm}
+                searchPlaceholder='Search lookups...'
+                toolbarActions={[
+                  <Button key='create' type='primary' icon={<FontAwesomeIcon icon={faPlus} />} onClick={handleAdd}>
+                    Create New
+                  </Button>
+                ]}
+                pagination={{
+                  total: groupedData.length,
+                  pageSize: 10,
+                  showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} categories`
+                }}
+                emptyText='No lookup categories found'
+              />
+            </Spin>
           </div>
         </div>
 
@@ -796,6 +815,7 @@ const Lookups = React.memo(({ user }) => {
                     form.resetFields()
                     setLabelValuePairs([{ label: '', value: '' }])
                   }}
+                  disabled={modalLoading}
                   className={`px-6 py-2 font-medium rounded-lg transition-all duration-200 ${
                     darkMode
                       ? 'bg-red-600 text-white hover:bg-red-700 border-red-600 hover:border-red-700'
@@ -807,6 +827,7 @@ const Lookups = React.memo(({ user }) => {
                 <Button
                   type='primary'
                   htmlType='submit'
+                  loading={modalLoading}
                   className={`px-6 py-2 font-medium rounded-lg transition-all duration-200 ${
                     darkMode
                       ? 'bg-emerald-600 text-white hover:bg-emerald-700 border-emerald-600 hover:border-emerald-700'
