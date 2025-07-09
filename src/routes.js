@@ -9,6 +9,7 @@ import Assessments from './modules/BusinessDashboard/Assessments/components'
 import CreateAssessment from './modules/BusinessDashboard/Assessments/components/CreateAssessment'
 import CreateJobListing from './modules/BusinessDashboard/JobOpportunities/components/CreateJobListing'
 import Lookups from './modules/BusinessDashboard/Lookups/components'
+import Pipeline from './modules/BusinessDashboard/Pipeline/components'
 import Header from './ui/layout/Header'
 import { useAuth } from './ui/AuthContext'
 
@@ -180,6 +181,19 @@ const AppRoutes = () => {
           user ? (
             <DashboardLayout user={user}>
               <Lookups user={user} />
+            </DashboardLayout>
+          ) : (
+            <Navigate to='/' replace state={{ from: location }} />
+          )
+        }
+      />
+
+      <Route
+        path='/business-dashboard/pipeline'
+        element={
+          user ? (
+            <DashboardLayout user={user}>
+              <Pipeline user={user} />
             </DashboardLayout>
           ) : (
             <Navigate to='/' replace state={{ from: location }} />

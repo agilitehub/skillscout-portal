@@ -10,7 +10,8 @@ import {
   faTachometerAlt,
   faCog,
   faCogs,
-  faList
+  faList,
+  faColumns
 } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../ui/ThemeContext'
 
@@ -44,6 +45,12 @@ const BusinessSidebar = React.memo(() => {
           path: '/business-dashboard/job-descriptions',
           icon: faFileText,
           label: 'Job Descriptions',
+          exact: false
+        },
+        {
+          path: '/business-dashboard/pipeline',
+          icon: faColumns,
+          label: 'Pipeline',
           exact: false
         }
       ]
