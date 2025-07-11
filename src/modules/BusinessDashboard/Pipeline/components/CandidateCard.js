@@ -1,7 +1,8 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
 import React from 'react'
-import { useDraggable } from '@dnd-kit/core'
+import { useSortable } from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { 
   faEdit, 
@@ -31,13 +32,16 @@ const CandidateCard = React.memo(({
     listeners,
     setNodeRef,
     transform,
+    transition,
     isDragging: isDraggingState,
-  } = useDraggable({
+  } = useSortable({
     id: candidate.id,
   })
 
   const style = {
-    transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
+    transform: CSS.Transform.toString(transform),
+    transition: transition || 'transform 200ms ease-out',
+    willChange: 'transform',
   }
 
   const getPriorityColor = (priority) => {
@@ -121,9 +125,10 @@ const CandidateCard = React.memo(({
   }
 
   const cardClasses = `
-    group relative p-3 rounded-lg border cursor-pointer transition-all duration-200 select-none
+    group relative p-3 rounded-lg border cursor-pointer select-none transform-gpu
+    transition-transform duration-200 ease-out
     ${isDragging || isDraggingState 
-      ? 'opacity-50 shadow-2xl' 
+      ? 'opacity-50 shadow-2xl scale-105' 
       : 'opacity-100 hover:shadow-md'
     }
     ${darkMode 

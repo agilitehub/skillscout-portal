@@ -2,6 +2,7 @@
 // Frontend Instructions Rule Applied!
 import React from 'react'
 import { useDroppable } from '@dnd-kit/core'
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { Badge } from 'antd'
@@ -15,9 +16,12 @@ const StageColumn = React.memo(({
   candidates, 
   onEditCandidate, 
   onCandidateAction, 
-  darkMode 
+  darkMode,
+  activeId,
+  overId 
 }) => {
-  const { setNodeRef } = useDroppable({
+  // Enable visual feedback when an item is dragged over this stage
+  const { setNodeRef, isOver } = useDroppable({
     id: stage.key,
   })
 
@@ -49,10 +53,48 @@ const StageColumn = React.memo(({
     return colors[color] || colors.blue
   }
 
+  const renderCandidates = () => {
+    const elements = []
+    candidates.forEach((candidate, idx) => {
+      // Insert placeholder line before the item when hovering over it
+      if (overId === candidate.id && activeId !== candidate.id) {
+        elements.push(
+          <div
+            key={`placeholder-${candidate.id}`}
+            className="h-1 bg-emerald-500 rounded my-1 transition-all duration-150"
+          />
+        )
+      }
+      elements.push(
+        <CandidateCard
+          key={candidate.id}
+          candidate={candidate}
+          stageKey={stage.key}
+          onEditCandidate={onEditCandidate}
+          onCandidateAction={onCandidateAction}
+          darkMode={darkMode}
+          activeId={activeId}
+          overId={overId}
+        />
+      )
+    })
+
+    // If hovering over empty column, show placeholder at end
+    if (candidates.length === 0 && overId === stage.key) {
+      elements.push(
+        <div key="placeholder-end" className="h-1 bg-emerald-500 rounded my-1 transition-all duration-150" />
+      )
+    }
+
+    return elements
+  }
+
   return (
-    <div className={`w-52 flex-shrink-0 ${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-lg shadow-sm border ${
-      darkMode ? 'border-gray-700' : 'border-gray-200'
-    }`}>
+    <div
+      className={`w-60 flex-shrink-0 ${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-lg shadow-sm border ${
+        darkMode ? 'border-gray-700' : 'border-gray-200'
+      } transition-colors duration-200 ${isOver ? 'ring-2 ring-emerald-500' : ''}`}
+    >
       {/* Stage Header */}
       <div className="p-3 border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center justify-between">
@@ -63,7 +105,7 @@ const StageColumn = React.memo(({
                 darkMode ? getStageDarkColor(stage.color) : getStageColor(stage.color)
               }`}
             />
-            <h3 className={`text-sm font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+            <h3 className={`text-sm font-semibold whitespace-nowrap truncate ${darkMode ? 'text-white' : 'text-gray-900'}`}>
               {stage.title}
             </h3>
           </div>
@@ -75,24 +117,17 @@ const StageColumn = React.memo(({
         ref={setNodeRef}
         className="p-3 min-h-32"
       >
-        <div className="space-y-3">
-          {candidates.map((candidate) => (
-            <CandidateCard
-              key={candidate.id}
-              candidate={candidate}
-              stageKey={stage.key}
-              onEditCandidate={onEditCandidate}
-              onCandidateAction={onCandidateAction}
-              darkMode={darkMode}
-            />
-          ))}
-          {candidates.length === 0 && (
+        <SortableContext items={candidates.map(c => c.id)} strategy={verticalListSortingStrategy}>
+          <div className="space-y-3">
+            {renderCandidates()}
+          </div>
+        </SortableContext>
+        {candidates.length === 0 && overId !== stage.key && (
             <div className={`text-center py-8 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
               <FontAwesomeIcon icon={faPlus} className="text-2xl mb-2 opacity-50" />
               <p className="text-sm">Drop candidates here</p>
             </div>
-          )}
-        </div>
+        )}
       </div>
     </div>
   )
@@ -106,7 +141,9 @@ const KanbanBoard = React.memo(({
   stages, 
   onEditCandidate, 
   onCandidateAction, 
-  darkMode 
+  darkMode,
+  activeId,
+  overId 
 }) => {
   return (
     <div className="flex space-x-2 overflow-x-auto pb-6">
@@ -118,6 +155,8 @@ const KanbanBoard = React.memo(({
           onEditCandidate={onEditCandidate}
           onCandidateAction={onCandidateAction}
           darkMode={darkMode}
+          activeId={activeId}
+          overId={overId}
         />
       ))}
     </div>

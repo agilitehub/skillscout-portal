@@ -11,7 +11,7 @@ import {
   faPlus
 } from '@fortawesome/free-solid-svg-icons'
 import { Button, Form, message } from 'antd'
-import { DndContext, closestCorners, DragOverlay } from '@dnd-kit/core'
+import { DndContext, closestCenter, DragOverlay, useSensor, useSensors, PointerSensor } from '@dnd-kit/core'
 import KanbanBoard from './KanbanBoard'
 import CandidateModal from './CandidateModal'
 import CandidateCard from './CandidateCard'
@@ -29,6 +29,7 @@ const Pipeline = React.memo(({ user }) => {
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [editingCandidate, setEditingCandidate] = useState(null)
   const [activeCandidate, setActiveCandidate] = useState(null)
+  const [dragOverId, setDragOverId] = useState(null)
 
   // Sample pipeline data - in real app this would come from API
   const [pipelineData, setPipelineData] = useState({
@@ -285,59 +286,101 @@ const Pipeline = React.memo(({ user }) => {
     }
   }, [pipelineData])
 
-  // Handle drag end
-  const handleDragEnd = useCallback((event) => {
-    const { active, over } = event
-
+  // Handle drag end with reordering & cross-stage moves
+  const handleDragEnd = useCallback(({ active, over }) => {
     setActiveCandidate(null)
+    setDragOverId(null)
 
+    // If not dropped over anything, abort
     if (!over) return
 
-    const candidateId = parseInt(active.id)
-    const targetStageId = over.id
+    const activeId = parseInt(active.id)
+    const overIdRaw = over.id
 
-    // Move candidate to new stage using functional update to avoid stale state
-    setPipelineData(prev => {
-      // Find source stage and candidate in current state
-      let sourceStage = null
-      let candidateIndex = -1
-      let candidate = null
+    // Identify source stage & index
+    let sourceStage = null
+    let sourceIndex = -1
+    for (const stageKey in pipelineData) {
+      const idx = pipelineData[stageKey].findIndex((c) => c.id === activeId)
+      if (idx !== -1) {
+        sourceStage = stageKey
+        sourceIndex = idx
+        break
+      }
+    }
 
-      for (const stageKey in prev) {
-        const index = prev[stageKey].findIndex(c => c.id === candidateId)
-        if (index !== -1) {
-          sourceStage = stageKey
-          candidateIndex = index
-          candidate = prev[stageKey][index]
+    if (sourceStage === null) return
+
+    // Determine target stage & index
+    let targetStage = sourceStage
+    let targetIndex = null
+
+    const overIdNum = parseInt(overIdRaw)
+    if (!Number.isNaN(overIdNum)) {
+      // Dropped over another candidate card
+      for (const stageKey in pipelineData) {
+        const idx = pipelineData[stageKey].findIndex((c) => c.id === overIdNum)
+        if (idx !== -1) {
+          targetStage = stageKey
+          targetIndex = idx
           break
         }
       }
+    } else {
+      // Dropped over empty stage area; append to end
+      targetStage = overIdRaw
+      targetIndex = pipelineData[targetStage]?.length ?? 0
+    }
 
-      if (!candidate || !sourceStage) return prev
+    if (targetStage === null || targetIndex === null) return
 
-      // If dropped on same stage, do nothing
-      if (sourceStage === targetStageId) return prev
+    // No change
+    if (sourceStage === targetStage && sourceIndex === targetIndex) return
 
-      // Create new data with candidate moved
+    setPipelineData((prev) => {
       const newData = { ...prev }
-      
-      // Create new arrays to avoid mutation
-      newData[sourceStage] = [...prev[sourceStage]]
-      newData[targetStageId] = [...prev[targetStageId]]
-      
-      // Remove from source stage
-      newData[sourceStage].splice(candidateIndex, 1)
-      
-      // Add to target stage
-      newData[targetStageId].push(candidate)
-      
-      // Show success message
-      const targetStageTitle = stages.find(s => s.key === targetStageId)?.title
-      message.success(`Moved ${candidate.name} to ${targetStageTitle}`)
-      
+
+      const candidate = newData[sourceStage][sourceIndex]
+
+      // Prepare new arrays
+      newData[sourceStage] = [...newData[sourceStage]]
+      newData[targetStage] = [...newData[targetStage]]
+
+      // Remove from source
+      newData[sourceStage].splice(sourceIndex, 1)
+
+      // Adjust targetIndex if moving within same list and removing earlier element
+      let insertIndex = targetIndex
+      if (sourceStage === targetStage && sourceIndex < targetIndex) {
+        insertIndex = targetIndex - 1
+      }
+
+      // Insert into target
+      newData[targetStage].splice(insertIndex, 0, candidate)
+
+      // Message
+      if (sourceStage !== targetStage) {
+        const targetStageTitle = stages.find((s) => s.key === targetStage)?.title
+        message.success(`Moved ${candidate.name} to ${targetStageTitle}`)
+      }
+
       return newData
     })
-  }, [stages])
+  }, [pipelineData, stages])
+
+  // Track current drag over id to show placeholder line
+  const handleDragOver = useCallback(({ over }) => {
+    setDragOverId(over ? over.id : null)
+  }, [])
+
+  // Configure sensors for more forgiving drag/drop
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 4, // start drag after small movement
+      },
+    })
+  )
 
   return (
     <div className={`flex h-screen ${darkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
@@ -386,8 +429,10 @@ const Pipeline = React.memo(({ user }) => {
         {/* Kanban Board with Drag and Drop */}
         <div className="p-4 overflow-x-auto">
           <DndContext
-            collisionDetection={closestCorners}
+            sensors={sensors}
+            collisionDetection={closestCenter}
             onDragStart={handleDragStart}
+            onDragOver={handleDragOver}
             onDragEnd={handleDragEnd}
           >
             <KanbanBoard
@@ -396,8 +441,10 @@ const Pipeline = React.memo(({ user }) => {
               onEditCandidate={handleEdit}
               onCandidateAction={handleCandidateAction}
               darkMode={darkMode}
+              activeId={activeCandidate ? activeCandidate.id : null}
+              overId={dragOverId}
             />
-            <DragOverlay>
+            <DragOverlay dropAnimation={{ duration: 200, easing: 'ease-out' }}>
               {activeCandidate ? (
                 <div className={`transform rotate-6 opacity-90 ${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-2xl`}>
                   <CandidateCard
@@ -432,4 +479,4 @@ const Pipeline = React.memo(({ user }) => {
   )
 })
 
-export default Pipeline 
+export default Pipeline
