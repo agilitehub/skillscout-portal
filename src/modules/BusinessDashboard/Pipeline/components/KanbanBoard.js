@@ -55,16 +55,18 @@ const StageColumn = React.memo(({
 
   const renderCandidates = () => {
     const elements = []
+    
     candidates.forEach((candidate, idx) => {
-      // Insert placeholder line before the item when hovering over it
-      if (overId === candidate.id && activeId !== candidate.id) {
+      // Show placeholder line before candidate when hovering over it
+      if (overId === candidate.id && activeId && activeId !== candidate.id) {
         elements.push(
           <div
-            key={`placeholder-${candidate.id}`}
-            className="h-1 bg-emerald-500 rounded my-1 transition-all duration-150"
+            key={`placeholder-before-${candidate.id}`}
+            className="h-0.5 bg-emerald-500 rounded-full mx-2 transition-all duration-200 ease-out"
           />
         )
       }
+      
       elements.push(
         <CandidateCard
           key={candidate.id}
@@ -73,16 +75,18 @@ const StageColumn = React.memo(({
           onEditCandidate={onEditCandidate}
           onCandidateAction={onCandidateAction}
           darkMode={darkMode}
-          activeId={activeId}
-          overId={overId}
+          isBeingDragged={activeId === candidate.id}
         />
       )
     })
 
-    // If hovering over empty column, show placeholder at end
-    if (candidates.length === 0 && overId === stage.key) {
+    // Show placeholder at end when hovering over empty space or after last item
+    if (overId === stage.key && activeId && !candidates.some(c => c.id === overId)) {
       elements.push(
-        <div key="placeholder-end" className="h-1 bg-emerald-500 rounded my-1 transition-all duration-150" />
+        <div
+          key="placeholder-end"
+          className="h-0.5 bg-emerald-500 rounded-full mx-2 transition-all duration-200 ease-out"
+        />
       )
     }
 
@@ -91,9 +95,15 @@ const StageColumn = React.memo(({
 
   return (
     <div
-      className={`w-60 flex-shrink-0 ${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-lg shadow-sm border ${
-        darkMode ? 'border-gray-700' : 'border-gray-200'
-      } transition-colors duration-200 ${isOver ? 'ring-2 ring-emerald-500' : ''}`}
+      className={`w-full min-h-[500px] flex flex-col ${
+        darkMode 
+          ? 'bg-gray-800/80 backdrop-blur-sm shadow-xl' 
+          : 'bg-white/80 backdrop-blur-sm shadow-lg'
+      } rounded-lg border ${
+        darkMode ? 'border-gray-700/50' : 'border-gray-200/50'
+      } transition-all duration-200 ${
+        isOver && activeId ? 'ring-2 ring-emerald-500/50 border-emerald-500' : ''
+      }`}
     >
       {/* Stage Header */}
       <div className="p-3 border-b border-gray-200 dark:border-gray-700">
@@ -115,18 +125,22 @@ const StageColumn = React.memo(({
       {/* Droppable Area */}
       <div 
         ref={setNodeRef}
-        className="p-3 min-h-32"
+        className={`p-3 min-h-32 transition-all duration-200 ${
+          isOver && activeId ? 'bg-emerald-50 dark:bg-emerald-900/20' : ''
+        }`}
       >
         <SortableContext items={candidates.map(c => c.id)} strategy={verticalListSortingStrategy}>
           <div className="space-y-3">
             {renderCandidates()}
           </div>
         </SortableContext>
-        {candidates.length === 0 && overId !== stage.key && (
-            <div className={`text-center py-8 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-              <FontAwesomeIcon icon={faPlus} className="text-2xl mb-2 opacity-50" />
-              <p className="text-sm">Drop candidates here</p>
-            </div>
+        
+        {/* Empty state */}
+        {candidates.length === 0 && !activeId && (
+          <div className={`text-center py-8 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+            <FontAwesomeIcon icon={faPlus} className="text-2xl mb-2 opacity-50" />
+            <p className="text-sm">Drop candidates here</p>
+          </div>
         )}
       </div>
     </div>
@@ -146,19 +160,41 @@ const KanbanBoard = React.memo(({
   overId 
 }) => {
   return (
-    <div className="flex space-x-2 overflow-x-auto pb-6">
-      {stages.map((stage) => (
-        <StageColumn
-          key={stage.key}
-          stage={stage}
-          candidates={pipelineData[stage.key] || []}
-          onEditCandidate={onEditCandidate}
-          onCandidateAction={onCandidateAction}
-          darkMode={darkMode}
-          activeId={activeId}
-          overId={overId}
-        />
-      ))}
+    <div className="w-full">
+      {/* Desktop Layout */}
+      <div className="hidden xl:grid xl:grid-cols-6 gap-4 pb-6">
+        {stages.map((stage) => (
+          <StageColumn
+            key={stage.key}
+            stage={stage}
+            candidates={pipelineData[stage.key] || []}
+            onEditCandidate={onEditCandidate}
+            onCandidateAction={onCandidateAction}
+            darkMode={darkMode}
+            activeId={activeId}
+            overId={overId}
+          />
+        ))}
+      </div>
+      
+      {/* Mobile/Tablet Layout */}
+      <div className="xl:hidden overflow-x-auto pb-6">
+        <div className="flex space-x-4 min-w-max">
+          {stages.map((stage) => (
+            <div key={stage.key} className="w-72 flex-shrink-0">
+              <StageColumn
+                stage={stage}
+                candidates={pipelineData[stage.key] || []}
+                onEditCandidate={onEditCandidate}
+                onCandidateAction={onCandidateAction}
+                darkMode={darkMode}
+                activeId={activeId}
+                overId={overId}
+              />
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   )
 })

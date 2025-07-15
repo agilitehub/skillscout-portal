@@ -11,7 +11,8 @@ import {
   faPlus
 } from '@fortawesome/free-solid-svg-icons'
 import { Button, Form, message } from 'antd'
-import { DndContext, closestCenter, DragOverlay, useSensor, useSensors, PointerSensor } from '@dnd-kit/core'
+import { DndContext, closestCenter, closestCorners, DragOverlay, useSensor, useSensors, PointerSensor, KeyboardSensor } from '@dnd-kit/core'
+import { sortableKeyboardCoordinates } from '@dnd-kit/sortable'
 import KanbanBoard from './KanbanBoard'
 import CandidateModal from './CandidateModal'
 import CandidateCard from './CandidateCard'
@@ -281,15 +282,21 @@ const Pipeline = React.memo(({ user }) => {
       const candidate = pipelineData[stageKey].find(c => c.id === candidateId)
       if (candidate) {
         setActiveCandidate(candidate)
-        break
+        return
       }
     }
+    
+    // If candidate not found, reset state
+    setActiveCandidate(null)
   }, [pipelineData])
 
   // Handle drag end with reordering & cross-stage moves
   const handleDragEnd = useCallback(({ active, over }) => {
-    setActiveCandidate(null)
-    setDragOverId(null)
+    // Clear drag state with small delay to prevent flashing
+    setTimeout(() => {
+      setActiveCandidate(null)
+      setDragOverId(null)
+    }, 50)
 
     // If not dropped over anything, abort
     if (!over) return
@@ -370,27 +377,48 @@ const Pipeline = React.memo(({ user }) => {
 
   // Track current drag over id to show placeholder line
   const handleDragOver = useCallback(({ over }) => {
-    setDragOverId(over ? over.id : null)
+    const newOverId = over ? over.id : null
+    setDragOverId(prev => prev !== newOverId ? newOverId : prev)
   }, [])
 
-  // Configure sensors for more forgiving drag/drop
+  // Configure sensors for better drag/drop experience
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 4, // start drag after small movement
+        distance: 8, // start drag after small movement to prevent accidental drags
+        delay: 100,
+        tolerance: 5,
       },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
     })
   )
 
   return (
-    <div className={`flex h-screen ${darkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
+    <div className={`min-h-screen ${
+      darkMode 
+        ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-indigo-900' 
+        : 'bg-gradient-to-br from-gray-50 via-white to-blue-50'
+    }`}>
+      {/* Background overlay for full coverage */}
+      <div className={`fixed inset-0 ${
+        darkMode 
+          ? 'bg-gradient-to-b from-transparent via-gray-900/20 to-gray-900/40' 
+          : 'bg-gradient-to-b from-transparent via-white/30 to-white/50'
+      } pointer-events-none`}></div>
+
       {/* Sidebar */}
       <BusinessSidebar />
 
       {/* Main Content */}
-      <div className="flex-1 ml-64 pt-20">
+      <div className="flex-1 ml-64 pt-20 relative">
         {/* Header */}
-        <div className={`px-8 py-6 border-b ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+        <div className={`relative px-8 py-6 border-b flex-shrink-0 ${
+          darkMode 
+            ? 'border-gray-700/50 bg-gray-800/30 backdrop-blur-sm' 
+            : 'border-gray-200/50 bg-white/30 backdrop-blur-sm'
+        }`}>
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <Button
@@ -427,10 +455,14 @@ const Pipeline = React.memo(({ user }) => {
         </div>
 
         {/* Kanban Board with Drag and Drop */}
-        <div className="p-4 overflow-x-auto">
+        <div className={`relative p-4 ${
+          darkMode 
+            ? 'bg-gray-800/20 backdrop-blur-sm' 
+            : 'bg-white/20 backdrop-blur-sm'
+        }`}>
           <DndContext
             sensors={sensors}
-            collisionDetection={closestCenter}
+            collisionDetection={closestCorners}
             onDragStart={handleDragStart}
             onDragOver={handleDragOver}
             onDragEnd={handleDragEnd}
@@ -444,16 +476,30 @@ const Pipeline = React.memo(({ user }) => {
               activeId={activeCandidate ? activeCandidate.id : null}
               overId={dragOverId}
             />
-            <DragOverlay dropAnimation={{ duration: 200, easing: 'ease-out' }}>
+            <DragOverlay 
+              dropAnimation={{ 
+                duration: 200, 
+                easing: 'cubic-bezier(0.25, 1, 0.5, 1)' 
+              }}
+              style={{ 
+                zIndex: 1000 
+              }}
+            >
               {activeCandidate ? (
-                <div className={`transform rotate-6 opacity-90 ${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-2xl`}>
+                <div className={`transform rotate-2 opacity-95 ${
+                  darkMode 
+                    ? 'bg-gray-800/90 backdrop-blur-md' 
+                    : 'bg-white/90 backdrop-blur-md'
+                } shadow-2xl rounded-lg border ${
+                  darkMode ? 'border-gray-600' : 'border-gray-300'
+                }`}>
                   <CandidateCard
                     candidate={activeCandidate}
                     stageKey="dragging"
                     onEditCandidate={() => {}}
                     onCandidateAction={() => {}}
                     darkMode={darkMode}
-                    isDragging={true}
+                    isBeingDragged={true}
                   />
                 </div>
               ) : null}

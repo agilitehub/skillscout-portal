@@ -25,7 +25,7 @@ const CandidateCard = React.memo(({
   onEditCandidate, 
   onCandidateAction, 
   darkMode, 
-  isDragging = false 
+  isBeingDragged = false 
 }) => {
   const {
     attributes,
@@ -34,14 +34,19 @@ const CandidateCard = React.memo(({
     transform,
     transition,
     isDragging: isDraggingState,
+    isSorting,
   } = useSortable({
     id: candidate.id,
+    transition: {
+      duration: 200,
+      easing: 'cubic-bezier(0.25, 1, 0.5, 1)',
+    },
   })
 
   const style = {
     transform: CSS.Transform.toString(transform),
-    transition: transition || 'transform 200ms ease-out',
-    willChange: 'transform',
+    transition: transition || (isSorting ? 'transform 200ms ease-out' : undefined),
+    zIndex: isDraggingState ? 1000 : 1,
   }
 
   const getPriorityColor = (priority) => {
@@ -125,16 +130,20 @@ const CandidateCard = React.memo(({
   }
 
   const cardClasses = `
-    group relative p-3 rounded-lg border cursor-pointer select-none transform-gpu
-    transition-transform duration-200 ease-out
-    ${isDragging || isDraggingState 
-      ? 'opacity-50 shadow-2xl scale-105' 
-      : 'opacity-100 hover:shadow-md'
+    group relative p-3 rounded-lg border transform-gpu
+    ${isDraggingState || isBeingDragged
+      ? `opacity-80 shadow-2xl scale-[1.02] rotate-1 ${
+          darkMode 
+            ? 'bg-gray-700/90 border-gray-600 backdrop-blur-sm' 
+            : 'bg-white/90 border-gray-300 backdrop-blur-sm'
+        }`
+      : `opacity-100 hover:shadow-md transition-all duration-200 ${
+          darkMode 
+            ? 'bg-gray-700/80 border-gray-600/60 hover:border-gray-500 hover:bg-gray-700/90 backdrop-blur-sm' 
+            : 'bg-white/80 border-gray-200/60 hover:border-gray-300 hover:bg-white/90 backdrop-blur-sm'
+        }`
     }
-    ${darkMode 
-      ? 'bg-gray-700 border-gray-600 hover:bg-gray-650' 
-      : 'bg-white border-gray-200 hover:bg-gray-50'
-    }
+    ${isDraggingState ? 'cursor-grabbing' : 'cursor-grab'}
   `
 
   return (
@@ -143,12 +152,12 @@ const CandidateCard = React.memo(({
       style={style}
       className={cardClasses}
       {...attributes}
+      {...listeners}
     >
-      {/* Drag Handle */}
+      {/* Drag Handle Indicator */}
       <div
-        {...listeners}
-        className={`absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-grab active:cursor-grabbing ${
-          darkMode ? 'text-gray-400 hover:text-gray-200' : 'text-gray-400 hover:text-gray-600'
+        className={`absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none ${
+          darkMode ? 'text-gray-400' : 'text-gray-400'
         }`}
       >
         <FontAwesomeIcon icon={faGripVertical} className="w-3 h-3" />
@@ -234,6 +243,7 @@ const CandidateCard = React.memo(({
             menu={{ items: actionItems }}
             placement="bottomLeft"
             trigger={['click']}
+            disabled={isDraggingState || isBeingDragged}
           >
             <Button
               size="small"
@@ -241,6 +251,8 @@ const CandidateCard = React.memo(({
               className={`opacity-0 group-hover:opacity-100 transition-opacity duration-200 ${
                 darkMode ? 'text-gray-400 hover:text-white' : 'text-gray-500 hover:text-gray-700'
               }`}
+              onMouseDown={(e) => e.stopPropagation()}
+              onClick={(e) => e.stopPropagation()}
             >
               Actions
             </Button>
