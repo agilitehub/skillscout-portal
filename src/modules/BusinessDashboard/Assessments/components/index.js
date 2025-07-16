@@ -303,32 +303,17 @@ const Assessments = React.memo(({ user }) => {
 
   return (
     <>
-      <div className={`min-h-screen relative overflow-hidden ${darkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
-        {/* Background Elements */}
-        <div className='fixed inset-0 pointer-events-none'>
-          {darkMode ? (
-            <>
-              <div
-                className='absolute -top-[10%] -right-[10%] w-1/2 h-1/2 rounded-full blur-3xl'
-                style={{ background: 'radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%)' }}
-              />
-              <div
-                className='absolute -bottom-[10%] -left-[10%] w-1/2 h-1/2 rounded-full blur-3xl'
-                style={{ background: 'radial-gradient(circle, rgba(34, 197, 94, 0.12) 0%, transparent 70%)' }}
-              />
-              <div
-                className='absolute top-1/3 left-1/3 w-1/4 h-1/4 rounded-full blur-3xl'
-                style={{ background: 'radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, transparent 70%)' }}
-              />
-            </>
-          ) : (
-            <>
-              <div className='absolute top-0 right-0 w-2/3 h-2/3 bg-gradient-to-bl from-blue-400/30 to-transparent rounded-full blur-3xl opacity-80' />
-              <div className='absolute bottom-0 left-0 w-2/3 h-2/3 bg-gradient-to-tr from-blue-500/30 to-transparent rounded-full blur-3xl opacity-80' />
-              <div className='absolute top-1/4 left-1/4 w-1/3 h-1/3 bg-gradient-to-br from-amber-400/30 to-transparent rounded-full blur-3xl opacity-80' />
-            </>
-          )}
-        </div>
+      <div className={`min-h-screen relative overflow-hidden ${
+        darkMode 
+          ? 'bg-gradient-to-br from-slate-700 via-slate-600 to-emerald-800'
+          : 'bg-gradient-to-br from-sky-100 via-gray-50 to-emerald-100'
+      }`}>
+        {/* Background overlay for full coverage */}
+        <div className={`fixed inset-0 ${
+          darkMode 
+            ? 'bg-gradient-to-b from-transparent via-slate-700/30 to-emerald-800/40' 
+            : 'bg-gradient-to-b from-transparent via-sky-100/40 to-emerald-100/50'
+        } pointer-events-none`}></div>
 
         <BusinessSidebar />
         <div className='p-6 ml-64 relative z-10'>

@@ -90,12 +90,11 @@ const Login = React.memo(() => {
 
   return (
     <main 
-      className="fixed inset-0 flex flex-col items-center justify-start overflow-auto w-full max-w-full pt-16"
-      style={{ 
-        background: darkMode 
-          ? `linear-gradient(135deg, ${colors.navyDark}, ${colors.darkBlue})`
-          : `linear-gradient(135deg, #fff, ${colors.botticelli}20)`
-      }}
+      className={`fixed inset-0 flex flex-col items-center justify-start overflow-auto w-full max-w-full pt-16 ${
+        darkMode 
+          ? 'bg-gradient-to-br from-slate-700 via-slate-600 to-emerald-800'
+          : 'bg-gradient-to-br from-sky-100 via-gray-50 to-emerald-100'
+      }`}
       role="main"
       aria-label="SkillScout login page"
     >

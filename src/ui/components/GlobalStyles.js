@@ -28,22 +28,28 @@ const GlobalStyles = () => {
     // Apply theme-specific classes
     if (darkMode) {
       const darkClasses = [
-        'bg-gray-900',
+        'bg-gradient-to-br',
+        'from-slate-700',
+        'via-slate-600', 
+        'to-emerald-800',
         'text-white'
       ]
       body.classList.add(...baseClasses, ...darkClasses)
       
-      // Apply dark mode gradient background
-      body.style.backgroundImage = 'linear-gradient(to bottom right, rgba(0, 107, 60, 0.2) 0%, rgba(0, 51, 79, 0.8) 50%, rgba(20, 20, 20, 1) 100%)'
+      // Clear any existing background image
+      body.style.backgroundImage = ''
     } else {
       const lightClasses = [
-        'bg-white',
+        'bg-gradient-to-br',
+        'from-sky-100',
+        'via-gray-50',
+        'to-emerald-100',
         'text-gray-900'
       ]
       body.classList.add(...baseClasses, ...lightClasses)
       
-      // Apply light mode gradient background
-      body.style.backgroundImage = 'linear-gradient(to bottom right, rgba(51, 193, 135, 0.1) 0%, rgba(14, 90, 148, 0.1) 50%, rgba(255, 255, 255, 1) 100%)'
+      // Clear any existing background image
+      body.style.backgroundImage = ''
     }
 
     // Remove any border-top that might cause issues

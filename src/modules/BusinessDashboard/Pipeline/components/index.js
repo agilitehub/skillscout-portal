@@ -398,14 +398,14 @@ const Pipeline = React.memo(({ user }) => {
   return (
     <div className={`min-h-screen ${
       darkMode 
-        ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-indigo-900' 
-        : 'bg-gradient-to-br from-gray-50 via-white to-blue-50'
+        ? 'bg-gradient-to-br from-slate-700 via-slate-600 to-emerald-800' 
+        : 'bg-gradient-to-br from-sky-100 via-gray-50 to-emerald-100'
     }`}>
       {/* Background overlay for full coverage */}
       <div className={`fixed inset-0 ${
         darkMode 
-          ? 'bg-gradient-to-b from-transparent via-gray-900/20 to-gray-900/40' 
-          : 'bg-gradient-to-b from-transparent via-white/30 to-white/50'
+          ? 'bg-gradient-to-b from-transparent via-slate-700/30 to-emerald-800/40' 
+          : 'bg-gradient-to-b from-transparent via-sky-100/40 to-emerald-100/50'
       } pointer-events-none`}></div>
 
       {/* Sidebar */}
@@ -414,7 +414,7 @@ const Pipeline = React.memo(({ user }) => {
       {/* Main Content */}
       <div className="flex-1 ml-64 pt-20 relative">
         {/* Header */}
-        <div className={`relative px-8 py-6 border-b flex-shrink-0 ${
+        <div className={`relative px-8 py-4 border-b flex-shrink-0 ${
           darkMode 
             ? 'border-gray-700/50 bg-gray-800/30 backdrop-blur-sm' 
             : 'border-gray-200/50 bg-white/30 backdrop-blur-sm'
@@ -455,7 +455,7 @@ const Pipeline = React.memo(({ user }) => {
         </div>
 
         {/* Kanban Board with Drag and Drop */}
-        <div className={`relative p-4 ${
+        <div className={`relative p-2 ${
           darkMode 
             ? 'bg-gray-800/20 backdrop-blur-sm' 
             : 'bg-white/20 backdrop-blur-sm'

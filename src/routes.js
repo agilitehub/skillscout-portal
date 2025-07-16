@@ -12,11 +12,18 @@ import Lookups from './modules/BusinessDashboard/Lookups/components'
 import Pipeline from './modules/BusinessDashboard/Pipeline/components'
 import Header from './ui/layout/Header'
 import { useAuth } from './ui/AuthContext'
+import { useTheme } from './ui/ThemeContext'
 
 // Layout components
 export const DashboardLayout = ({ children, user }) => {
+  const { darkMode } = useTheme()
+  
   return (
-    <div className='flex flex-col h-screen bg-white/0 dark:bg-gray-950/50'>
+    <div className={`flex flex-col h-screen ${
+      darkMode 
+        ? 'bg-gradient-to-br from-slate-700 via-slate-600 to-emerald-800'
+        : 'bg-gradient-to-br from-sky-100 via-gray-50 to-emerald-100'
+    }`}>
       <Header user={user} />
       <main className='flex-1 p-6 overflow-auto relative z-0'>{children}</main>
     </div>
