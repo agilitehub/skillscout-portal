@@ -2,14 +2,14 @@
 // Frontend Instructions Rule Applied!
 import React, { useState, useCallback, useEffect } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
-import Logo from '../../../ui/components/Logo'
-import ThemeToggle from '../../../ui/components/ThemeToggle'
+import Logo from '../../Logo'
+import ThemeToggle from '../../ThemeToggle'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSignOut, faUser, faBuilding, faUserTie, faChevronDown } from '@fortawesome/free-solid-svg-icons'
 import { Dropdown, Modal, Form, Input, Button, message } from 'antd'
-import { useTheme } from '../../../ui/ThemeContext'
-import { useAuth } from '../../../ui/AuthContext'
-import { BRAND_COLORS } from '../../../ui/config/colors'
+import { useTheme } from '../../../ThemeContext'
+import { useAuth } from '../../../AuthContext'
+import { BRAND_COLORS } from '../../../config/colors'
 
 /**
  * Simplified Header component for the application
@@ -67,45 +67,51 @@ const Header = ({ user }) => {
   }, [businessInfo])
 
   // Handle dashboard switch
-  const handleDashboardSwitch = useCallback((dashboardType) => {
-    setIsDashboardDropdownOpen(false) // Close dropdown after selection
-    
-    if (dashboardType === 'business') {
-      // Check if business setup is complete
-      if (!isBusinessSetupComplete()) {
-        setIsBusinessSetupOpen(true)
-        return
+  const handleDashboardSwitch = useCallback(
+    (dashboardType) => {
+      setIsDashboardDropdownOpen(false) // Close dropdown after selection
+
+      if (dashboardType === 'business') {
+        // Check if business setup is complete
+        if (!isBusinessSetupComplete()) {
+          setIsBusinessSetupOpen(true)
+          return
+        }
+        setSelectedDashboard(dashboardType)
+        navigate('/business-dashboard')
+      } else {
+        setSelectedDashboard(dashboardType)
+        navigate('/dashboard')
       }
-      setSelectedDashboard(dashboardType)
-      navigate('/business-dashboard')
-    } else {
-      setSelectedDashboard(dashboardType)
-      navigate('/dashboard')
-    }
-  }, [navigate, isBusinessSetupComplete])
+    },
+    [navigate, isBusinessSetupComplete]
+  )
 
   // Handle business setup form submission
-  const handleBusinessSetup = useCallback(async (values) => {
-    try {
-      // Here you would typically save to a backend/database
-      // For now, we'll store in local state and localStorage
-      const businessData = {
-        name: values.businessName,
-        domain: values.emailDomain
+  const handleBusinessSetup = useCallback(
+    async (values) => {
+      try {
+        // Here you would typically save to a backend/database
+        // For now, we'll store in local state and localStorage
+        const businessData = {
+          name: values.businessName,
+          domain: values.emailDomain
+        }
+
+        setBusinessInfo(businessData)
+        localStorage.setItem('skillscout_business_info', JSON.stringify(businessData))
+
+        message.success('Business information saved successfully!')
+        setIsBusinessSetupOpen(false)
+        setSelectedDashboard('business')
+        navigate('/business-dashboard')
+      } catch (error) {
+        console.error('Error saving business info:', error)
+        message.error('Failed to save business information. Please try again.')
       }
-      
-      setBusinessInfo(businessData)
-      localStorage.setItem('skillscout_business_info', JSON.stringify(businessData))
-      
-      message.success('Business information saved successfully!')
-      setIsBusinessSetupOpen(false)
-      setSelectedDashboard('business')
-      navigate('/business-dashboard')
-    } catch (error) {
-      console.error('Error saving business info:', error)
-      message.error('Failed to save business information. Please try again.')
-    }
-  }, [navigate])
+    },
+    [navigate]
+  )
 
   // Handle business setup modal close
   const handleBusinessSetupClose = useCallback(() => {
@@ -135,9 +141,14 @@ const Header = ({ user }) => {
       <button
         onClick={() => handleDashboardSwitch('personal')}
         className={`w-full py-3 px-4 text-left flex items-center text-sm transition-all duration-200
-                   ${selectedDashboard === 'personal' 
-                     ? darkMode ? 'bg-emerald-700 text-white' : 'bg-emerald-50 text-emerald-700 border-l-4 border-emerald-500'
-                     : darkMode ? 'text-white bg-gray-800 hover:bg-gray-700' : 'text-gray-700 bg-white hover:bg-gray-50'
+                   ${
+                     selectedDashboard === 'personal'
+                       ? darkMode
+                         ? 'bg-emerald-700 text-white'
+                         : 'bg-emerald-50 text-emerald-700 border-l-4 border-emerald-500'
+                       : darkMode
+                         ? 'text-white bg-gray-800 hover:bg-gray-700'
+                         : 'text-gray-700 bg-white hover:bg-gray-50'
                    }`}
         onMouseEnter={(e) => {
           if (selectedDashboard !== 'personal') {
@@ -164,17 +175,20 @@ const Header = ({ user }) => {
       >
         <FontAwesomeIcon icon={faUserTie} className='mr-3 w-4' />
         Personal Dashboard
-        {selectedDashboard === 'personal' && (
-          <div className='ml-auto w-2 h-2 bg-emerald-500 rounded-full'></div>
-        )}
+        {selectedDashboard === 'personal' && <div className='ml-auto w-2 h-2 bg-emerald-500 rounded-full'></div>}
       </button>
-      
+
       <button
         onClick={() => handleDashboardSwitch('business')}
         className={`w-full py-3 px-4 text-left flex items-center text-sm transition-all duration-200
-                   ${selectedDashboard === 'business' 
-                     ? darkMode ? 'bg-emerald-700 text-white' : 'bg-emerald-50 text-emerald-700 border-l-4 border-emerald-500'
-                     : darkMode ? 'text-white bg-gray-800 hover:bg-gray-700' : 'text-gray-700 bg-white hover:bg-gray-50'
+                   ${
+                     selectedDashboard === 'business'
+                       ? darkMode
+                         ? 'bg-emerald-700 text-white'
+                         : 'bg-emerald-50 text-emerald-700 border-l-4 border-emerald-500'
+                       : darkMode
+                         ? 'text-white bg-gray-800 hover:bg-gray-700'
+                         : 'text-gray-700 bg-white hover:bg-gray-50'
                    }`}
         onMouseEnter={(e) => {
           if (selectedDashboard !== 'business') {
@@ -201,9 +215,7 @@ const Header = ({ user }) => {
       >
         <FontAwesomeIcon icon={faBuilding} className='mr-3 w-4' />
         Business Dashboard
-        {selectedDashboard === 'business' && (
-          <div className='ml-auto w-2 h-2 bg-emerald-500 rounded-full'></div>
-        )}
+        {selectedDashboard === 'business' && <div className='ml-auto w-2 h-2 bg-emerald-500 rounded-full'></div>}
       </button>
     </div>
   )
@@ -271,7 +283,8 @@ const Header = ({ user }) => {
               <Logo size='small' className='w-12 h-12 sm:w-14 sm:h-14 md:w-18 md:h-18' />
             </div>
             <h1 className='ml-1 sm:ml-2 md:ml-3 text-lg sm:text-xl md:text-4xl font-bold text-white whitespace-nowrap'>
-              <span className="text-blue-500">Skill</span><span className="text-emerald-500">Scout</span>
+              <span className='text-blue-500'>Skill</span>
+              <span className='text-emerald-500'>Scout</span>
             </h1>
           </Link>
 
@@ -279,9 +292,9 @@ const Header = ({ user }) => {
           <div className='flex items-center ml-auto'>
             {/* Dashboard Dropdown */}
             {user && (
-              <Dropdown 
-                dropdownRender={renderDashboardDropdown} 
-                trigger={['click']} 
+              <Dropdown
+                dropdownRender={renderDashboardDropdown}
+                trigger={['click']}
                 placement='bottomRight'
                 className='mr-2 sm:mr-4 md:mr-6'
                 open={isDashboardDropdownOpen}
@@ -296,18 +309,15 @@ const Header = ({ user }) => {
                         : `linear-gradient(135deg, ${BRAND_COLORS.tealGreen}, ${BRAND_COLORS.emeraldBright}40)`
                     }}
                   >
-                    <FontAwesomeIcon 
-                      icon={selectedDashboard === 'business' ? faBuilding : faUserTie} 
-                      className='text-xs md:text-sm' 
+                    <FontAwesomeIcon
+                      icon={selectedDashboard === 'business' ? faBuilding : faUserTie}
+                      className='text-xs md:text-sm'
                     />
                   </div>
                   <span className='hidden sm:block text-xs md:text-sm font-medium text-white mr-1'>
                     {selectedDashboard === 'business' ? 'Business Dashboard' : 'Personal Dashboard'}
                   </span>
-                  <FontAwesomeIcon 
-                    icon={faChevronDown} 
-                    className='text-white text-xs opacity-70' 
-                  />
+                  <FontAwesomeIcon icon={faChevronDown} className='text-white text-xs opacity-70' />
                 </div>
               </Dropdown>
             )}
@@ -396,7 +406,7 @@ const Header = ({ user }) => {
       {/* Business Setup Modal */}
       <Modal
         title={
-          <div className="flex items-center space-x-2">
+          <div className='flex items-center space-x-2'>
             <FontAwesomeIcon icon={faBuilding} style={{ color: darkMode ? '#10b981' : '#059669' }} />
             <span style={{ color: darkMode ? '#ffffff' : '#000000' }}>Business Dashboard Setup</span>
           </div>
@@ -422,9 +432,9 @@ const Header = ({ user }) => {
         }}
       >
         {/* Dark Mode Form Styling */}
-                 {darkMode && (
-           <style>
-             {`
+        {darkMode && (
+          <style>
+            {`
                .business-setup-form .ant-form-item-label > label {
                  color: #E5E7EB !important;
                }
@@ -446,69 +456,66 @@ const Header = ({ user }) => {
                  color: #F9FAFB !important;
                }
              `}
-           </style>
-         )}
+          </style>
+        )}
 
-        <div className="space-y-4">
+        <div className='space-y-4'>
           <div className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-            <p className="mb-3">
-              To access the Business Dashboard, please provide your business information. 
-              This helps us customize your experience and organize your business data.
+            <p className='mb-3'>
+              To access the Business Dashboard, please provide your business information. This helps us customize your
+              experience and organize your business data.
             </p>
-            <div className={`p-3 rounded-lg ${darkMode ? 'bg-blue-900/20 border border-blue-700' : 'bg-blue-50 border border-blue-200'}`}>
+            <div
+              className={`p-3 rounded-lg ${darkMode ? 'bg-blue-900/20 border border-blue-700' : 'bg-blue-50 border border-blue-200'}`}
+            >
               <p className={`text-xs ${darkMode ? 'text-blue-300' : 'text-blue-700'} mb-0`}>
-                <strong>Note:</strong> This information is required to access business features and will be used to organize your job postings and assessments.
+                <strong>Note:</strong> This information is required to access business features and will be used to
+                organize your job postings and assessments.
               </p>
             </div>
           </div>
 
           <Form
             form={businessForm}
-            layout="vertical"
+            layout='vertical'
             onFinish={handleBusinessSetup}
             className={`${darkMode ? 'business-setup-form' : ''}`}
           >
             <Form.Item
               label={<span className={darkMode ? 'text-gray-300' : ''}>Business Name</span>}
-              name="businessName"
+              name='businessName'
               rules={[
                 { required: true, message: 'Please enter your business name' },
                 { min: 2, message: 'Business name must be at least 2 characters' }
               ]}
             >
-              <Input 
-                placeholder="e.g. TechCorp Solutions"
-                autoFocus
-              />
+              <Input placeholder='e.g. TechCorp Solutions' autoFocus />
             </Form.Item>
 
             <Form.Item
               label={<span className={darkMode ? 'text-gray-300' : ''}>Email Domain</span>}
-              name="emailDomain"
+              name='emailDomain'
               rules={[
                 { required: true, message: 'Please enter your business email domain' },
-                { 
+                {
                   pattern: /^[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]*\.([a-zA-Z]{2,}|[a-zA-Z]{2,}\.[a-zA-Z]{2,})$/,
                   message: 'Please enter a valid domain (e.g. company.com)'
                 }
               ]}
             >
-              <Input 
-                placeholder="e.g. company.com"
-                addonBefore="@"
-              />
+              <Input placeholder='e.g. company.com' addonBefore='@' />
             </Form.Item>
 
-            <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200 dark:border-gray-600">
-              <Button 
+            <div className='flex justify-end space-x-3 pt-4 border-t border-gray-200 dark:border-gray-600'>
+              <Button
                 onClick={handleBusinessSetupClose}
                 className={darkMode ? 'border-gray-600 text-gray-300 hover:border-gray-500' : ''}
               >
                 Cancel
               </Button>
-              <Button 
-                type="primary" 
-                htmlType="submit"
+              <Button
+                type='primary'
+                htmlType='submit'
                 style={{
                   backgroundColor: darkMode ? '#059669' : '#10b981',
                   borderColor: darkMode ? '#059669' : '#10b981'

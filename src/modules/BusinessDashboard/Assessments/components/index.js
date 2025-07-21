@@ -2,7 +2,7 @@
 // Frontend Instructions Rule Applied!
 import React, { useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useTheme } from '../../../../ui/ThemeContext'
+import { useTheme } from '../../../../core/ThemeContext'
 import BusinessSidebar from '../../components/BusinessSidebar'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faClipboardCheck, faPlus, faArrowLeft, faCheckCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons'

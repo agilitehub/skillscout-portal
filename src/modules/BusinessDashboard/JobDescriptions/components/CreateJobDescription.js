@@ -10,14 +10,13 @@ import {
   faTimes,
   faFileText,
   faBuilding,
-  faUsers,
   faTasks,
   faClipboardList,
   faGift,
   faArrowLeft,
   faEdit
 } from '@fortawesome/free-solid-svg-icons'
-import { useTheme } from '../../../../ui/ThemeContext'
+import { useTheme } from '../../../../core/ThemeContext'
 import BusinessSidebar from '../../components/BusinessSidebar'
 import {
   createJobDescription,
@@ -50,7 +49,6 @@ const CreateJobDescription = React.memo(({ user }) => {
   // Check if we're in edit mode
   const isEditMode = location.state?.isEdit
   const editId = location.state?.editId
-  const existingJobDescription = location.state?.jobDescription
 
   // Load lookup data on component mount
   useEffect(() => {
@@ -182,17 +180,21 @@ const CreateJobDescription = React.memo(({ user }) => {
   )
 
   return (
-    <div className={`min-h-screen ${
-      darkMode 
-        ? 'bg-gradient-to-br from-slate-700 via-slate-600 to-emerald-800'
-        : 'bg-gradient-to-br from-sky-100 via-gray-50 to-emerald-100'
-    } relative overflow-hidden`}>
+    <div
+      className={`min-h-screen ${
+        darkMode
+          ? 'bg-gradient-to-br from-slate-700 via-slate-600 to-emerald-800'
+          : 'bg-gradient-to-br from-sky-100 via-gray-50 to-emerald-100'
+      } relative overflow-hidden`}
+    >
       {/* Background overlay for full coverage */}
-      <div className={`fixed inset-0 ${
-        darkMode 
-          ? 'bg-gradient-to-b from-transparent via-slate-700/30 to-emerald-800/40' 
-          : 'bg-gradient-to-b from-transparent via-sky-100/40 to-emerald-100/50'
-      } pointer-events-none`}></div>
+      <div
+        className={`fixed inset-0 ${
+          darkMode
+            ? 'bg-gradient-to-b from-transparent via-slate-700/30 to-emerald-800/40'
+            : 'bg-gradient-to-b from-transparent via-sky-100/40 to-emerald-100/50'
+        } pointer-events-none`}
+      ></div>
 
       {/* Business Sidebar */}
       <BusinessSidebar />

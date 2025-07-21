@@ -1,6 +1,6 @@
 import React from 'react'
-import { ThemeProvider } from './ui/ThemeContext'
-import { AuthProvider } from './ui/AuthContext'
+import { ThemeProvider } from './core/ThemeContext'
+import { AuthProvider } from './core/AuthContext'
 import { BrowserRouter as Router } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify'
 import { GlobalStyles } from './ui/styles'
@@ -11,14 +11,13 @@ import AppRoutes from './routes'
  * Main App component
  */
 const App = () => {
-
   return (
     <AuthProvider>
       <ThemeProvider>
         <GlobalStyles />
         <Router>
           <AppRoutes />
-          <ToastContainer position="top-right" autoClose={3000} />
+          <ToastContainer position='top-right' autoClose={3000} />
         </Router>
       </ThemeProvider>
     </AuthProvider>

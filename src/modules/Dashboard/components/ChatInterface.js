@@ -17,7 +17,7 @@ import {
   faList,
   faChartLine
 } from '@fortawesome/free-solid-svg-icons'
-import { useTheme } from '../../../ui/ThemeContext'
+import { useTheme } from '../../../core/ThemeContext'
 import ChatMessages from './ChatMessages'
 import ChatInput from './ChatInput'
 import useChat from '../hooks/useChat'

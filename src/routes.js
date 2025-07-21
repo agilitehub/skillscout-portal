@@ -10,20 +10,22 @@ import CreateAssessment from './modules/BusinessDashboard/Assessments/components
 import CreateJobListing from './modules/BusinessDashboard/JobOpportunities/components/CreateJobListing'
 import Lookups from './modules/BusinessDashboard/Lookups/components'
 import Pipeline from './modules/BusinessDashboard/Pipeline/components'
-import Header from './ui/layout/Header'
-import { useAuth } from './ui/AuthContext'
-import { useTheme } from './ui/ThemeContext'
+import Header from './core/components/layout/Header'
+import { useAuth } from './core/AuthContext'
+import { useTheme } from './core/ThemeContext'
 
 // Layout components
 export const DashboardLayout = ({ children, user }) => {
   const { darkMode } = useTheme()
-  
+
   return (
-    <div className={`flex flex-col h-screen ${
-      darkMode 
-        ? 'bg-gradient-to-br from-slate-700 via-slate-600 to-emerald-800'
-        : 'bg-gradient-to-br from-sky-100 via-gray-50 to-emerald-100'
-    }`}>
+    <div
+      className={`flex flex-col h-screen ${
+        darkMode
+          ? 'bg-gradient-to-br from-slate-700 via-slate-600 to-emerald-800'
+          : 'bg-gradient-to-br from-sky-100 via-gray-50 to-emerald-100'
+      }`}
+    >
       <Header user={user} />
       <main className='flex-1 p-6 overflow-auto relative z-0'>{children}</main>
     </div>

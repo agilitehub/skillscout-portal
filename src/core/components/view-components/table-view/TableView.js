@@ -4,7 +4,7 @@ import React, { useMemo, useCallback } from 'react'
 import { Table, Input, Card, Button } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus, faMinus } from '@fortawesome/free-solid-svg-icons'
-import { useTheme } from '../../../../ui/ThemeContext'
+import { useTheme } from '../../../ThemeContext'
 
 const { Search } = Input
 

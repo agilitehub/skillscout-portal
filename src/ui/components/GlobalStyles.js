@@ -1,7 +1,7 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
 import { useEffect } from 'react'
-import { useTheme } from '../ThemeContext'
+import { useTheme } from '../../core/ThemeContext'
 
 /**
  * GlobalStyles component - Applies global styles programmatically using Tailwind classes
@@ -16,38 +16,21 @@ const GlobalStyles = () => {
 
     // Remove all existing body classes to start fresh
     body.className = ''
-    
+
     // Apply base classes that were previously in CSS
-    const baseClasses = [
-      'transition-colors',
-      'duration-200',
-      'min-h-screen',
-      'font-sans'
-    ]
+    const baseClasses = ['transition-colors', 'duration-200', 'min-h-screen', 'font-sans']
 
     // Apply theme-specific classes
     if (darkMode) {
-      const darkClasses = [
-        'bg-gradient-to-br',
-        'from-slate-700',
-        'via-slate-600', 
-        'to-emerald-800',
-        'text-white'
-      ]
+      const darkClasses = ['bg-gradient-to-br', 'from-slate-700', 'via-slate-600', 'to-emerald-800', 'text-white']
       body.classList.add(...baseClasses, ...darkClasses)
-      
+
       // Clear any existing background image
       body.style.backgroundImage = ''
     } else {
-      const lightClasses = [
-        'bg-gradient-to-br',
-        'from-sky-100',
-        'via-gray-50',
-        'to-emerald-100',
-        'text-gray-900'
-      ]
+      const lightClasses = ['bg-gradient-to-br', 'from-sky-100', 'via-gray-50', 'to-emerald-100', 'text-gray-900']
       body.classList.add(...baseClasses, ...lightClasses)
-      
+
       // Clear any existing background image
       body.style.backgroundImage = ''
     }
@@ -96,4 +79,4 @@ const GlobalStyles = () => {
   return null
 }
 
-export default GlobalStyles 
+export default GlobalStyles

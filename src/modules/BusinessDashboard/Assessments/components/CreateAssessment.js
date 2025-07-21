@@ -6,7 +6,7 @@ import { Card, Button, Form, Input, Select, Switch, message } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowLeft, faSave, faEye, faClipboardCheck } from '@fortawesome/free-solid-svg-icons'
-import { useTheme } from '../../../../ui/ThemeContext'
+import { useTheme } from '../../../../core/ThemeContext'
 import BusinessSidebar from '../../components/BusinessSidebar'
 import { createAssessment } from '../utils/controller'
 import { parseTags } from '../utils/data-model'
@@ -69,17 +69,21 @@ const CreateAssessment = React.memo(({ user }) => {
 
   return (
     <>
-      <div className={`min-h-screen relative overflow-hidden ${
-        darkMode 
-          ? 'bg-gradient-to-br from-slate-700 via-slate-600 to-emerald-800'
-          : 'bg-gradient-to-br from-sky-100 via-gray-50 to-emerald-100'
-      }`}>
+      <div
+        className={`min-h-screen relative overflow-hidden ${
+          darkMode
+            ? 'bg-gradient-to-br from-slate-700 via-slate-600 to-emerald-800'
+            : 'bg-gradient-to-br from-sky-100 via-gray-50 to-emerald-100'
+        }`}
+      >
         {/* Background overlay for full coverage */}
-        <div className={`fixed inset-0 ${
-          darkMode 
-            ? 'bg-gradient-to-b from-transparent via-slate-700/30 to-emerald-800/40' 
-            : 'bg-gradient-to-b from-transparent via-sky-100/40 to-emerald-100/50'
-        } pointer-events-none`}></div>
+        <div
+          className={`fixed inset-0 ${
+            darkMode
+              ? 'bg-gradient-to-b from-transparent via-slate-700/30 to-emerald-800/40'
+              : 'bg-gradient-to-b from-transparent via-sky-100/40 to-emerald-100/50'
+          } pointer-events-none`}
+        ></div>
 
         <BusinessSidebar />
 

@@ -4,8 +4,8 @@ import React from 'react'
 import { Typography } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faLightbulb } from '@fortawesome/free-solid-svg-icons'
-import { useTheme } from '../../../ui/ThemeContext'
-import Logo from '../../../ui/components/Logo'
+import { useTheme } from '../../../core/ThemeContext'
+import Logo from '../../../core/components/Logo'
 import MagicLinkLogin from './MagicLinkLogin'
 
 const { Title } = Typography
@@ -64,7 +64,8 @@ const HeroSection = React.memo(({ loading, onLogin }) => {
           }`}
           style={darkMode ? { color: '#ffffff !important' } : {}}
         >
-          <span className="text-blue-500">Skill</span><span className="text-emerald-500">Scout</span>
+          <span className='text-blue-500'>Skill</span>
+          <span className='text-emerald-500'>Scout</span>
         </Title>
         <Title
           level={3}
