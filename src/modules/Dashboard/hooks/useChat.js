@@ -9,7 +9,7 @@ import {
   uploadMultipleFiles,
   getUserFiles,
   deleteFileFromStorage
-} from '../../../lib/supabase-controller'
+} from '../../../core/lib/supabase-controller'
 
 /**
  * Custom hook for chat functionality with AI integration, Supabase file storage, and streaming support
