@@ -4,7 +4,7 @@ import Login from './modules/Login'
 import Dashboard from './modules/Dashboard'
 import BusinessDashboard from './modules/BusinessDashboard/JobOpportunities/components'
 import JobDescriptions from './modules/BusinessDashboard/JobDescriptions/components'
-import CreateJobDescription from './modules/BusinessDashboard/JobDescriptions/components/CreateJobDescription'
+import JobDescriptionForm from './modules/BusinessDashboard/JobDescriptions/components/JobDescriptionForm'
 import Assessments from './modules/BusinessDashboard/Assessments/components'
 import CreateAssessment from './modules/BusinessDashboard/Assessments/components/CreateAssessment'
 import CreateJobListing from './modules/BusinessDashboard/JobOpportunities/components/CreateJobListing'
@@ -137,7 +137,7 @@ const AppRoutes = () => {
         element={
           user ? (
             <DashboardLayout user={user}>
-              <CreateJobDescription user={user} />
+              <JobDescriptionForm user={user} />
             </DashboardLayout>
           ) : (
             <Navigate to='/' replace state={{ from: location }} />

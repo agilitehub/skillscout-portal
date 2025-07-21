@@ -2,7 +2,7 @@
 // Frontend Instructions Rule Applied!
 
 import React, { useState, useCallback, useEffect } from 'react'
-import { Card, Button, Form, Input, Select, Space, message, Row, Col, Tabs, Spin } from 'antd'
+import { Card, Button, Form, Space, message, Row, Col, Tabs, Spin } from 'antd'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
@@ -27,8 +27,11 @@ import {
 } from '../utils/controller'
 import { parseKeywords } from '../utils/data-model'
 
-const { TextArea } = Input
-const { Option } = Select
+// Import enhanced form field components
+import FormInput from '../../../../core/components/form-components/form-fields/FormInput'
+import FormSelect from '../../../../core/components/form-components/form-fields/FormSelect'
+import FormTextArea from '../../../../core/components/form-components/form-fields/FormTextArea'
+
 const { TabPane } = Tabs
 
 /**
@@ -521,37 +524,43 @@ const CreateJobDescription = React.memo(({ user }) => {
                           </h3>
                         </div>
 
-                        <Form.Item
-                          label={<span className={darkMode ? 'text-gray-300' : 'text-gray-900'}>Job Title</span>}
+                        <FormInput
+                          label='Job Title'
                           name='title'
+                          placeholder='e.g. Senior React Developer'
                           rules={[
                             { required: true, message: 'Please enter job title' },
                             { max: 255, message: 'Job title must be 255 characters or less' }
                           ]}
-                        >
-                          <Input
-                            placeholder='e.g. Senior React Developer'
-                            prefix={<FontAwesomeIcon icon={faFileText} className='text-gray-400' />}
-                          />
-                        </Form.Item>
+                          inputProps={{
+                            prefix: <FontAwesomeIcon icon={faFileText} className='text-gray-400' />
+                          }}
+                          customStyle={{
+                            fontWeight: '500'
+                          }}
+                        />
 
-                        <Form.Item
-                          label={<span className={darkMode ? 'text-gray-300' : 'text-gray-900'}>Job Overview</span>}
+                        <FormTextArea
+                          label='Job Overview'
                           name='overview'
+                          placeholder='Describe the role, its importance to the company, and what the successful candidate will achieve...'
+                          rows={4}
                           rules={[{ required: true, message: 'Please enter job overview' }]}
-                          extra={
-                            <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
-                              Provide a compelling overview of the role and what makes it attractive to candidates
-                            </span>
-                          }
-                        >
-                          <TextArea
-                            rows={4}
-                            placeholder='Describe the role, its importance to the company, and what the successful candidate will achieve...'
-                            showCount
-                            maxLength={2000}
-                          />
-                        </Form.Item>
+                          textAreaProps={{
+                            showCount: true,
+                            maxLength: 2000
+                          }}
+                          formItemProps={{
+                            extra: (
+                              <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
+                                Provide a compelling overview of the role and what makes it attractive to candidates
+                              </span>
+                            )
+                          }}
+                          customStyle={{
+                            fontWeight: '500'
+                          }}
+                        />
                       </div>
                     </Col>
                     <Col span={12}>
@@ -565,73 +574,82 @@ const CreateJobDescription = React.memo(({ user }) => {
                             Job Details
                           </h3>
                         </div>
-                        <Form.Item
-                          label={<span className={darkMode ? 'text-gray-300' : 'text-gray-900'}>Department</span>}
+                        <FormSelect
+                          label='Department'
                           name='department'
+                          placeholder={lookupsLoading ? 'Loading departments...' : 'Select department'}
                           rules={[{ required: true, message: 'Please select a department' }]}
-                          extra={
-                            <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
-                              Select the department this role belongs to
-                            </span>
-                          }
-                        >
-                          <Select
-                            placeholder={lookupsLoading ? 'Loading departments...' : 'Select department'}
-                            allowClear
-                            loading={lookupsLoading}
-                            disabled={lookupsLoading}
-                            notFoundContent={lookupsLoading ? <Spin size='small' /> : 'No departments found'}
-                          >
-                            {departments.map((dept) => (
-                              <Option key={dept.id} value={dept.id}>
-                                {dept.label}
-                              </Option>
-                            ))}
-                          </Select>
-                        </Form.Item>
+                          options={departments.map((dept) => ({
+                            value: dept.id,
+                            label: dept.label
+                          }))}
+                          selectProps={{
+                            allowClear: true,
+                            loading: lookupsLoading,
+                            disabled: lookupsLoading,
+                            notFoundContent: lookupsLoading ? <Spin size='small' /> : 'No departments found'
+                          }}
+                          formItemProps={{
+                            extra: (
+                              <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
+                                Select the department this role belongs to
+                              </span>
+                            )
+                          }}
+                          customStyle={{
+                            fontWeight: '500'
+                          }}
+                        />
 
-                        <Form.Item
-                          label={<span className={darkMode ? 'text-gray-300' : 'text-gray-900'}>Experience Level</span>}
+                        <FormSelect
+                          label='Experience Level'
                           name='experienceLevel'
+                          placeholder={lookupsLoading ? 'Loading experience levels...' : 'Select experience level'}
                           rules={[{ required: true, message: 'Please select an experience level' }]}
-                          extra={
-                            <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
-                              Select the required experience level for this role
-                            </span>
-                          }
-                        >
-                          <Select
-                            placeholder={lookupsLoading ? 'Loading experience levels...' : 'Select experience level'}
-                            allowClear
-                            loading={lookupsLoading}
-                            disabled={lookupsLoading}
-                            notFoundContent={lookupsLoading ? <Spin size='small' /> : 'No experience levels found'}
-                          >
-                            {experienceLevels.map((level) => (
-                              <Option key={level.id} value={level.id}>
-                                {level.label}
-                              </Option>
-                            ))}
-                          </Select>
-                        </Form.Item>
+                          options={experienceLevels.map((level) => ({
+                            value: level.id,
+                            label: level.label
+                          }))}
+                          selectProps={{
+                            allowClear: true,
+                            loading: lookupsLoading,
+                            disabled: lookupsLoading,
+                            notFoundContent: lookupsLoading ? <Spin size='small' /> : 'No experience levels found'
+                          }}
+                          formItemProps={{
+                            extra: (
+                              <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
+                                Select the required experience level for this role
+                              </span>
+                            )
+                          }}
+                          customStyle={{
+                            fontWeight: '500'
+                          }}
+                        />
 
-                        <Form.Item
-                          label={<span className={darkMode ? 'text-gray-300' : 'text-gray-900'}>Keywords</span>}
+                        <FormSelect
+                          label='Keywords'
                           name='keywords'
+                          placeholder='Add keywords like: javascript, react, senior, remote, frontend, engineer'
                           rules={[{ required: true, message: 'Please add at least one keyword' }]}
-                          extra={
-                            <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
-                              Add relevant keywords to help with categorization and search. Press Enter or comma to
-                              separate.
-                            </span>
-                          }
-                        >
-                          <Select
-                            mode='tags'
-                            placeholder='Add keywords like: javascript, react, senior, remote, frontend, engineer'
-                            tokenSeparators={[',', '\n']}
-                          />
-                        </Form.Item>
+                          options={[]}
+                          selectProps={{
+                            mode: 'tags',
+                            tokenSeparators: [',', '\n']
+                          }}
+                          formItemProps={{
+                            extra: (
+                              <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
+                                Add relevant keywords to help with categorization and search. Press Enter or comma to
+                                separate.
+                              </span>
+                            )
+                          }}
+                          customStyle={{
+                            fontWeight: '500'
+                          }}
+                        />
                       </div>
                     </Col>
                   </Row>
@@ -660,80 +678,92 @@ const CreateJobDescription = React.memo(({ user }) => {
                           </h3>
                         </div>
 
-                        <Form.Item
+                        <FormTextArea
                           label={
                             <Space>
-                              <span className={darkMode ? 'text-gray-300' : 'text-gray-900'}>Responsibilities</span>
+                              <span>Responsibilities</span>
                               <FontAwesomeIcon icon={faTasks} className='text-gray-400' />
                             </Space>
                           }
                           name='responsibilities'
-                          rules={[{ required: true, message: 'Please enter job responsibilities' }]}
-                          extra={
-                            <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
-                              Enter each responsibility on a new line. Bullet points will be automatically formatted.
-                            </span>
-                          }
-                        >
-                          <TextArea
-                            rows={8}
-                            placeholder={`• Lead development of new features and products
+                          placeholder={`• Lead development of new features and products
 • Collaborate with cross-functional teams
 • Mentor junior developers
 • Participate in code reviews and architecture decisions`}
-                            showCount
-                          />
-                        </Form.Item>
+                          rows={8}
+                          rules={[{ required: true, message: 'Please enter job responsibilities' }]}
+                          textAreaProps={{
+                            showCount: true
+                          }}
+                          formItemProps={{
+                            extra: (
+                              <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
+                                Enter each responsibility on a new line. Bullet points will be automatically formatted.
+                              </span>
+                            )
+                          }}
+                          customStyle={{
+                            fontWeight: '500'
+                          }}
+                        />
 
-                        <Form.Item
+                        <FormTextArea
                           label={
                             <Space>
-                              <span className={darkMode ? 'text-gray-300' : 'text-gray-900'}>Requirements</span>
+                              <span>Requirements</span>
                               <FontAwesomeIcon icon={faClipboardList} className='text-gray-400' />
                             </Space>
                           }
                           name='requirements'
-                          rules={[{ required: true, message: 'Please enter job requirements' }]}
-                          extra={
-                            <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
-                              List the essential skills, qualifications, and experience needed for this role
-                            </span>
-                          }
-                        >
-                          <TextArea
-                            rows={8}
-                            placeholder={`• 5+ years of experience with React and modern JavaScript
+                          placeholder={`• 5+ years of experience with React and modern JavaScript
 • Strong understanding of software engineering principles
 • Experience with REST APIs and database design
 • Excellent communication and collaboration skills`}
-                            showCount
-                          />
-                        </Form.Item>
+                          rows={8}
+                          rules={[{ required: true, message: 'Please enter job requirements' }]}
+                          textAreaProps={{
+                            showCount: true
+                          }}
+                          formItemProps={{
+                            extra: (
+                              <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
+                                List the essential skills, qualifications, and experience needed for this role
+                              </span>
+                            )
+                          }}
+                          customStyle={{
+                            fontWeight: '500'
+                          }}
+                        />
 
-                        <Form.Item
+                        <FormTextArea
                           label={
                             <Space>
-                              <span className={darkMode ? 'text-gray-300' : 'text-gray-900'}>Benefits</span>
+                              <span>Benefits</span>
                               <FontAwesomeIcon icon={faGift} className='text-gray-400' />
                             </Space>
                           }
                           name='benefits'
-                          rules={[{ required: true, message: 'Please enter job benefits' }]}
-                          extra={
-                            <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
-                              List the benefits and perks offered with this position
-                            </span>
-                          }
-                        >
-                          <TextArea
-                            rows={8}
-                            placeholder={`• Competitive salary and equity package
+                          placeholder={`• Competitive salary and equity package
 • Comprehensive health, dental, and vision insurance
 • Flexible PTO and work-from-home options
 • Professional development budget`}
-                            showCount
-                          />
-                        </Form.Item>
+                          rows={8}
+                          rules={[{ required: true, message: 'Please enter job benefits' }]}
+                          textAreaProps={{
+                            showCount: true
+                          }}
+                          formItemProps={{
+                            extra: (
+                              <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
+                                List the benefits and perks offered with this position
+                              </span>
+                            )
+                          }}
+                          customStyle={{
+                            fontWeight: '500'
+                          }}
+                        />
                       </div>
                     </Col>
                   </Row>

@@ -5,23 +5,6 @@ import { useTheme } from '../../../context/ThemeContext'
 import './styles.css'
 
 /**
- * Helper function to merge theme-aware styling with custom styling
- * @param {boolean} darkMode - Whether dark mode is active
- * @param {Object} customStyle - Custom style object provided by user
- * @returns {Object} Merged style object
- */
-const getThemeAwareStyle = (darkMode, customStyle = {}) => {
-  const themeStyle = {
-    backgroundColor: darkMode ? '#374151' : '#ffffff',
-    borderColor: darkMode ? '#6b7280' : '#d1d5db',
-    color: darkMode ? '#ffffff' : '#111827',
-    fontSize: '14px',
-    ...customStyle // Custom styling overrides theme defaults
-  }
-  return themeStyle
-}
-
-/**
  * Helper function to get theme-aware class names for labels
  * @param {boolean} darkMode - Whether dark mode is active
  * @param {string} customLabelClasses - Custom classes provided by user

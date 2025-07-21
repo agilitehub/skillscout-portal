@@ -11,7 +11,6 @@ import TableView from '../../../../core/components/view-components/table-view/Ta
 import TableActions from '../../../../core/components/view-components/table-view/TableActions'
 
 // Import enhanced form field components
-import FormInput from '../../../../core/components/form-components/form-fields/FormInput'
 import FormSelect from '../../../../core/components/form-components/form-fields/FormSelect'
 import FormTextArea from '../../../../core/components/form-components/form-fields/FormTextArea'
 import FormSwitch from '../../../../core/components/form-components/form-fields/FormSwitch'

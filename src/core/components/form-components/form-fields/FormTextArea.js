@@ -4,8 +4,6 @@ import { Form, Input } from 'antd'
 import { useTheme } from '../../../context/ThemeContext'
 import './styles.css'
 
-const { TextArea } = Input
-
 /**
  * Helper function to merge theme-aware styling with custom styling
  * @param {boolean} darkMode - Whether dark mode is active
