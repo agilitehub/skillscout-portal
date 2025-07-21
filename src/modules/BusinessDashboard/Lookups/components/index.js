@@ -6,10 +6,15 @@ import { useTheme } from '../../../../core/context/ThemeContext'
 import BusinessSidebar from '../../components/BusinessSidebar'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faList, faPlus, faFilter, faArrowLeft, faTimes, faSpinner } from '@fortawesome/free-solid-svg-icons'
-import { Button, Input, Select, Modal, Form, message, Switch, Row, Col, Spin } from 'antd'
+import { Button, Select, Modal, Form, message, Row, Col, Spin } from 'antd'
 import TableView from '../../../../core/components/view-components/table-view/TableView'
 import TableActions from '../../../../core/components/view-components/table-view/TableActions'
 import { getAllLookups, createLookup, updateLookup, deleteLookup } from '../utils/controller'
+
+// Import enhanced form field components
+import FormInput from '../../../../core/components/form-components/form-fields/FormInput'
+import FormSelect from '../../../../core/components/form-components/form-fields/FormSelect'
+import FormSwitch from '../../../../core/components/form-components/form-fields/FormSwitch'
 
 const { Option } = Select
 
@@ -595,98 +600,64 @@ const Lookups = React.memo(({ user }) => {
             <Form form={form} layout='vertical' onFinish={handleSubmit} initialValues={{ isActive: true }}>
               {/* Active Toggle */}
               <div className='mb-6'>
-                <Form.Item name='isActive' valuePropName='checked'>
-                  <div className='flex items-center'>
-                    <Switch
-                      defaultChecked={true}
-                      className='mr-3'
-                      style={{
-                        backgroundColor: darkMode ? '#059669' : '#10b981'
-                      }}
-                    />
-                    <span className={`text-base font-medium ${darkMode ? 'text-emerald-100' : 'text-emerald-800'}`}>
-                      Active
-                    </span>
-                  </div>
-                </Form.Item>
+                <FormSwitch
+                  label='Active'
+                  name='isActive'
+                  defaultChecked={true}
+                  switchProps={{
+                    className: 'mr-3',
+                    style: {
+                      backgroundColor: darkMode ? '#059669' : '#10b981'
+                    }
+                  }}
+                />
               </div>
 
               <Row gutter={16}>
                 <Col span={12}>
-                  <Form.Item
+                  <FormInput
+                    label='Profile Key'
                     name='profileKey'
-                    label={
-                      <span className={`font-medium ${darkMode ? 'text-emerald-100' : 'text-emerald-800'}`}>
-                        Profile Key
-                      </span>
-                    }
+                    placeholder='Provide a unique Profile Key'
                     rules={[{ required: true, message: 'Please enter a profile key' }]}
-                  >
-                    <Input
-                      placeholder='Provide a unique Profile Key'
-                      className={darkMode ? 'dark-input' : 'light-input'}
-                      style={{
-                        backgroundColor: darkMode ? '#374151' : '#ffffff',
-                        borderColor: darkMode ? '#10b981' : '#10b981',
-                        color: darkMode ? '#ffffff' : '#111827',
-                        fontSize: '14px',
-                        fontWeight: '500'
-                      }}
-                    />
-                  </Form.Item>
+                    customStyle={{
+                      borderColor: darkMode ? '#10b981' : '#10b981',
+                      fontWeight: '500'
+                    }}
+                  />
                 </Col>
                 <Col span={12}>
-                  <Form.Item
+                  <FormInput
+                    label='Group Name (optional)'
                     name='groupName'
-                    label={
-                      <span className={`font-medium ${darkMode ? 'text-emerald-100' : 'text-emerald-800'}`}>
-                        Group Name (optional)
-                      </span>
-                    }
-                  >
-                    <Input
-                      placeholder='Used to group Profiles'
-                      className={darkMode ? 'dark-input' : 'light-input'}
-                      style={{
-                        backgroundColor: darkMode ? '#374151' : '#ffffff',
-                        borderColor: darkMode ? '#10b981' : '#10b981',
-                        color: darkMode ? '#ffffff' : '#111827',
-                        fontSize: '14px',
-                        fontWeight: '500'
-                      }}
-                    />
-                  </Form.Item>
+                    placeholder='Used to group Profiles'
+                    customStyle={{
+                      borderColor: darkMode ? '#10b981' : '#10b981',
+                      fontWeight: '500'
+                    }}
+                  />
                 </Col>
               </Row>
 
-              <Form.Item
+              <FormSelect
+                label='Solution(s) (optional)'
                 name='solutions'
-                label={
-                  <span className={`font-medium ${darkMode ? 'text-emerald-100' : 'text-emerald-800'}`}>
-                    Solution(s) (optional)
-                  </span>
-                }
-              >
-                <Select
-                  mode='multiple'
-                  placeholder='Used to link solutions'
-                  className={darkMode ? 'dark-select' : 'light-select'}
-                  style={{
-                    backgroundColor: darkMode ? '#374151' : '#ffffff',
-                    color: darkMode ? '#ffffff' : '#111827',
-                    fontSize: '14px',
-                    fontWeight: '500'
-                  }}
-                  dropdownStyle={{
+                placeholder='Used to link solutions'
+                options={[
+                  { label: 'Solution A', value: 'solution-a' },
+                  { label: 'Solution B', value: 'solution-b' },
+                  { label: 'Solution C', value: 'solution-c' }
+                ]}
+                selectProps={{
+                  mode: 'multiple',
+                  dropdownStyle: {
                     backgroundColor: darkMode ? '#374151' : '#ffffff'
-                  }}
-                  options={[
-                    { label: 'Solution A', value: 'solution-a' },
-                    { label: 'Solution B', value: 'solution-b' },
-                    { label: 'Solution C', value: 'solution-c' }
-                  ]}
-                />
-              </Form.Item>
+                  }
+                }}
+                customStyle={{
+                  fontWeight: '500'
+                }}
+              />
 
               {/* Label-Value Pairs Section */}
               <div
@@ -747,31 +718,25 @@ const Lookups = React.memo(({ user }) => {
                   {labelValuePairs.map((pair, index) => (
                     <Row key={index} gutter={8} align='middle' className='mb-2'>
                       <Col span={10}>
-                        <Input
+                        <FormInput
                           placeholder='Provide a Label'
                           value={pair.label}
                           onChange={(e) => handleLabelValueChange(index, 'label', e.target.value)}
-                          className={darkMode ? 'dark-input' : 'light-input'}
-                          style={{
-                            backgroundColor: darkMode ? '#374151' : '#ffffff',
+                          standalone={true}
+                          customStyle={{
                             borderColor: darkMode ? '#10b981' : '#10b981',
-                            color: darkMode ? '#ffffff' : '#111827',
-                            fontSize: '14px',
                             fontWeight: '500'
                           }}
                         />
                       </Col>
                       <Col span={10}>
-                        <Input
+                        <FormInput
                           placeholder='Provide a Value'
                           value={pair.value}
                           onChange={(e) => handleLabelValueChange(index, 'value', e.target.value)}
-                          className={darkMode ? 'dark-input' : 'light-input'}
-                          style={{
-                            backgroundColor: darkMode ? '#374151' : '#ffffff',
+                          standalone={true}
+                          customStyle={{
                             borderColor: darkMode ? '#10b981' : '#10b981',
-                            color: darkMode ? '#ffffff' : '#111827',
-                            fontSize: '14px',
                             fontWeight: '500'
                           }}
                         />

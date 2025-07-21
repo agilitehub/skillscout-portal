@@ -44,11 +44,11 @@ const getThemeAwareInputClasses = (darkMode, customInputClasses = '') => {
 }
 
 /**
- * A reusable form input component that wraps Ant Design's Form.Item and Input
+ * A reusable form input component that wraps Ant Design's Input with optional Form.Item
  * @component
  * @param {Object} props - Component props
  * @param {string} props.label - Label for the form field
- * @param {string} props.name - Name/identifier for the form field
+ * @param {string} props.name - Name/identifier for the form field (optional for standalone)
  * @param {Array} props.rules - Validation rules for the form field
  * @param {string} props.placeholder - Placeholder text for the input
  * @param {Object} props.inputProps - Additional props to pass to the Input component
@@ -56,6 +56,9 @@ const getThemeAwareInputClasses = (darkMode, customInputClasses = '') => {
  * @param {Object} props.customStyle - Custom styling to override theme defaults
  * @param {string} props.labelClasses - Custom class names for the label
  * @param {string} props.inputClasses - Custom class names for the input
+ * @param {boolean} props.standalone - If true, renders without Form.Item wrapper for standalone controlled components
+ * @param {*} props.value - Value for standalone controlled input
+ * @param {Function} props.onChange - onChange handler for standalone controlled input
  * @returns {React.ReactElement} FormInput component
  */
 const FormInput = ({
@@ -67,7 +70,10 @@ const FormInput = ({
   formItemProps = {},
   customStyle = {},
   labelClasses = '',
-  inputClasses = ''
+  inputClasses = '',
+  standalone = false,
+  value,
+  onChange
 }) => {
   const { darkMode } = useTheme()
 
@@ -84,6 +90,24 @@ const FormInput = ({
   // Create themed label component
   const themedLabel = label ? <span className={labelClassNames}>{label}</span> : undefined
 
+  // For standalone usage (no Form.Item wrapper)
+  if (standalone) {
+    return (
+      <div>
+        {themedLabel && <div className='mb-1'>{themedLabel}</div>}
+        <Input
+          placeholder={placeholder}
+          value={value}
+          onChange={onChange}
+          {...inputProps}
+          className={`${inputClassNames} ${inputProps.className || ''}`.trim()}
+          style={mergedStyle}
+        />
+      </div>
+    )
+  }
+
+  // Standard usage with Form.Item wrapper
   return (
     <Form.Item label={themedLabel} name={name} rules={rules} {...formItemProps}>
       <Input
@@ -97,15 +121,18 @@ const FormInput = ({
 }
 
 FormInput.propTypes = {
-  label: PropTypes.string.isRequired,
-  name: PropTypes.string.isRequired,
+  label: PropTypes.string,
+  name: PropTypes.string,
   rules: PropTypes.arrayOf(PropTypes.object),
   placeholder: PropTypes.string,
   inputProps: PropTypes.object,
   formItemProps: PropTypes.object,
   customStyle: PropTypes.object,
   labelClasses: PropTypes.string,
-  inputClasses: PropTypes.string
+  inputClasses: PropTypes.string,
+  standalone: PropTypes.bool,
+  value: PropTypes.any,
+  onChange: PropTypes.func
 }
 
 export default FormInput
