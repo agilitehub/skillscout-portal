@@ -1,5 +1,5 @@
 /** @type {import('tailwindcss').Config} */
-const boilerplateConfig = require('./src/ui/config/tailwind.config')
+const boilerplateConfig = require('./src/core/theme/tailwind/tailwind.config')
 
 // This is the Tailwind CSS configuration file that:
 // 1. Processes all JS/JSX/TS/TSX files in the src directory for Tailwind classes

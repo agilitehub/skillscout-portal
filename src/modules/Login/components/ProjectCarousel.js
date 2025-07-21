@@ -5,6 +5,7 @@ import { Card } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../ui/ThemeContext'
+import { BRAND_COLORS } from '../../../core/theme/colors'
 
 /**
  * ProjectCarousel component - Mobile carousel for featured projects
@@ -21,17 +22,17 @@ const ProjectCarousel = React.memo(({ projects, onProjectClick, isProjectClickab
   // Error boundary for carousel
   try {
     return (
-      <div className="md:hidden w-full px-1 mt-4 mb-4">
+      <div className='md:hidden w-full px-1 mt-4 mb-4'>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', padding: '10px 0' }}>
           {projects.map((project, index) => (
             <div key={index} style={{ width: '100%', maxWidth: '280px', margin: '0 auto' }}>
-              <Card 
+              <Card
                 className={`h-full border-0 mx-auto transition-shadow duration-300 ${
                   isProjectClickable(project) ? 'cursor-pointer hover:shadow-lg' : ''
                 }`}
-                style={{ 
-                  background: '#ffffff',
-                  border: '1px solid #e5e7eb',
+                style={{
+                  background: BRAND_COLORS.white,
+                  border: `1px solid ${BRAND_COLORS.lightBorderGray}`,
                   borderRadius: '6px',
                   overflow: 'visible',
                   width: '100%',
@@ -41,16 +42,16 @@ const ProjectCarousel = React.memo(({ projects, onProjectClick, isProjectClickab
                 bodyStyle={{ padding: '0', overflow: 'visible' }}
                 onClick={isProjectClickable(project) ? () => onProjectClick(project) : undefined}
               >
-                <div 
-                  className="h-2" 
-                  style={{ 
-                    background: `linear-gradient(to right, ${project.gradientColors[0]}, ${project.gradientColors[1]})` 
-                  }} 
+                <div
+                  className='h-2'
+                  style={{
+                    background: `linear-gradient(to right, ${project.gradientColors[0]}, ${project.gradientColors[1]})`
+                  }}
                 />
                 <div style={{ padding: '12px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
-                    <div 
-                      style={{ 
+                    <div
+                      style={{
                         width: '32px',
                         height: '32px',
                         borderRadius: '50%',
@@ -65,10 +66,10 @@ const ProjectCarousel = React.memo(({ projects, onProjectClick, isProjectClickab
                     >
                       <FontAwesomeIcon icon={project.icon} style={{ color: 'white', fontSize: '14px' }} />
                     </div>
-                    <h4 
-                      style={{ 
-                        color: '#000000', 
-                        fontWeight: '600', 
+                    <h4
+                      style={{
+                        color: BRAND_COLORS.black,
+                        fontWeight: '600',
                         fontSize: '16px',
                         margin: '0',
                         overflow: 'hidden',
@@ -80,10 +81,10 @@ const ProjectCarousel = React.memo(({ projects, onProjectClick, isProjectClickab
                     </h4>
                   </div>
 
-                  <p 
-                    style={{ 
-                      color: '#333333', 
-                      fontSize: '13px', 
+                  <p
+                    style={{
+                      color: BRAND_COLORS.darkGray,
+                      fontSize: '13px',
                       lineHeight: '1.4',
                       margin: '0 0 8px 0',
                       display: '-webkit-box',
@@ -96,13 +97,15 @@ const ProjectCarousel = React.memo(({ projects, onProjectClick, isProjectClickab
                   </p>
 
                   {isProjectClickable(project) && (
-                    <div style={{ 
-                      display: 'flex', 
-                      alignItems: 'center',
-                      color: project.color,
-                      fontSize: '12px',
-                      fontWeight: '500'
-                    }}>
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        color: project.color,
+                        fontSize: '12px',
+                        fontWeight: '500'
+                      }}
+                    >
                       <span>Tap to explore</span>
                       <FontAwesomeIcon icon={faArrowRight} style={{ marginLeft: '6px', fontSize: '10px' }} />
                     </div>
@@ -122,4 +125,4 @@ const ProjectCarousel = React.memo(({ projects, onProjectClick, isProjectClickab
 
 ProjectCarousel.displayName = 'ProjectCarousel'
 
-export default ProjectCarousel 
+export default ProjectCarousel

@@ -5,6 +5,7 @@ import { Typography } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faLightbulb } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../core/context/ThemeContext'
+import { BRAND_COLORS } from '../../../core/theme/colors'
 import Logo from '../../../core/components/Logo'
 import MagicLinkLogin from './MagicLinkLogin'
 
@@ -17,22 +18,6 @@ const { Title } = Typography
 const HeroSection = React.memo(({ loading, onLogin }) => {
   const { darkMode } = useTheme()
 
-  // Color palette - Skill Scout blue-to-green balance
-  const colors = {
-    // Blues from brand palette
-    darkBlue: '#1E3A52',
-    shakespeare: '#4A90A4',
-    pictonBlue: '#5BA3D4',
-    toreaBay: '#2E5984',
-    // Greens from brand palette
-    seaGreen: '#16A085',
-    emeraldPrimary: '#059669',
-    emeraldBright: '#34D399',
-    tealGreen: '#14B8A6',
-    mintGreen: '#00D8A3',
-    forestGreen: '#065F46'
-  }
-
   return (
     <div className='w-full flex flex-col items-center justify-center p-4 md:p-8 pt-8 sm:pt-10 md:pt-12 pb-4 md:pb-6 z-10'>
       {/* Logo */}
@@ -41,7 +26,7 @@ const HeroSection = React.memo(({ loading, onLogin }) => {
           <div
             className='absolute inset-0 rounded-full'
             style={{
-              background: `linear-gradient(45deg, ${colors.shakespeare}, ${colors.seaGreen})`,
+              background: `linear-gradient(45deg, ${BRAND_COLORS.shakespeare}, ${BRAND_COLORS.seaGreen})`,
               animation: 'pulse 2s infinite'
             }}
           />
@@ -62,7 +47,7 @@ const HeroSection = React.memo(({ loading, onLogin }) => {
           className={`text-2xl sm:text-3xl md:text-5xl mb-2 font-extrabold tracking-tight ${
             darkMode ? '!text-white' : 'bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent'
           }`}
-          style={darkMode ? { color: '#ffffff !important' } : {}}
+          style={darkMode ? { color: `${BRAND_COLORS.white} !important` } : {}}
         >
           <span className='text-blue-500'>Skill</span>
           <span className='text-emerald-500'>Scout</span>
@@ -74,7 +59,7 @@ const HeroSection = React.memo(({ loading, onLogin }) => {
               ? '!text-white !opacity-90'
               : 'bg-gradient-to-r from-blue-500 to-teal-500 bg-clip-text text-transparent'
           }`}
-          style={darkMode ? { color: '#ffffff !important', opacity: '0.9' } : {}}
+          style={darkMode ? { color: `${BRAND_COLORS.white} !important`, opacity: '0.9' } : {}}
         >
           Streamline your workflow with intelligent forms and seamless data management.
         </Title>
@@ -88,20 +73,20 @@ const HeroSection = React.memo(({ loading, onLogin }) => {
         <div
           className='w-1/3 h-px'
           style={{
-            background: darkMode ? `${colors.shakespeare}30` : `${colors.pictonBlue}20`
+            background: darkMode ? `${BRAND_COLORS.shakespeare}30` : `${BRAND_COLORS.pictonBlue}20`
           }}
         />
         <FontAwesomeIcon
           icon={faLightbulb}
           className='mx-4 text-xl'
           style={{
-            color: darkMode ? colors.shakespeare : colors.seaGreen
+            color: darkMode ? BRAND_COLORS.shakespeare : BRAND_COLORS.seaGreen
           }}
         />
         <div
           className='w-1/3 h-px'
           style={{
-            background: darkMode ? `${colors.shakespeare}30` : `${colors.pictonBlue}20`
+            background: darkMode ? `${BRAND_COLORS.shakespeare}30` : `${BRAND_COLORS.pictonBlue}20`
           }}
         />
       </div>

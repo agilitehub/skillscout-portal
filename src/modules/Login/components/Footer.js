@@ -3,6 +3,7 @@
 import React from 'react'
 import { Typography } from 'antd'
 import { useTheme } from '../../../ui/ThemeContext'
+import { BRAND_COLORS } from '../../../core/theme/colors'
 
 const { Paragraph } = Typography
 
@@ -14,38 +15,38 @@ const Footer = React.memo(() => {
   const { darkMode } = useTheme()
 
   return (
-    <footer className="w-full py-6 md:py-8 z-10">
-      <div className="text-center">
-        <Paragraph 
-          className="mt-2 md:mt-3 text-sm sm:text-base md:text-lg px-2" 
-          style={{ 
-            color: darkMode ? '#e0e0e0' : '#505050' 
+    <footer className='w-full py-6 md:py-8 z-10'>
+      <div className='text-center'>
+        <Paragraph
+          className='mt-2 md:mt-3 text-sm sm:text-base md:text-lg px-2'
+          style={{
+            color: darkMode ? BRAND_COLORS.lightGray : BRAND_COLORS.mediumGray
           }}
         >
           A DeSo project by{' '}
-          <a 
-            href="https://focus.xyz/MoneyQuest" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="text-blue-500 hover:text-blue-600 transition-colors duration-200 underline"
+          <a
+            href='https://focus.xyz/MoneyQuest'
+            target='_blank'
+            rel='noopener noreferrer'
+            className='text-blue-500 hover:text-blue-600 transition-colors duration-200 underline'
           >
             @MoneyQuest
           </a>
           . Developed by{' '}
-          <a 
-            href="https://focus.xyz/JohnJardin" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="text-blue-500 hover:text-blue-600 transition-colors duration-200 underline"
+          <a
+            href='https://focus.xyz/JohnJardin'
+            target='_blank'
+            rel='noopener noreferrer'
+            className='text-blue-500 hover:text-blue-600 transition-colors duration-200 underline'
           >
             @JohnJardin
-          </a>
-          {' '}&{' '}
-          <a 
-            href="https://focus.xyz/MarianneC" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="text-blue-500 hover:text-blue-600 transition-colors duration-200 underline"
+          </a>{' '}
+          &{' '}
+          <a
+            href='https://focus.xyz/MarianneC'
+            target='_blank'
+            rel='noopener noreferrer'
+            className='text-blue-500 hover:text-blue-600 transition-colors duration-200 underline'
           >
             @MarianneC
           </a>
@@ -58,4 +59,4 @@ const Footer = React.memo(() => {
 
 Footer.displayName = 'Footer'
 
-export default Footer 
+export default Footer

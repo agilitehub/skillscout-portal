@@ -4,6 +4,7 @@ import React, { useMemo, useCallback } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faHome, faCommentDots, faGraduationCap } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../ui/ThemeContext'
+import { BRAND_COLORS } from '../../../core/theme/colors'
 
 /**
  * BottomNavigation component - Fixed bottom navigation for mobile
@@ -12,13 +13,6 @@ import { useTheme } from '../../../ui/ThemeContext'
  */
 const BottomNavigation = React.memo(({ activeTab, onTabChange, onDetailViewReset }) => {
   const { darkMode } = useTheme()
-
-  // Centralized color palette - memoized for performance optimization
-  const colors = useMemo(() => ({
-    darkBlue: '#0E4173',
-    shakespeare: '#3FB1D4',
-    activeIconColor: '#FFD700', // Gold color for active state
-  }), [])
 
   // Navigation items configuration with comprehensive validation
   const navigationItems = useMemo(() => {
@@ -45,14 +39,15 @@ const BottomNavigation = React.memo(({ activeTab, onTabChange, onDetailViewReset
       ]
 
       // Validate each navigation item structure
-      return items.filter(item => {
-        const isValid = item.id && 
-                       item.icon && 
-                       item.label && 
-                       item.ariaLabel &&
-                       typeof item.id === 'string' &&
-                       typeof item.label === 'string'
-        
+      return items.filter((item) => {
+        const isValid =
+          item.id &&
+          item.icon &&
+          item.label &&
+          item.ariaLabel &&
+          typeof item.id === 'string' &&
+          typeof item.label === 'string'
+
         if (!isValid) {
           console.warn('BottomNavigation: Invalid navigation item configuration found', item)
         }
@@ -65,77 +60,86 @@ const BottomNavigation = React.memo(({ activeTab, onTabChange, onDetailViewReset
   }, [])
 
   // Handle navigation item click with comprehensive error handling
-  const handleItemClick = useCallback((item) => {
-    try {
-      if (!item || !item.id) {
-        console.warn('BottomNavigation: Invalid navigation item for click')
-        return
-      }
-
-      // Reset detail view if handler is provided
-      if (onDetailViewReset && typeof onDetailViewReset === 'function') {
-        try {
-          onDetailViewReset()
-        } catch (error) {
-          console.error('BottomNavigation: Error resetting detail view:', error)
+  const handleItemClick = useCallback(
+    (item) => {
+      try {
+        if (!item || !item.id) {
+          console.warn('BottomNavigation: Invalid navigation item for click')
+          return
         }
-      }
 
-      // Change tab
-      onTabChange(item.id)
-    } catch (error) {
-      console.error('BottomNavigation: Error handling navigation click:', error)
-    }
-  }, [onTabChange, onDetailViewReset])
+        // Reset detail view if handler is provided
+        if (onDetailViewReset && typeof onDetailViewReset === 'function') {
+          try {
+            onDetailViewReset()
+          } catch (error) {
+            console.error('BottomNavigation: Error resetting detail view:', error)
+          }
+        }
+
+        // Change tab
+        onTabChange(item.id)
+      } catch (error) {
+        console.error('BottomNavigation: Error handling navigation click:', error)
+      }
+    },
+    [onTabChange, onDetailViewReset]
+  )
 
   // Check if item is active with error handling
-  const isItemActive = useCallback((itemId) => {
-    try {
-      return activeTab === itemId
-    } catch (error) {
-      console.error('BottomNavigation: Error checking active state:', error)
-      return false
-    }
-  }, [activeTab])
+  const isItemActive = useCallback(
+    (itemId) => {
+      try {
+        return activeTab === itemId
+      } catch (error) {
+        console.error('BottomNavigation: Error checking active state:', error)
+        return false
+      }
+    },
+    [activeTab]
+  )
 
   // Get item styles with error handling
-  const getItemStyles = useCallback((item) => {
-    try {
-      const isActive = isItemActive(item.id)
-      
-      return {
-        container: {
-          transform: isActive ? 'scale(1.1)' : 'scale(1)',
-          transition: 'all 0.3s ease'
-        },
-        iconContainer: {
-          backgroundColor: isActive ? 'rgba(255, 255, 255, 0.3)' : 'rgba(255, 255, 255, 0.1)',
-          boxShadow: isActive ? '0 0 12px rgba(255, 215, 0, 0.4)' : 'none',
-          transform: isActive ? 'scale(1.1)' : 'scale(1)',
-          transition: 'all 0.3s ease'
-        },
-        icon: {
-          color: isActive ? colors.activeIconColor : 'white',
-          fontSize: isActive ? '1.125rem' : '1rem',
-          transition: 'all 0.3s ease'
-        },
-        label: {
-          color: isActive ? colors.activeIconColor : 'white',
-          fontWeight: isActive ? 'bold' : 'normal',
-          opacity: isActive ? 1 : 0.8,
-          transition: 'all 0.3s ease'
+  const getItemStyles = useCallback(
+    (item) => {
+      try {
+        const isActive = isItemActive(item.id)
+
+        return {
+          container: {
+            transform: isActive ? 'scale(1.1)' : 'scale(1)',
+            transition: 'all 0.3s ease'
+          },
+          iconContainer: {
+            backgroundColor: isActive ? 'rgba(255, 255, 255, 0.3)' : 'rgba(255, 255, 255, 0.1)',
+            boxShadow: isActive ? '0 0 12px rgba(255, 215, 0, 0.4)' : 'none',
+            transform: isActive ? 'scale(1.1)' : 'scale(1)',
+            transition: 'all 0.3s ease'
+          },
+          icon: {
+            color: isActive ? BRAND_COLORS.gold : 'white',
+            fontSize: isActive ? '1.125rem' : '1rem',
+            transition: 'all 0.3s ease'
+          },
+          label: {
+            color: isActive ? BRAND_COLORS.gold : 'white',
+            fontWeight: isActive ? 'bold' : 'normal',
+            opacity: isActive ? 1 : 0.8,
+            transition: 'all 0.3s ease'
+          }
+        }
+      } catch (error) {
+        console.error('BottomNavigation: Error getting item styles:', error)
+        return {
+          container: {},
+          iconContainer: {},
+          icon: { color: 'white' },
+          label: { color: 'white' }
         }
       }
-    } catch (error) {
-      console.error('BottomNavigation: Error getting item styles:', error)
-      return {
-        container: {},
-        iconContainer: {},
-        icon: { color: 'white' },
-        label: { color: 'white' }
-      }
-    }
-  }, [isItemActive, colors.activeIconColor])
+    },
+    [isItemActive]
+  )
 
   // Validate required props with comprehensive error handling
   if (!onTabChange || typeof onTabChange !== 'function') {
@@ -155,45 +159,37 @@ const BottomNavigation = React.memo(({ activeTab, onTabChange, onDetailViewReset
   }
 
   return (
-    <nav 
-      className="fixed bottom-0 left-0 right-0 py-2 z-10"
-      style={{ 
-        background: darkMode ? colors.darkBlue : colors.shakespeare,
+    <nav
+      className='fixed bottom-0 left-0 right-0 py-2 z-10'
+      style={{
+        background: darkMode ? BRAND_COLORS.darkBlueVariant : BRAND_COLORS.shakespeareVariant,
         boxShadow: '0 -1px 4px rgba(0,0,0,0.1)'
       }}
-      role="navigation"
-      aria-label="Bottom navigation"
+      role='navigation'
+      aria-label='Bottom navigation'
     >
-      <div className="flex justify-around items-center">
+      <div className='flex justify-around items-center'>
         {navigationItems.map((item) => {
           const styles = getItemStyles(item)
           const isActive = isItemActive(item.id)
-          
+
           return (
-            <button 
+            <button
               key={item.id}
-              className="flex flex-col items-center cursor-pointer transition-transform duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 rounded-lg p-2"
+              className='flex flex-col items-center cursor-pointer transition-transform duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 rounded-lg p-2'
               onClick={() => handleItemClick(item)}
               style={styles.container}
               aria-label={item.ariaLabel}
               aria-current={isActive ? 'page' : undefined}
-              type="button"
+              type='button'
             >
-              <div 
-                className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300"
+              <div
+                className='w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300'
                 style={styles.iconContainer}
               >
-                <FontAwesomeIcon 
-                  icon={item.icon} 
-                  style={styles.icon}
-                  size="lg"
-                  aria-hidden="true"
-                />
+                <FontAwesomeIcon icon={item.icon} style={styles.icon} size='lg' aria-hidden='true' />
               </div>
-              <span 
-                className="text-[10px] mt-1 transition-all duration-300"
-                style={styles.label}
-              >
+              <span className='text-[10px] mt-1 transition-all duration-300' style={styles.label}>
                 {item.label}
               </span>
             </button>
@@ -207,4 +203,4 @@ const BottomNavigation = React.memo(({ activeTab, onTabChange, onDetailViewReset
 // Set display name for debugging purposes
 BottomNavigation.displayName = 'BottomNavigation'
 
-export default BottomNavigation 
+export default BottomNavigation

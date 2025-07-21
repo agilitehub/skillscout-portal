@@ -5,6 +5,7 @@ import { Modal, Spin } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronLeft } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../core/context/ThemeContext'
+import { BRAND_COLORS } from '../../core/theme/colors'
 import ChatInterface from './components/ChatInterface'
 
 /**
@@ -30,21 +31,6 @@ const Dashboard = React.memo(({ user }) => {
     content: '',
     type: ''
   })
-
-  // Color palette - memoized for performance
-  const colors = useMemo(
-    () => ({
-      darkBlue: '#0E4173',
-      blueAccent: '#2C5282',
-      shakespeare: '#3FB1D4',
-      pictonBlue: '#1EC9EA',
-      logoGoldAccent: '#DCAC55',
-      diSerria: '#DCAA55',
-      navyDark: '#0A1929',
-      logoNavy: '#0D2035'
-    }),
-    []
-  )
 
   // iPhone SE detection with error handling
   const isIPhoneSE = useCallback(() => {
@@ -216,7 +202,7 @@ const Dashboard = React.memo(({ user }) => {
       <div
         className='sticky top-0 p-2 md:p-4 flex items-center z-20'
         style={{
-          background: darkMode ? colors.darkBlue : colors.shakespeare,
+          background: darkMode ? BRAND_COLORS.darkBlueVariant : BRAND_COLORS.shakespeareVariant,
           boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
         }}
       >
@@ -241,7 +227,7 @@ const Dashboard = React.memo(({ user }) => {
         </div>
       </div>
     )
-  }, [detailView, darkMode, colors, handleBack])
+  }, [detailView, darkMode, handleBack])
 
   // Render main content - single page view or detail view
   const renderContent = useCallback(() => {
@@ -358,8 +344,8 @@ const Dashboard = React.memo(({ user }) => {
         <div
           style={{
             background: darkMode
-              ? `linear-gradient(135deg, ${colors.navyDark}, ${colors.darkBlue})`
-              : `linear-gradient(135deg, ${colors.shakespeare}, ${colors.pictonBlue})`,
+              ? `linear-gradient(135deg, ${BRAND_COLORS.navyDark}, ${BRAND_COLORS.darkBlueVariant})`
+              : `linear-gradient(135deg, ${BRAND_COLORS.shakespeareVariant}, ${BRAND_COLORS.pictonBlue})`,
             borderBottom: `1px solid ${darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'}`,
             padding: '16px'
           }}
@@ -369,7 +355,7 @@ const Dashboard = React.memo(({ user }) => {
             <div
               className='w-12 h-12 rounded-full flex items-center justify-center mr-4 flex-shrink-0'
               style={{
-                background: `linear-gradient(135deg, ${darkMode ? colors.darkBlue : colors.shakespeare}, ${darkMode ? colors.blueAccent : colors.pictonBlue})`,
+                background: `linear-gradient(135deg, ${darkMode ? BRAND_COLORS.darkBlueVariant : BRAND_COLORS.shakespeareVariant}, ${darkMode ? BRAND_COLORS.blueAccentVariant : BRAND_COLORS.pictonBlue})`,
                 boxShadow: '0 4px 10px rgba(0,0,0,0.2)'
               }}
             >

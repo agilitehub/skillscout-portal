@@ -22,6 +22,7 @@ export const BRAND_COLORS = {
   navyMedium: '#1A2633', // Medium navy
   navyLight: '#2A3D4F', // Light navy
   darkTeal: '#1E3A52', // Dark teal matching logo
+  logoNavy: '#0D2035', // Logo navy - specific brand navy
 
   // Emerald/Forest green palette
   emeraldPrimary: '#059669', // Primary emerald green
@@ -33,6 +34,55 @@ export const BRAND_COLORS = {
   mintGreen: '#00D8A3', // Mint green
   tealGreen: '#14B8A6', // Teal green
   darkForest: '#064E3B', // Dark forest green
+  tealVariant: '#0f766e', // Teal variant for gradients
+  lightGreen: '#A7F3D0', // Light green accent
+
+  // Blue variants for gradients and UI
+  blueVariant: '#3b82f6', // Blue variant
+  lightBlueVariant: '#60a5fa', // Light blue variant
+
+  // Grayscale palette
+  white: '#ffffff', // Pure white
+  black: '#000000', // Pure black
+  darkGray: '#333333', // Dark gray
+  mediumGray: '#505050', // Medium gray
+  lightGray: '#e0e0e0', // Light gray
+  borderGray: '#d9d9d9', // Border gray
+  lightBorderGray: '#e5e7eb', // Light border gray
+  offWhite: '#f9fafb', // Off white
+  lightestGray: '#f8fafc', // Lightest gray
+
+  // Slate palette for dark themes
+  mediumSlate: '#4b5563', // Medium slate
+  darkSlate: '#6b7280', // Dark slate
+  darkSlate2: '#334155', // Dark slate variant
+
+  // Additional blue variants
+  mediumBlue: '#2563eb', // Medium blue
+  darkBlueVariant: '#0E4173', // Dark blue variant
+  blueAccentVariant: '#2C5282', // Blue accent variant
+  shakespeareVariant: '#3FB1D4', // Shakespeare variant
+  lightBlueAccent: '#90CAF9', // Light blue accent
+  veryLightBlue: '#E0F2FE', // Very light blue background
+  lightBlueBorder: '#BAE6FD', // Light blue border
+
+  // Additional dark theme colors
+  veryDarkSlate: '#0F172A', // Very dark slate
+  darkSlateAlt: '#1F2937', // Dark slate alternative
+  lightSlateBackground: '#F1F5F9', // Light slate background
+  lightestSlateBackground: '#F8FAFC', // Lightest slate background
+
+  // Additional accent colors
+  gold: '#FFD700', // Gold for active states
+  logoGoldAccent: '#DCAC55', // Logo gold accent
+  diSerria: '#DCAA55', // DiSerria gold
+  lightYellow: '#FEF3C7', // Light yellow background
+  darkYellow: '#92400E', // Dark yellow/orange text
+  lightRed: '#F87171', // Light red text
+
+  // Additional grayscale variants
+  lightestGrayAlt: '#f3f4f6', // Alternative lightest gray
+  lightGrayAlt: '#f1f1f1', // Alternative light gray
 
   // Supporting colors
   botticelli: '#B8D4E3', // Light blue-gray

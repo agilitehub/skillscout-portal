@@ -6,6 +6,7 @@ import { Button } from '../../../core/components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPaperPlane, faPaperclip, faCloudUploadAlt, faSpinner } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../core/context/ThemeContext'
+import { BRAND_COLORS, DARK_THEME } from '../../../core/theme/colors'
 
 const { TextArea } = Input
 
@@ -33,14 +34,6 @@ const ChatInput = React.memo(
     const [dragError, setDragError] = React.useState(null)
     const [uploadProgress, setUploadProgress] = React.useState({})
     const fileInputRef = useRef(null)
-
-    // Internal color palette for Skill Scout
-    const colors = {
-      shakespeare: '#4A90A4',
-      pictonBlue: '#5BA3D4',
-      seaGreen: '#16A085',
-      emeraldPrimary: '#059669'
-    }
 
     // Handle sending message
     const handleSendMessage = useCallback(() => {
@@ -268,7 +261,11 @@ const ChatInput = React.memo(
               : darkMode
                 ? '#1F2937'
                 : '#ffffff',
-            borderColor: isDragOver ? colors.emeraldPrimary : darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'
+            borderColor: isDragOver
+              ? BRAND_COLORS.emeraldPrimary
+              : darkMode
+                ? 'rgba(255,255,255,0.1)'
+                : 'rgba(0,0,0,0.1)'
           }}
           onDragEnter={handleDragEnter}
           onDragLeave={handleDragLeave}
@@ -299,8 +296,8 @@ const ChatInput = React.memo(
                 status='active'
                 showInfo={false}
                 strokeColor={{
-                  '0%': colors.shakespeare,
-                  '100%': colors.emeraldPrimary
+                  '0%': BRAND_COLORS.shakespeare,
+                  '100%': BRAND_COLORS.emeraldPrimary
                 }}
                 trailColor={darkMode ? '#374151' : '#f3f4f6'}
                 size='small'
@@ -320,8 +317,8 @@ const ChatInput = React.memo(
                       size='small'
                       showInfo={false}
                       strokeColor={{
-                        '0%': colors.shakespeare,
-                        '100%': colors.emeraldPrimary
+                        '0%': BRAND_COLORS.shakespeare,
+                        '100%': BRAND_COLORS.emeraldPrimary
                       }}
                       trailColor={darkMode ? '#374151' : '#f3f4f6'}
                     />
@@ -346,7 +343,7 @@ const ChatInput = React.memo(
                 minHeight: '44px',
                 width: '44px',
                 padding: '0',
-                color: darkMode ? colors.shakespeare : colors.seaGreen,
+                color: darkMode ? BRAND_COLORS.shakespeare : BRAND_COLORS.seaGreen,
                 opacity: isDisabled ? 0.5 : 1
               }}
               icon={
@@ -396,7 +393,7 @@ const ChatInput = React.memo(
               disabled={!isInputValid}
               className='flex items-center justify-center h-auto border-0 flex-shrink-0 transition-all duration-200'
               style={{
-                background: `linear-gradient(to right, ${colors.emeraldPrimary}, ${colors.seaGreen})`,
+                background: `linear-gradient(to right, ${BRAND_COLORS.emeraldPrimary}, ${BRAND_COLORS.seaGreen})`,
                 borderRadius: '8px',
                 minHeight: '44px',
                 width: '44px',
@@ -523,7 +520,7 @@ const ChatInput = React.memo(
                     }`}
                     style={{
                       color: streamingEnabled
-                        ? colors.emeraldPrimary
+                        ? BRAND_COLORS.emeraldPrimary
                         : darkMode
                           ? 'rgba(229, 231, 235, 0.6)'
                           : 'rgba(75, 85, 99, 0.6)'

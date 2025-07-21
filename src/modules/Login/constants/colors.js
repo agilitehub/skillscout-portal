@@ -13,7 +13,7 @@ export const LOGIN_COLORS = {
   emeraldPrimary: '#059669',
   emeraldLight: '#10B981',
   emeraldAccent: '#047857',
-  
+
   // Accent Colors
   forestGreen: '#065F46',
   seaGreen: '#16A085',
@@ -24,7 +24,7 @@ export const LOGIN_COLORS = {
   pictonBlue: '#5BA3D4',
   viking: '#4A90A4',
   diSerria: '#059669',
-  
+
   // Theme Colors
   navyDark: '#0F1419',
   darkBlue: '#1E3A52',
@@ -90,4 +90,4 @@ export const FEATURED_PROJECTS_CONFIG = [
     description: 'Stay tuned for more exciting projects joining the ecosystem',
     gradientColors: [LOGIN_COLORS.shakespeare, LOGIN_COLORS.pictonBlue]
   }
-] 
+]

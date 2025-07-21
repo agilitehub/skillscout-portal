@@ -14,6 +14,7 @@ import {
   faClock
 } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../core/context/ThemeContext'
+import { BRAND_COLORS, DARK_THEME } from '../../../core/theme/colors'
 
 const { Text, Paragraph } = Typography
 
@@ -204,7 +205,7 @@ const renderMarkdown = (text, textColor) => {
               target='_blank'
               rel='noopener noreferrer'
               style={{
-                color: textColor === '#ffffff' ? '#90CAF9' : '#2563EB',
+                color: textColor === BRAND_COLORS.white ? BRAND_COLORS.lightBlueAccent : BRAND_COLORS.mediumBlue,
                 textDecoration: 'underline'
               }}
             >
@@ -307,16 +308,6 @@ const ChatMessages = React.memo(
     const prevScrollHeightRef = useRef(0)
     const isRestoringScrollRef = useRef(false)
     const prevIsLoadingHistoricalRef = useRef(false)
-
-    // Internal color palette for Skill Scout
-    const colors = {
-      darkBlue: '#1E3A52',
-      shakespeare: '#4A90A4',
-      pictonBlue: '#5BA3D4',
-      seaGreen: '#16A085',
-      emeraldPrimary: '#059669',
-      tealGreen: '#14B8A6'
-    }
 
     // Handle scroll detection for showing load more button
     const handleScroll = useCallback(
@@ -491,9 +482,9 @@ const ChatMessages = React.memo(
           case 'user':
             return {
               justifySelf: 'end',
-              backgroundColor: darkMode ? '#3B82F6' : '#3B82F6',
-              color: '#ffffff',
-              borderColor: darkMode ? '#2563EB' : '#2563EB'
+              backgroundColor: darkMode ? BRAND_COLORS.blueVariant : BRAND_COLORS.blueVariant,
+              color: BRAND_COLORS.white,
+              borderColor: darkMode ? BRAND_COLORS.mediumBlue : BRAND_COLORS.mediumBlue
             }
           case 'assistant':
           case 'bot':
@@ -537,28 +528,28 @@ const ChatMessages = React.memo(
                 size='small'
                 icon={<FontAwesomeIcon icon={faRobot} />}
                 style={{
-                  backgroundColor: colors.emeraldPrimary
+                  backgroundColor: BRAND_COLORS.emeraldPrimary
                 }}
               />
               <div className='flex items-center space-x-1'>
                 <div
                   className='rounded-full h-2 w-2 animate-pulse'
                   style={{
-                    backgroundColor: colors.emeraldPrimary,
+                    backgroundColor: BRAND_COLORS.emeraldPrimary,
                     animationDelay: '0ms'
                   }}
                 />
                 <div
                   className='rounded-full h-2 w-2 animate-pulse'
                   style={{
-                    backgroundColor: colors.emeraldPrimary,
+                    backgroundColor: BRAND_COLORS.emeraldPrimary,
                     animationDelay: '300ms'
                   }}
                 />
                 <div
                   className='rounded-full h-2 w-2 animate-pulse'
                   style={{
-                    backgroundColor: colors.emeraldPrimary,
+                    backgroundColor: BRAND_COLORS.emeraldPrimary,
                     animationDelay: '600ms'
                   }}
                 />
@@ -582,12 +573,12 @@ const ChatMessages = React.memo(
       <div
         className='h-full overflow-y-auto p-2 md:p-4 flex flex-col'
         style={{
-          background: darkMode ? '#0F172A' : '#F9FAFB',
+          background: darkMode ? BRAND_COLORS.veryDarkSlate : BRAND_COLORS.offWhite,
           backgroundImage: darkMode
             ? 'radial-gradient(circle at 25% 25%, rgba(42, 67, 101, 0.05) 0%, transparent 50%), radial-gradient(circle at 75% 75%, rgba(66, 99, 149, 0.05) 0%, transparent 50%)'
             : 'radial-gradient(circle at 25% 25%, rgba(49, 130, 206, 0.05) 0%, transparent 50%), radial-gradient(circle at 75% 75%, rgba(176, 153, 86, 0.05) 0%, transparent 50%)',
           scrollbarWidth: 'thin',
-          scrollbarColor: `${colors.shakespeare} ${darkMode ? '#374151' : '#f1f1f1'}`
+          scrollbarColor: `${BRAND_COLORS.shakespeare} ${darkMode ? DARK_THEME.border.primary : BRAND_COLORS.lightGrayAlt}`
         }}
         ref={messagesContainerRef}
       >
@@ -610,7 +601,7 @@ const ChatMessages = React.memo(
                 style={{
                   background: isLoadingMore
                     ? undefined
-                    : `linear-gradient(135deg, ${colors.shakespeare}, ${colors.pictonBlue})`
+                    : `linear-gradient(135deg, ${BRAND_COLORS.shakespeare}, ${BRAND_COLORS.pictonBlue})`
                 }}
               >
                 {isLoadingMore ? (
@@ -657,7 +648,7 @@ const ChatMessages = React.memo(
                         size='small'
                         icon={<FontAwesomeIcon icon={faRobot} />}
                         style={{
-                          backgroundColor: colors.emeraldPrimary,
+                          backgroundColor: BRAND_COLORS.emeraldPrimary,
                           marginRight: '8px'
                         }}
                       />
@@ -680,7 +671,7 @@ const ChatMessages = React.memo(
                         size='small'
                         icon={<FontAwesomeIcon icon={faUser} />}
                         style={{
-                          backgroundColor: colors.shakespeare,
+                          backgroundColor: BRAND_COLORS.shakespeare,
                           marginRight: '8px'
                         }}
                       />

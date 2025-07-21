@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { Form, Input, Select, Card, message, Space } from 'antd'
 import { Button } from '../../../core/components'
+import { BRAND_COLORS, LIGHT_THEME, DARK_THEME } from '../../../core/theme/colors'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faArrowLeft,
@@ -225,54 +226,54 @@ const CreateJobPosting = React.memo(() => {
           <style>
             {`
               .dark-form .ant-form-item-label > label {
-                color: #E5E7EB !important;
+                color: ${BRAND_COLORS.lightBorderGray} !important;
               }
               .dark-form .ant-input {
-                background-color: #4B5563 !important;
-                border-color: #6B7280 !important;
-                color: #F9FAFB !important;
+                background-color: ${BRAND_COLORS.mediumSlate} !important;
+                border-color: ${BRAND_COLORS.darkSlate} !important;
+                color: ${BRAND_COLORS.offWhite} !important;
               }
               .dark-form .ant-input:focus {
-                border-color: #059669 !important;
+                border-color: ${BRAND_COLORS.emeraldPrimary} !important;
                 box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
               }
               .dark-form .ant-input::placeholder {
-                color: #9CA3AF !important;
+                color: ${LIGHT_THEME.text.tertiary} !important;
               }
               .dark-form .ant-select-selector {
-                background-color: #4B5563 !important;
-                border-color: #6B7280 !important;
-                color: #F9FAFB !important;
+                background-color: ${BRAND_COLORS.mediumSlate} !important;
+                border-color: ${BRAND_COLORS.darkSlate} !important;
+                color: ${BRAND_COLORS.offWhite} !important;
               }
               .dark-form .ant-select-focused .ant-select-selector {
-                border-color: #059669 !important;
+                border-color: ${BRAND_COLORS.emeraldPrimary} !important;
                 box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
               }
               .dark-form .ant-select-selection-placeholder {
-                color: #9CA3AF !important;
+                color: ${LIGHT_THEME.text.tertiary} !important;
               }
               .dark-form .ant-select-selection-item {
-                color: #F9FAFB !important;
+                color: ${BRAND_COLORS.offWhite} !important;
               }
               .dark-form .ant-input-number {
-                background-color: #4B5563 !important;
-                border-color: #6B7280 !important;
-                color: #F9FAFB !important;
+                background-color: ${BRAND_COLORS.mediumSlate} !important;
+                border-color: ${BRAND_COLORS.darkSlate} !important;
+                color: ${BRAND_COLORS.offWhite} !important;
               }
               .dark-form .ant-input-number:focus {
-                border-color: #059669 !important;
+                border-color: ${BRAND_COLORS.emeraldPrimary} !important;
                 box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
               }
               .dark-form .ant-select-multiple .ant-select-selection-item {
-                background-color: #374151 !important;
-                border-color: #6B7280 !important;
-                color: #F9FAFB !important;
+                background-color: ${DARK_THEME.border.primary} !important;
+                border-color: ${BRAND_COLORS.darkSlate} !important;
+                color: ${BRAND_COLORS.offWhite} !important;
               }
               .dark-form .ant-select-multiple .ant-select-selection-item-remove {
-                color: #9CA3AF !important;
+                color: ${LIGHT_THEME.text.tertiary} !important;
               }
               .dark-form .ant-select-multiple .ant-select-selection-item-remove:hover {
-                color: #F9FAFB !important;
+                color: ${BRAND_COLORS.offWhite} !important;
               }
             `}
           </style>
@@ -296,14 +297,14 @@ const CreateJobPosting = React.memo(() => {
               className={`${darkMode ? 'border-teal-500/30' : 'border-blue-200'} h-fit shadow-lg`}
               headStyle={{
                 background: darkMode
-                  ? 'linear-gradient(135deg, #0f766e, #14b8a6)'
-                  : 'linear-gradient(135deg, #3b82f6, #60a5fa)',
+                  ? `linear-gradient(135deg, ${BRAND_COLORS.tealVariant}, ${BRAND_COLORS.tealGreen})`
+                  : `linear-gradient(135deg, ${BRAND_COLORS.blueVariant}, ${BRAND_COLORS.lightBlueVariant})`,
                 borderBottom: 'none',
-                color: '#ffffff'
+                color: BRAND_COLORS.white
               }}
               bodyStyle={{
-                backgroundColor: darkMode ? '#334155' : '#f8fafc',
-                borderTop: `3px solid ${darkMode ? '#14b8a6' : '#2563eb'}`
+                backgroundColor: darkMode ? BRAND_COLORS.darkSlate2 : BRAND_COLORS.lightestGray,
+                borderTop: `3px solid ${darkMode ? BRAND_COLORS.tealGreen : BRAND_COLORS.mediumBlue}`
               }}
             >
               <div className='space-y-4'>
@@ -403,14 +404,14 @@ const CreateJobPosting = React.memo(() => {
               className={`${darkMode ? 'border-teal-500/30' : 'border-blue-200'} h-fit shadow-lg`}
               headStyle={{
                 background: darkMode
-                  ? 'linear-gradient(135deg, #0f766e, #14b8a6)'
-                  : 'linear-gradient(135deg, #3b82f6, #60a5fa)',
+                  ? `linear-gradient(135deg, ${BRAND_COLORS.tealVariant}, ${BRAND_COLORS.tealGreen})`
+                  : `linear-gradient(135deg, ${BRAND_COLORS.blueVariant}, ${BRAND_COLORS.lightBlueVariant})`,
                 borderBottom: 'none',
-                color: '#ffffff'
+                color: BRAND_COLORS.white
               }}
               bodyStyle={{
-                backgroundColor: darkMode ? '#334155' : '#f8fafc',
-                borderTop: `3px solid ${darkMode ? '#14b8a6' : '#2563eb'}`
+                backgroundColor: darkMode ? BRAND_COLORS.darkSlate2 : BRAND_COLORS.lightestGray,
+                borderTop: `3px solid ${darkMode ? BRAND_COLORS.tealGreen : BRAND_COLORS.mediumBlue}`
               }}
             >
               <div className='space-y-4'>
@@ -535,14 +536,14 @@ const CreateJobPosting = React.memo(() => {
               className={`${darkMode ? 'border-teal-500/30' : 'border-blue-200'} h-fit shadow-lg`}
               headStyle={{
                 background: darkMode
-                  ? 'linear-gradient(135deg, #0f766e, #14b8a6)'
-                  : 'linear-gradient(135deg, #3b82f6, #60a5fa)',
+                  ? `linear-gradient(135deg, ${BRAND_COLORS.tealVariant}, ${BRAND_COLORS.tealGreen})`
+                  : `linear-gradient(135deg, ${BRAND_COLORS.blueVariant}, ${BRAND_COLORS.lightBlueVariant})`,
                 borderBottom: 'none',
-                color: '#ffffff'
+                color: BRAND_COLORS.white
               }}
               bodyStyle={{
-                backgroundColor: darkMode ? '#334155' : '#f8fafc',
-                borderTop: `3px solid ${darkMode ? '#14b8a6' : '#2563eb'}`
+                backgroundColor: darkMode ? BRAND_COLORS.darkSlate2 : BRAND_COLORS.lightestGray,
+                borderTop: `3px solid ${darkMode ? BRAND_COLORS.tealGreen : BRAND_COLORS.mediumBlue}`
               }}
             >
               <div className='space-y-4'>
@@ -656,7 +657,7 @@ const CreateJobPosting = React.memo(() => {
                       className={`mb-3 ${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50'}`}
                       bodyStyle={{
                         padding: '12px',
-                        backgroundColor: darkMode ? '#374151' : '#f9fafb'
+                        backgroundColor: darkMode ? DARK_THEME.border.primary : BRAND_COLORS.offWhite
                       }}
                     >
                       <div className='space-y-3'>

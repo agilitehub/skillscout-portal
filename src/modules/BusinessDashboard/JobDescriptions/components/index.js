@@ -7,6 +7,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus, faUsers, faCalendarAlt, faClipboardCheck, faFileText } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../../core/context/ThemeContext'
+import { BRAND_COLORS } from '../../../../core/theme/colors'
 import BusinessSidebar from '../../components/BusinessSidebar'
 import { getAllJobDescriptions, deleteJobDescription } from '../utils/controller'
 import TableView from '../../../../core/components/view-components/table-view/TableView'
@@ -249,8 +250,8 @@ const JobDescriptions = React.memo(({ user }) => {
             className={`rounded-lg mb-6 px-6 py-4 shadow-lg ${darkMode ? 'bg-gray-800 border border-gray-700' : ''}`}
             style={{
               background: darkMode
-                ? 'linear-gradient(135deg, #065f46 0%, #047857 50%, #059669 100%)'
-                : 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
+                ? `linear-gradient(135deg, ${BRAND_COLORS.forestGreen} 0%, ${BRAND_COLORS.emeraldAccent} 50%, ${BRAND_COLORS.emeraldPrimary} 100%)`
+                : `linear-gradient(135deg, ${BRAND_COLORS.emeraldLight} 0%, ${BRAND_COLORS.emeraldPrimary} 100%)`
             }}
           >
             <div className='flex items-center'>

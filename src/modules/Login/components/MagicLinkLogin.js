@@ -6,6 +6,7 @@ import { Button } from '../../../core/components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEnvelope, faCheckCircle, faSpinner } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../core/context/ThemeContext'
+import { BRAND_COLORS } from '../../../core/theme/colors'
 
 /**
  * Magic Link Login Component
@@ -19,20 +20,6 @@ const MagicLinkLogin = React.memo(({ onLogin, loading }) => {
   const [email, setEmail] = useState('')
   const [error, setError] = useState(null)
   const { darkMode } = useTheme()
-
-  // Color palette - Skill Scout blue-to-green balance
-  const colors = {
-    darkBlue: '#1E3A52',
-    shakespeare: '#4A90A4',
-    pictonBlue: '#5BA3D4',
-    toreaBay: '#2E5984',
-    seaGreen: '#16A085',
-    emeraldPrimary: '#059669',
-    emeraldBright: '#34D399',
-    tealGreen: '#14B8A6',
-    mintGreen: '#00D8A3',
-    forestGreen: '#065F46'
-  }
 
   // Handle form submission
   const handleSubmit = useCallback(
@@ -120,7 +107,11 @@ const MagicLinkLogin = React.memo(({ onLogin, loading }) => {
           }`}
         >
           <div className='text-center'>
-            <FontAwesomeIcon icon={faCheckCircle} className='text-4xl mb-4' style={{ color: colors.emeraldPrimary }} />
+            <FontAwesomeIcon
+              icon={faCheckCircle}
+              className='text-4xl mb-4'
+              style={{ color: BRAND_COLORS.emeraldPrimary }}
+            />
             <h3 className={`text-lg font-semibold mb-2 ${darkMode ? 'text-white' : 'text-gray-800'}`}>
               Check Your Email
             </h3>
@@ -138,7 +129,7 @@ const MagicLinkLogin = React.memo(({ onLogin, loading }) => {
                 disabled={loading}
                 className='w-full'
                 style={{
-                  background: `linear-gradient(135deg, ${colors.pictonBlue}, ${colors.seaGreen})`,
+                  background: `linear-gradient(135deg, ${BRAND_COLORS.pictonBlue}, ${BRAND_COLORS.seaGreen})`,
                   border: 'none'
                 }}
               >
@@ -159,7 +150,7 @@ const MagicLinkLogin = React.memo(({ onLogin, loading }) => {
                 onClick={handleReset}
                 className='w-full'
                 style={{
-                  border: darkMode ? '1px solid rgba(255,255,255,0.3)' : '1px solid #d9d9d9',
+                  border: darkMode ? '1px solid rgba(255,255,255,0.3)' : `1px solid ${BRAND_COLORS.borderGray}`,
                   color: darkMode ? 'white' : 'inherit',
                   backgroundColor: darkMode ? 'rgba(255,255,255,0.1)' : 'white'
                 }}
@@ -221,11 +212,11 @@ const MagicLinkLogin = React.memo(({ onLogin, loading }) => {
             className='h-12 font-medium text-white transition-all duration-300 hover:shadow-lg border-0 hover:scale-105 transform'
             style={{
               background: darkMode
-                ? `linear-gradient(135deg, ${colors.darkBlue} 0%, ${colors.shakespeare} 35%, ${colors.emeraldPrimary} 70%, ${colors.forestGreen} 100%)`
-                : `linear-gradient(135deg, ${colors.pictonBlue} 0%, ${colors.shakespeare} 25%, ${colors.seaGreen} 60%, ${colors.emeraldPrimary} 100%)`,
+                ? `linear-gradient(135deg, ${BRAND_COLORS.darkBlue} 0%, ${BRAND_COLORS.shakespeare} 35%, ${BRAND_COLORS.emeraldPrimary} 70%, ${BRAND_COLORS.forestGreen} 100%)`
+                : `linear-gradient(135deg, ${BRAND_COLORS.pictonBlue} 0%, ${BRAND_COLORS.shakespeare} 25%, ${BRAND_COLORS.seaGreen} 60%, ${BRAND_COLORS.emeraldPrimary} 100%)`,
               boxShadow: darkMode
-                ? `0 6px 20px 0 ${colors.shakespeare}40, 0 2px 6px 0 ${colors.emeraldPrimary}30`
-                : `0 6px 20px 0 ${colors.pictonBlue}40, 0 2px 6px 0 ${colors.seaGreen}20`
+                ? `0 6px 20px 0 ${BRAND_COLORS.shakespeare}40, 0 2px 6px 0 ${BRAND_COLORS.emeraldPrimary}30`
+                : `0 6px 20px 0 ${BRAND_COLORS.pictonBlue}40, 0 2px 6px 0 ${BRAND_COLORS.seaGreen}20`
             }}
           >
             {loading ? (
