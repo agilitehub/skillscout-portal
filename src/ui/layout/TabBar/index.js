@@ -1,6 +1,6 @@
 import React from 'react'
 import { useTabs } from '../../../ui/TabContext'
-import ReusableTabBar from '../../../ui/components/tab-bar'
+import ReusableTabBar from '../../../core/components/tab-bar/TabBar'
 
 /**
  * TabBar component that displays the currently open tabs in the application
