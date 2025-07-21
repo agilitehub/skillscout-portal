@@ -1,7 +1,47 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Form, Radio } from 'antd'
+import { useTheme } from '../../../context/ThemeContext'
 import './styles.css'
+
+/**
+ * Helper function to merge theme-aware styling with custom styling
+ * @param {boolean} darkMode - Whether dark mode is active
+ * @param {Object} customStyle - Custom style object provided by user
+ * @returns {Object} Merged style object
+ */
+const getThemeAwareStyle = (darkMode, customStyle = {}) => {
+  const themeStyle = {
+    backgroundColor: darkMode ? '#374151' : '#ffffff',
+    borderColor: darkMode ? '#6b7280' : '#d1d5db',
+    color: darkMode ? '#ffffff' : '#111827',
+    fontSize: '14px',
+    ...customStyle // Custom styling overrides theme defaults
+  }
+  return themeStyle
+}
+
+/**
+ * Helper function to get theme-aware class names for labels
+ * @param {boolean} darkMode - Whether dark mode is active
+ * @param {string} customLabelClasses - Custom classes provided by user
+ * @returns {string} Combined class names
+ */
+const getThemeAwareLabelClasses = (darkMode, customLabelClasses = '') => {
+  const defaultClasses = `font-medium ${darkMode ? 'text-emerald-100' : 'text-emerald-800'}`
+  return `${defaultClasses} ${customLabelClasses}`.trim()
+}
+
+/**
+ * Helper function to get theme-aware class names for radio groups
+ * @param {boolean} darkMode - Whether dark mode is active
+ * @param {string} customRadioClasses - Custom classes provided by user
+ * @returns {string} Combined class names
+ */
+const getThemeAwareRadioClasses = (darkMode, customRadioClasses = '') => {
+  const defaultClasses = darkMode ? 'dark-input' : 'light-input'
+  return `${defaultClasses} ${customRadioClasses}`.trim()
+}
 
 /**
  * A reusable form radio component that wraps Ant Design's Form.Item and Radio.Group
@@ -15,6 +55,9 @@ import './styles.css'
  * @param {boolean} props.optionType - Type of radio options ('default' or 'button')
  * @param {Object} props.radioProps - Additional props to pass to the Radio.Group component
  * @param {Object} props.formItemProps - Additional props to pass to the Form.Item component
+ * @param {Object} props.customStyle - Custom styling to override theme defaults
+ * @param {string} props.labelClasses - Custom class names for the label
+ * @param {string} props.radioClasses - Custom class names for the radio group
  * @returns {React.ReactElement} FormRadio component
  */
 const FormRadio = ({
@@ -25,11 +68,35 @@ const FormRadio = ({
   buttonStyle = 'outline',
   optionType = 'default',
   radioProps = {},
-  formItemProps = {}
+  formItemProps = {},
+  customStyle = {},
+  labelClasses = '',
+  radioClasses = ''
 }) => {
+  const { darkMode } = useTheme()
+
+  // Merge theme-aware styling with any existing style from radioProps
+  const mergedStyle = getThemeAwareStyle(darkMode, {
+    ...customStyle,
+    ...radioProps.style
+  })
+
+  // Get theme-aware class names
+  const labelClassNames = getThemeAwareLabelClasses(darkMode, labelClasses)
+  const radioClassNames = getThemeAwareRadioClasses(darkMode, radioClasses)
+
+  // Create themed label component
+  const themedLabel = label ? <span className={labelClassNames}>{label}</span> : undefined
+
   return (
-    <Form.Item label={label} name={name} rules={rules} {...formItemProps}>
-      <Radio.Group buttonStyle={buttonStyle} optionType={optionType} {...radioProps}>
+    <Form.Item label={themedLabel} name={name} rules={rules} {...formItemProps}>
+      <Radio.Group
+        buttonStyle={buttonStyle}
+        optionType={optionType}
+        {...radioProps}
+        className={`${radioClassNames} ${radioProps.className || ''}`.trim()}
+        style={mergedStyle}
+      >
         {options.map((option) =>
           optionType === 'button' ? (
             <Radio.Button key={option.value} value={option.value}>
@@ -59,7 +126,10 @@ FormRadio.propTypes = {
   buttonStyle: PropTypes.oneOf(['outline', 'solid']),
   optionType: PropTypes.oneOf(['default', 'button']),
   radioProps: PropTypes.object,
-  formItemProps: PropTypes.object
+  formItemProps: PropTypes.object,
+  customStyle: PropTypes.object,
+  labelClasses: PropTypes.string,
+  radioClasses: PropTypes.string
 }
 
 export default FormRadio
