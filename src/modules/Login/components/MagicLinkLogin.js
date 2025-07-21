@@ -4,7 +4,7 @@ import React, { useState, useCallback } from 'react'
 import { Form, Input, Button, message, Alert } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEnvelope, faCheckCircle, faSpinner } from '@fortawesome/free-solid-svg-icons'
-import { useTheme } from '../../../core/ThemeContext'
+import { useTheme } from '../../../core/context/ThemeContext'
 
 /**
  * Magic Link Login Component

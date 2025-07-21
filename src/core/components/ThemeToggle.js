@@ -2,7 +2,7 @@
 // Frontend Instructions Rule Applied!
 import React, { memo, useMemo } from 'react'
 import PropTypes from 'prop-types'
-import { useTheme } from '../ThemeContext'
+import { useTheme } from '../context/ThemeContext'
 import { BRAND_COLORS } from '../config/colors'
 
 // Define transitions locally since styles.js seems to be unavailable
@@ -79,10 +79,12 @@ const ThemeToggle = ({ className = '' }) => {
       <div className='absolute inset-0 rounded-full overflow-hidden'>
         {/* Night Background */}
         <div className={`absolute inset-0 ${TRANSITIONS.MEDIUM} ${darkMode ? 'translate-x-0' : 'translate-x-full'}`}>
-          <div className='absolute inset-0'
-            style={{ 
-              background: `linear-gradient(to right, ${BRAND_COLORS.navyDark}, ${BRAND_COLORS.darkBlue})` 
-            }}>
+          <div
+            className='absolute inset-0'
+            style={{
+              background: `linear-gradient(to right, ${BRAND_COLORS.navyDark}, ${BRAND_COLORS.darkBlue})`
+            }}
+          >
             {/* Stars - only visible in dark mode */}
             <div className={`absolute inset-0 ${TRANSITIONS.MEDIUM} ${darkMode ? 'opacity-100' : 'opacity-0'}`}>
               {starElements}
@@ -91,10 +93,12 @@ const ThemeToggle = ({ className = '' }) => {
         </div>
         {/* Day Background */}
         <div className={`absolute inset-0 ${TRANSITIONS.MEDIUM} ${darkMode ? 'translate-x-full' : 'translate-x-0'}`}>
-          <div className='absolute inset-0'
-              style={{ 
-                background: `linear-gradient(to right, ${BRAND_COLORS.shakespeare}, ${BRAND_COLORS.pictonBlue})`
-              }}></div>
+          <div
+            className='absolute inset-0'
+            style={{
+              background: `linear-gradient(to right, ${BRAND_COLORS.shakespeare}, ${BRAND_COLORS.pictonBlue})`
+            }}
+          ></div>
           {/* Clouds - only visible in light mode */}
           <div className={`absolute inset-0 ${TRANSITIONS.MEDIUM} ${darkMode ? 'opacity-0' : 'opacity-30'}`}>
             <div className='absolute top-1 left-2 w-4 h-2 bg-white rounded-full'></div>
@@ -112,7 +116,7 @@ const ThemeToggle = ({ className = '' }) => {
       {/* Toggle Handle */}
       <div
         className={`relative z-10 w-6 h-6 rounded-full shadow-md transform ${TRANSITIONS.MEDIUM} flex items-center justify-center`}
-        style={{ 
+        style={{
           backgroundColor: darkMode ? BRAND_COLORS.blueHighlight : 'white',
           borderWidth: darkMode ? '1px' : '0',
           borderStyle: 'solid',
@@ -132,8 +136,10 @@ const ThemeToggle = ({ className = '' }) => {
           className={`absolute inset-0 flex items-center justify-center ${TRANSITIONS.MEDIUM} ${darkMode ? 'opacity-100' : 'opacity-0'}`}
         >
           <div className='w-3.5 h-3.5 bg-white rounded-full'></div>
-          <div className='absolute top-1 right-1.5 w-2 h-2 rounded-full' 
-               style={{ backgroundColor: BRAND_COLORS.logoGoldAccent }}></div>
+          <div
+            className='absolute top-1 right-1.5 w-2 h-2 rounded-full'
+            style={{ backgroundColor: BRAND_COLORS.logoGoldAccent }}
+          ></div>
         </div>
       </div>
     </button>

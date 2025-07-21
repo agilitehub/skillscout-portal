@@ -2,7 +2,7 @@
 // Frontend Instructions Rule Applied!
 import React, { useState, useCallback, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useTheme } from '../../../../core/ThemeContext'
+import { useTheme } from '../../../../core/context/ThemeContext'
 import BusinessSidebar from '../../components/BusinessSidebar'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faColumns, faArrowLeft, faPlus } from '@fortawesome/free-solid-svg-icons'

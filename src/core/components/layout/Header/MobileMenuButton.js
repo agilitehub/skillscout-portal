@@ -1,7 +1,7 @@
 import React from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBars, faTimes } from '@fortawesome/free-solid-svg-icons'
-import { useTheme } from '../../../ThemeContext'
+import { useTheme } from '../../../context/ThemeContext'
 
 // Color palette from the image
 const colors = {

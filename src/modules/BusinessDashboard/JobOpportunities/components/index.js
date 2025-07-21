@@ -12,7 +12,7 @@ import {
   faCalendarAlt,
   faBuilding
 } from '@fortawesome/free-solid-svg-icons'
-import { useTheme } from '../../../../core/ThemeContext'
+import { useTheme } from '../../../../core/context/ThemeContext'
 import { useNavigate } from 'react-router-dom'
 import BusinessSidebar from '../../components/BusinessSidebar'
 import { getAllJobOpportunities, deleteJobOpportunity } from '../utils/controller'

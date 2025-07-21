@@ -11,8 +11,8 @@ import CreateJobListing from './modules/BusinessDashboard/JobOpportunities/compo
 import Lookups from './modules/BusinessDashboard/Lookups/components'
 import Pipeline from './modules/BusinessDashboard/Pipeline/components'
 import Header from './core/components/layout/Header'
-import { useAuth } from './core/AuthContext'
-import { useTheme } from './core/ThemeContext'
+import { useAuth } from './core/context/AuthContext'
+import { useTheme } from './core/context/ThemeContext'
 
 // Layout components
 export const DashboardLayout = ({ children, user }) => {

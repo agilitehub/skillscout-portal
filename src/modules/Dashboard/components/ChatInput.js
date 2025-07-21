@@ -4,7 +4,7 @@ import React, { useRef, useCallback } from 'react'
 import { Button, Input, message, Progress } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPaperPlane, faPaperclip, faCloudUploadAlt, faSpinner } from '@fortawesome/free-solid-svg-icons'
-import { useTheme } from '../../../core/ThemeContext'
+import { useTheme } from '../../../core/context/ThemeContext'
 
 const { TextArea } = Input
 

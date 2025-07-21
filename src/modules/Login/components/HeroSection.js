@@ -4,7 +4,7 @@ import React from 'react'
 import { Typography } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faLightbulb } from '@fortawesome/free-solid-svg-icons'
-import { useTheme } from '../../../core/ThemeContext'
+import { useTheme } from '../../../core/context/ThemeContext'
 import Logo from '../../../core/components/Logo'
 import MagicLinkLogin from './MagicLinkLogin'
 

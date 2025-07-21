@@ -8,7 +8,7 @@ import {
   onAuthStateChange,
   getSession,
   isAuthenticated
-} from '../core/lib/supabase-controller'
+} from '../../core/lib/supabase-controller'
 
 /**
  * Authentication context for Supabase Magic Link authentication

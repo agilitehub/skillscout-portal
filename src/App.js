@@ -1,6 +1,6 @@
 import React from 'react'
-import { ThemeProvider } from './core/ThemeContext'
-import { AuthProvider } from './core/AuthContext'
+import { ThemeProvider } from './core/context/ThemeContext'
+import { AuthProvider } from './core/context/AuthContext'
 import { BrowserRouter as Router } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify'
 import GlobalStyles from './core/components/GlobalStyles'

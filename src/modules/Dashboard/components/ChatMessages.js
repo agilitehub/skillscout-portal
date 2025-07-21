@@ -13,7 +13,7 @@ import {
   faPaperclip,
   faClock
 } from '@fortawesome/free-solid-svg-icons'
-import { useTheme } from '../../../core/ThemeContext'
+import { useTheme } from '../../../core/context/ThemeContext'
 
 const { Text, Paragraph } = Typography
 

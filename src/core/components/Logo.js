@@ -2,7 +2,7 @@
 // Frontend Instructions Rule Applied!
 import React, { memo } from 'react'
 import PropTypes from 'prop-types'
-import { useTheme } from '../ThemeContext'
+import { useTheme } from '../context/ThemeContext'
 
 /**
  * Logo component that automatically switches between light and dark mode versions
@@ -54,7 +54,7 @@ Logo.propTypes = {
 
 Logo.defaultProps = {
   className: '',
-      alt: 'SkillScout Logo',
+  alt: 'SkillScout Logo',
   forceLight: false
 }
 

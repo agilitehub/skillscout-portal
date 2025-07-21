@@ -4,7 +4,7 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react'
 import { Modal, Spin } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronLeft } from '@fortawesome/free-solid-svg-icons'
-import { useTheme } from '../../core/ThemeContext'
+import { useTheme } from '../../core/context/ThemeContext'
 import ChatInterface from './components/ChatInterface'
 
 /**

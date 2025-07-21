@@ -16,7 +16,7 @@ import {
   faArrowLeft,
   faEdit
 } from '@fortawesome/free-solid-svg-icons'
-import { useTheme } from '../../../../core/ThemeContext'
+import { useTheme } from '../../../../core/context/ThemeContext'
 import BusinessSidebar from '../../components/BusinessSidebar'
 import {
   createJobDescription,

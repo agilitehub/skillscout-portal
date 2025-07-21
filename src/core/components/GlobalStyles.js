@@ -1,7 +1,7 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
 import { useEffect } from 'react'
-import { useTheme } from '../../core/ThemeContext'
+import { useTheme } from '../context/ThemeContext'
 
 /**
  * GlobalStyles component - Applies global styles programmatically using Tailwind classes

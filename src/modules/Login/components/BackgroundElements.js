@@ -1,7 +1,7 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
 import React from 'react'
-import { useTheme } from '../../../core/ThemeContext'
+import { useTheme } from '../../../core/context/ThemeContext'
 
 /**
  * BackgroundElements component - Swirling animated background effect

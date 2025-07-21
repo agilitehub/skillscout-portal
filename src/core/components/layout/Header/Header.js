@@ -7,8 +7,8 @@ import ThemeToggle from '../../ThemeToggle'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSignOut, faUser, faBuilding, faUserTie, faChevronDown } from '@fortawesome/free-solid-svg-icons'
 import { Dropdown, Modal, Form, Input, Button, message } from 'antd'
-import { useTheme } from '../../../ThemeContext'
-import { useAuth } from '../../../AuthContext'
+import { useTheme } from '../../../context/ThemeContext'
+import { useAuth } from '../../../context/AuthContext'
 import { BRAND_COLORS } from '../../../config/colors'
 
 /**

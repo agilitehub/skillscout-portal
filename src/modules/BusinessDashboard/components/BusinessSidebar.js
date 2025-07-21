@@ -13,7 +13,7 @@ import {
   faList,
   faColumns
 } from '@fortawesome/free-solid-svg-icons'
-import { useTheme } from '../../../core/ThemeContext'
+import { useTheme } from '../../../core/context/ThemeContext'
 
 /**
  * Business Dashboard Sidebar Navigation

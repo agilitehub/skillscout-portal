@@ -1,6 +1,6 @@
 import React from 'react'
 import Navigation from './Navigation'
-import { useTheme } from '../../../ThemeContext'
+import { useTheme } from '../../../context/ThemeContext'
 
 // Color palette from the image
 const colors = {

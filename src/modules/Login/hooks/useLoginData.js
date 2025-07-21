@@ -2,7 +2,7 @@
 // Frontend Instructions Rule Applied!
 import { useState, useMemo, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../../../core/AuthContext'
+import { useAuth } from '../../../core/context/AuthContext'
 import {
   faCoins,
   faUsers,
@@ -12,7 +12,7 @@ import {
   faDollarSign,
   faLaptop
 } from '@fortawesome/free-solid-svg-icons'
-import { useTheme } from '../../../core/ThemeContext'
+import { useTheme } from '../../../core/context/ThemeContext'
 import { LOGIN_COLORS, DARK_MODE_VARIANTS, FEATURED_PROJECTS_CONFIG } from '../constants/colors'
 
 /**

@@ -6,7 +6,7 @@ import { Card, Button, Form, Input, message, Row, Col } from 'antd'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSave, faTimes } from '@fortawesome/free-solid-svg-icons'
-import { useTheme } from '../../../../core/ThemeContext'
+import { useTheme } from '../../../../core/context/ThemeContext'
 import BusinessSidebar from '../../components/BusinessSidebar'
 import { createJobListing } from '../utils/listing-controller'
 
