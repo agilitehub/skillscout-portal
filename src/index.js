@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import './ui/styles' // Import new Tailwind-only styles
+import './core/styles' // Import new Tailwind-only styles
 import App from './App'
 import reportWebVitals from './reportWebVitals'
 

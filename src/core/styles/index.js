@@ -2,7 +2,7 @@
 // Frontend Instructions Rule Applied!
 
 // Import minimal Tailwind CSS file (only directives, no custom CSS)
-import './tailwind.css'
+import '../styles/tailwind.css'
 
 // Import the utility classes and functions for internal use
 import {
@@ -43,18 +43,18 @@ export {
 // Legacy exports for backward compatibility (deprecated - use TailwindComponents instead)
 export const TRANSITIONS = {
   FAST: 'transition-all duration-200 ease-in-out',
-  MEDIUM: 'transition-all duration-300 ease-in-out', 
+  MEDIUM: 'transition-all duration-300 ease-in-out',
   SLOW: 'transition-all duration-500 ease-in-out'
 }
 
 // Utility function to help with migration
 export const migrateClassNames = {
-  'btn': BUTTON_BASE_CLASSES,
+  btn: BUTTON_BASE_CLASSES,
   'btn-primary': getButtonClasses('primary'),
   'btn-secondary': getButtonClasses('secondary'),
   'btn-outline': getButtonClasses('outline'),
   'btn-ghost': getButtonClasses('ghost'),
-  'container': getContainerClasses('default'),
+  container: getContainerClasses('default'),
   'container-padded': getContainerClasses('padded'),
   'transition-all-fast': TRANSITION_CLASSES.fast,
   'transition-all-medium': TRANSITION_CLASSES.medium,
