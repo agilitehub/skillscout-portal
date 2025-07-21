@@ -13,6 +13,9 @@ alwaysApply: false
 - Design User Intefaces to be responsive, with emphasis on mobile browsers.
 - Always design for light and dark mode using [ThemeContext.js](mdc:src/ui/ThemeContext.js)
 - Use the already installed "recharts" module for visual reports like charts, etc.
+- For any form fields use the components in core/components/form-components/form-fields
+- For any colours use the colors in src/core/theme/colors.js
+- For any buttons use the reusable button component in src/core/components/Button.js
 
 ## This rule provides best practices when working with ReactJS specifically
 - Optimize performance using React.memo, useMemo, and useCallback
