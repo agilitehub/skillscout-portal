@@ -1,7 +1,8 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
 import React, { useMemo, useCallback } from 'react'
-import { Table, Input, Card, Button } from 'antd'
+import { Table, Input, Card } from 'antd'
+import { Button } from '../../index'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus, faMinus } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../context/ThemeContext'

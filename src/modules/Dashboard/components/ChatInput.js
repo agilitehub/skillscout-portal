@@ -1,7 +1,8 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
 import React, { useRef, useCallback } from 'react'
-import { Button, Input, message, Progress } from 'antd'
+import { Input, message, Progress } from 'antd'
+import { Button } from '../../../core/components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPaperPlane, faPaperclip, faCloudUploadAlt, faSpinner } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../core/context/ThemeContext'

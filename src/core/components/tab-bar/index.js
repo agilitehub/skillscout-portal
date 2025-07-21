@@ -1,5 +1,6 @@
 import React from 'react'
-import { Tabs, Button } from 'antd'
+import { Tabs } from 'antd'
+import { Button } from '../index'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTimes, faTimesCircle } from '@fortawesome/free-solid-svg-icons'
 import './styles.css'

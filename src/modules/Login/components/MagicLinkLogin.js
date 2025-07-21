@@ -1,7 +1,8 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
 import React, { useState, useCallback } from 'react'
-import { Form, Input, Button, message, Alert } from 'antd'
+import { Form, Input, message, Alert } from 'antd'
+import { Button } from '../../../core/components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEnvelope, faCheckCircle, faSpinner } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../core/context/ThemeContext'

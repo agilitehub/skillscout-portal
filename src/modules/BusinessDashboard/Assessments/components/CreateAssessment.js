@@ -2,7 +2,8 @@
 // Frontend Instructions Rule Applied!
 
 import React, { useState, useCallback } from 'react'
-import { Card, Button, Form, message } from 'antd'
+import { Card, Form, message } from 'antd'
+import { Button } from '../../../../core/components'
 import { useNavigate } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowLeft, faSave, faEye, faClipboardCheck } from '@fortawesome/free-solid-svg-icons'

@@ -1,7 +1,8 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
 import React, { useState, useEffect, useMemo, useCallback } from 'react'
-import { Button, Tag, message, Card } from 'antd'
+import { Tag, message, Card } from 'antd'
+import { Button } from '../../../../core/components'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus, faUsers, faCalendarAlt, faClipboardCheck, faFileText } from '@fortawesome/free-solid-svg-icons'

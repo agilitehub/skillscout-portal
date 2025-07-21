@@ -1,7 +1,8 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
 import React from 'react'
-import { Button, Space, Tooltip, Popconfirm } from 'antd'
+import { Space, Tooltip, Popconfirm } from 'antd'
+import { Button } from '../../index'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faEye,
@@ -28,27 +29,27 @@ import { useTheme } from '../../../context/ThemeContext'
 const TableActions = React.memo(({ record, actions = [], size = 'small', wrap = true }) => {
   const { darkMode } = useTheme()
 
-  // Default action configurations
+  // Default action configurations with high contrast colors for visibility
   const defaultActions = {
     view: {
       key: 'view',
       icon: faEye,
       tooltip: 'View',
-      color: 'text-blue-500 hover:text-blue-700',
+      color: darkMode ? '!text-blue-400 hover:!text-blue-300' : '!text-blue-800 hover:!text-blue-900',
       onClick: (record) => console.log('View:', record)
     },
     edit: {
       key: 'edit',
       icon: faEdit,
       tooltip: 'Edit',
-      color: 'text-green-500 hover:text-green-700',
+      color: darkMode ? '!text-green-400 hover:!text-green-300' : '!text-green-800 hover:!text-green-900',
       onClick: (record) => console.log('Edit:', record)
     },
     delete: {
       key: 'delete',
       icon: faTrash,
       tooltip: 'Delete',
-      color: 'text-red-500 hover:text-red-700',
+      color: darkMode ? '!text-red-400 hover:!text-red-300' : '!text-red-800 hover:!text-red-900',
       onClick: (record) => console.log('Delete:', record),
       confirm: {
         title: 'Delete Item',
@@ -62,35 +63,35 @@ const TableActions = React.memo(({ record, actions = [], size = 'small', wrap = 
       key: 'description',
       icon: faFileText,
       tooltip: 'View Description',
-      color: 'text-purple-500 hover:text-purple-700',
+      color: darkMode ? '!text-purple-400 hover:!text-purple-300' : '!text-purple-800 hover:!text-purple-900',
       onClick: (record) => console.log('Description:', record)
     },
     assessment: {
       key: 'assessment',
       icon: faClipboardCheck,
       tooltip: 'View Assessment',
-      color: 'text-orange-500 hover:text-orange-700',
+      color: darkMode ? '!text-orange-400 hover:!text-orange-300' : '!text-orange-800 hover:!text-orange-900',
       onClick: (record) => console.log('Assessment:', record)
     },
     download: {
       key: 'download',
       icon: faDownload,
       tooltip: 'Download',
-      color: 'text-indigo-500 hover:text-indigo-700',
+      color: darkMode ? '!text-indigo-400 hover:!text-indigo-300' : '!text-indigo-800 hover:!text-indigo-900',
       onClick: (record) => console.log('Download:', record)
     },
     share: {
       key: 'share',
       icon: faShare,
       tooltip: 'Share',
-      color: 'text-cyan-500 hover:text-cyan-700',
+      color: darkMode ? '!text-cyan-400 hover:!text-cyan-300' : '!text-cyan-800 hover:!text-cyan-900',
       onClick: (record) => console.log('Share:', record)
     },
     copy: {
       key: 'copy',
       icon: faCopy,
       tooltip: 'Copy',
-      color: 'text-gray-500 hover:text-gray-700',
+      color: darkMode ? '!text-gray-400 hover:!text-gray-300' : '!text-gray-800 hover:!text-gray-900',
       onClick: (record) => console.log('Copy:', record)
     }
   }
@@ -105,15 +106,11 @@ const TableActions = React.memo(({ record, actions = [], size = 'small', wrap = 
       <Button
         type='text'
         size={size}
-        icon={<FontAwesomeIcon icon={config.icon} />}
+        icon={<FontAwesomeIcon icon={config.icon} className={`${config.color} transition-colors duration-200`} />}
         onClick={() => config.onClick(record)}
-        className={config.color}
+        className={`!bg-transparent !border-transparent hover:!bg-gray-100 dark:hover:!bg-gray-700 transition-all duration-200`}
         disabled={config.disabled}
-        style={{
-          backgroundColor: 'transparent',
-          borderColor: darkMode ? '#6b7280' : '#d1d5db',
-          ...config.style
-        }}
+        style={config.style}
       />
     )
 

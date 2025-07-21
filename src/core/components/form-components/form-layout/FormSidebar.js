@@ -1,10 +1,9 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
-import { Typography, Card, Button, Progress, Input, Row, Col } from 'antd'
+import { Typography, Card, Progress, Input, Row, Col } from 'antd'
+import { Button } from '../../index'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {
-  faSave
-} from '@fortawesome/free-solid-svg-icons'
+import { faSave } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../../ui/ThemeContext'
 import './form-sidebar.css'
 
@@ -159,7 +158,7 @@ const FormSidebar = ({
         )}
 
         {/* Workflow section */}
-        {(data.options.length > 0) && (
+        {data.options.length > 0 && (
           <div className='workflow-section'>
             <Text className={`text-sm font-medium ${darkMode ? 'text-agilite-grey-light' : 'text-secondary'}`}>
               Select Workflow Option:
@@ -189,70 +188,70 @@ const FormSidebar = ({
                 >
                   <Text className='option-text'>Return</Text>
                 </div>
-              )}  
+              )}
             </div>
+          </div>
+        )}
+        <div className='workflow-section'>
+          <div className='comments-section'>
+            <Text className={`text-xs font-medium ${darkMode ? 'text-agilite-grey-light' : 'text-secondary'}`}>
+              {workflowOption === 'reject' ? 'Mandatory step comments' : 'Step comments (optional)'}
+            </Text>
+            <TextArea
+              value={comments}
+              onChange={(e) => setComments(e.target.value)}
+              rows={3}
+              placeholder='Enter your comments here'
+              className={darkMode ? 'bg-agilite-black border-gray-700 text-agilite-grey-light' : ''}
+            />
+          </div>
+
+          <div className='action-buttons-row'>
+            <Col>
+              <Button
+                icon={<FontAwesomeIcon icon={faSave} />}
+                onClick={handleSaveDraft}
+                loading={isSaving}
+                className='action-button'
+              >
+                Save Draft
+              </Button>
+            </Col>
+            <Col flex='auto'>
+              <Button type='primary' onClick={handleSubmit} disabled={!canSubmit} block className='submit-button'>
+                {data.submitLabel}
+              </Button>
+            </Col>
+          </div>
+
+          {/* Progress section - moved below buttons */}
+          {(requiredCompletion > 0 || additionalCompletion > 0) && (
+            <div className='progress-section'>
+              <Row gutter={[12, 8]} align='middle'>
+                {requiredCompletion > 0 && (
+                  <Col span={12}>
+                    <div>
+                      <Text className={`text-xs ${darkMode ? 'text-agilite-grey-light' : 'text-secondary'}`}>
+                        Required Info: {requiredCompletion}%
+                      </Text>
+                      <Progress percent={requiredCompletion} size='small' showInfo={false} strokeColor='#1890ff' />
+                    </div>
+                  </Col>
+                )}
+                {additionalCompletion > 0 && (
+                  <Col span={12}>
+                    <div>
+                      <Text className={`text-xs ${darkMode ? 'text-agilite-grey-light' : 'text-secondary'}`}>
+                        Additional Info: {additionalCompletion}%
+                      </Text>
+                      <Progress percent={additionalCompletion} size='small' showInfo={false} strokeColor='#52c41a' />
+                    </div>
+                  </Col>
+                )}
+              </Row>
             </div>
           )}
-          <div className='workflow-section'>
-            <div className='comments-section'>
-              <Text className={`text-xs font-medium ${darkMode ? 'text-agilite-grey-light' : 'text-secondary'}`}>
-                {workflowOption === 'reject' ? 'Mandatory step comments' : 'Step comments (optional)'}
-              </Text>
-              <TextArea
-                value={comments}
-                onChange={(e) => setComments(e.target.value)}
-                rows={3}
-                placeholder='Enter your comments here'
-                className={darkMode ? 'bg-agilite-black border-gray-700 text-agilite-grey-light' : ''}
-              />
-            </div>
-
-            <div className='action-buttons-row'>
-              <Col>
-                <Button
-                  icon={<FontAwesomeIcon icon={faSave} />}
-                  onClick={handleSaveDraft}
-                  loading={isSaving}
-                  className='action-button'
-                >
-                  Save Draft
-                </Button>
-              </Col>
-              <Col flex='auto'>
-                <Button type='primary' onClick={handleSubmit} disabled={!canSubmit} block className='submit-button'>
-                  {data.submitLabel}
-                </Button>
-              </Col>
-            </div>
-
-            {/* Progress section - moved below buttons */}
-            {(requiredCompletion > 0 || additionalCompletion > 0) && (
-              <div className='progress-section'>
-                <Row gutter={[12, 8]} align='middle'>
-                  {requiredCompletion > 0 && (
-                    <Col span={12}>
-                      <div>
-                        <Text className={`text-xs ${darkMode ? 'text-agilite-grey-light' : 'text-secondary'}`}>
-                          Required Info: {requiredCompletion}%
-                        </Text>
-                        <Progress percent={requiredCompletion} size='small' showInfo={false} strokeColor='#1890ff' />
-                      </div>
-                    </Col>
-                  )}
-                  {additionalCompletion > 0 && (
-                    <Col span={12}>
-                      <div>
-                        <Text className={`text-xs ${darkMode ? 'text-agilite-grey-light' : 'text-secondary'}`}>
-                          Additional Info: {additionalCompletion}%
-                        </Text>
-                        <Progress percent={additionalCompletion} size='small' showInfo={false} strokeColor='#52c41a' />
-                      </div>
-                    </Col>
-                  )}
-                </Row>
-              </div>
-            )}
-          </div>
+        </div>
       </div>
     </Card>
   )

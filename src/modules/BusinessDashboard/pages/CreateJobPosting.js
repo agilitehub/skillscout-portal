@@ -1,7 +1,8 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
 import React, { useState, useEffect, useCallback } from 'react'
-import { Form, Input, Select, Button, Card, message, Space } from 'antd'
+import { Form, Input, Select, Card, message, Space } from 'antd'
+import { Button } from '../../../core/components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faArrowLeft,

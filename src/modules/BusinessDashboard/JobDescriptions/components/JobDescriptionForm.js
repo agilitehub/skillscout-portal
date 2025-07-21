@@ -2,7 +2,8 @@
 // Frontend Instructions Rule Applied!
 
 import React, { useState, useCallback, useEffect } from 'react'
-import { Card, Button, Form, Space, message, Row, Col, Tabs, Spin } from 'antd'
+import { Card, Form, Space, message, Row, Col, Tabs, Spin } from 'antd'
+import { Button } from '../../../../core/components'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
