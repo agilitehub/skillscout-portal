@@ -2,7 +2,7 @@
 // Frontend Instructions Rule Applied!
 
 import React, { useState, useCallback } from 'react'
-import { Card, Button, Form, Input, Select, Switch, message } from 'antd'
+import { Card, Button, Form, message } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowLeft, faSave, faEye, faClipboardCheck } from '@fortawesome/free-solid-svg-icons'
@@ -11,8 +11,12 @@ import BusinessSidebar from '../../components/BusinessSidebar'
 import { createAssessment } from '../utils/controller'
 import { parseTags } from '../utils/data-model'
 
-const { TextArea } = Input
-const { Option } = Select
+// Import enhanced form field components
+import FormSelect from '../../../../core/components/form-components/form-fields/FormSelect'
+import FormTextArea from '../../../../core/components/form-components/form-fields/FormTextArea'
+import FormSwitch from '../../../../core/components/form-components/form-fields/FormSwitch'
+
+// Enhanced form components imported above
 
 /**
  * CreateAssessment page for creating new skill assessments
@@ -23,9 +27,6 @@ const CreateAssessment = React.memo(({ user }) => {
   const navigate = useNavigate()
   const [form] = Form.useForm()
   const [loading, setLoading] = useState(false)
-
-  // DEBUG: Log to console
-  console.log('CreateAssessment component rendering, darkMode:', darkMode)
 
   // Handle navigation back to assessments list
   const handleGoBack = useCallback(() => {
@@ -162,127 +163,110 @@ const CreateAssessment = React.memo(({ user }) => {
                   <div className='space-y-4'>
                     {/* Active Toggle */}
                     <div className='mb-4'>
-                      <Form.Item name='isActive' valuePropName='checked'>
-                        <div className='flex items-center'>
-                          <Switch defaultChecked={true} className='mr-3' />
-                          <span
-                            className={`text-base font-medium ${darkMode ? 'text-emerald-100' : 'text-emerald-800'}`}
-                          >
-                            Active
-                          </span>
-                        </div>
-                      </Form.Item>
+                      <FormSwitch
+                        label='Active'
+                        name='isActive'
+                        defaultChecked={true}
+                        switchProps={{
+                          className: 'mr-3'
+                        }}
+                      />
                     </div>
 
                     <div className='grid grid-cols-2 gap-4'>
-                      <Form.Item
+                      <FormSelect
+                        label='Status'
                         name='status'
-                        label={
-                          <span className={`font-medium ${darkMode ? 'text-emerald-100' : 'text-emerald-800'}`}>
-                            Status
-                          </span>
-                        }
+                        placeholder='Select status'
                         rules={[{ required: true, message: 'Please select a status' }]}
-                      >
-                        <Select placeholder='Select status' className={`${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                          <Option value='Draft'>Draft</Option>
-                          <Option value='Active'>Active</Option>
-                          <Option value='Inactive'>Inactive</Option>
-                          <Option value='Archived'>Archived</Option>
-                        </Select>
-                      </Form.Item>
+                        options={[
+                          { label: 'Draft', value: 'Draft' },
+                          { label: 'Active', value: 'Active' },
+                          { label: 'Inactive', value: 'Inactive' },
+                          { label: 'Archived', value: 'Archived' }
+                        ]}
+                        customStyle={{
+                          fontWeight: '500'
+                        }}
+                      />
 
-                      <Form.Item
+                      <FormSelect
+                        label='Category'
                         name='category'
-                        label={
-                          <span className={`font-medium ${darkMode ? 'text-emerald-100' : 'text-emerald-800'}`}>
-                            Category
-                          </span>
-                        }
-                      >
-                        <Select
-                          placeholder='Select category'
-                          className={`${darkMode ? 'text-white' : 'text-gray-900'}`}
-                        >
-                          <Option value='Technical'>Technical</Option>
-                          <Option value='Behavioral'>Behavioral</Option>
-                          <Option value='Cognitive'>Cognitive</Option>
-                          <Option value='Portfolio'>Portfolio</Option>
-                        </Select>
-                      </Form.Item>
+                        placeholder='Select category'
+                        options={[
+                          { label: 'Technical', value: 'Technical' },
+                          { label: 'Behavioral', value: 'Behavioral' },
+                          { label: 'Cognitive', value: 'Cognitive' },
+                          { label: 'Portfolio', value: 'Portfolio' }
+                        ]}
+                        customStyle={{
+                          fontWeight: '500'
+                        }}
+                      />
                     </div>
 
-                    <Form.Item
+                    <FormTextArea
+                      label='Question'
                       name='question'
-                      label={
-                        <span className={`font-medium ${darkMode ? 'text-emerald-100' : 'text-emerald-800'}`}>
-                          Question
-                        </span>
-                      }
+                      placeholder='Enter the assessment question...'
+                      rows={4}
                       rules={[{ required: true, message: 'Please enter a question' }]}
-                    >
-                      <TextArea
-                        rows={4}
-                        placeholder='Enter the assessment question...'
-                        showCount
-                        maxLength={1000}
-                        className={`${darkMode ? 'text-white placeholder-white' : 'text-gray-900 placeholder-gray-500'}`}
-                      />
-                    </Form.Item>
+                      textAreaProps={{
+                        showCount: true,
+                        maxLength: 1000
+                      }}
+                      customStyle={{
+                        fontWeight: '500'
+                      }}
+                    />
 
-                    <Form.Item
+                    <FormTextArea
+                      label='Context'
                       name='context'
-                      label={
-                        <span className={`font-medium ${darkMode ? 'text-emerald-100' : 'text-emerald-800'}`}>
-                          Context
-                        </span>
-                      }
+                      placeholder='Provide context about what this question assesses...'
+                      rows={4}
                       rules={[{ required: true, message: 'Please enter the context' }]}
-                    >
-                      <TextArea
-                        rows={4}
-                        placeholder='Provide context about what this question assesses...'
-                        showCount
-                        maxLength={2000}
-                        className={`${darkMode ? 'text-white placeholder-white' : 'text-gray-900 placeholder-gray-500'}`}
-                      />
-                    </Form.Item>
+                      textAreaProps={{
+                        showCount: true,
+                        maxLength: 2000
+                      }}
+                      customStyle={{
+                        fontWeight: '500'
+                      }}
+                    />
                   </div>
 
                   {/* Right Column */}
                   <div className='space-y-4'>
-                    <Form.Item
+                    <FormTextArea
+                      label='Preferred Feedback'
                       name='preferredFeedback'
-                      label={
-                        <span className={`font-medium ${darkMode ? 'text-emerald-100' : 'text-emerald-800'}`}>
-                          Preferred Feedback
-                        </span>
-                      }
+                      placeholder='Describe what to look for in good answers and how to evaluate responses...'
+                      rows={8}
                       rules={[{ required: true, message: 'Please enter preferred feedback guidelines' }]}
-                    >
-                      <TextArea
-                        rows={8}
-                        placeholder='Describe what to look for in good answers and how to evaluate responses...'
-                        showCount
-                        maxLength={2000}
-                        className={`${darkMode ? 'text-white placeholder-white' : 'text-gray-900 placeholder-gray-500'}`}
-                      />
-                    </Form.Item>
+                      textAreaProps={{
+                        showCount: true,
+                        maxLength: 2000
+                      }}
+                      customStyle={{
+                        fontWeight: '500'
+                      }}
+                    />
 
-                    <Form.Item
+                    <FormSelect
+                      label='Tags'
                       name='tags'
-                      label={
-                        <span className={`font-medium ${darkMode ? 'text-emerald-100' : 'text-emerald-800'}`}>
-                          Tags
-                        </span>
-                      }
-                    >
-                      <Select
-                        mode='tags'
-                        placeholder='Add tags (press Enter to add)'
-                        className={`w-full ${darkMode ? 'text-white' : 'text-gray-900'}`}
-                      />
-                    </Form.Item>
+                      placeholder='Add tags (press Enter to add)'
+                      options={[]}
+                      selectProps={{
+                        mode: 'tags',
+                        className: 'w-full'
+                      }}
+                      customStyle={{
+                        fontWeight: '500'
+                      }}
+                    />
 
                     {/* Summary Card */}
                     <div

@@ -6,12 +6,17 @@ import { useTheme } from '../../../../core/context/ThemeContext'
 import BusinessSidebar from '../../components/BusinessSidebar'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faClipboardCheck, faPlus, faArrowLeft, faCheckCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons'
-import { Button, Input, Select, Modal, Form, message, Switch, Row, Col, Tag } from 'antd'
+import { Button, Select, Modal, Form, message, Row, Col, Tag } from 'antd'
 import TableView from '../../../../core/components/view-components/table-view/TableView'
 import TableActions from '../../../../core/components/view-components/table-view/TableActions'
 
+// Import enhanced form field components
+import FormInput from '../../../../core/components/form-components/form-fields/FormInput'
+import FormSelect from '../../../../core/components/form-components/form-fields/FormSelect'
+import FormTextArea from '../../../../core/components/form-components/form-fields/FormTextArea'
+import FormSwitch from '../../../../core/components/form-components/form-fields/FormSwitch'
+
 const { Option } = Select
-const { TextArea } = Input
 
 /**
  * Assessments Management Page
@@ -449,149 +454,103 @@ const Assessments = React.memo(({ user }) => {
             >
               {/* Active Toggle */}
               <div className='mb-6'>
-                <Form.Item name='isActive' valuePropName='checked'>
-                  <div className='flex items-center'>
-                    <Switch
-                      defaultChecked={true}
-                      className='mr-3'
-                      style={{
-                        backgroundColor: darkMode ? '#059669' : '#10b981'
-                      }}
-                    />
-                    <span className={`text-base font-medium ${darkMode ? 'text-emerald-100' : 'text-emerald-800'}`}>
-                      Active
-                    </span>
-                  </div>
-                </Form.Item>
+                <FormSwitch
+                  label='Active'
+                  name='isActive'
+                  defaultChecked={true}
+                  switchProps={{
+                    className: 'mr-3',
+                    style: {
+                      backgroundColor: darkMode ? '#059669' : '#10b981'
+                    }
+                  }}
+                />
               </div>
 
               <Row gutter={16}>
                 <Col span={16}>
-                  <Form.Item
+                  <FormSelect
+                    label='Status'
                     name='status'
-                    label={
-                      <span className={`font-medium ${darkMode ? 'text-emerald-100' : 'text-emerald-800'}`}>
-                        Status
-                      </span>
-                    }
+                    placeholder='Select status'
                     rules={[{ required: true, message: 'Please select a status' }]}
-                  >
-                    <Select
-                      placeholder='Select status'
-                      className={darkMode ? 'dark-select' : ''}
-                      style={{
-                        backgroundColor: darkMode ? '#374151' : '#ffffff',
-                        color: darkMode ? '#ffffff' : '#111827'
-                      }}
-                    >
-                      <Option value='Draft'>Draft</Option>
-                      <Option value='Active'>Active</Option>
-                      <Option value='Inactive'>Inactive</Option>
-                      <Option value='Archived'>Archived</Option>
-                    </Select>
-                  </Form.Item>
+                    options={[
+                      { label: 'Draft', value: 'Draft' },
+                      { label: 'Active', value: 'Active' },
+                      { label: 'Inactive', value: 'Inactive' },
+                      { label: 'Archived', value: 'Archived' }
+                    ]}
+                    customStyle={{
+                      fontWeight: '500'
+                    }}
+                  />
                 </Col>
                 <Col span={8}>
-                  <Form.Item
+                  <FormSelect
+                    label='Category'
                     name='category'
-                    label={
-                      <span className={`font-medium ${darkMode ? 'text-emerald-100' : 'text-emerald-800'}`}>
-                        Category
-                      </span>
-                    }
-                  >
-                    <Select
-                      placeholder='Select category'
-                      className={darkMode ? 'dark-select' : ''}
-                      style={{
-                        backgroundColor: darkMode ? '#374151' : '#ffffff',
-                        color: darkMode ? '#ffffff' : '#111827'
-                      }}
-                    >
-                      <Option value='Technical'>Technical</Option>
-                      <Option value='Behavioral'>Behavioral</Option>
-                      <Option value='Cognitive'>Cognitive</Option>
-                      <Option value='Portfolio'>Portfolio</Option>
-                    </Select>
-                  </Form.Item>
+                    placeholder='Select category'
+                    options={[
+                      { label: 'Technical', value: 'Technical' },
+                      { label: 'Behavioral', value: 'Behavioral' },
+                      { label: 'Cognitive', value: 'Cognitive' },
+                      { label: 'Portfolio', value: 'Portfolio' }
+                    ]}
+                    customStyle={{
+                      fontWeight: '500'
+                    }}
+                  />
                 </Col>
               </Row>
 
-              <Form.Item
+              <FormTextArea
+                label='Question'
                 name='question'
-                label={
-                  <span className={`font-medium ${darkMode ? 'text-emerald-100' : 'text-emerald-800'}`}>Question</span>
-                }
+                placeholder='Enter the assessment question...'
+                rows={3}
                 rules={[{ required: true, message: 'Please enter a question' }]}
-              >
-                <TextArea
-                  rows={3}
-                  placeholder='Enter the assessment question...'
-                  className={darkMode ? 'dark-input' : ''}
-                  style={{
-                    backgroundColor: darkMode ? '#374151' : '#ffffff',
-                    borderColor: darkMode ? '#10b981' : '#10b981',
-                    color: darkMode ? '#ffffff' : '#111827'
-                  }}
-                />
-              </Form.Item>
+                customStyle={{
+                  borderColor: darkMode ? '#10b981' : '#10b981',
+                  fontWeight: '500'
+                }}
+              />
 
-              <Form.Item
+              <FormTextArea
+                label='Context'
                 name='context'
-                label={
-                  <span className={`font-medium ${darkMode ? 'text-emerald-100' : 'text-emerald-800'}`}>Context</span>
-                }
+                placeholder='Provide context about what this question assesses...'
+                rows={4}
                 rules={[{ required: true, message: 'Please enter the context' }]}
-              >
-                <TextArea
-                  rows={4}
-                  placeholder='Provide context about what this question assesses...'
-                  className={darkMode ? 'dark-input' : ''}
-                  style={{
-                    backgroundColor: darkMode ? '#374151' : '#ffffff',
-                    borderColor: darkMode ? '#10b981' : '#10b981',
-                    color: darkMode ? '#ffffff' : '#111827'
-                  }}
-                />
-              </Form.Item>
+                customStyle={{
+                  borderColor: darkMode ? '#10b981' : '#10b981',
+                  fontWeight: '500'
+                }}
+              />
 
-              <Form.Item
+              <FormTextArea
+                label='Preferred Feedback'
                 name='preferredFeedback'
-                label={
-                  <span className={`font-medium ${darkMode ? 'text-emerald-100' : 'text-emerald-800'}`}>
-                    Preferred Feedback
-                  </span>
-                }
+                placeholder='Describe what to look for in good answers and how to evaluate responses...'
+                rows={4}
                 rules={[{ required: true, message: 'Please enter preferred feedback guidelines' }]}
-              >
-                <TextArea
-                  rows={4}
-                  placeholder='Describe what to look for in good answers and how to evaluate responses...'
-                  className={darkMode ? 'dark-input' : ''}
-                  style={{
-                    backgroundColor: darkMode ? '#374151' : '#ffffff',
-                    borderColor: darkMode ? '#10b981' : '#10b981',
-                    color: darkMode ? '#ffffff' : '#111827'
-                  }}
-                />
-              </Form.Item>
+                customStyle={{
+                  borderColor: darkMode ? '#10b981' : '#10b981',
+                  fontWeight: '500'
+                }}
+              />
 
-              <Form.Item
+              <FormSelect
+                label='Tags'
                 name='tags'
-                label={
-                  <span className={`font-medium ${darkMode ? 'text-emerald-100' : 'text-emerald-800'}`}>Tags</span>
-                }
-              >
-                <Select
-                  mode='tags'
-                  placeholder='Add tags (press Enter to add)'
-                  className={darkMode ? 'dark-select' : ''}
-                  style={{
-                    backgroundColor: darkMode ? '#374151' : '#ffffff',
-                    color: darkMode ? '#ffffff' : '#111827'
-                  }}
-                />
-              </Form.Item>
+                placeholder='Add tags (press Enter to add)'
+                options={[]}
+                selectProps={{
+                  mode: 'tags'
+                }}
+                customStyle={{
+                  fontWeight: '500'
+                }}
+              />
 
               <div className='flex justify-end space-x-3 mt-8'>
                 <Button
