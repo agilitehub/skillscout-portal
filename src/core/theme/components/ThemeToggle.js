@@ -2,8 +2,8 @@
 // Frontend Instructions Rule Applied!
 import React, { memo, useMemo } from 'react'
 import PropTypes from 'prop-types'
-import { useTheme } from '../context/ThemeContext'
-import { BRAND_COLORS } from '../config/colors'
+import { useTheme } from '../../context/ThemeContext'
+import { BRAND_COLORS } from '../colors'
 
 // Define transitions locally since styles.js seems to be unavailable
 const TRANSITIONS = {

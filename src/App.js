@@ -3,7 +3,7 @@ import { ThemeProvider } from './core/context/ThemeContext'
 import { AuthProvider } from './core/context/AuthContext'
 import { BrowserRouter as Router } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify'
-import GlobalStyles from './core/components/GlobalStyles'
+import GlobalStyles from './core/theme/GlobalStyles'
 import 'react-toastify/dist/ReactToastify.css'
 import AppRoutes from './routes'
 

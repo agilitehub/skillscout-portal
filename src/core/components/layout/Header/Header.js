@@ -3,13 +3,13 @@
 import React, { useState, useCallback, useEffect } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import Logo from '../../Logo'
-import ThemeToggle from '../../ThemeToggle'
+import ThemeToggle from '../../../theme/components/ThemeToggle'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSignOut, faUser, faBuilding, faUserTie, faChevronDown } from '@fortawesome/free-solid-svg-icons'
 import { Dropdown, Modal, Form, Input, Button, message } from 'antd'
 import { useTheme } from '../../../context/ThemeContext'
 import { useAuth } from '../../../context/AuthContext'
-import { BRAND_COLORS } from '../../../config/colors'
+import { BRAND_COLORS } from '../../../theme/colors'
 
 /**
  * Simplified Header component for the application
