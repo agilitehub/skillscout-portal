@@ -7,8 +7,8 @@ import BusinessSidebar from '../../components/BusinessSidebar'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faList, faPlus, faFilter, faArrowLeft, faTimes, faSpinner } from '@fortawesome/free-solid-svg-icons'
 import { Button, Input, Select, Modal, Form, message, Switch, Row, Col, Spin } from 'antd'
-import TableView from '../../../../core/View/TableView'
-import TableActions from '../../../../core/View/TableActions'
+import TableView from '../../../../core/components/view-components/table-view/TableView'
+import TableActions from '../../../../core/components/view-components/table-view/TableActions'
 import { getAllLookups, createLookup, updateLookup, deleteLookup } from '../utils/controller'
 
 const { Option } = Select
@@ -35,6 +35,7 @@ const Lookups = React.memo(({ user }) => {
   // Load lookups data on component mount
   useEffect(() => {
     loadLookups()
+    // eslint-disable-next-line
   }, [])
 
   // Load lookups from API
@@ -435,17 +436,21 @@ const Lookups = React.memo(({ user }) => {
         </style>
       )}
 
-      <div className={`min-h-screen relative overflow-hidden ${
-        darkMode 
-          ? 'bg-gradient-to-br from-slate-700 via-slate-600 to-emerald-800'
-          : 'bg-gradient-to-br from-sky-100 via-gray-50 to-emerald-100'
-      }`}>
+      <div
+        className={`min-h-screen relative overflow-hidden ${
+          darkMode
+            ? 'bg-gradient-to-br from-slate-700 via-slate-600 to-emerald-800'
+            : 'bg-gradient-to-br from-sky-100 via-gray-50 to-emerald-100'
+        }`}
+      >
         {/* Background overlay for full coverage */}
-        <div className={`fixed inset-0 ${
-          darkMode 
-            ? 'bg-gradient-to-b from-transparent via-slate-700/30 to-emerald-800/40' 
-            : 'bg-gradient-to-b from-transparent via-sky-100/40 to-emerald-100/50'
-        } pointer-events-none`}></div>
+        <div
+          className={`fixed inset-0 ${
+            darkMode
+              ? 'bg-gradient-to-b from-transparent via-slate-700/30 to-emerald-800/40'
+              : 'bg-gradient-to-b from-transparent via-sky-100/40 to-emerald-100/50'
+          } pointer-events-none`}
+        ></div>
 
         <BusinessSidebar />
         <div className='p-6 ml-64 relative z-10'>

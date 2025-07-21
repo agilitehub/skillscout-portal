@@ -13,7 +13,7 @@ import {
   faShare,
   faCopy
 } from '@fortawesome/free-solid-svg-icons'
-import { useTheme } from '../../ui/ThemeContext'
+import { useTheme } from '../../../../ui/ThemeContext'
 
 /**
  * Reusable TableActions Component

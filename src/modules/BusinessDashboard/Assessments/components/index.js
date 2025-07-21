@@ -7,8 +7,8 @@ import BusinessSidebar from '../../components/BusinessSidebar'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faClipboardCheck, faPlus, faArrowLeft, faCheckCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons'
 import { Button, Input, Select, Modal, Form, message, Switch, Row, Col, Tag } from 'antd'
-import TableView from '../../../../core/View/TableView'
-import TableActions from '../../../../core/View/TableActions'
+import TableView from '../../../../core/components/view-components/table-view/TableView'
+import TableActions from '../../../../core/components/view-components/table-view/TableActions'
 
 const { Option } = Select
 const { TextArea } = Input
@@ -303,17 +303,21 @@ const Assessments = React.memo(({ user }) => {
 
   return (
     <>
-      <div className={`min-h-screen relative overflow-hidden ${
-        darkMode 
-          ? 'bg-gradient-to-br from-slate-700 via-slate-600 to-emerald-800'
-          : 'bg-gradient-to-br from-sky-100 via-gray-50 to-emerald-100'
-      }`}>
+      <div
+        className={`min-h-screen relative overflow-hidden ${
+          darkMode
+            ? 'bg-gradient-to-br from-slate-700 via-slate-600 to-emerald-800'
+            : 'bg-gradient-to-br from-sky-100 via-gray-50 to-emerald-100'
+        }`}
+      >
         {/* Background overlay for full coverage */}
-        <div className={`fixed inset-0 ${
-          darkMode 
-            ? 'bg-gradient-to-b from-transparent via-slate-700/30 to-emerald-800/40' 
-            : 'bg-gradient-to-b from-transparent via-sky-100/40 to-emerald-100/50'
-        } pointer-events-none`}></div>
+        <div
+          className={`fixed inset-0 ${
+            darkMode
+              ? 'bg-gradient-to-b from-transparent via-slate-700/30 to-emerald-800/40'
+              : 'bg-gradient-to-b from-transparent via-sky-100/40 to-emerald-100/50'
+          } pointer-events-none`}
+        ></div>
 
         <BusinessSidebar />
         <div className='p-6 ml-64 relative z-10'>
