@@ -2,7 +2,7 @@
 // Frontend Instructions Rule Applied!
 
 import React, { useState, useCallback } from 'react'
-import { Card, Button, Form, Input, message, Row, Col } from 'antd'
+import { Card, Button, Form, message, Row, Col } from 'antd'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSave, faTimes } from '@fortawesome/free-solid-svg-icons'
@@ -10,7 +10,9 @@ import { useTheme } from '../../../../core/context/ThemeContext'
 import BusinessSidebar from '../../components/BusinessSidebar'
 import { createJobListing } from '../utils/listing-controller'
 
-const { TextArea } = Input
+// Import enhanced form field components
+import FormInput from '../../../../core/components/form-components/form-fields/FormInput'
+import FormTextArea from '../../../../core/components/form-components/form-fields/FormTextArea'
 
 /**
  * CreateJobListing page for creating engaging job listings
@@ -125,85 +127,100 @@ const CreateJobListing = React.memo(({ user }) => {
               {/* Job Title and Source */}
               <Row gutter={24}>
                 <Col span={16}>
-                  <Form.Item
-                    label={<span className={darkMode ? 'text-gray-300' : ''}>Job Title</span>}
+                  <FormInput
+                    label='Job Title'
                     name='title'
+                    placeholder='e.g. Marketing Manager'
                     rules={[{ required: true, message: 'Please enter job title' }]}
-                  >
-                    <Input placeholder='e.g. Marketing Manager' />
-                  </Form.Item>
+                    customStyle={{
+                      fontWeight: '500'
+                    }}
+                  />
                 </Col>
                 <Col span={8}>
-                  <Form.Item
-                    label={<span className={darkMode ? 'text-gray-300' : ''}>Source</span>}
+                  <FormInput
+                    label='Source'
                     name='source'
+                    placeholder='e.g. Indeed'
                     rules={[{ required: true, message: 'Please enter source' }]}
-                  >
-                    <Input placeholder='e.g. Indeed' />
-                  </Form.Item>
+                    customStyle={{
+                      fontWeight: '500'
+                    }}
+                  />
                 </Col>
               </Row>
 
               {/* Role Overview */}
-              <Form.Item
-                label={<span className={darkMode ? 'text-gray-300' : ''}>Role Overview</span>}
+              <FormTextArea
+                label='Role Overview'
                 name='overview'
+                placeholder='Brief overview of the role and its main purpose'
+                rows={3}
                 rules={[{ required: true, message: 'Please enter role overview' }]}
-              >
-                <TextArea rows={3} placeholder='Brief overview of the role and its main purpose' />
-              </Form.Item>
+                customStyle={{
+                  fontWeight: '500'
+                }}
+              />
 
               {/* Key Duties */}
-              <Form.Item
-                label={<span className={darkMode ? 'text-gray-300' : ''}>Key Duties</span>}
+              <FormTextArea
+                label='Key Duties'
                 name='duties'
-                rules={[{ required: true, message: 'Please enter key duties' }]}
-                extra='Enter each duty on a new line. They will be displayed as bullet points.'
-              >
-                <TextArea
-                  rows={6}
-                  placeholder='• Communicate with senior management on marketing strategies
+                placeholder={`• Communicate with senior management on marketing strategies
 • Organize events like trade shows & oversee logistics
 • Coordinate content creation and campaign optimization
-• Manage budgets and improve campaign ROI'
-                />
-              </Form.Item>
+• Manage budgets and improve campaign ROI`}
+                rows={6}
+                rules={[{ required: true, message: 'Please enter key duties' }]}
+                formItemProps={{
+                  extra: 'Enter each duty on a new line. They will be displayed as bullet points.'
+                }}
+                customStyle={{
+                  fontWeight: '500'
+                }}
+              />
 
               {/* Qualifications */}
-              <Form.Item
-                label={<span className={darkMode ? 'text-gray-300' : ''}>Qualifications</span>}
+              <FormTextArea
+                label='Qualifications'
                 name='qualifications'
-                rules={[{ required: true, message: 'Please enter qualifications' }]}
-                extra='Enter each qualification on a new line. They will be displayed as bullet points.'
-              >
-                <TextArea
-                  rows={6}
-                  placeholder="• Strong communication & decision-making
+                placeholder={`• Strong communication & decision-making
 • Familiarity with marketing software tools
 • Attention to detail and analytical mindset
-• Bachelor's degree (MBA preferred) with several years of marketing experience"
-                />
-              </Form.Item>
+• Bachelor's degree (MBA preferred) with several years of marketing experience`}
+                rows={6}
+                rules={[{ required: true, message: 'Please enter qualifications' }]}
+                formItemProps={{
+                  extra: 'Enter each qualification on a new line. They will be displayed as bullet points.'
+                }}
+                customStyle={{
+                  fontWeight: '500'
+                }}
+              />
 
               {/* Additional Details */}
               <Row gutter={24}>
                 <Col span={12}>
-                  <Form.Item
-                    label={<span className={darkMode ? 'text-gray-300' : ''}>Company</span>}
+                  <FormInput
+                    label='Company'
                     name='company'
+                    placeholder='Company name'
                     rules={[{ required: true, message: 'Please enter company name' }]}
-                  >
-                    <Input placeholder='Company name' />
-                  </Form.Item>
+                    customStyle={{
+                      fontWeight: '500'
+                    }}
+                  />
                 </Col>
                 <Col span={12}>
-                  <Form.Item
-                    label={<span className={darkMode ? 'text-gray-300' : ''}>Last Updated</span>}
+                  <FormInput
+                    label='Last Updated'
                     name='lastUpdated'
+                    placeholder='e.g. June 24, 2025'
                     rules={[{ required: true, message: 'Please enter last updated date' }]}
-                  >
-                    <Input placeholder='e.g. June 24, 2025' />
-                  </Form.Item>
+                    customStyle={{
+                      fontWeight: '500'
+                    }}
+                  />
                 </Col>
               </Row>
 
