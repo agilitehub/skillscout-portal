@@ -81,13 +81,9 @@ export const validateAssessment = (assessmentData) => {
 /**
  * Transform form data to database format (Supabase format)
  * @param {Object} formData - Data from the form
- * @param {Object} options - Additional options
- * @param {boolean} options.isUpdate - Whether this is an update operation
  * @returns {Object} Transformed data for database insertion
  */
-export const transformToDatabase = (formData, options = {}) => {
-  const { isUpdate = false } = options
-
+export const transformToDatabase = (formData) => {
   const transformed = {
     // Core Fields - exact field names that match Supabase
     question: formData.question?.trim(),
