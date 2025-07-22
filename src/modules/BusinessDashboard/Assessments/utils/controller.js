@@ -3,8 +3,8 @@ import { createClient } from '@supabase/supabase-js'
 import { transformToDatabase, transformFromDatabase, validateAssessment } from './data-model'
 
 /**
- * Assessments Controller
- * Handles all CRUD operations for simplified assessments
+ * Enhanced Assessments Controller
+ * Handles all CRUD operations for assessments with multiple questions support
  */
 
 // Initialize Supabase client
@@ -20,7 +20,7 @@ if (SUPABASE_URL && SUPABASE_ANON_KEY) {
 }
 
 /**
- * Get all assessments with optional filtering
+ * Get all assessments with optional filtering (includes question count)
  * @param {Object} filters - Optional filters for assessments
  * @returns {Promise<Object>} Result with assessments array
  */
@@ -30,7 +30,8 @@ export const getAllAssessments = async (filters = {}) => {
       throw new Error('Supabase client not initialized')
     }
 
-    let query = supabase.from('assessments').select('*').order('created_at', { ascending: false })
+    // Use the view that includes question count
+    let query = supabase.from('assessment_with_questions').select('*').order('created_at', { ascending: false })
 
     // Apply filters if provided
     if (filters.status) {
@@ -82,7 +83,7 @@ export const getAllAssessments = async (filters = {}) => {
 }
 
 /**
- * Get a single assessment by ID
+ * Get a single assessment by ID (includes questions)
  * @param {string} id - Assessment ID
  * @returns {Promise<Object>} Result with assessment data
  */
@@ -100,7 +101,8 @@ export const getAssessmentById = async (id) => {
       }
     }
 
-    const { data, error } = await supabase.from('assessments').select('*').eq('id', id).single()
+    // Use the view that includes questions
+    const { data, error } = await supabase.from('assessment_with_questions').select('*').eq('id', id).single()
 
     if (error) {
       console.error('Error fetching assessment by ID:', error)
@@ -163,11 +165,12 @@ export const createAssessment = async (assessmentData) => {
       }
     }
 
-    const transformedData = transformFromDatabase(data)
+    // Get the full assessment with questions using the view
+    const fullAssessmentResult = await getAssessmentById(data.id)
 
     return {
       success: true,
-      data: transformedData,
+      data: fullAssessmentResult.success ? fullAssessmentResult.data : transformFromDatabase(data),
       error: null
     }
   } catch (error) {
@@ -224,11 +227,12 @@ export const updateAssessment = async (id, assessmentData) => {
       }
     }
 
-    const transformedData = transformFromDatabase(data)
+    // Get the full assessment with questions using the view
+    const fullAssessmentResult = await getAssessmentById(data.id)
 
     return {
       success: true,
-      data: transformedData,
+      data: fullAssessmentResult.success ? fullAssessmentResult.data : transformFromDatabase(data),
       error: null
     }
   } catch (error) {
@@ -242,7 +246,7 @@ export const updateAssessment = async (id, assessmentData) => {
 }
 
 /**
- * Delete an assessment
+ * Delete an assessment (will cascade delete all questions)
  * @param {string} id - Assessment ID
  * @returns {Promise<Object>} Result of deletion operation
  */
@@ -334,11 +338,12 @@ export const updateAssessmentStatus = async (id, status) => {
       }
     }
 
-    const transformedData = transformFromDatabase(data)
+    // Get the full assessment with questions using the view
+    const fullAssessmentResult = await getAssessmentById(data.id)
 
     return {
       success: true,
-      data: transformedData,
+      data: fullAssessmentResult.success ? fullAssessmentResult.data : transformFromDatabase(data),
       error: null
     }
   } catch (error) {
@@ -352,7 +357,7 @@ export const updateAssessmentStatus = async (id, status) => {
 }
 
 /**
- * Search assessments by term
+ * Search assessments by term (searches title, category, and question content)
  * @param {string} searchTerm - Search term
  * @param {Object} filters - Optional additional filters
  * @returns {Promise<Object>} Result with matching assessments
@@ -371,12 +376,11 @@ export const searchAssessments = async (searchTerm, filters = {}) => {
       }
     }
 
+    // Search in both assessments table and questions via the view
     let query = supabase
-      .from('assessments')
+      .from('assessment_with_questions')
       .select('*')
-      .or(
-        `question.ilike.%${searchTerm}%,context.ilike.%${searchTerm}%,preferred_feedback.ilike.%${searchTerm}%,category.ilike.%${searchTerm}%`
-      )
+      .or(`title.ilike.%${searchTerm}%,category.ilike.%${searchTerm}%`)
       .order('created_at', { ascending: false })
 
     // Apply additional filters
@@ -403,7 +407,44 @@ export const searchAssessments = async (searchTerm, filters = {}) => {
       }
     }
 
-    const transformedData = data.map(transformFromDatabase)
+    // Also search in questions and get parent assessments
+    const questionSearchQuery = supabase
+      .from('assessment_questions')
+      .select('assessment_id')
+      .or(`question.ilike.%${searchTerm}%,context.ilike.%${searchTerm}%,preferred_feedback.ilike.%${searchTerm}%`)
+
+    const { data: questionResults } = await questionSearchQuery
+
+    // Get unique assessment IDs from question search
+    const assessmentIdsFromQuestions = questionResults ? [...new Set(questionResults.map((q) => q.assessment_id))] : []
+
+    // Fetch assessments that have matching questions
+    let additionalAssessments = []
+    if (assessmentIdsFromQuestions.length > 0) {
+      let additionalQuery = supabase.from('assessment_with_questions').select('*').in('id', assessmentIdsFromQuestions)
+
+      // Apply same filters to additional search
+      if (filters.status) {
+        additionalQuery = additionalQuery.eq('status', filters.status)
+      }
+
+      if (filters.category) {
+        additionalQuery = additionalQuery.eq('category', filters.category)
+      }
+
+      if (filters.isActive !== undefined) {
+        additionalQuery = additionalQuery.eq('is_active', filters.isActive)
+      }
+
+      const { data: additionalData } = await additionalQuery
+      additionalAssessments = additionalData || []
+    }
+
+    // Combine and deduplicate results
+    const allResults = [...data, ...additionalAssessments]
+    const uniqueResults = allResults.filter((item, index, self) => index === self.findIndex((t) => t.id === item.id))
+
+    const transformedData = uniqueResults.map(transformFromDatabase)
 
     return {
       success: true,
@@ -440,7 +481,7 @@ export const getAssessmentsByCategory = async (category) => {
     }
 
     const { data, error } = await supabase
-      .from('assessments')
+      .from('assessment_with_questions')
       .select('*')
       .eq('category', category)
       .order('created_at', { ascending: false })
@@ -472,7 +513,7 @@ export const getAssessmentsByCategory = async (category) => {
 }
 
 /**
- * Duplicate an assessment
+ * Duplicate an assessment (including all its questions)
  * @param {string} id - Assessment ID to duplicate
  * @param {Object} overrides - Optional field overrides for the new assessment
  * @returns {Promise<Object>} Result with duplicated assessment
@@ -491,7 +532,7 @@ export const duplicateAssessment = async (id, overrides = {}) => {
       }
     }
 
-    // First, get the original assessment
+    // First, get the original assessment with questions
     const originalResult = await getAssessmentById(id)
     if (!originalResult.success) {
       return originalResult
@@ -503,7 +544,7 @@ export const duplicateAssessment = async (id, overrides = {}) => {
     const newAssessmentData = {
       ...originalData,
       ...overrides,
-      question: overrides.question || `${originalData.question} (Copy)`,
+      title: overrides.title || `${originalData.title} (Copy)`,
       status: 'Draft' // Always set copies to draft
     }
 
@@ -515,13 +556,38 @@ export const duplicateAssessment = async (id, overrides = {}) => {
     delete newAssessmentData.lastUpdated
     delete newAssessmentData.createdBy
     delete newAssessmentData.modifiedBy
+    delete newAssessmentData.questions
+    delete newAssessmentData.questionCount
 
     // Reset statistics for the copy
     newAssessmentData.completions = 0
     newAssessmentData.totalAttempts = 0
     newAssessmentData.averageScore = 0
 
-    return await createAssessment(newAssessmentData)
+    // Create the new assessment
+    const newAssessmentResult = await createAssessment(newAssessmentData)
+    if (!newAssessmentResult.success) {
+      return newAssessmentResult
+    }
+
+    // If original had questions, duplicate them
+    if (originalData.questions && originalData.questions.length > 0) {
+      const { createAssessmentQuestion } = await import('./assessment-questions-controller')
+
+      for (const question of originalData.questions) {
+        const questionData = {
+          question: question.question,
+          context: question.context,
+          preferred_feedback: question.preferred_feedback,
+          is_active: question.is_active
+        }
+
+        await createAssessmentQuestion(newAssessmentResult.data.id, questionData)
+      }
+    }
+
+    // Return the complete duplicated assessment
+    return await getAssessmentById(newAssessmentResult.data.id)
   } catch (error) {
     console.error('Unexpected error in duplicateAssessment:', error)
     return {
@@ -544,8 +610,8 @@ export const getAssessmentsStats = async (filters = {}) => {
     }
 
     let query = supabase
-      .from('assessments')
-      .select('status, category, completions, total_attempts, average_score, is_active')
+      .from('assessment_with_questions')
+      .select('status, category, completions, total_attempts, average_score, is_active, question_count')
 
     // Apply filters if provided
     if (filters.createdBy) {
@@ -572,6 +638,7 @@ export const getAssessmentsStats = async (filters = {}) => {
       byCategory: {},
       totalCompletions: 0,
       totalAttempts: 0,
+      totalQuestions: 0,
       overallAverageScore: 0
     }
 
@@ -587,9 +654,10 @@ export const getAssessmentsStats = async (filters = {}) => {
         stats.byCategory[item.category] = (stats.byCategory[item.category] || 0) + 1
       }
 
-      // Sum completions and attempts
+      // Sum completions, attempts, and questions
       stats.totalCompletions += item.completions || 0
       stats.totalAttempts += item.total_attempts || 0
+      stats.totalQuestions += item.question_count || 0
 
       // Calculate overall average score
       if (item.average_score > 0) {
@@ -653,11 +721,12 @@ export const updateAssessmentStats = async (id, stats) => {
       }
     }
 
-    const transformedData = transformFromDatabase(data)
+    // Get the full assessment with questions using the view
+    const fullAssessmentResult = await getAssessmentById(data.id)
 
     return {
       success: true,
-      data: transformedData,
+      data: fullAssessmentResult.success ? fullAssessmentResult.data : transformFromDatabase(data),
       error: null
     }
   } catch (error) {

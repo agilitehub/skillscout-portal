@@ -1,18 +1,16 @@
 // Global Instructions Rule Applied!
 
 /**
- * Data Model for Simplified Assessments
- * Matches the new Supabase table structure exactly
+ * Data Model for Enhanced Assessments with Multiple Questions
+ * Assessments now have titles and questions are in a separate table
  */
 
 /**
- * Simplified Assessment Schema - Core Fields Only
+ * Enhanced Assessment Schema - Core Fields Only
  */
 export const AssessmentSchema = {
   // Core Fields (Required)
-  question: { type: 'string', required: true, maxLength: 2000 },
-  context: { type: 'string', required: true, maxLength: 2000 },
-  preferred_feedback: { type: 'string', required: true, maxLength: 2000 },
+  title: { type: 'string', required: true, maxLength: 255 },
 
   // Status and Visibility
   is_active: { type: 'boolean', required: false, default: true },
@@ -29,6 +27,21 @@ export const AssessmentSchema = {
 }
 
 /**
+ * Assessment Question Schema
+ */
+export const AssessmentQuestionSchema = {
+  // Core Fields (Required)
+  assessment_id: { type: 'string', required: true },
+  question: { type: 'string', required: true, maxLength: 2000 },
+  context: { type: 'string', required: true, maxLength: 2000 },
+  preferred_feedback: { type: 'string', required: true, maxLength: 2000 },
+
+  // Order and Status
+  question_order: { type: 'number', required: false, default: 1 },
+  is_active: { type: 'boolean', required: false, default: true }
+}
+
+/**
  * Validate assessment data against schema
  * @param {Object} assessmentData - Assessment data to validate
  * @returns {Object} Validation result with success status and errors
@@ -36,32 +49,14 @@ export const AssessmentSchema = {
 export const validateAssessment = (assessmentData) => {
   const errors = []
 
-  // Required field validation - check for both camelCase (from form) and snake_case (from db)
-  if (!assessmentData.question || assessmentData.question.trim() === '') {
-    errors.push('Question is required')
-  }
-
-  if (!assessmentData.context || assessmentData.context.trim() === '') {
-    errors.push('Context is required')
-  }
-
-  // Check for both preferredFeedback (from form) and preferred_feedback (from db)
-  const preferredFeedback = assessmentData.preferredFeedback || assessmentData.preferred_feedback
-  if (!preferredFeedback || preferredFeedback.trim() === '') {
-    errors.push('Preferred feedback is required')
+  // Required field validation
+  if (!assessmentData.title || assessmentData.title.trim() === '') {
+    errors.push('Title is required')
   }
 
   // Length validation
-  if (assessmentData.question && assessmentData.question.length > 2000) {
-    errors.push('Question must be 2000 characters or less')
-  }
-
-  if (assessmentData.context && assessmentData.context.length > 2000) {
-    errors.push('Context must be 2000 characters or less')
-  }
-
-  if (preferredFeedback && preferredFeedback.length > 2000) {
-    errors.push('Preferred feedback must be 2000 characters or less')
+  if (assessmentData.title && assessmentData.title.length > 255) {
+    errors.push('Title must be 255 characters or less')
   }
 
   if (assessmentData.category && assessmentData.category.length > 255) {
@@ -79,16 +74,64 @@ export const validateAssessment = (assessmentData) => {
 }
 
 /**
- * Transform form data to database format (Supabase format)
+ * Validate assessment question data against schema
+ * @param {Object} questionData - Assessment question data to validate
+ * @returns {Object} Validation result with success status and errors
+ */
+export const validateAssessmentQuestion = (questionData) => {
+  const errors = []
+
+  // Required field validation
+  if (!questionData.assessment_id || questionData.assessment_id.trim() === '') {
+    errors.push('Assessment ID is required')
+  }
+
+  if (!questionData.question || questionData.question.trim() === '') {
+    errors.push('Question is required')
+  }
+
+  if (!questionData.context || questionData.context.trim() === '') {
+    errors.push('Context is required')
+  }
+
+  // Check for both preferredFeedback (from form) and preferred_feedback (from db)
+  const preferredFeedback = questionData.preferredFeedback || questionData.preferred_feedback
+  if (!preferredFeedback || preferredFeedback.trim() === '') {
+    errors.push('Preferred feedback is required')
+  }
+
+  // Length validation
+  if (questionData.question && questionData.question.length > 2000) {
+    errors.push('Question must be 2000 characters or less')
+  }
+
+  if (questionData.context && questionData.context.length > 2000) {
+    errors.push('Context must be 2000 characters or less')
+  }
+
+  if (preferredFeedback && preferredFeedback.length > 2000) {
+    errors.push('Preferred feedback must be 2000 characters or less')
+  }
+
+  return {
+    success: errors.length === 0,
+    errors
+  }
+}
+
+/**
+ * Transform form data to database format (Supabase format) for assessments
  * @param {Object} formData - Data from the form
+ * @param {Object} options - Additional options
+ * @param {boolean} options.isUpdate - Whether this is an update operation
  * @returns {Object} Transformed data for database insertion
  */
-export const transformToDatabase = (formData) => {
+export const transformToDatabase = (formData, options = {}) => {
+  const { isUpdate = false } = options
+
   const transformed = {
     // Core Fields - exact field names that match Supabase
-    question: formData.question?.trim(),
-    context: formData.context?.trim(),
-    preferred_feedback: formData.preferredFeedback?.trim() || formData.preferred_feedback?.trim(),
+    title: formData.title?.trim(),
 
     // Status and Visibility
     is_active:
@@ -120,7 +163,38 @@ export const transformToDatabase = (formData) => {
 }
 
 /**
- * Transform database data to frontend format
+ * Transform form data to database format for assessment questions
+ * @param {Object} formData - Data from the form
+ * @param {string} assessmentId - ID of the parent assessment
+ * @param {Object} options - Additional options
+ * @returns {Object} Transformed data for database insertion
+ */
+export const transformQuestionToDatabase = (formData, assessmentId, options = {}) => {
+  const transformed = {
+    // Core Fields
+    assessment_id: assessmentId,
+    question: formData.question?.trim(),
+    context: formData.context?.trim(),
+    preferred_feedback: formData.preferredFeedback?.trim() || formData.preferred_feedback?.trim(),
+
+    // Order and Status
+    question_order: formData.questionOrder || formData.question_order || 1,
+    is_active:
+      formData.isActive !== undefined ? formData.isActive : formData.is_active !== undefined ? formData.is_active : true
+  }
+
+  // Remove undefined values
+  Object.keys(transformed).forEach((key) => {
+    if (transformed[key] === undefined) {
+      delete transformed[key]
+    }
+  })
+
+  return transformed
+}
+
+/**
+ * Transform database data to frontend format for assessments
  * @param {Object} dbData - Data from database (Supabase format)
  * @returns {Object} Transformed data for frontend use (camelCase)
  */
@@ -130,9 +204,7 @@ export const transformFromDatabase = (dbData) => {
   return {
     // Core Fields
     id: dbData.id,
-    question: dbData.question,
-    context: dbData.context,
-    preferredFeedback: dbData.preferred_feedback, // Convert to camelCase for frontend
+    title: dbData.title,
 
     // Status and Visibility
     isActive: dbData.is_active, // Convert to camelCase for frontend
@@ -147,7 +219,43 @@ export const transformFromDatabase = (dbData) => {
     totalAttempts: dbData.total_attempts || 0, // Convert to camelCase for frontend
     averageScore: parseFloat(dbData.average_score) || 0, // Convert to camelCase for frontend
 
+    // Question count (if available from view)
+    questionCount: dbData.question_count || 0,
+    questions: dbData.questions || [],
+
     // Audit Fields (keep as snake_case since they're mostly for backend use)
+    createdBy: dbData.created_by,
+    modifiedBy: dbData.modified_by,
+    createdAt: dbData.created_at,
+    modifiedAt: dbData.modified_at,
+
+    // Formatted dates for display
+    createdDate: dbData.created_at ? new Date(dbData.created_at).toISOString().split('T')[0] : null,
+    lastUpdated: dbData.modified_at ? new Date(dbData.modified_at).toISOString().split('T')[0] : null
+  }
+}
+
+/**
+ * Transform database data to frontend format for assessment questions
+ * @param {Object} dbData - Data from database (Supabase format)
+ * @returns {Object} Transformed data for frontend use (camelCase)
+ */
+export const transformQuestionFromDatabase = (dbData) => {
+  if (!dbData) return null
+
+  return {
+    // Core Fields
+    id: dbData.id,
+    assessmentId: dbData.assessment_id, // Convert to camelCase
+    question: dbData.question,
+    context: dbData.context,
+    preferredFeedback: dbData.preferred_feedback, // Convert to camelCase
+
+    // Order and Status
+    questionOrder: dbData.question_order, // Convert to camelCase
+    isActive: dbData.is_active, // Convert to camelCase
+
+    // Audit Fields
     createdBy: dbData.created_by,
     modifiedBy: dbData.modified_by,
     createdAt: dbData.created_at,
@@ -233,7 +341,8 @@ export const calculateAssessmentStats = (assessments) => {
       activeAssessments: 0,
       draftAssessments: 0,
       totalCompletions: 0,
-      averageScore: 0
+      averageScore: 0,
+      totalQuestions: 0
     }
   }
 
@@ -242,6 +351,7 @@ export const calculateAssessmentStats = (assessments) => {
     activeAssessments: assessments.filter((a) => a.status === 'Active').length,
     draftAssessments: assessments.filter((a) => a.status === 'Draft').length,
     totalCompletions: assessments.reduce((sum, a) => sum + (a.completions || 0), 0),
+    totalQuestions: assessments.reduce((sum, a) => sum + (a.questionCount || 0), 0),
     averageScore: 0
   }
 
@@ -249,4 +359,24 @@ export const calculateAssessmentStats = (assessments) => {
   stats.averageScore = assessments.length > 0 ? Math.round(totalScore / assessments.length) : 0
 
   return stats
+}
+
+/**
+ * Reorder questions within an assessment
+ * @param {Array} questions - Array of questions
+ * @param {number} fromIndex - Source index
+ * @param {number} toIndex - Target index
+ * @returns {Array} Reordered questions with updated order numbers
+ */
+export const reorderQuestions = (questions, fromIndex, toIndex) => {
+  const result = Array.from(questions)
+  const [removed] = result.splice(fromIndex, 1)
+  result.splice(toIndex, 0, removed)
+
+  // Update question_order for all questions
+  return result.map((question, index) => ({
+    ...question,
+    questionOrder: index + 1,
+    question_order: index + 1
+  }))
 }

@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowLeft, faSave, faEye, faClipboardCheck } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../../core/context/ThemeContext'
+import { BRAND_COLORS, DARK_THEME } from '../../../../core/theme/colors'
 import BusinessSidebar from '../../components/BusinessSidebar'
 import { createAssessment } from '../utils/controller'
 import { parseTags } from '../utils/data-model'
@@ -95,13 +96,14 @@ const CreateAssessment = React.memo(({ user }) => {
             <div className='flex items-center justify-between mb-6'>
               <div className='flex items-center space-x-4'>
                 <Button
+                  variant='ghost'
                   icon={<FontAwesomeIcon icon={faArrowLeft} />}
                   onClick={handleGoBack}
-                  style={{
-                    backgroundColor: darkMode ? '#374151' : '#ffffff',
-                    borderColor: darkMode ? '#6b7280' : '#d1d5db',
-                    color: darkMode ? '#e5e7eb' : '#6b7280'
-                  }}
+                  className={`${
+                    darkMode
+                      ? 'text-gray-300 hover:text-white hover:bg-gray-700'
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                  }`}
                 >
                   Back to Assessments
                 </Button>
@@ -116,25 +118,22 @@ const CreateAssessment = React.memo(({ user }) => {
               </div>
               <div className='flex space-x-3'>
                 <Button
+                  variant='ghost'
                   icon={<FontAwesomeIcon icon={faEye} />}
                   onClick={handlePreview}
-                  style={{
-                    backgroundColor: darkMode ? '#4b5563' : '#ffffff',
-                    borderColor: darkMode ? '#6b7280' : '#d1d5db',
-                    color: darkMode ? '#e5e7eb' : '#6b7280'
-                  }}
+                  className={`${
+                    darkMode
+                      ? 'text-gray-300 hover:text-white hover:bg-gray-700'
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                  }`}
                 >
                   Preview
                 </Button>
                 <Button
-                  type='primary'
+                  variant='success'
                   icon={<FontAwesomeIcon icon={faSave} />}
                   onClick={() => form.submit()}
                   loading={loading}
-                  style={{
-                    backgroundColor: darkMode ? '#059669' : '#10b981',
-                    borderColor: darkMode ? '#059669' : '#10b981'
-                  }}
                 >
                   Create Assessment
                 </Button>
@@ -156,7 +155,7 @@ const CreateAssessment = React.memo(({ user }) => {
                 className={`${darkMode ? 'bg-gray-800 border-gray-600' : 'bg-white border-gray-200'} shadow-lg`}
                 bodyStyle={{
                   padding: '24px',
-                  backgroundColor: darkMode ? '#1f2937' : '#ffffff'
+                  backgroundColor: darkMode ? DARK_THEME.background.secondary : BRAND_COLORS.white
                 }}
               >
                 <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
@@ -319,29 +318,16 @@ const CreateAssessment = React.memo(({ user }) => {
 
                 <div className='flex justify-end space-x-3 mt-6 pt-4 border-t border-gray-200 dark:border-gray-600'>
                   <Button
+                    variant='danger'
                     onClick={() => {
                       form.resetFields()
                       navigate('/business-dashboard/assessments')
                     }}
                     size='large'
-                    style={{
-                      backgroundColor: darkMode ? '#dc2626' : '#ef4444',
-                      borderColor: darkMode ? '#dc2626' : '#ef4444',
-                      color: '#ffffff'
-                    }}
                   >
                     Cancel
                   </Button>
-                  <Button
-                    type='primary'
-                    htmlType='submit'
-                    size='large'
-                    loading={loading}
-                    style={{
-                      backgroundColor: darkMode ? '#059669' : '#10b981',
-                      borderColor: darkMode ? '#059669' : '#10b981'
-                    }}
-                  >
+                  <Button variant='success' htmlType='submit' size='large' loading={loading}>
                     Create Assessment
                   </Button>
                 </div>
