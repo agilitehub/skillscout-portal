@@ -1,22 +1,44 @@
 ---
-description: 
-globs: src/modules/**/*,src/ui/**/*
-alwaysApply: false
+alwaysApply: true
 ---
-## This rule provides standards for designing User Interfaces (aka frontend development)
-- Always start the file with a comment "Frontend Instructions Rule Applied!".
-- Use Ant Design (antd) and TailwindCSS exclusively to design the user interfaces and functionality.
-- Never use inline CSS and never create CSS resources.
-- All styling must be done through Tailwind only.
-- FontAwesome must be used for ALL icons.
-- Split logic into reusable components within the `components` folder in the folder the primary file is in.
-- Design User Intefaces to be responsive, with emphasis on mobile browsers.
-- Always design for light and dark mode using [ThemeContext.js](mdc:src/ui/ThemeContext.js)
-- Use the already installed "recharts" module for visual reports like charts, etc.
-- For any form fields use the components in core/components/form-components/form-fields
-- For any colours use the colors in src/core/theme/colors.js
-- For any buttons use the reusable button component in src/core/components/Button.js
 
-## This rule provides best practices when working with ReactJS specifically
-- Optimize performance using React.memo, useMemo, and useCallback
-- Follow React hooks best practices and rules
+# ✅ Frontend (UI) Development Standards
+
+### **General**
+- Start each file with the comment:  
+  `// Frontend Instructions Rule Applied!`
+- All UI must be **responsive**, prioritizing **mobile-first** design.
+- Support **light and dark mode** via `src/core/context/ThemeContext.js`.
+
+---
+
+### **Styling**
+- **Use TailwindCSS exclusively** for all styling.  
+  ❌ No inline styles.  
+  ❌ No custom CSS files.  
+- Use predefined colors from `src/core/theme/colors.js`.
+
+---
+
+### **UI Components**
+- **Icons:** Use **FontAwesome** for all icons.  
+- **Buttons:** Always use the reusable button in `src/core/components/Button.js`.  
+- **Forms:** Use form fields from `src/core/components/form-components/form-fields`.  
+- **Charts/Reports:** Use the **Recharts** module for all visual reports.
+- **Tables:** Use the reusable TableView and TableActions components in `src/core/components/view-components/table-view` for all tables
+
+---
+
+### **Component Architecture**
+- Split logic into **reusable components** inside a `components` folder, located in the same directory as the primary file.
+
+---
+
+# ✅ ReactJS Best Practices
+
+### **Hooks & Performance**
+- Follow official **React Hooks Rules**.  
+- Optimize performance with:
+  - `React.memo` for pure components
+  - `useMemo` for expensive calculations
+  - `useCallback` for stable function references

@@ -1,15 +1,55 @@
 ---
-description: 
-globs: 
+description: Global development standards for all files
+globs: "**/*"
 alwaysApply: true
 ---
-# Core Competencies
-Expert Web Developer in JavaScript, ReactJS, Tailwind, and Ant Design.
 
-## This rule provides standards for general development
-- Always start the file with a comment "Global Instructions Rule Applied!"
-- All modules should be imported at the top of the file and not inline in functions.
-- Never import everything from modules (e.g. *). Explicitly import what's required.
-- Write modular, reusable, and maintainable code (Module-Driven Development). 
-- Provide clear inline documentation and comments where relevant.
-- Implement proper error handling and validation.
+# ✅ Core Competencies
+Expert-level Web Development in **JavaScript**, **ReactJS**, **TailwindCSS**, and **Ant Design**.
+
+---
+
+# ✅ Global Development Standards
+
+### **General**
+- Start every file with the comment:  
+  `// Global Instructions Rule Applied!`
+- Write **modular, reusable, and maintainable** code (**Module-Driven Development**).
+- Favor **composition over inheritance** in React components.
+- Ensure **cross-browser compatibility** and adhere to **W3C standards**.
+- Provide **clear inline documentation** and meaningful comments for complex logic.
+
+---
+
+### **Error Handling & Validation**
+- Always handle errors gracefully:
+  - Use **try/catch** for async operations.
+  - Display user-friendly error messages (never raw errors).
+  - Log technical errors to a monitoring system or console (dev mode only).
+- Use **fallback UI** (React error boundaries) for critical component failures.
+
+---
+
+### **Imports & Code Organization**
+- Place **all imports at the top** of the file.  
+  ❌ No inline imports inside functions.  
+- Explicitly import only what’s required.  
+  ❌ Never use wildcard imports (`import * as ...`).
+- Keep files **small and single-responsibility**; split into multiple files if exceeding ~300 lines.
+
+---
+
+### **Performance & Optimization**
+- Avoid unnecessary re-renders:
+  - Use `React.memo` for pure components.
+  - Use `useMemo` and `useCallback` to memoize expensive operations.
+- Avoid deep object comparisons in props; normalize data where possible.
+- Lazy-load heavy components with `React.lazy` and `Suspense`.
+
+---
+
+### **Security & Data Handling**
+- Never expose sensitive information (API keys, tokens, etc.).
+- Sanitize all external data before rendering to prevent XSS attacks.
+- Use environment variables (`process.env`) for secrets.
+
