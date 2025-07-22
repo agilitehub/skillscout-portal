@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import { useTheme } from '../../../../core/context/ThemeContext'
 import BusinessSidebar from '../../components/BusinessSidebar'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faClipboardCheck, faPlus, faArrowLeft, faCheckCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons'
+import { faClipboardCheck, faPlus, faArrowLeft, faCheckCircle, faTimesCircle, faTimes } from '@fortawesome/free-solid-svg-icons'
 import { Select, Modal, Form, message, Row, Col, Tag, Spin, Alert } from 'antd'
 import { Button } from '../../../../core/components'
 import TableView from '../../../../core/components/view-components/table-view/TableView'
@@ -490,9 +490,24 @@ const Assessments = React.memo(({ user }) => {
         {/* Add/Edit Modal */}
         <Modal
           title={
-            <span className='text-white font-semibold text-lg'>
-              {editingAssessment ? 'Edit Assessment' : 'New Assessment'}
-            </span>
+            <div className='flex items-center justify-between w-full'>
+              <span className='text-white font-semibold text-lg'>
+                {editingAssessment ? 'Edit Assessment' : 'New Assessment'}
+              </span>
+              <button
+                onClick={() => {
+                  if (!submitLoading) {
+                    setIsModalVisible(false)
+                    setEditingAssessment(null)
+                    form.resetFields()
+                  }
+                }}
+                className='text-white hover:text-gray-200 transition-colors duration-200 p-1 rounded'
+                disabled={submitLoading}
+              >
+                <FontAwesomeIcon icon={faTimes} className='text-lg' />
+              </button>
+            </div>
           }
           open={isModalVisible}
           onCancel={() => {
@@ -518,7 +533,7 @@ const Assessments = React.memo(({ user }) => {
             }
           }}
           className={darkMode ? 'dark-modal' : ''}
-          closable={!submitLoading}
+          closable={false}
         >
           <div className={`p-6 ${darkMode ? 'bg-gray-800' : 'bg-gray-50'} rounded-lg mb-4`}>
             <Spin spinning={submitLoading} tip={`${editingAssessment ? 'Updating' : 'Creating'} assessment...`}>
@@ -669,7 +684,17 @@ const Assessments = React.memo(({ user }) => {
 
         {/* View Modal */}
         <Modal
-          title={<span className='text-white font-semibold text-lg'>Assessment Details</span>}
+          title={
+            <div className='flex items-center justify-between w-full'>
+              <span className='text-white font-semibold text-lg'>Assessment Details</span>
+              <button
+                onClick={() => setIsViewModalVisible(false)}
+                className='text-white hover:text-gray-200 transition-colors duration-200 p-1 rounded'
+              >
+                <FontAwesomeIcon icon={faTimes} className='text-lg' />
+              </button>
+            </div>
+          }
           open={isViewModalVisible}
           onCancel={() => setIsViewModalVisible(false)}
           footer={null}
@@ -688,6 +713,7 @@ const Assessments = React.memo(({ user }) => {
             }
           }}
           className={darkMode ? 'dark-modal' : ''}
+          closable={false}
         >
           {selectedAssessment && (
             <div className={`p-6 ${darkMode ? 'bg-gray-800' : 'bg-gray-50'} rounded-lg`}>
