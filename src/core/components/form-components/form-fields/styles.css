@@ -632,4 +632,59 @@
 
 .ant-form-item .ant-picker input {
   height: 30px !important;
+}
+
+/* Emerald theme for select dropdowns */
+.emerald-select-dropdown .ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
+  background-color: #d1fae5 !important;
+  color: #047857 !important;
+  font-weight: 500 !important;
+}
+
+.emerald-select-dropdown .ant-select-item-option:hover:not(.ant-select-item-option-disabled) {
+  background-color: #ecfdf5 !important;
+  color: #065f46 !important;
+}
+
+.emerald-select-dropdown .ant-select-item-option-active:not(.ant-select-item-option-disabled) {
+  background-color: #ecfdf5 !important;
+  color: #065f46 !important;
+}
+
+/* Dark mode emerald theme for select dropdowns */
+.dark .emerald-select-dropdown .ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
+  background-color: #065f46 !important;
+  color: #10b981 !important;
+  font-weight: 500 !important;
+}
+
+.dark .emerald-select-dropdown .ant-select-item-option:hover:not(.ant-select-item-option-disabled) {
+  background-color: #064e3b !important;
+  color: #34d399 !important;
+}
+
+.dark .emerald-select-dropdown .ant-select-item-option-active:not(.ant-select-item-option-disabled) {
+  background-color: #064e3b !important;
+  color: #34d399 !important;
+}
+
+/* Emerald theme for dropdown container */
+.emerald-select-dropdown .ant-select-dropdown {
+  border: 1px solid #d1d5db !important;
+}
+
+.dark .emerald-select-dropdown .ant-select-dropdown {
+  background-color: #374151 !important;
+  border: 1px solid #6b7280 !important;
+}
+
+/* Hide dropdown completely for tags mode with no options */
+.tags-no-dropdown .ant-select-dropdown,
+.tags-no-dropdown .ant-select-dropdown-menu,
+.tags-no-dropdown .rc-virtual-list {
+  display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  max-height: 0 !important;
+  opacity: 0 !important;
 } 
