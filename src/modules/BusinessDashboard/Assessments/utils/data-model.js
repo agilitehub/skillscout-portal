@@ -122,13 +122,9 @@ export const validateAssessmentQuestion = (questionData) => {
 /**
  * Transform form data to database format (Supabase format) for assessments
  * @param {Object} formData - Data from the form
- * @param {Object} options - Additional options
- * @param {boolean} options.isUpdate - Whether this is an update operation
  * @returns {Object} Transformed data for database insertion
  */
-export const transformToDatabase = (formData, options = {}) => {
-  const { isUpdate = false } = options
-
+export const transformToDatabase = (formData) => {
   const transformed = {
     // Core Fields - exact field names that match Supabase
     title: formData.title?.trim(),
@@ -166,10 +162,9 @@ export const transformToDatabase = (formData, options = {}) => {
  * Transform form data to database format for assessment questions
  * @param {Object} formData - Data from the form
  * @param {string} assessmentId - ID of the parent assessment
- * @param {Object} options - Additional options
  * @returns {Object} Transformed data for database insertion
  */
-export const transformQuestionToDatabase = (formData, assessmentId, options = {}) => {
+export const transformQuestionToDatabase = (formData, assessmentId) => {
   const transformed = {
     // Core Fields
     assessment_id: assessmentId,

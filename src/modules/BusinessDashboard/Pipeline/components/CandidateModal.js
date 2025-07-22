@@ -183,6 +183,30 @@ const CandidateModal = React.memo(({ visible, onCancel, onSubmit, form, editingC
             style={{ width: '100%' }}
             tokenSeparators={[',']}
             maxTagCount={10}
+            tagRender={({ label, onClose, closable }) => (
+              <span
+                className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-medium mr-1 mb-1 ${
+                  darkMode
+                    ? 'bg-emerald-800 text-emerald-100 border border-emerald-700'
+                    : 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+                }`}
+              >
+                {label}
+                {closable && (
+                  <button
+                    type="button"
+                    onClick={onClose}
+                    className={`ml-2 inline-flex items-center justify-center w-4 h-4 rounded-full text-xs font-medium hover:opacity-75 focus:outline-none ${
+                      darkMode
+                        ? 'text-emerald-300 hover:bg-emerald-700'
+                        : 'text-emerald-600 hover:bg-emerald-200'
+                    }`}
+                  >
+                    ×
+                  </button>
+                )}
+              </span>
+            )}
           >
             {commonSkills.map((skill) => (
               <Option key={skill} value={skill}>

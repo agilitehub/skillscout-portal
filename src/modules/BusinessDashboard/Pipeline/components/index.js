@@ -9,7 +9,6 @@ import {
   DndContext,
   closestCenter,
   pointerWithin,
-  rectIntersection,
   DragOverlay,
   useSensor,
   useSensors,
@@ -333,86 +332,86 @@ const Pipeline = React.memo(({ user }) => {
         const activeId = parseInt(active.id)
         const overIdRaw = over.id
 
-      // Identify source stage & index
-      let sourceStage = null
-      let sourceIndex = -1
-      for (const stageKey in pipelineData) {
-        const idx = pipelineData[stageKey].findIndex((c) => c.id === activeId)
-        if (idx !== -1) {
-          sourceStage = stageKey
-          sourceIndex = idx
-          break
-        }
-      }
-
-      if (sourceStage === null) return
-
-      // Determine target stage & index
-      let targetStage = sourceStage
-      let targetIndex = null
-
-      const overIdNum = parseInt(overIdRaw)
-      if (!Number.isNaN(overIdNum)) {
-        // Dropped over another candidate card
+        // Identify source stage & index
+        let sourceStage = null
+        let sourceIndex = -1
         for (const stageKey in pipelineData) {
-          const idx = pipelineData[stageKey].findIndex((c) => c.id === overIdNum)
+          const idx = pipelineData[stageKey].findIndex((c) => c.id === activeId)
           if (idx !== -1) {
-            targetStage = stageKey
-            targetIndex = idx
+            sourceStage = stageKey
+            sourceIndex = idx
             break
           }
         }
-      } else if (typeof overIdRaw === 'string') {
-        // Dropped over stage area - check if it's a valid stage key
-        if (pipelineData.hasOwnProperty(overIdRaw)) {
-          targetStage = overIdRaw
-          targetIndex = pipelineData[targetStage]?.length ?? 0
-        }
-      }
 
-      // Debug log to help troubleshoot
-      console.log('Drag end debug:', {
-        activeId,
-        overIdRaw,
-        sourceStage,
-        targetStage,
-        targetIndex
-      })
+        if (sourceStage === null) return
 
-      if (targetStage === null || targetIndex === null) return
+        // Determine target stage & index
+        let targetStage = sourceStage
+        let targetIndex = null
 
-      // No change
-      if (sourceStage === targetStage && sourceIndex === targetIndex) return
-
-      setPipelineData((prev) => {
-        const newData = { ...prev }
-
-        const candidate = newData[sourceStage][sourceIndex]
-
-        // Prepare new arrays
-        newData[sourceStage] = [...newData[sourceStage]]
-        newData[targetStage] = [...newData[targetStage]]
-
-        // Remove from source
-        newData[sourceStage].splice(sourceIndex, 1)
-
-        // Adjust targetIndex if moving within same list and removing earlier element
-        let insertIndex = targetIndex
-        if (sourceStage === targetStage && sourceIndex < targetIndex) {
-          insertIndex = targetIndex - 1
+        const overIdNum = parseInt(overIdRaw)
+        if (!Number.isNaN(overIdNum)) {
+          // Dropped over another candidate card
+          for (const stageKey in pipelineData) {
+            const idx = pipelineData[stageKey].findIndex((c) => c.id === overIdNum)
+            if (idx !== -1) {
+              targetStage = stageKey
+              targetIndex = idx
+              break
+            }
+          }
+        } else if (typeof overIdRaw === 'string') {
+          // Dropped over stage area - check if it's a valid stage key
+          if (pipelineData.hasOwnProperty(overIdRaw)) {
+            targetStage = overIdRaw
+            targetIndex = pipelineData[targetStage]?.length ?? 0
+          }
         }
 
-        // Insert into target
-        newData[targetStage].splice(insertIndex, 0, candidate)
+        // Debug log to help troubleshoot
+        console.log('Drag end debug:', {
+          activeId,
+          overIdRaw,
+          sourceStage,
+          targetStage,
+          targetIndex
+        })
 
-        // Message
-        if (sourceStage !== targetStage) {
-          const targetStageTitle = stages.find((s) => s.key === targetStage)?.title
-          message.success(`Moved ${candidate.name} to ${targetStageTitle}`)
-        }
+        if (targetStage === null || targetIndex === null) return
 
-        return newData
-      })
+        // No change
+        if (sourceStage === targetStage && sourceIndex === targetIndex) return
+
+        setPipelineData((prev) => {
+          const newData = { ...prev }
+
+          const candidate = newData[sourceStage][sourceIndex]
+
+          // Prepare new arrays
+          newData[sourceStage] = [...newData[sourceStage]]
+          newData[targetStage] = [...newData[targetStage]]
+
+          // Remove from source
+          newData[sourceStage].splice(sourceIndex, 1)
+
+          // Adjust targetIndex if moving within same list and removing earlier element
+          let insertIndex = targetIndex
+          if (sourceStage === targetStage && sourceIndex < targetIndex) {
+            insertIndex = targetIndex - 1
+          }
+
+          // Insert into target
+          newData[targetStage].splice(insertIndex, 0, candidate)
+
+          // Message
+          if (sourceStage !== targetStage) {
+            const targetStageTitle = stages.find((s) => s.key === targetStage)?.title
+            message.success(`Moved ${candidate.name} to ${targetStageTitle}`)
+          }
+
+          return newData
+        })
       } catch (error) {
         console.error('Error in drag end:', error)
         // Reset drag state on error
@@ -440,11 +439,11 @@ const Pipeline = React.memo(({ user }) => {
   const customCollisionDetection = useCallback((args) => {
     // First try to detect collisions with stage columns (droppable areas)
     const pointerCollisions = pointerWithin(args)
-    
+
     if (pointerCollisions.length > 0) {
       return pointerCollisions
     }
-    
+
     // Fallback to closest center for better UX
     return closestCenter(args)
   }, [])
