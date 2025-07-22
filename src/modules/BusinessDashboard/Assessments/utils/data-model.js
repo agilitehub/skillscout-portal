@@ -1,35 +1,31 @@
 // Global Instructions Rule Applied!
 
 /**
- * Data Model for Assessments
- * Provides validation, transformation, and mapping functions
+ * Data Model for Simplified Assessments
+ * Matches the new Supabase table structure exactly
  */
 
 /**
- * Assessment data structure definition
+ * Simplified Assessment Schema - Core Fields Only
  */
 export const AssessmentSchema = {
-  // Basic Information (Required)
-  question: { type: 'string', required: true, maxLength: 1000 },
+  // Core Fields (Required)
+  question: { type: 'string', required: true, maxLength: 2000 },
   context: { type: 'string', required: true, maxLength: 2000 },
-  preferredFeedback: { type: 'string', required: true, maxLength: 2000 },
+  preferred_feedback: { type: 'string', required: true, maxLength: 2000 },
 
   // Status and Visibility
+  is_active: { type: 'boolean', required: false, default: true },
   status: { type: 'string', required: false, enum: ['Draft', 'Active', 'Inactive', 'Archived'], default: 'Draft' },
-  isActive: { type: 'boolean', required: false, default: true },
 
   // Metadata
+  tags: { type: 'array', required: false, default: [] },
   category: { type: 'string', required: false, maxLength: 255 },
-  tags: { type: 'array', required: false },
-  searchKeywords: { type: 'string', required: false },
-  
-  // Statistics (Auto-calculated)
+
+  // Statistics (Optional)
   completions: { type: 'number', required: false, default: 0 },
-  totalAttempts: { type: 'number', required: false, default: 0 },
-  averageScore: { type: 'number', required: false, default: 0 },
-  
-  // Related Data
-  jobOpportunityIds: { type: 'array', required: false }
+  total_attempts: { type: 'number', required: false, default: 0 },
+  average_score: { type: 'number', required: false, default: 0 }
 }
 
 /**
@@ -40,30 +36,36 @@ export const AssessmentSchema = {
 export const validateAssessment = (assessmentData) => {
   const errors = []
 
-  // Required field validation
-  const requiredFields = Object.keys(AssessmentSchema).filter((key) => AssessmentSchema[key].required)
-
-  requiredFields.forEach((field) => {
-    if (!assessmentData[field] || assessmentData[field] === '') {
-      errors.push(`${field} is required`)
-    }
-  })
-
-  // Type-specific validation
-  if (assessmentData.question && assessmentData.question.length > AssessmentSchema.question.maxLength) {
-    errors.push(`Question must be ${AssessmentSchema.question.maxLength} characters or less`)
+  // Required field validation - check for both camelCase (from form) and snake_case (from db)
+  if (!assessmentData.question || assessmentData.question.trim() === '') {
+    errors.push('Question is required')
   }
 
-  if (assessmentData.context && assessmentData.context.length > AssessmentSchema.context.maxLength) {
-    errors.push(`Context must be ${AssessmentSchema.context.maxLength} characters or less`)
+  if (!assessmentData.context || assessmentData.context.trim() === '') {
+    errors.push('Context is required')
   }
 
-  if (assessmentData.preferredFeedback && assessmentData.preferredFeedback.length > AssessmentSchema.preferredFeedback.maxLength) {
-    errors.push(`Preferred feedback must be ${AssessmentSchema.preferredFeedback.maxLength} characters or less`)
+  // Check for both preferredFeedback (from form) and preferred_feedback (from db)
+  const preferredFeedback = assessmentData.preferredFeedback || assessmentData.preferred_feedback
+  if (!preferredFeedback || preferredFeedback.trim() === '') {
+    errors.push('Preferred feedback is required')
   }
 
-  if (assessmentData.category && assessmentData.category.length > AssessmentSchema.category.maxLength) {
-    errors.push(`Category must be ${AssessmentSchema.category.maxLength} characters or less`)
+  // Length validation
+  if (assessmentData.question && assessmentData.question.length > 2000) {
+    errors.push('Question must be 2000 characters or less')
+  }
+
+  if (assessmentData.context && assessmentData.context.length > 2000) {
+    errors.push('Context must be 2000 characters or less')
+  }
+
+  if (preferredFeedback && preferredFeedback.length > 2000) {
+    errors.push('Preferred feedback must be 2000 characters or less')
+  }
+
+  if (assessmentData.category && assessmentData.category.length > 255) {
+    errors.push('Category must be 255 characters or less')
   }
 
   if (assessmentData.status && !AssessmentSchema.status.enum.includes(assessmentData.status)) {
@@ -77,48 +79,34 @@ export const validateAssessment = (assessmentData) => {
 }
 
 /**
- * Transform form data to database format
+ * Transform form data to database format (Supabase format)
  * @param {Object} formData - Data from the form
- * @param {Object} options - Additional options including user context
- * @param {Object} options.user - Current user information
- * @param {boolean} options.isUpdate - Whether this is an update operation
  * @returns {Object} Transformed data for database insertion
  */
-export const transformToDatabase = (formData, options = {}) => {
-  const { user, isUpdate = false } = options
-
+export const transformToDatabase = (formData) => {
   const transformed = {
-    // Basic Information
+    // Core Fields - exact field names that match Supabase
     question: formData.question?.trim(),
     context: formData.context?.trim(),
-    preferred_feedback: formData.preferredFeedback?.trim(),
+    preferred_feedback: formData.preferredFeedback?.trim() || formData.preferred_feedback?.trim(),
 
     // Status and Visibility
+    is_active:
+      formData.isActive !== undefined
+        ? formData.isActive
+        : formData.is_active !== undefined
+          ? formData.is_active
+          : true,
     status: formData.status || 'Draft',
-    is_active: formData.isActive !== undefined ? formData.isActive : true,
 
     // Metadata
     category: formData.category?.trim() || null,
     tags: Array.isArray(formData.tags) ? formData.tags : [],
-    search_keywords: formData.searchKeywords?.trim() || null,
 
     // Statistics (preserve existing values for updates, default for creates)
     completions: formData.completions || 0,
-    total_attempts: formData.totalAttempts || 0,
-    average_score: parseFloat(formData.averageScore) || 0.0,
-
-    // Related Data
-    job_opportunity_ids: Array.isArray(formData.jobOpportunityIds) ? formData.jobOpportunityIds : []
-  }
-
-  // Add user context for audit fields
-  if (user && user.id) {
-    if (!isUpdate) {
-      // Set created_by only for new records
-      transformed.created_by = user.id
-    }
-    // Always set modified_by for both create and update operations
-    transformed.modified_by = user.id
+    total_attempts: formData.totalAttempts || formData.total_attempts || 0,
+    average_score: parseFloat(formData.averageScore || formData.average_score) || 0.0
   }
 
   // Remove undefined values
@@ -133,84 +121,42 @@ export const transformToDatabase = (formData, options = {}) => {
 
 /**
  * Transform database data to frontend format
- * @param {Object} dbData - Data from database
- * @returns {Object} Transformed data for frontend use
+ * @param {Object} dbData - Data from database (Supabase format)
+ * @returns {Object} Transformed data for frontend use (camelCase)
  */
 export const transformFromDatabase = (dbData) => {
   if (!dbData) return null
 
   return {
-    // Basic Information
+    // Core Fields
     id: dbData.id,
     question: dbData.question,
     context: dbData.context,
-    preferredFeedback: dbData.preferred_feedback,
+    preferredFeedback: dbData.preferred_feedback, // Convert to camelCase for frontend
 
     // Status and Visibility
+    isActive: dbData.is_active, // Convert to camelCase for frontend
     status: dbData.status,
-    isActive: dbData.is_active,
 
     // Metadata
     category: dbData.category,
     tags: dbData.tags || [],
-    searchKeywords: dbData.search_keywords,
 
     // Statistics
     completions: dbData.completions || 0,
-    totalAttempts: dbData.total_attempts || 0,
-    averageScore: parseFloat(dbData.average_score) || 0,
+    totalAttempts: dbData.total_attempts || 0, // Convert to camelCase for frontend
+    averageScore: parseFloat(dbData.average_score) || 0, // Convert to camelCase for frontend
 
-    // Related Data
-    jobOpportunityIds: dbData.job_opportunity_ids || [],
-
-    // Audit Fields
+    // Audit Fields (keep as snake_case since they're mostly for backend use)
     createdBy: dbData.created_by,
     modifiedBy: dbData.modified_by,
     createdAt: dbData.created_at,
-    updatedAt: dbData.updated_at,
+    modifiedAt: dbData.modified_at,
 
     // Formatted dates for display
     createdDate: dbData.created_at ? new Date(dbData.created_at).toISOString().split('T')[0] : null,
-    lastUpdated: dbData.updated_at ? new Date(dbData.updated_at).toISOString().split('T')[0] : null
+    lastUpdated: dbData.modified_at ? new Date(dbData.modified_at).toISOString().split('T')[0] : null
   }
-}
-
-/**
- * Generate search keywords from assessment data
- * @param {Object} assessmentData - Assessment data
- * @returns {string} Generated search keywords
- */
-export const generateSearchKeywords = (assessmentData) => {
-  const keywords = []
-
-  if (assessmentData.question) {
-    // Extract meaningful words from question
-    const questionWords = assessmentData.question
-      .toLowerCase()
-      .replace(/[^\w\s]/gi, '')
-      .split(/\s+/)
-      .filter((word) => word.length > 3)
-    keywords.push(...questionWords)
-  }
-
-  if (assessmentData.context) {
-    // Extract meaningful words from context
-    const contextWords = assessmentData.context
-      .toLowerCase()
-      .replace(/[^\w\s]/gi, '')
-      .split(/\s+/)
-      .filter((word) => word.length > 3)
-    keywords.push(...contextWords)
-  }
-
-  if (assessmentData.category) keywords.push(assessmentData.category.toLowerCase())
-
-  if (Array.isArray(assessmentData.tags)) {
-    keywords.push(...assessmentData.tags.map((tag) => tag.toLowerCase()))
-  }
-
-  // Remove duplicates and join
-  return [...new Set(keywords)].join(' ')
 }
 
 /**
@@ -293,8 +239,8 @@ export const calculateAssessmentStats = (assessments) => {
 
   const stats = {
     totalAssessments: assessments.length,
-    activeAssessments: assessments.filter(a => a.status === 'Active').length,
-    draftAssessments: assessments.filter(a => a.status === 'Draft').length,
+    activeAssessments: assessments.filter((a) => a.status === 'Active').length,
+    draftAssessments: assessments.filter((a) => a.status === 'Draft').length,
     totalCompletions: assessments.reduce((sum, a) => sum + (a.completions || 0), 0),
     averageScore: 0
   }
@@ -304,4 +250,3 @@ export const calculateAssessmentStats = (assessments) => {
 
   return stats
 }
-

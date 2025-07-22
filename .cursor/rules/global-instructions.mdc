@@ -18,6 +18,8 @@ Expert-level Web Development in **JavaScript**, **ReactJS**, **TailwindCSS**, an
 - Favor **composition over inheritance** in React components.
 - Ensure **cross-browser compatibility** and adhere to **W3C standards**.
 - Provide **clear inline documentation** and meaningful comments for complex logic.
+- Never try to start the react app as it will always be running
+- Never try to run a `npm run build` or any other npm related scripts
 
 ---
 

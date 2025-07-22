@@ -1,10 +1,10 @@
 // Global Instructions Rule Applied!
 import { createClient } from '@supabase/supabase-js'
-import { transformToDatabase, transformFromDatabase, validateAssessment, generateSearchKeywords } from './data-model'
+import { transformToDatabase, transformFromDatabase, validateAssessment } from './data-model'
 
 /**
  * Assessments Controller
- * Handles all CRUD operations for assessments
+ * Handles all CRUD operations for simplified assessments
  */
 
 // Initialize Supabase client
@@ -37,16 +37,12 @@ export const getAllAssessments = async (filters = {}) => {
       query = query.eq('status', filters.status)
     }
 
-    if (filters.type) {
-      query = query.eq('type', filters.type)
-    }
-
-    if (filters.difficulty) {
-      query = query.eq('difficulty', filters.difficulty)
-    }
-
     if (filters.category) {
       query = query.ilike('category', `%${filters.category}%`)
+    }
+
+    if (filters.isActive !== undefined) {
+      query = query.eq('is_active', filters.isActive)
     }
 
     if (filters.createdBy) {
@@ -135,10 +131,9 @@ export const getAssessmentById = async (id) => {
 /**
  * Create a new assessment
  * @param {Object} assessmentData - Assessment data
- * @param {Object} user - Current user information
  * @returns {Promise<Object>} Result with created assessment
  */
-export const createAssessment = async (assessmentData, user = null) => {
+export const createAssessment = async (assessmentData) => {
   try {
     if (!supabase) {
       throw new Error('Supabase client not initialized')
@@ -154,17 +149,8 @@ export const createAssessment = async (assessmentData, user = null) => {
       }
     }
 
-    // Generate search keywords
-    const searchKeywords = generateSearchKeywords(assessmentData)
-
-    // Transform form data to database format with user context
-    const dbData = transformToDatabase(
-      {
-        ...assessmentData,
-        searchKeywords
-      },
-      { user, isUpdate: false }
-    )
+    // Transform form data to database format
+    const dbData = transformToDatabase(assessmentData, { isUpdate: false })
 
     const { data, error } = await supabase.from('assessments').insert([dbData]).select().single()
 
@@ -198,10 +184,9 @@ export const createAssessment = async (assessmentData, user = null) => {
  * Update an existing assessment
  * @param {string} id - Assessment ID
  * @param {Object} assessmentData - Updated assessment data
- * @param {Object} user - Current user information
  * @returns {Promise<Object>} Result with updated assessment
  */
-export const updateAssessment = async (id, assessmentData, user = null) => {
+export const updateAssessment = async (id, assessmentData) => {
   try {
     if (!supabase) {
       throw new Error('Supabase client not initialized')
@@ -225,17 +210,8 @@ export const updateAssessment = async (id, assessmentData, user = null) => {
       }
     }
 
-    // Generate search keywords
-    const searchKeywords = generateSearchKeywords(assessmentData)
-
-    // Transform form data to database format with user context
-    const dbData = transformToDatabase(
-      {
-        ...assessmentData,
-        searchKeywords
-      },
-      { user, isUpdate: true }
-    )
+    // Transform form data to database format
+    const dbData = transformToDatabase(assessmentData, { isUpdate: true })
 
     const { data, error } = await supabase.from('assessments').update(dbData).eq('id', id).select().single()
 
@@ -399,7 +375,7 @@ export const searchAssessments = async (searchTerm, filters = {}) => {
       .from('assessments')
       .select('*')
       .or(
-        `title.ilike.%${searchTerm}%,category.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%,search_keywords.ilike.%${searchTerm}%`
+        `question.ilike.%${searchTerm}%,context.ilike.%${searchTerm}%,preferred_feedback.ilike.%${searchTerm}%,category.ilike.%${searchTerm}%`
       )
       .order('created_at', { ascending: false })
 
@@ -408,12 +384,12 @@ export const searchAssessments = async (searchTerm, filters = {}) => {
       query = query.eq('status', filters.status)
     }
 
-    if (filters.type) {
-      query = query.eq('type', filters.type)
+    if (filters.category) {
+      query = query.eq('category', filters.category)
     }
 
-    if (filters.difficulty) {
-      query = query.eq('difficulty', filters.difficulty)
+    if (filters.isActive !== undefined) {
+      query = query.eq('is_active', filters.isActive)
     }
 
     const { data, error } = await query
@@ -496,64 +472,12 @@ export const getAssessmentsByCategory = async (category) => {
 }
 
 /**
- * Get assessments by type
- * @param {string} type - Assessment type
- * @returns {Promise<Object>} Result with type's assessments
- */
-export const getAssessmentsByType = async (type) => {
-  try {
-    if (!supabase) {
-      throw new Error('Supabase client not initialized')
-    }
-
-    if (!type) {
-      return {
-        success: false,
-        error: 'Assessment type is required',
-        data: []
-      }
-    }
-
-    const { data, error } = await supabase
-      .from('assessments')
-      .select('*')
-      .eq('type', type)
-      .order('created_at', { ascending: false })
-
-    if (error) {
-      console.error('Error fetching assessments by type:', error)
-      return {
-        success: false,
-        error: error.message,
-        data: []
-      }
-    }
-
-    const transformedData = data.map(transformFromDatabase)
-
-    return {
-      success: true,
-      data: transformedData,
-      error: null
-    }
-  } catch (error) {
-    console.error('Unexpected error in getAssessmentsByType:', error)
-    return {
-      success: false,
-      error: 'An unexpected error occurred while fetching assessments by type',
-      data: []
-    }
-  }
-}
-
-/**
  * Duplicate an assessment
  * @param {string} id - Assessment ID to duplicate
- * @param {Object} user - Current user creating the duplicate
  * @param {Object} overrides - Optional field overrides for the new assessment
  * @returns {Promise<Object>} Result with duplicated assessment
  */
-export const duplicateAssessment = async (id, user = null, overrides = {}) => {
+export const duplicateAssessment = async (id, overrides = {}) => {
   try {
     if (!supabase) {
       throw new Error('Supabase client not initialized')
@@ -579,14 +503,14 @@ export const duplicateAssessment = async (id, user = null, overrides = {}) => {
     const newAssessmentData = {
       ...originalData,
       ...overrides,
-      title: overrides.title || `${originalData.title} (Copy)`,
+      question: overrides.question || `${originalData.question} (Copy)`,
       status: 'Draft' // Always set copies to draft
     }
 
     // Remove fields that shouldn't be copied
     delete newAssessmentData.id
     delete newAssessmentData.createdAt
-    delete newAssessmentData.updatedAt
+    delete newAssessmentData.modifiedAt
     delete newAssessmentData.createdDate
     delete newAssessmentData.lastUpdated
     delete newAssessmentData.createdBy
@@ -596,9 +520,8 @@ export const duplicateAssessment = async (id, user = null, overrides = {}) => {
     newAssessmentData.completions = 0
     newAssessmentData.totalAttempts = 0
     newAssessmentData.averageScore = 0
-    newAssessmentData.successRate = 0
 
-    return await createAssessment(newAssessmentData, user)
+    return await createAssessment(newAssessmentData)
   } catch (error) {
     console.error('Unexpected error in duplicateAssessment:', error)
     return {
@@ -622,7 +545,7 @@ export const getAssessmentsStats = async (filters = {}) => {
 
     let query = supabase
       .from('assessments')
-      .select('status, type, difficulty, category, completions, total_attempts, average_score')
+      .select('status, category, completions, total_attempts, average_score, is_active')
 
     // Apply filters if provided
     if (filters.createdBy) {
@@ -643,9 +566,9 @@ export const getAssessmentsStats = async (filters = {}) => {
     // Calculate statistics
     const stats = {
       total: data.length,
+      active: data.filter((item) => item.is_active).length,
+      inactive: data.filter((item) => !item.is_active).length,
       byStatus: {},
-      byType: {},
-      byDifficulty: {},
       byCategory: {},
       totalCompletions: 0,
       totalAttempts: 0,
@@ -658,14 +581,6 @@ export const getAssessmentsStats = async (filters = {}) => {
     data.forEach((item) => {
       // Count by status
       stats.byStatus[item.status] = (stats.byStatus[item.status] || 0) + 1
-
-      // Count by type
-      stats.byType[item.type] = (stats.byType[item.type] || 0) + 1
-
-      // Count by difficulty
-      if (item.difficulty) {
-        stats.byDifficulty[item.difficulty] = (stats.byDifficulty[item.difficulty] || 0) + 1
-      }
 
       // Count by category
       if (item.category) {
@@ -726,7 +641,6 @@ export const updateAssessmentStats = async (id, stats) => {
     if (stats.completions !== undefined) updateData.completions = stats.completions
     if (stats.totalAttempts !== undefined) updateData.total_attempts = stats.totalAttempts
     if (stats.averageScore !== undefined) updateData.average_score = stats.averageScore
-    if (stats.successRate !== undefined) updateData.success_rate = stats.successRate
 
     const { data, error } = await supabase.from('assessments').update(updateData).eq('id', id).select().single()
 
