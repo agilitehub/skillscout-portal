@@ -1,12 +1,12 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTheme } from '../../../../core/context/ThemeContext'
 import BusinessSidebar from '../../components/BusinessSidebar'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faClipboardCheck, faPlus, faArrowLeft, faCheckCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons'
-import { Select, Modal, Form, message, Row, Col, Tag } from 'antd'
+import { Select, Modal, Form, message, Row, Col, Tag, Spin, Alert } from 'antd'
 import { Button } from '../../../../core/components'
 import TableView from '../../../../core/components/view-components/table-view/TableView'
 import TableActions from '../../../../core/components/view-components/table-view/TableActions'
@@ -15,6 +15,15 @@ import TableActions from '../../../../core/components/view-components/table-view
 import FormSelect from '../../../../core/components/form-components/form-fields/FormSelect'
 import FormTextArea from '../../../../core/components/form-components/form-fields/FormTextArea'
 import FormSwitch from '../../../../core/components/form-components/form-fields/FormSwitch'
+
+// Import controller functions
+import {
+  getAllAssessments,
+  createAssessment,
+  updateAssessment,
+  deleteAssessment,
+  searchAssessments
+} from '../utils/controller'
 
 const { Option } = Select
 
@@ -35,78 +44,103 @@ const Assessments = React.memo(({ user }) => {
   const [isViewModalVisible, setIsViewModalVisible] = useState(false)
   const [selectedAssessment, setSelectedAssessment] = useState(null)
 
-  // Sample assessment data - in real app this would come from API
-  const [assessmentData, setAssessmentData] = useState([
-    {
-      id: 1,
-      question: 'Describe your experience with React and modern JavaScript frameworks',
-      context:
-        "This question is designed to assess a candidate's frontend development skills, particularly their understanding of React concepts like components, state management, hooks, and the overall React ecosystem.",
-      preferredFeedback:
-        'Look for mentions of component-based architecture, state management solutions (Redux, Context API), hooks usage, and understanding of React lifecycle. Good answers should demonstrate practical experience with real projects.',
-      status: 'Active',
-      isActive: true,
-      category: 'Technical',
-      tags: ['React', 'JavaScript', 'Frontend'],
-      completions: 45,
-      totalAttempts: 52,
-      averageScore: 78
-    },
-    {
-      id: 2,
-      question: 'Tell me about a challenging project you worked on and how you overcame obstacles',
-      context:
-        'This behavioral question evaluates problem-solving skills, resilience, and communication abilities. It helps understand how candidates handle pressure and work through complex situations.',
-      preferredFeedback:
-        "Assess the candidate's ability to structure their response using STAR method (Situation, Task, Action, Result). Look for evidence of problem-solving, collaboration, and learning from challenges.",
-      status: 'Active',
-      isActive: true,
-      category: 'Behavioral',
-      tags: ['Problem Solving', 'Communication', 'Leadership'],
-      completions: 38,
-      totalAttempts: 41,
-      averageScore: 85
-    },
-    {
-      id: 3,
-      question: 'Design a database schema for an e-commerce platform',
-      context:
-        'This technical question tests database design skills, understanding of relationships, normalization, and scalability considerations for a complex system.',
-      preferredFeedback:
-        'Evaluate understanding of entity relationships, proper normalization, indexing strategies, and consideration of scalability. Look for discussion of user tables, product catalogs, orders, and payment systems.',
-      status: 'Draft',
-      isActive: false,
-      category: 'Technical',
-      tags: ['Database', 'System Design', 'Architecture'],
-      completions: 0,
-      totalAttempts: 0,
-      averageScore: 0
-    },
-    {
-      id: 4,
-      question: 'How do you handle working with difficult team members?',
-      context:
-        'This question assesses interpersonal skills, conflict resolution abilities, and emotional intelligence in professional settings.',
-      preferredFeedback:
-        'Look for mature approaches to conflict resolution, empathy, communication skills, and ability to maintain professionalism. Good answers show understanding of different perspectives and collaborative problem-solving.',
-      status: 'Active',
-      isActive: true,
-      category: 'Behavioral',
-      tags: ['Team Work', 'Conflict Resolution', 'Communication'],
-      completions: 29,
-      totalAttempts: 33,
-      averageScore: 72
-    }
-  ])
+  // Data states
+  const [assessmentData, setAssessmentData] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
+  const [submitLoading, setSubmitLoading] = useState(false)
 
-  // Filter data based on search and status
+  // Fetch assessments data
+  const fetchAssessments = useCallback(async (filters = {}) => {
+    try {
+      setLoading(true)
+      setError(null)
+
+      const result = await getAllAssessments(filters)
+
+      if (result.success) {
+        setAssessmentData(result.data)
+      } else {
+        setError(result.error)
+        message.error(`Failed to fetch assessments: ${result.error}`)
+      }
+    } catch (err) {
+      setError(err.message)
+      message.error('An unexpected error occurred while fetching assessments')
+      console.error('Error fetching assessments:', err)
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  // Search assessments
+  const handleSearch = useCallback(
+    async (searchValue) => {
+      if (!searchValue.trim()) {
+        // If search is empty, fetch all assessments
+        await fetchAssessments()
+        return
+      }
+
+      try {
+        setLoading(true)
+        setError(null)
+
+        const result = await searchAssessments(searchValue, {
+          status: selectedStatus !== 'all' ? selectedStatus : undefined
+        })
+
+        if (result.success) {
+          setAssessmentData(result.data)
+        } else {
+          setError(result.error)
+          message.error(`Search failed: ${result.error}`)
+        }
+      } catch (err) {
+        setError(err.message)
+        message.error('Search failed')
+        console.error('Error searching assessments:', err)
+      } finally {
+        setLoading(false)
+      }
+    },
+    [selectedStatus, fetchAssessments]
+  )
+
+  // Effect to fetch data on component mount and when filters change
+  useEffect(() => {
+    const filters = {}
+    if (selectedStatus !== 'all') {
+      filters.status = selectedStatus
+    }
+    fetchAssessments(filters)
+  }, [fetchAssessments, selectedStatus])
+
+  // Effect to handle search
+  useEffect(() => {
+    const debounceTimer = setTimeout(() => {
+      if (searchTerm) {
+        handleSearch(searchTerm)
+      } else {
+        const filters = {}
+        if (selectedStatus !== 'all') {
+          filters.status = selectedStatus
+        }
+        fetchAssessments(filters)
+      }
+    }, 300) // 300ms debounce
+
+    return () => clearTimeout(debounceTimer)
+  }, [searchTerm, handleSearch, fetchAssessments, selectedStatus])
+
+  // Filter data based on search and status (client-side backup filtering)
   const filteredData = assessmentData.filter((assessment) => {
     const matchesSearch =
       searchTerm === '' ||
       assessment.question.toLowerCase().includes(searchTerm.toLowerCase()) ||
       assessment.context.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      assessment.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      assessment.tags.some((tag) => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+      assessment.category?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      assessment.tags?.some((tag) => tag.toLowerCase().includes(searchTerm.toLowerCase()))
 
     const matchesStatus = selectedStatus === 'all' || assessment.status === selectedStatus
 
@@ -150,36 +184,59 @@ const Assessments = React.memo(({ user }) => {
   const handleSubmit = useCallback(
     async (values) => {
       try {
-        const newAssessment = {
-          ...values,
-          id: editingAssessment ? editingAssessment.id : Date.now(),
-          completions: editingAssessment ? editingAssessment.completions : 0,
-          totalAttempts: editingAssessment ? editingAssessment.totalAttempts : 0,
-          averageScore: editingAssessment ? editingAssessment.averageScore : 0
+        setSubmitLoading(true)
+        setError(null)
+
+        let result
+        if (editingAssessment) {
+          // Update existing assessment
+          result = await updateAssessment(editingAssessment.id, values)
+        } else {
+          // Create new assessment
+          result = await createAssessment(values)
         }
 
-        setAssessmentData((prev) =>
-          editingAssessment
-            ? prev.map((assessment) => (assessment.id === editingAssessment.id ? newAssessment : assessment))
-            : [...prev, newAssessment]
-        )
+        if (result.success) {
+          message.success(`${editingAssessment ? 'Updated' : 'Created'} assessment successfully`)
+          setIsModalVisible(false)
+          setEditingAssessment(null)
+          form.resetFields()
 
-        message.success(`${editingAssessment ? 'Updated' : 'Added'} assessment successfully`)
-        setIsModalVisible(false)
-        setEditingAssessment(null)
-        form.resetFields()
+          // Refresh the assessments list
+          await fetchAssessments()
+        } else {
+          message.error(`Failed to ${editingAssessment ? 'update' : 'create'} assessment: ${result.error}`)
+        }
       } catch (error) {
-        message.error('Failed to save assessment')
+        message.error(`Failed to ${editingAssessment ? 'update' : 'create'} assessment`)
+        console.error('Error submitting assessment:', error)
+      } finally {
+        setSubmitLoading(false)
       }
     },
-    [editingAssessment, form]
+    [editingAssessment, form, fetchAssessments]
   )
 
   // Handle delete
-  const handleDelete = useCallback((id) => {
-    setAssessmentData((prev) => prev.filter((assessment) => assessment.id !== id))
-    message.success('Assessment deleted successfully')
-  }, [])
+  const handleDelete = useCallback(
+    async (id) => {
+      try {
+        const result = await deleteAssessment(id)
+
+        if (result.success) {
+          message.success('Assessment deleted successfully')
+          // Refresh the assessments list
+          await fetchAssessments()
+        } else {
+          message.error(`Failed to delete assessment: ${result.error}`)
+        }
+      } catch (error) {
+        message.error('Failed to delete assessment')
+        console.error('Error deleting assessment:', error)
+      }
+    },
+    [fetchAssessments]
+  )
 
   // Truncate text for display
   const truncateText = (text, maxLength = 100) => {
@@ -257,12 +314,12 @@ const Assessments = React.memo(({ user }) => {
             },
             {
               key: 'delete',
-              onClick: (record) => handleDelete(record.id),
               confirm: {
                 title: 'Delete Assessment',
                 description: 'Are you sure you want to delete this assessment?',
                 okText: 'Yes',
-                cancelText: 'No'
+                cancelText: 'No',
+                onConfirm: (record) => handleDelete(record.id)
               }
             }
           ]}
@@ -354,6 +411,19 @@ const Assessments = React.memo(({ user }) => {
               </div>
             </div>
 
+            {/* Error Alert */}
+            {error && (
+              <Alert
+                message='Error'
+                description={error}
+                type='error'
+                showIcon
+                closable
+                onClose={() => setError(null)}
+                className='mb-4'
+              />
+            )}
+
             {/* Toolbar with Title */}
             <div
               className={`rounded-lg mb-6 px-6 py-4 shadow-lg ${darkMode ? 'bg-gray-800 border border-gray-700' : ''}`}
@@ -392,26 +462,28 @@ const Assessments = React.memo(({ user }) => {
             </div>
 
             {/* Assessment Data Table */}
-            <TableView
-              columns={columns}
-              dataSource={filteredData}
-              rowKey='id'
-              expandedRowRender={expandedRowRender}
-              searchTerm={searchTerm}
-              onSearch={setSearchTerm}
-              searchPlaceholder='Search assessments...'
-              toolbarActions={[
-                <Button key='create' type='primary' icon={<FontAwesomeIcon icon={faPlus} />} onClick={handleAdd}>
-                  Create New
-                </Button>
-              ]}
-              pagination={{
-                total: filteredData.length,
-                pageSize: 10,
-                showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} assessments`
-              }}
-              emptyText='No assessments found'
-            />
+            <Spin spinning={loading} tip='Loading assessments...'>
+              <TableView
+                columns={columns}
+                dataSource={filteredData}
+                rowKey='id'
+                expandedRowRender={expandedRowRender}
+                searchTerm={searchTerm}
+                onSearch={setSearchTerm}
+                searchPlaceholder='Search assessments...'
+                toolbarActions={[
+                  <Button key='create' type='primary' icon={<FontAwesomeIcon icon={faPlus} />} onClick={handleAdd}>
+                    Create New
+                  </Button>
+                ]}
+                pagination={{
+                  total: filteredData.length,
+                  pageSize: 10,
+                  showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} assessments`
+                }}
+                emptyText={loading ? 'Loading assessments...' : 'No assessments found'}
+              />
+            </Spin>
           </div>
         </div>
 
@@ -424,9 +496,11 @@ const Assessments = React.memo(({ user }) => {
           }
           open={isModalVisible}
           onCancel={() => {
-            setIsModalVisible(false)
-            setEditingAssessment(null)
-            form.resetFields()
+            if (!submitLoading) {
+              setIsModalVisible(false)
+              setEditingAssessment(null)
+              form.resetFields()
+            }
           }}
           footer={null}
           width={800}
@@ -444,142 +518,152 @@ const Assessments = React.memo(({ user }) => {
             }
           }}
           className={darkMode ? 'dark-modal' : ''}
+          closable={!submitLoading}
         >
           <div className={`p-6 ${darkMode ? 'bg-gray-800' : 'bg-gray-50'} rounded-lg mb-4`}>
-            <Form
-              form={form}
-              layout='vertical'
-              onFinish={handleSubmit}
-              initialValues={{ isActive: true, status: 'Draft' }}
-            >
-              {/* Active Toggle */}
-              <div className='mb-6'>
-                <FormSwitch
-                  label='Active'
-                  name='isActive'
-                  defaultChecked={true}
-                  switchProps={{
-                    className: 'mr-3',
-                    style: {
-                      backgroundColor: darkMode ? '#059669' : '#10b981'
-                    }
+            <Spin spinning={submitLoading} tip={`${editingAssessment ? 'Updating' : 'Creating'} assessment...`}>
+              <Form
+                form={form}
+                layout='vertical'
+                onFinish={handleSubmit}
+                onFinishFailed={(errorInfo) => {
+                  message.error('Please fill in all required fields')
+                }}
+                initialValues={{ isActive: true, status: 'Draft' }}
+              >
+                {/* Active Toggle */}
+                <div className='mb-6'>
+                  <FormSwitch
+                    label='Active'
+                    name='isActive'
+                    defaultChecked={true}
+                    switchProps={{
+                      className: 'mr-3',
+                      style: {
+                        backgroundColor: darkMode ? '#059669' : '#10b981'
+                      }
+                    }}
+                  />
+                </div>
+
+                <Row gutter={16}>
+                  <Col span={16}>
+                    <FormSelect
+                      label='Status'
+                      name='status'
+                      placeholder='Select status'
+                      rules={[{ required: true, message: 'Please select a status' }]}
+                      options={[
+                        { label: 'Draft', value: 'Draft' },
+                        { label: 'Active', value: 'Active' },
+                        { label: 'Inactive', value: 'Inactive' },
+                        { label: 'Archived', value: 'Archived' }
+                      ]}
+                      customStyle={{
+                        fontWeight: '500'
+                      }}
+                    />
+                  </Col>
+                  <Col span={8}>
+                    <FormSelect
+                      label='Category'
+                      name='category'
+                      placeholder='Select category'
+                      options={[
+                        { label: 'Technical', value: 'Technical' },
+                        { label: 'Behavioral', value: 'Behavioral' },
+                        { label: 'Cognitive', value: 'Cognitive' },
+                        { label: 'Portfolio', value: 'Portfolio' }
+                      ]}
+                      customStyle={{
+                        fontWeight: '500'
+                      }}
+                    />
+                  </Col>
+                </Row>
+
+                <FormTextArea
+                  label='Question'
+                  name='question'
+                  placeholder='Enter the assessment question...'
+                  rows={3}
+                  rules={[{ required: true, message: 'Please enter a question' }]}
+                  customStyle={{
+                    borderColor: darkMode ? '#10b981' : '#10b981',
+                    fontWeight: '500'
                   }}
                 />
-              </div>
 
-              <Row gutter={16}>
-                <Col span={16}>
-                  <FormSelect
-                    label='Status'
-                    name='status'
-                    placeholder='Select status'
-                    rules={[{ required: true, message: 'Please select a status' }]}
-                    options={[
-                      { label: 'Draft', value: 'Draft' },
-                      { label: 'Active', value: 'Active' },
-                      { label: 'Inactive', value: 'Inactive' },
-                      { label: 'Archived', value: 'Archived' }
-                    ]}
-                    customStyle={{
-                      fontWeight: '500'
-                    }}
-                  />
-                </Col>
-                <Col span={8}>
-                  <FormSelect
-                    label='Category'
-                    name='category'
-                    placeholder='Select category'
-                    options={[
-                      { label: 'Technical', value: 'Technical' },
-                      { label: 'Behavioral', value: 'Behavioral' },
-                      { label: 'Cognitive', value: 'Cognitive' },
-                      { label: 'Portfolio', value: 'Portfolio' }
-                    ]}
-                    customStyle={{
-                      fontWeight: '500'
-                    }}
-                  />
-                </Col>
-              </Row>
-
-              <FormTextArea
-                label='Question'
-                name='question'
-                placeholder='Enter the assessment question...'
-                rows={3}
-                rules={[{ required: true, message: 'Please enter a question' }]}
-                customStyle={{
-                  borderColor: darkMode ? '#10b981' : '#10b981',
-                  fontWeight: '500'
-                }}
-              />
-
-              <FormTextArea
-                label='Context'
-                name='context'
-                placeholder='Provide context about what this question assesses...'
-                rows={4}
-                rules={[{ required: true, message: 'Please enter the context' }]}
-                customStyle={{
-                  borderColor: darkMode ? '#10b981' : '#10b981',
-                  fontWeight: '500'
-                }}
-              />
-
-              <FormTextArea
-                label='Preferred Feedback'
-                name='preferredFeedback'
-                placeholder='Describe what to look for in good answers and how to evaluate responses...'
-                rows={4}
-                rules={[{ required: true, message: 'Please enter preferred feedback guidelines' }]}
-                customStyle={{
-                  borderColor: darkMode ? '#10b981' : '#10b981',
-                  fontWeight: '500'
-                }}
-              />
-
-              <FormSelect
-                label='Tags'
-                name='tags'
-                placeholder='Add tags (press Enter to add)'
-                options={[]}
-                selectProps={{
-                  mode: 'tags'
-                }}
-                customStyle={{
-                  fontWeight: '500'
-                }}
-              />
-
-              <div className='flex justify-end space-x-3 mt-8'>
-                <Button
-                  onClick={() => {
-                    setIsModalVisible(false)
-                    setEditingAssessment(null)
-                    form.resetFields()
+                <FormTextArea
+                  label='Context'
+                  name='context'
+                  placeholder='Provide context about what this question assesses...'
+                  rows={4}
+                  rules={[{ required: true, message: 'Please enter the context' }]}
+                  customStyle={{
+                    borderColor: darkMode ? '#10b981' : '#10b981',
+                    fontWeight: '500'
                   }}
-                  className={`px-6 py-2 font-medium rounded-lg transition-all duration-200 ${
-                    darkMode
-                      ? 'bg-red-600 text-white hover:bg-red-700 border-red-600 hover:border-red-700'
-                      : 'bg-red-500 text-white hover:bg-red-600 border-red-500'
-                  }`}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type='primary'
-                  htmlType='submit'
-                  className={`px-6 py-2 font-medium rounded-lg transition-all duration-200 ${
-                    darkMode
-                      ? 'bg-emerald-600 text-white hover:bg-emerald-700 border-emerald-600 hover:border-emerald-700'
-                      : 'bg-emerald-500 text-white hover:bg-emerald-600 border-emerald-500'
-                  }`}
-                >
-                  {editingAssessment ? 'Update' : 'Create'}
-                </Button>
-              </div>
-            </Form>
+                />
+
+                <FormTextArea
+                  label='Preferred Feedback'
+                  name='preferredFeedback'
+                  placeholder='Describe what to look for in good answers and how to evaluate responses...'
+                  rows={4}
+                  rules={[{ required: true, message: 'Please enter preferred feedback guidelines' }]}
+                  customStyle={{
+                    borderColor: darkMode ? '#10b981' : '#10b981',
+                    fontWeight: '500'
+                  }}
+                />
+
+                <FormSelect
+                  label='Tags'
+                  name='tags'
+                  placeholder='Add tags (press Enter to add)'
+                  options={[]}
+                  selectProps={{
+                    mode: 'tags'
+                  }}
+                  customStyle={{
+                    fontWeight: '500'
+                  }}
+                />
+
+                <div className='flex justify-end space-x-3 mt-8'>
+                  <Button
+                    onClick={() => {
+                      if (!submitLoading) {
+                        setIsModalVisible(false)
+                        setEditingAssessment(null)
+                        form.resetFields()
+                      }
+                    }}
+                    disabled={submitLoading}
+                    className={`px-6 py-2 font-medium rounded-lg transition-all duration-200 ${
+                      darkMode
+                        ? 'bg-red-600 text-white hover:bg-red-700 border-red-600 hover:border-red-700'
+                        : 'bg-red-500 text-white hover:bg-red-600 border-red-500'
+                    }`}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type='primary'
+                    htmlType='submit'
+                    loading={submitLoading}
+                    className={`px-6 py-2 font-medium rounded-lg transition-all duration-200 ${
+                      darkMode
+                        ? 'bg-emerald-600 text-white hover:bg-emerald-700 border-emerald-600 hover:border-emerald-700'
+                        : 'bg-emerald-500 text-white hover:bg-emerald-600 border-emerald-500'
+                    }`}
+                  >
+                    {editingAssessment ? 'Update' : 'Create'}
+                  </Button>
+                </div>
+              </Form>
+            </Spin>
           </div>
         </Modal>
 
