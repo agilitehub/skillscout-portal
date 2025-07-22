@@ -244,7 +244,6 @@ const TableView = React.memo(
             }
             .dark-pagination .ant-pagination-item-active {
               background-color: #059669 !important;
-              border-color: #059669 !important;
             }
             .dark-pagination .ant-pagination-item-active a {
               color: #ffffff !important;

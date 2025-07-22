@@ -1,11 +1,11 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
 import React from 'react'
-import { useDroppable } from '@dnd-kit/core'
-import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
+import { Badge } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
-import { Badge } from 'antd'
+import { useDroppable } from '@dnd-kit/core'
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import CandidateCard from './CandidateCard'
 
 /**
@@ -22,7 +22,7 @@ const StageColumn = React.memo(({
 }) => {
   // Enable visual feedback when an item is dragged over this stage
   const { setNodeRef, isOver } = useDroppable({
-    id: stage.key,
+    id: stage?.key || 'invalid-stage',
   })
 
   const getStageColor = (color) => {
@@ -53,7 +53,11 @@ const StageColumn = React.memo(({
     return colors[color] || colors.blue
   }
 
-  const renderCandidates = () => {
+  const renderCandidates = React.useMemo(() => {
+    // Safety check within the memoized function
+    if (!Array.isArray(candidates)) {
+      return []
+    }
     const elements = []
     
     candidates.forEach((candidate, idx) => {
@@ -91,10 +95,25 @@ const StageColumn = React.memo(({
     }
 
     return elements
+  }, [candidates, overId, activeId, stage?.key, onEditCandidate, onCandidateAction, darkMode])
+
+  // Safety check for stage data (after hooks)
+  if (!stage || !stage.key) {
+    return (
+      <div 
+        ref={setNodeRef}
+        className={`w-full min-h-[500px] flex items-center justify-center ${
+          darkMode ? 'bg-gray-800 text-gray-400' : 'bg-gray-100 text-gray-500'
+        } rounded-lg border`}
+      >
+        <p>Error loading stage data</p>
+      </div>
+    )
   }
 
   return (
     <div
+      ref={setNodeRef}
       className={`w-full min-h-[500px] flex flex-col ${
         darkMode 
           ? 'bg-gray-800/80 backdrop-blur-sm shadow-xl' 
@@ -124,14 +143,13 @@ const StageColumn = React.memo(({
 
       {/* Droppable Area */}
       <div 
-        ref={setNodeRef}
-        className={`p-3 min-h-32 transition-all duration-200 ${
+        className={`p-3 min-h-32 flex-1 transition-all duration-200 ${
           isOver && activeId ? 'bg-emerald-50 dark:bg-emerald-900/20' : ''
         }`}
       >
         <SortableContext items={candidates.map(c => c.id)} strategy={verticalListSortingStrategy}>
           <div className="space-y-3">
-            {renderCandidates()}
+            {renderCandidates}
           </div>
         </SortableContext>
         
@@ -159,6 +177,17 @@ const KanbanBoard = React.memo(({
   activeId,
   overId 
 }) => {
+  // Safety checks
+  if (!pipelineData || !Array.isArray(stages)) {
+    return (
+      <div className={`w-full min-h-[400px] flex items-center justify-center ${
+        darkMode ? 'bg-gray-800 text-gray-400' : 'bg-gray-100 text-gray-500'
+      } rounded-lg border`}>
+        <p>Error loading pipeline data</p>
+      </div>
+    )
+  }
+
   return (
     <div className="w-full">
       {/* Desktop Layout */}

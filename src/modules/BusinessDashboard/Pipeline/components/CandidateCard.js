@@ -1,8 +1,7 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
 import React from 'react'
-import { useSortable } from '@dnd-kit/sortable'
-import { CSS } from '@dnd-kit/utilities'
+import { Tag, Dropdown } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faEdit,
@@ -13,7 +12,8 @@ import {
   faCalendar,
   faExclamationTriangle
 } from '@fortawesome/free-solid-svg-icons'
-import { Tag, Dropdown } from 'antd'
+import { useSortable } from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
 import { Button } from '../../../../core/components'
 
 /**
@@ -30,17 +30,34 @@ const CandidateCard = React.memo(
       isDragging: isDraggingState,
       isSorting
     } = useSortable({
-      id: candidate.id,
+      id: candidate?.id || 'invalid',
       transition: {
         duration: 200,
         easing: 'cubic-bezier(0.25, 1, 0.5, 1)'
       }
     })
 
+    // Safety check for candidate data (after hooks)
+    if (!candidate || !candidate.id || !candidate.name) {
+      return (
+        <div 
+          ref={setNodeRef} 
+          className={`p-3 rounded-lg border text-center ${
+            darkMode ? 'bg-gray-700 border-gray-600 text-gray-400' : 'bg-gray-100 border-gray-200 text-gray-500'
+          }`}
+        >
+          <p className="text-xs">Invalid candidate data</p>
+        </div>
+      )
+    }
+
     const style = {
-      transform: CSS.Transform.toString(transform),
+      transform: isDraggingState ? 'none' : CSS.Transform.toString(transform),
       transition: transition || (isSorting ? 'transform 200ms ease-out' : undefined),
-      zIndex: isDraggingState ? 1000 : 1
+      zIndex: isDraggingState ? 1000 : 1,
+      // Ensure consistent width during drag operations
+      width: isDraggingState || isBeingDragged ? '280px' : 'auto',
+      opacity: isDraggingState ? 0.5 : 1
     }
 
     const getPriorityColor = (priority) => {
@@ -115,27 +132,32 @@ const CandidateCard = React.memo(
       onClick: () => onEditCandidate(candidate)
     })
 
-    const formatDate = (dateString) => {
-      try {
-        return new Date(dateString).toLocaleDateString('en-US', {
-          month: 'short',
-          day: 'numeric',
-          year: 'numeric'
-        })
-      } catch {
-        return dateString
-      }
+      const formatDate = (dateString) => {
+    try {
+      if (!dateString) return 'No date'
+      const date = new Date(dateString)
+      if (isNaN(date.getTime())) return dateString
+      
+      return date.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+      })
+    } catch (error) {
+      console.warn('Error formatting date:', error)
+      return dateString || 'Invalid date'
     }
+  }
 
     const cardClasses = `
-    group relative p-3 rounded-lg border transform-gpu
+    group relative p-3 rounded-lg border
     ${
       isDraggingState || isBeingDragged
-        ? `opacity-80 shadow-2xl scale-[1.02] rotate-1 ${
+        ? `${
             darkMode
-              ? 'bg-gray-700/90 border-gray-600 backdrop-blur-sm'
-              : 'bg-white/90 border-gray-300 backdrop-blur-sm'
-          }`
+              ? 'bg-gray-700/95 border-gray-600 backdrop-blur-sm'
+              : 'bg-white/95 border-gray-300 backdrop-blur-sm'
+          } shadow-lg`
         : `opacity-100 hover:shadow-md transition-all duration-200 ${
             darkMode
               ? 'bg-gray-700/80 border-gray-600/60 hover:border-gray-500 hover:bg-gray-700/90 backdrop-blur-sm'

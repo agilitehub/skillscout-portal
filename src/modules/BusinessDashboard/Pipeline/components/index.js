@@ -2,15 +2,14 @@
 // Frontend Instructions Rule Applied!
 import React, { useState, useCallback, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useTheme } from '../../../../core/context/ThemeContext'
-import BusinessSidebar from '../../components/BusinessSidebar'
+import { Form, message } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faColumns, faArrowLeft, faPlus } from '@fortawesome/free-solid-svg-icons'
-import { Form, message } from 'antd'
-import { Button } from '../../../../core/components'
 import {
   DndContext,
-  closestCorners,
+  closestCenter,
+  pointerWithin,
+  rectIntersection,
   DragOverlay,
   useSensor,
   useSensors,
@@ -18,6 +17,9 @@ import {
   KeyboardSensor
 } from '@dnd-kit/core'
 import { sortableKeyboardCoordinates } from '@dnd-kit/sortable'
+import { useTheme } from '../../../../core/context/ThemeContext'
+import { Button } from '../../../../core/components'
+import BusinessSidebar from '../../components/BusinessSidebar'
 import KanbanBoard from './KanbanBoard'
 import CandidateModal from './CandidateModal'
 import CandidateCard from './CandidateCard'
@@ -292,20 +294,25 @@ const Pipeline = React.memo(({ user }) => {
   // Handle drag start
   const handleDragStart = useCallback(
     (event) => {
-      const { active } = event
-      const candidateId = parseInt(active.id)
+      try {
+        const { active } = event
+        const candidateId = parseInt(active.id)
 
-      // Find the candidate being dragged
-      for (const stageKey in pipelineData) {
-        const candidate = pipelineData[stageKey].find((c) => c.id === candidateId)
-        if (candidate) {
-          setActiveCandidate(candidate)
-          return
+        // Find the candidate being dragged
+        for (const stageKey in pipelineData) {
+          const candidate = pipelineData[stageKey].find((c) => c.id === candidateId)
+          if (candidate) {
+            setActiveCandidate(candidate)
+            return
+          }
         }
-      }
 
-      // If candidate not found, reset state
-      setActiveCandidate(null)
+        // If candidate not found, reset state
+        setActiveCandidate(null)
+      } catch (error) {
+        console.error('Error in drag start:', error)
+        setActiveCandidate(null)
+      }
     },
     [pipelineData]
   )
@@ -313,17 +320,18 @@ const Pipeline = React.memo(({ user }) => {
   // Handle drag end with reordering & cross-stage moves
   const handleDragEnd = useCallback(
     ({ active, over }) => {
-      // Clear drag state with small delay to prevent flashing
-      setTimeout(() => {
-        setActiveCandidate(null)
-        setDragOverId(null)
-      }, 50)
+      try {
+        // Clear drag state with small delay to prevent flashing
+        setTimeout(() => {
+          setActiveCandidate(null)
+          setDragOverId(null)
+        }, 50)
 
-      // If not dropped over anything, abort
-      if (!over) return
+        // If not dropped over anything, abort
+        if (!over || !active) return
 
-      const activeId = parseInt(active.id)
-      const overIdRaw = over.id
+        const activeId = parseInt(active.id)
+        const overIdRaw = over.id
 
       // Identify source stage & index
       let sourceStage = null
@@ -354,11 +362,22 @@ const Pipeline = React.memo(({ user }) => {
             break
           }
         }
-      } else {
-        // Dropped over empty stage area; append to end
-        targetStage = overIdRaw
-        targetIndex = pipelineData[targetStage]?.length ?? 0
+      } else if (typeof overIdRaw === 'string') {
+        // Dropped over stage area - check if it's a valid stage key
+        if (pipelineData.hasOwnProperty(overIdRaw)) {
+          targetStage = overIdRaw
+          targetIndex = pipelineData[targetStage]?.length ?? 0
+        }
       }
+
+      // Debug log to help troubleshoot
+      console.log('Drag end debug:', {
+        activeId,
+        overIdRaw,
+        sourceStage,
+        targetStage,
+        targetIndex
+      })
 
       if (targetStage === null || targetIndex === null) return
 
@@ -394,6 +413,13 @@ const Pipeline = React.memo(({ user }) => {
 
         return newData
       })
+      } catch (error) {
+        console.error('Error in drag end:', error)
+        // Reset drag state on error
+        setActiveCandidate(null)
+        setDragOverId(null)
+        message.error('Failed to move candidate')
+      }
     },
     [pipelineData, stages]
   )
@@ -401,15 +427,34 @@ const Pipeline = React.memo(({ user }) => {
   // Track current drag over id to show placeholder line
   const handleDragOver = useCallback(({ over }) => {
     const newOverId = over ? over.id : null
+    // Only update if different to prevent unnecessary re-renders
     setDragOverId((prev) => (prev !== newOverId ? newOverId : prev))
+  }, [])
+
+  // Memoize active candidate ID for performance
+  const activeCandidateId = useMemo(() => {
+    return activeCandidate ? activeCandidate.id : null
+  }, [activeCandidate])
+
+  // Custom collision detection for kanban board
+  const customCollisionDetection = useCallback((args) => {
+    // First try to detect collisions with stage columns (droppable areas)
+    const pointerCollisions = pointerWithin(args)
+    
+    if (pointerCollisions.length > 0) {
+      return pointerCollisions
+    }
+    
+    // Fallback to closest center for better UX
+    return closestCenter(args)
   }, [])
 
   // Configure sensors for better drag/drop experience
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 8, // start drag after small movement to prevent accidental drags
-        delay: 100,
+        distance: 3, // Minimal distance for reliable drag detection
+        delay: 0,
         tolerance: 5
       }
     }),
@@ -489,7 +534,7 @@ const Pipeline = React.memo(({ user }) => {
         >
           <DndContext
             sensors={sensors}
-            collisionDetection={closestCorners}
+            collisionDetection={customCollisionDetection}
             onDragStart={handleDragStart}
             onDragOver={handleDragOver}
             onDragEnd={handleDragEnd}
@@ -500,7 +545,7 @@ const Pipeline = React.memo(({ user }) => {
               onEditCandidate={handleEdit}
               onCandidateAction={handleCandidateAction}
               darkMode={darkMode}
-              activeId={activeCandidate ? activeCandidate.id : null}
+              activeId={activeCandidateId}
               overId={dragOverId}
             />
             <DragOverlay
@@ -508,15 +553,17 @@ const Pipeline = React.memo(({ user }) => {
                 duration: 200,
                 easing: 'cubic-bezier(0.25, 1, 0.5, 1)'
               }}
-              style={{
-                zIndex: 1000
-              }}
             >
               {activeCandidate ? (
                 <div
-                  className={`transform rotate-2 opacity-95 ${
-                    darkMode ? 'bg-gray-800/90 backdrop-blur-md' : 'bg-white/90 backdrop-blur-md'
-                  } shadow-2xl rounded-lg border ${darkMode ? 'border-gray-600' : 'border-gray-300'}`}
+                  className={`${
+                    darkMode ? 'bg-gray-800/95 backdrop-blur-sm' : 'bg-white/95 backdrop-blur-sm'
+                  } shadow-lg rounded-lg border ${darkMode ? 'border-gray-600' : 'border-gray-300'} opacity-90`}
+                  style={{
+                    width: '280px',
+                    cursor: 'grabbing',
+                    pointerEvents: 'none'
+                  }}
                 >
                   <CandidateCard
                     candidate={activeCandidate}

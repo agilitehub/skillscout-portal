@@ -18,9 +18,9 @@ const CandidateModal = React.memo(({ visible, onCancel, onSubmit, form, editingC
   }
 
   const priorityOptions = [
-    { value: 'low', label: 'Low Priority', color: 'green' },
-    { value: 'medium', label: 'Medium Priority', color: 'orange' },
-    { value: 'high', label: 'High Priority', color: 'red' }
+    { value: 'low', label: 'Low Priority', colorClass: 'bg-green-500' },
+    { value: 'medium', label: 'Medium Priority', colorClass: 'bg-orange-500' },
+    { value: 'high', label: 'High Priority', colorClass: 'bg-red-500' }
   ]
 
   const commonSkills = [
@@ -137,7 +137,7 @@ const CandidateModal = React.memo(({ visible, onCancel, onSubmit, form, editingC
               </div>
             }
             name='phone'
-            rules={[{ pattern: /^\+?[\d\s\-()]+$/, message: 'Please enter a valid phone number' }]}
+            rules={[{ pattern: /^\+?[1-9]\d{1,14}$|^\+?[\d\s\-()]{10,20}$/, message: 'Please enter a valid phone number' }]}
           >
             <Input placeholder='+1 (555) 123-4567' />
           </Form.Item>
@@ -158,7 +158,7 @@ const CandidateModal = React.memo(({ visible, onCancel, onSubmit, form, editingC
             {priorityOptions.map((option) => (
               <Option key={option.value} value={option.value}>
                 <div className='flex items-center space-x-2'>
-                  <div className={`w-3 h-3 rounded-full bg-${option.color}-500`}></div>
+                  <div className={`w-3 h-3 rounded-full ${option.colorClass}`}></div>
                   <span>{option.label}</span>
                 </div>
               </Option>
