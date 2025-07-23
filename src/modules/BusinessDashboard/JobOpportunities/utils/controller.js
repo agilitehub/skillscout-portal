@@ -1,3 +1,6 @@
+// Global Instructions Rule Applied!
+// Frontend Instructions Rule Applied!
+
 import { createClient } from '@supabase/supabase-js'
 import { transformToDatabase, transformFromDatabase, validateJobOpportunity } from './data-model'
 
@@ -48,6 +51,22 @@ export const getAllJobOpportunities = async (filters = {}) => {
       query = query.eq('created_by', filters.createdBy)
     }
 
+    if (filters.location) {
+      query = query.ilike('location', `%${filters.location}%`)
+    }
+
+    if (filters.company) {
+      query = query.ilike('company', `%${filters.company}%`)
+    }
+
+    if (filters.experienceRequired) {
+      query = query.eq('experience_required', filters.experienceRequired)
+    }
+
+    if (filters.remote !== undefined) {
+      query = query.eq('remote', filters.remote)
+    }
+
     const { data, error } = await query
 
     if (error) {
@@ -78,7 +97,7 @@ export const getAllJobOpportunities = async (filters = {}) => {
 }
 
 /**
- * Get a single job opportunity by ID
+ * Get a specific job opportunity by ID
  * @param {string} id - Job opportunity ID
  * @returns {Promise<Object>} Result with job opportunity data
  */
@@ -251,7 +270,8 @@ export const deleteJobOpportunity = async (id) => {
     if (!id) {
       return {
         success: false,
-        error: 'Job opportunity ID is required'
+        error: 'Job opportunity ID is required',
+        data: null
       }
     }
 
@@ -261,19 +281,22 @@ export const deleteJobOpportunity = async (id) => {
       console.error('Error deleting job opportunity:', error)
       return {
         success: false,
-        error: error.message
+        error: error.message,
+        data: null
       }
     }
 
     return {
       success: true,
-      error: null
+      error: null,
+      data: { id }
     }
   } catch (error) {
     console.error('Unexpected error in deleteJobOpportunity:', error)
     return {
       success: false,
-      error: 'An unexpected error occurred while deleting the job opportunity'
+      error: 'An unexpected error occurred while deleting the job opportunity',
+      data: null
     }
   }
 }
@@ -282,33 +305,34 @@ export const deleteJobOpportunity = async (id) => {
  * Update job opportunity status
  * @param {string} id - Job opportunity ID
  * @param {string} status - New status ('Active', 'Paused', 'Closed')
- * @returns {Promise<Object>} Result of status update
+ * @returns {Promise<Object>} Result of status update operation
  */
-export const updateJobStatus = async (id, status) => {
+export const updateJobOpportunityStatus = async (id, status) => {
   try {
     if (!supabase) {
       throw new Error('Supabase client not initialized')
     }
 
-    if (!id || !status) {
+    if (!id) {
       return {
         success: false,
-        error: 'Job opportunity ID and status are required'
+        error: 'Job opportunity ID is required',
+        data: null
       }
     }
 
-    const validStatuses = ['Active', 'Paused', 'Closed']
-    if (!validStatuses.includes(status)) {
+    if (!['Active', 'Paused', 'Closed'].includes(status)) {
       return {
         success: false,
-        error: 'Invalid status. Must be Active, Paused, or Closed'
+        error: 'Invalid status. Must be Active, Paused, or Closed',
+        data: null
       }
     }
 
     const { data, error } = await supabase.from('job_opportunities').update({ status }).eq('id', id).select().single()
 
     if (error) {
-      console.error('Error updating job status:', error)
+      console.error('Error updating job opportunity status:', error)
       return {
         success: false,
         error: error.message,
@@ -324,42 +348,37 @@ export const updateJobStatus = async (id, status) => {
       error: null
     }
   } catch (error) {
-    console.error('Unexpected error in updateJobStatus:', error)
+    console.error('Unexpected error in updateJobOpportunityStatus:', error)
     return {
       success: false,
-      error: 'An unexpected error occurred while updating the job status'
+      error: 'An unexpected error occurred while updating the job opportunity status',
+      data: null
     }
   }
 }
 
 /**
- * Update applicant count for a job opportunity
- * @param {string} id - Job opportunity ID
- * @param {number} count - New applicant count
- * @returns {Promise<Object>} Result of applicant count update
+ * Get job opportunities statistics
+ * @param {Object} filters - Optional filters for statistics
+ * @returns {Promise<Object>} Result with statistics data
  */
-export const updateApplicantCount = async (id, count) => {
+export const getJobOpportunitiesStats = async (filters = {}) => {
   try {
     if (!supabase) {
       throw new Error('Supabase client not initialized')
     }
 
-    if (!id || count < 0) {
-      return {
-        success: false,
-        error: 'Valid job opportunity ID and non-negative count are required'
-      }
+    let query = supabase.from('job_opportunities').select('status, applicants, type, work_arrangement')
+
+    // Apply filters if provided
+    if (filters.createdBy) {
+      query = query.eq('created_by', filters.createdBy)
     }
 
-    const { data, error } = await supabase
-      .from('job_opportunities')
-      .update({ applicants: count })
-      .eq('id', id)
-      .select()
-      .single()
+    const { data, error } = await query
 
     if (error) {
-      console.error('Error updating applicant count:', error)
+      console.error('Error fetching job opportunities statistics:', error)
       return {
         success: false,
         error: error.message,
@@ -367,27 +386,47 @@ export const updateApplicantCount = async (id, count) => {
       }
     }
 
-    const transformedData = transformFromDatabase(data)
+    // Calculate statistics
+    const stats = {
+      total: data.length,
+      active: data.filter((job) => job.status === 'Active').length,
+      paused: data.filter((job) => job.status === 'Paused').length,
+      closed: data.filter((job) => job.status === 'Closed').length,
+      totalApplicants: data.reduce((sum, job) => sum + (job.applicants || 0), 0),
+      byType: {},
+      byWorkArrangement: {}
+    }
+
+    // Group by type
+    data.forEach((job) => {
+      stats.byType[job.type] = (stats.byType[job.type] || 0) + 1
+    })
+
+    // Group by work arrangement
+    data.forEach((job) => {
+      stats.byWorkArrangement[job.work_arrangement] = (stats.byWorkArrangement[job.work_arrangement] || 0) + 1
+    })
 
     return {
       success: true,
-      data: transformedData,
+      data: stats,
       error: null
     }
   } catch (error) {
-    console.error('Unexpected error in updateApplicantCount:', error)
+    console.error('Unexpected error in getJobOpportunitiesStats:', error)
     return {
       success: false,
-      error: 'An unexpected error occurred while updating the applicant count'
+      error: 'An unexpected error occurred while fetching statistics',
+      data: null
     }
   }
 }
 
 /**
- * Search job opportunities by title, company, or skills
+ * Search job opportunities
  * @param {string} searchTerm - Search term
- * @param {Object} filters - Additional filters
- * @returns {Promise<Object>} Result with matching job opportunities
+ * @param {Object} filters - Optional filters
+ * @returns {Promise<Object>} Result with filtered job opportunities
  */
 export const searchJobOpportunities = async (searchTerm, filters = {}) => {
   try {
@@ -395,15 +434,14 @@ export const searchJobOpportunities = async (searchTerm, filters = {}) => {
       throw new Error('Supabase client not initialized')
     }
 
-    if (!searchTerm || searchTerm.trim().length === 0) {
-      return getAllJobOpportunities(filters)
-    }
+    let query = supabase.from('job_opportunities').select('*')
 
-    let query = supabase
-      .from('job_opportunities')
-      .select('*')
-      .or(`title.ilike.%${searchTerm}%,company.ilike.%${searchTerm}%,required_skills.ilike.%${searchTerm}%`)
-      .order('created_at', { ascending: false })
+    // Apply text search
+    if (searchTerm) {
+      query = query.or(
+        `title.ilike.%${searchTerm}%,company.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%,required_skills.ilike.%${searchTerm}%`
+      )
+    }
 
     // Apply additional filters
     if (filters.status) {
@@ -413,6 +451,20 @@ export const searchJobOpportunities = async (searchTerm, filters = {}) => {
     if (filters.type) {
       query = query.eq('type', filters.type)
     }
+
+    if (filters.workArrangement) {
+      query = query.eq('work_arrangement', filters.workArrangement)
+    }
+
+    if (filters.experienceRequired) {
+      query = query.eq('experience_required', filters.experienceRequired)
+    }
+
+    if (filters.remote !== undefined) {
+      query = query.eq('remote', filters.remote)
+    }
+
+    query = query.order('created_at', { ascending: false })
 
     const { data, error } = await query
 
@@ -425,6 +477,7 @@ export const searchJobOpportunities = async (searchTerm, filters = {}) => {
       }
     }
 
+    // Transform database data to frontend format
     const transformedData = data.map(transformFromDatabase)
 
     return {
@@ -438,6 +491,61 @@ export const searchJobOpportunities = async (searchTerm, filters = {}) => {
       success: false,
       error: 'An unexpected error occurred while searching job opportunities',
       data: []
+    }
+  }
+}
+
+/**
+ * Duplicate a job opportunity
+ * @param {string} id - Job opportunity ID to duplicate
+ * @param {Object} overrides - Optional field overrides for the duplicate
+ * @returns {Promise<Object>} Result with duplicated job opportunity
+ */
+export const duplicateJobOpportunity = async (id, overrides = {}) => {
+  try {
+    if (!supabase) {
+      throw new Error('Supabase client not initialized')
+    }
+
+    if (!id) {
+      return {
+        success: false,
+        error: 'Job opportunity ID is required',
+        data: null
+      }
+    }
+
+    // First, get the original job opportunity
+    const originalResult = await getJobOpportunityById(id)
+    if (!originalResult.success) {
+      return originalResult
+    }
+
+    // Prepare data for duplication
+    const duplicateData = {
+      ...originalResult.data,
+      ...overrides,
+      title: overrides.title || `${originalResult.data.title} (Copy)`,
+      applicants: 0,
+      datePosted: null,
+      status: 'Active'
+    }
+
+    // Remove ID and audit fields that should be auto-generated
+    delete duplicateData.id
+    delete duplicateData.createdAt
+    delete duplicateData.modifiedAt
+    delete duplicateData.createdBy
+    delete duplicateData.modifiedBy
+
+    // Create the duplicate
+    return await createJobOpportunity(duplicateData)
+  } catch (error) {
+    console.error('Unexpected error in duplicateJobOpportunity:', error)
+    return {
+      success: false,
+      error: 'An unexpected error occurred while duplicating the job opportunity',
+      data: null
     }
   }
 }

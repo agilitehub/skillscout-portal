@@ -1,7 +1,7 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
 import React, { useState, useEffect, useMemo, useCallback } from 'react'
-import { Modal, Tag, Card, Statistic, message } from 'antd'
+import { Modal, Tag, Card, Statistic, message, Popconfirm } from 'antd'
 import { Button } from '../../../../core/components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
@@ -11,14 +11,24 @@ import {
   faMapMarkerAlt,
   faDollarSign,
   faCalendarAlt,
-  faBuilding
+  faBuilding,
+  faEdit,
+  faTrash,
+  faEye,
+  faClone
 } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../../core/context/ThemeContext'
 import { useNavigate } from 'react-router-dom'
 import BusinessSidebar from '../../components/BusinessSidebar'
-import { getAllJobOpportunities, deleteJobOpportunity } from '../utils/controller'
+import {
+  getAllJobOpportunities,
+  deleteJobOpportunity,
+  updateJobOpportunityStatus,
+  duplicateJobOpportunity
+} from '../utils/controller'
 import TableView from '../../../../core/components/view-components/table-view/TableView'
 import TableActions from '../../../../core/components/view-components/table-view/TableActions'
+import JobOpportunityForm from './JobOpportunityForm'
 
 /**
  * Business Dashboard component for Recruiters and Employers
@@ -34,70 +44,132 @@ const BusinessDashboard = React.memo(({ user }) => {
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [selectedJob, setSelectedJob] = useState(null)
 
-  // Load job opportunities from database
-  useEffect(() => {
-    const loadJobData = async () => {
-      setLoading(true)
-      try {
-        const result = await getAllJobOpportunities()
-        if (result.success) {
-          setJobOpportunities(result.data)
-        } else {
-          console.error('Error loading job opportunities:', result.error)
-          message.error('Failed to load job opportunities: ' + result.error)
-          setJobOpportunities([])
-        }
-      } catch (error) {
-        console.error('Unexpected error loading job opportunities:', error)
-        message.error('An unexpected error occurred while loading job opportunities')
-        setJobOpportunities([])
-      } finally {
-        setLoading(false)
-      }
-    }
+  // Form modal state
+  const [isFormVisible, setIsFormVisible] = useState(false)
+  const [editingJobId, setEditingJobId] = useState(null)
+  const [editingJobData, setEditingJobData] = useState(null)
 
-    loadJobData()
+  // Load job opportunities from database
+  const loadJobOpportunities = useCallback(async () => {
+    setLoading(true)
+    try {
+      const result = await getAllJobOpportunities()
+      if (result.success) {
+        setJobOpportunities(result.data)
+      } else {
+        console.error('Error loading job opportunities:', result.error)
+        message.error('Failed to load job opportunities: ' + result.error)
+        setJobOpportunities([])
+      }
+    } catch (error) {
+      console.error('Unexpected error loading job opportunities:', error)
+      message.error('An unexpected error occurred while loading job opportunities')
+      setJobOpportunities([])
+    } finally {
+      setLoading(false)
+    }
   }, [])
 
-  // Handle navigation operations
-  const handleCreateJobListing = useCallback(() => {
-    navigate('/business-dashboard/create-job-listing')
-  }, [navigate])
+  useEffect(() => {
+    loadJobOpportunities()
+  }, [loadJobOpportunities])
 
-  const handleEditJob = useCallback(
-    (job) => {
-      navigate(`/business-dashboard/create-job-listing?id=${job.id}`, {
-        state: { jobData: job }
-      })
-    },
-    [navigate]
-  )
+  // Handle navigation operations
+  const handleCreateJobOpportunity = useCallback(() => {
+    setEditingJobId(null)
+    setEditingJobData(null)
+    setIsFormVisible(true)
+  }, [])
+
+  const handleEditJob = useCallback((job) => {
+    setEditingJobId(job.id)
+    setEditingJobData(job) // Pass the full record
+    setIsFormVisible(true)
+  }, [])
 
   const handleViewJob = useCallback((job) => {
     setSelectedJob(job)
     setIsModalVisible(true)
   }, [])
 
-  const handleDeleteJob = useCallback(async (jobId) => {
-    try {
-      const result = await deleteJobOpportunity(jobId)
-      if (result.success) {
-        setJobOpportunities((prev) => prev.filter((job) => job.id !== jobId))
-        message.success('Job opportunity deleted successfully')
-      } else {
-        console.error('Error deleting job opportunity:', result.error)
-        message.error('Failed to delete job opportunity: ' + result.error)
+  const handleDeleteJob = useCallback(
+    async (jobId) => {
+      try {
+        const result = await deleteJobOpportunity(jobId)
+        if (result.success) {
+          message.success('Job opportunity deleted successfully')
+          // Refresh the list
+          loadJobOpportunities()
+        } else {
+          console.error('Error deleting job opportunity:', result.error)
+          message.error('Failed to delete job opportunity: ' + result.error)
+        }
+      } catch (error) {
+        console.error('Unexpected error deleting job opportunity:', error)
+        message.error('An unexpected error occurred while deleting the job opportunity')
       }
-    } catch (error) {
-      console.error('Unexpected error deleting job opportunity:', error)
-      message.error('An unexpected error occurred while deleting the job opportunity')
-    }
-  }, [])
+    },
+    [loadJobOpportunities]
+  )
+
+  const handleDuplicateJob = useCallback(
+    async (job) => {
+      try {
+        const result = await duplicateJobOpportunity(job.id)
+        if (result.success) {
+          message.success('Job opportunity duplicated successfully')
+          // Refresh the list
+          loadJobOpportunities()
+        } else {
+          console.error('Error duplicating job opportunity:', result.error)
+          message.error('Failed to duplicate job opportunity: ' + result.error)
+        }
+      } catch (error) {
+        console.error('Unexpected error duplicating job opportunity:', error)
+        message.error('An unexpected error occurred while duplicating the job opportunity')
+      }
+    },
+    [loadJobOpportunities]
+  )
+
+  const handleStatusChange = useCallback(
+    async (jobId, newStatus) => {
+      try {
+        const result = await updateJobOpportunityStatus(jobId, newStatus)
+        if (result.success) {
+          message.success(`Job status updated to ${newStatus}`)
+          // Refresh the list
+          loadJobOpportunities()
+        } else {
+          console.error('Error updating job status:', result.error)
+          message.error('Failed to update job status: ' + result.error)
+        }
+      } catch (error) {
+        console.error('Unexpected error updating job status:', error)
+        message.error('An unexpected error occurred while updating job status')
+      }
+    },
+    [loadJobOpportunities]
+  )
 
   const handleModalClose = useCallback(() => {
     setIsModalVisible(false)
     setSelectedJob(null)
   }, [])
+
+  const handleFormClose = useCallback(() => {
+    setIsFormVisible(false)
+    setEditingJobId(null)
+    setEditingJobData(null)
+  }, [])
+
+  const handleFormSuccess = useCallback(
+    (data) => {
+      // Refresh the job opportunities list
+      loadJobOpportunities()
+    },
+    [loadJobOpportunities]
+  )
 
   // Handle navigation to linked pages with job context
   const handleViewJobDescription = useCallback(
@@ -146,33 +218,51 @@ const BusinessDashboard = React.memo(({ user }) => {
         title: 'Location',
         dataIndex: 'location',
         key: 'location',
-        render: (text, record) => (
+        render: (location) => (
           <div className='flex items-center'>
-            <FontAwesomeIcon icon={faMapMarkerAlt} className='mr-2 text-gray-400' />
-            <div>
-              <div>{text}</div>
-              {record.remote && (
-                <Tag color='green' size='small'>
-                  Remote
-                </Tag>
-              )}
-            </div>
+            <FontAwesomeIcon icon={faMapMarkerAlt} className='mr-1 text-gray-400' />
+            {location}
           </div>
-        )
+        ),
+        sorter: (a, b) => a.location.localeCompare(b.location)
       },
       {
         title: 'Type',
         dataIndex: 'type',
         key: 'type',
         render: (type) => (
-          <Tag color={type === 'Full-time' ? 'blue' : type === 'Part-time' ? 'orange' : 'purple'}>{type}</Tag>
+          <Tag
+            color={
+              type === 'Full-time' ? 'blue' : type === 'Part-time' ? 'green' : type === 'Contract' ? 'orange' : 'purple'
+            }
+          >
+            {type}
+          </Tag>
         ),
         filters: [
           { text: 'Full-time', value: 'Full-time' },
           { text: 'Part-time', value: 'Part-time' },
-          { text: 'Contract', value: 'Contract' }
+          { text: 'Contract', value: 'Contract' },
+          { text: 'Internship', value: 'Internship' }
         ],
         onFilter: (value, record) => record.type === value
+      },
+      {
+        title: 'Work Arrangement',
+        dataIndex: 'workArrangement',
+        key: 'workArrangement',
+        render: (arrangement) => (
+          <Tag color={arrangement === 'Remote' ? 'green' : arrangement === 'Hybrid' ? 'blue' : 'default'}>
+            {arrangement}
+          </Tag>
+        ),
+        filters: [
+          { text: 'On-site', value: 'On-site' },
+          { text: 'Remote', value: 'Remote' },
+          { text: 'Hybrid', value: 'Hybrid' },
+          { text: 'Flexible', value: 'Flexible' }
+        ],
+        onFilter: (value, record) => record.workArrangement === value
       },
       {
         title: 'Salary',
@@ -189,8 +279,17 @@ const BusinessDashboard = React.memo(({ user }) => {
         title: 'Status',
         dataIndex: 'status',
         key: 'status',
-        render: (status) => (
-          <Tag color={status === 'Active' ? 'green' : status === 'Paused' ? 'orange' : 'red'}>{status}</Tag>
+        render: (status, record) => (
+          <Tag
+            color={status === 'Active' ? 'green' : status === 'Paused' ? 'orange' : 'red'}
+            style={{ cursor: 'pointer' }}
+            onClick={() => {
+              const nextStatus = status === 'Active' ? 'Paused' : status === 'Paused' ? 'Closed' : 'Active'
+              handleStatusChange(record.id, nextStatus)
+            }}
+          >
+            {status}
+          </Tag>
         ),
         filters: [
           { text: 'Active', value: 'Active' },
@@ -218,10 +317,14 @@ const BusinessDashboard = React.memo(({ user }) => {
         render: (date) => (
           <div className='flex items-center'>
             <FontAwesomeIcon icon={faCalendarAlt} className='mr-1 text-gray-400' />
-            {new Date(date).toLocaleDateString()}
+            {date ? new Date(date).toLocaleDateString() : 'Not set'}
           </div>
         ),
-        sorter: (a, b) => new Date(a.datePosted) - new Date(b.datePosted)
+        sorter: (a, b) => {
+          if (!a.datePosted) return 1
+          if (!b.datePosted) return -1
+          return new Date(a.datePosted) - new Date(b.datePosted)
+        }
       },
       {
         title: 'Actions',
@@ -232,22 +335,36 @@ const BusinessDashboard = React.memo(({ user }) => {
             actions={[
               {
                 key: 'view',
+                icon: faEye,
+                tooltip: 'View Details',
                 onClick: handleViewJob
               },
               {
+                key: 'edit',
+                icon: faEdit,
+                tooltip: 'Edit Job',
+                onClick: handleEditJob
+              },
+              {
+                key: 'duplicate',
+                icon: faClone,
+                tooltip: 'Duplicate Job',
+                onClick: handleDuplicateJob
+              },
+              {
                 key: 'description',
+                label: 'Job Description',
                 onClick: handleViewJobDescription
               },
               {
                 key: 'assessment',
+                label: 'Assessment',
                 onClick: handleViewJobAssessment
               },
               {
-                key: 'edit',
-                onClick: handleEditJob
-              },
-              {
                 key: 'delete',
+                icon: faTrash,
+                tooltip: 'Delete Job',
                 onClick: (record) => handleDeleteJob(record.id),
                 confirm: {
                   title: 'Delete Job Opportunity',
@@ -262,13 +379,21 @@ const BusinessDashboard = React.memo(({ user }) => {
         )
       }
     ],
-    [handleViewJob, handleEditJob, handleDeleteJob, handleViewJobDescription, handleViewJobAssessment]
+    [
+      handleViewJob,
+      handleEditJob,
+      handleDeleteJob,
+      handleDuplicateJob,
+      handleStatusChange,
+      handleViewJobDescription,
+      handleViewJobAssessment
+    ]
   )
 
   // Statistics calculations
   const stats = useMemo(() => {
     const activeJobs = jobOpportunities.filter((job) => job.status === 'Active').length
-    const totalApplicants = jobOpportunities.reduce((sum, job) => sum + job.applicants, 0)
+    const totalApplicants = jobOpportunities.reduce((sum, job) => sum + (job.applicants || 0), 0)
     const avgApplicants = jobOpportunities.length > 0 ? Math.round(totalApplicants / jobOpportunities.length) : 0
 
     return {
@@ -312,46 +437,46 @@ const BusinessDashboard = React.memo(({ user }) => {
                 type='primary'
                 size='large'
                 icon={<FontAwesomeIcon icon={faPlus} />}
-                onClick={handleCreateJobListing}
+                onClick={handleCreateJobOpportunity}
                 style={{
                   background: darkMode ? '#059669' : '#10b981',
                   borderColor: darkMode ? '#059669' : '#10b981'
                 }}
               >
-                Post Job Listing
+                Create Job Opportunity
               </Button>
             </div>
           </div>
 
           {/* Statistics Cards */}
-          <div className='grid grid-cols-2 md:grid-cols-4 gap-4 mb-6'>
-            <Card className={darkMode ? 'bg-gray-700 border-gray-600' : ''}>
+          <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6'>
+            <Card className={`${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white'} shadow-lg`}>
               <Statistic
-                title={<span className={darkMode ? 'text-gray-300' : ''}>Total Jobs</span>}
+                title={<span className={darkMode ? 'text-gray-300' : 'text-gray-600'}>Total Jobs</span>}
                 value={stats.totalJobs}
                 prefix={<FontAwesomeIcon icon={faBriefcase} className='text-blue-500' />}
                 valueStyle={{ color: darkMode ? '#ffffff' : '#1f2937' }}
               />
             </Card>
-            <Card className={darkMode ? 'bg-gray-700 border-gray-600' : ''}>
+            <Card className={`${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white'} shadow-lg`}>
               <Statistic
-                title={<span className={darkMode ? 'text-gray-300' : ''}>Active Jobs</span>}
+                title={<span className={darkMode ? 'text-gray-300' : 'text-gray-600'}>Active Jobs</span>}
                 value={stats.activeJobs}
                 prefix={<FontAwesomeIcon icon={faBriefcase} className='text-green-500' />}
                 valueStyle={{ color: darkMode ? '#ffffff' : '#1f2937' }}
               />
             </Card>
-            <Card className={darkMode ? 'bg-gray-700 border-gray-600' : ''}>
+            <Card className={`${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white'} shadow-lg`}>
               <Statistic
-                title={<span className={darkMode ? 'text-gray-300' : ''}>Total Applicants</span>}
+                title={<span className={darkMode ? 'text-gray-300' : 'text-gray-600'}>Total Applicants</span>}
                 value={stats.totalApplicants}
                 prefix={<FontAwesomeIcon icon={faUsers} className='text-purple-500' />}
                 valueStyle={{ color: darkMode ? '#ffffff' : '#1f2937' }}
               />
             </Card>
-            <Card className={darkMode ? 'bg-gray-700 border-gray-600' : ''}>
+            <Card className={`${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white'} shadow-lg`}>
               <Statistic
-                title={<span className={darkMode ? 'text-gray-300' : ''}>Avg per Job</span>}
+                title={<span className={darkMode ? 'text-gray-300' : 'text-gray-600'}>Avg Applicants</span>}
                 value={stats.avgApplicants}
                 prefix={<FontAwesomeIcon icon={faUsers} className='text-orange-500' />}
                 valueStyle={{ color: darkMode ? '#ffffff' : '#1f2937' }}
@@ -361,30 +486,47 @@ const BusinessDashboard = React.memo(({ user }) => {
         </div>
 
         {/* Job Opportunities Table */}
-        <TableView
-          columns={columns}
-          dataSource={jobOpportunities}
-          loading={loading}
-          rowKey='id'
-          pagination={{
-            pageSize: 10,
-            showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} jobs`
-          }}
-          emptyText='No job opportunities found'
-        />
+        <Card className={`${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white'} shadow-lg`}>
+          <div className='mb-4'>
+            <h2 className={`text-xl font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Job Opportunities</h2>
+            <p className={`${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>Manage and track your job postings</p>
+          </div>
 
-        {/* Job Modal */}
+          <TableView
+            dataSource={jobOpportunities}
+            columns={columns}
+            loading={loading}
+            pagination={{
+              pageSize: 10,
+              showSizeChanger: true,
+              showQuickJumper: true,
+              showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`
+            }}
+            rowKey='id'
+            scroll={{ x: 1200 }}
+          />
+        </Card>
+
+        {/* Job Details Modal */}
         <Modal
-          title={<span className={darkMode ? 'text-white' : 'text-gray-900'}>Job Details</span>}
+          title={
+            <div className='flex items-center'>
+              <FontAwesomeIcon icon={faBriefcase} className='mr-2' />
+              Job Details
+            </div>
+          }
           open={isModalVisible}
           onCancel={handleModalClose}
           footer={[
             <Button key='close' onClick={handleModalClose}>
               Close
+            </Button>,
+            <Button key='edit' type='primary' onClick={() => handleEditJob(selectedJob)}>
+              Edit Job
             </Button>
           ]}
           width={800}
-          className={darkMode ? 'ant-modal-dark' : ''}
+          className={darkMode ? 'modal-dark' : ''}
           styles={{
             content: {
               backgroundColor: darkMode ? '#374151' : '#ffffff'
@@ -416,6 +558,7 @@ const BusinessDashboard = React.memo(({ user }) => {
                   <Tag color='blue'>{selectedJob.type}</Tag>
                   <Tag color={selectedJob.status === 'Active' ? 'green' : 'orange'}>{selectedJob.status}</Tag>
                   {selectedJob.remote && <Tag color='purple'>Remote Available</Tag>}
+                  <Tag color='cyan'>{selectedJob.workArrangement}</Tag>
                 </div>
               </div>
 
@@ -426,266 +569,62 @@ const BusinessDashboard = React.memo(({ user }) => {
                   <span className={`ml-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{selectedJob.salary}</span>
                 </div>
                 <div>
+                  <span className={`font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Experience:</span>
+                  <span className={`ml-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                    {selectedJob.experienceRequired} years
+                  </span>
+                </div>
+                <div>
                   <span className={`font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Applicants:</span>
                   <span className={`ml-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{selectedJob.applicants}</span>
                 </div>
                 <div>
                   <span className={`font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Posted:</span>
-                  <span className={`ml-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{selectedJob.datePosted}</span>
-                </div>
-                <div>
-                  <span className={`font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                    Work Arrangement:
-                  </span>
                   <span className={`ml-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                    {selectedJob.workArrangement}
+                    {selectedJob.datePosted ? new Date(selectedJob.datePosted).toLocaleDateString() : 'Not set'}
                   </span>
                 </div>
               </div>
 
-              {/* Job Description */}
+              {/* Description */}
               <div>
-                <h4 className={`font-semibold mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Job Description</h4>
-                <p className={`${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>{selectedJob.description}</p>
+                <h4 className={`font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Description</h4>
+                <p className={`${darkMode ? 'text-white' : 'text-gray-900'} whitespace-pre-wrap`}>
+                  {selectedJob.description}
+                </p>
               </div>
 
-              {/* Candidate Requirements */}
-              <div>
-                <h4 className={`font-semibold mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                  Candidate Requirements
-                </h4>
-                <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                  <div>
-                    <span className={`font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Experience:</span>
-                    <span className={`ml-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                      {selectedJob.experienceRequired} years
-                    </span>
-                  </div>
-                  <div>
-                    <span className={`font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Education:</span>
-                    <span className={`ml-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                      {selectedJob.educationLevel}
-                    </span>
-                  </div>
-                  <div>
-                    <span className={`font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                      Field of Study:
-                    </span>
-                    <span className={`ml-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                      {selectedJob.fieldOfStudy}
-                    </span>
-                  </div>
-                  <div>
-                    <span className={`font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Industry:</span>
-                    <span className={`ml-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                      {selectedJob.industryExperience}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Skills & Tools */}
-              <div>
-                <h4 className={`font-semibold mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Skills & Tools</h4>
-                <div className='space-y-3'>
-                  <div>
-                    <span className={`font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                      Required Skills:
-                    </span>
-                    <div className='mt-1 flex flex-wrap gap-1'>
-                      {selectedJob.requiredSkills?.split(',').map((skill, index) => (
-                        <Tag key={index} color='blue' className='mb-1'>
-                          {skill.trim()}
-                        </Tag>
-                      ))}
-                    </div>
-                  </div>
-                  {selectedJob.softSkills && (
-                    <div>
-                      <span className={`font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                        Soft Skills:
-                      </span>
-                      <div className='mt-1 flex flex-wrap gap-1'>
-                        {selectedJob.softSkills.split(',').map((skill, index) => (
-                          <Tag key={index} color='green' className='mb-1'>
-                            {skill.trim()}
-                          </Tag>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  {selectedJob.toolsRequired && (
-                    <div>
-                      <span className={`font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                        Tools & Software:
-                      </span>
-                      <div className='mt-1 flex flex-wrap gap-1'>
-                        {selectedJob.toolsRequired.split(',').map((tool, index) => (
-                          <Tag key={index} color='purple' className='mb-1'>
-                            {tool.trim()}
-                          </Tag>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  {selectedJob.certificationsRequired && (
-                    <div>
-                      <span className={`font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                        Certifications:
-                      </span>
-                      <span className={`ml-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                        {selectedJob.certificationsRequired}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Employment Details */}
-              <div>
-                <h4 className={`font-semibold mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                  Employment Details
-                </h4>
-                <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                  <div>
-                    <span className={`font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                      Employment Types:
-                    </span>
-                    <div className='mt-1'>
-                      {selectedJob.employmentTypes?.map((type, index) => (
-                        <Tag key={index} color='orange' className='mb-1'>
-                          {type}
-                        </Tag>
-                      ))}
-                    </div>
-                  </div>
-                  <div>
-                    <span className={`font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                      Visa Sponsorship:
-                    </span>
-                    <span className={`ml-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                      {selectedJob.visaSponsorship}
-                    </span>
-                  </div>
-                  <div>
-                    <span className={`font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                      Travel Requirements:
-                    </span>
-                    <span className={`ml-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                      {selectedJob.travelRequirements}
-                    </span>
-                  </div>
-                </div>
-                {selectedJob.benefits && (
-                  <div className='mt-3'>
-                    <span className={`font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Benefits:</span>
-                    <p className={`mt-1 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>{selectedJob.benefits}</p>
-                  </div>
-                )}
-              </div>
-
-              {/* Application Requirements */}
-              <div>
-                <h4 className={`font-semibold mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                  Application Requirements
-                </h4>
-                <div className='grid grid-cols-2 gap-4'>
-                  <div>
-                    <span className={`font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Resume:</span>
-                    <Tag color={selectedJob.resumeRequired ? 'red' : 'green'} className='ml-2'>
-                      {selectedJob.resumeRequired ? 'Required' : 'Optional'}
-                    </Tag>
-                  </div>
-                  <div>
-                    <span className={`font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Cover Letter:</span>
-                    <Tag
-                      color={
-                        selectedJob.coverLetterRequired === 'Required'
-                          ? 'red'
-                          : selectedJob.coverLetterRequired === 'Preferred'
-                            ? 'orange'
-                            : 'green'
-                      }
-                      className='ml-2'
-                    >
-                      {selectedJob.coverLetterRequired || 'Optional'}
-                    </Tag>
-                  </div>
-                  <div>
-                    <span className={`font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Portfolio:</span>
-                    <Tag
-                      color={
-                        selectedJob.portfolioRequired === 'Required'
-                          ? 'red'
-                          : selectedJob.portfolioRequired === 'Preferred'
-                            ? 'orange'
-                            : 'green'
-                      }
-                      className='ml-2'
-                    >
-                      {selectedJob.portfolioRequired || 'Optional'}
-                    </Tag>
-                  </div>
-                  <div>
-                    <span className={`font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>References:</span>
-                    <Tag
-                      color={selectedJob.referencesRequired === 'Required Upfront' ? 'red' : 'green'}
-                      className='ml-2'
-                    >
-                      {selectedJob.referencesRequired || 'Optional'}
-                    </Tag>
-                  </div>
-                </div>
-                {selectedJob.applicationInstructions && (
-                  <div className='mt-3'>
-                    <span className={`font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                      Application Instructions:
-                    </span>
-                    <p className={`mt-1 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                      {selectedJob.applicationInstructions}
-                    </p>
-                  </div>
-                )}
-              </div>
-
-              {/* Screening Questions */}
-              {selectedJob.screeningQuestions && (
+              {/* Required Skills */}
+              {selectedJob.requiredSkills && (
                 <div>
-                  <h4 className={`font-semibold mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                    Pre-Screening Questions
+                  <h4 className={`font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Required Skills
                   </h4>
-                  <div
-                    className={`bg-gray-50 dark:bg-gray-800 p-3 rounded-lg ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}
-                  >
-                    {selectedJob.screeningQuestions.split('\n').map((question, index) => (
-                      <div key={index} className='mb-2'>
-                        <span className='font-medium'>{index + 1}.</span> {question}
-                      </div>
-                    ))}
-                  </div>
+                  <p className={`${darkMode ? 'text-white' : 'text-gray-900'}`}>{selectedJob.requiredSkills}</p>
                 </div>
               )}
 
-              {/* Legacy Requirements (for backward compatibility) */}
-              {selectedJob.requirements && Array.isArray(selectedJob.requirements) && (
+              {/* Benefits */}
+              {selectedJob.benefits && (
                 <div>
-                  <h4 className={`font-semibold mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                    Additional Requirements
-                  </h4>
-                  <ul className={`list-disc list-inside space-y-1 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                    {selectedJob.requirements.map((req, index) => (
-                      <li key={index}>{req}</li>
-                    ))}
-                  </ul>
+                  <h4 className={`font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Benefits</h4>
+                  <p className={`${darkMode ? 'text-white' : 'text-gray-900'} whitespace-pre-wrap`}>
+                    {selectedJob.benefits}
+                  </p>
                 </div>
               )}
             </div>
-          ) : (
-            <div className={`text-center py-8 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-              <p>No job selected</p>
-            </div>
-          )}
+          ) : null}
         </Modal>
+
+        {/* Job Opportunity Form Modal */}
+        <JobOpportunityForm
+          visible={isFormVisible}
+          onClose={handleFormClose}
+          onSuccess={handleFormSuccess}
+          editId={editingJobId}
+          initialData={editingJobData}
+        />
       </div>
     </div>
   )
