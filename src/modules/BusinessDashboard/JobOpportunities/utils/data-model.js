@@ -1,8 +1,10 @@
 // Global Instructions Rule Applied!
+// Frontend Instructions Rule Applied!
 
 /**
  * Data Model for Job Opportunities
  * Provides validation, transformation, and mapping functions
+ * Updated to match complete Supabase schema
  */
 
 /**
@@ -43,7 +45,7 @@ export const JobOpportunitySchema = {
 
   // Application Requirements
   employmentTypes: { type: 'array', required: true },
-  resumeRequired: { type: 'boolean', required: true, default: true },
+  resumeRequired: { type: 'boolean', required: false, default: true },
   coverLetterRequired: { type: 'string', required: false, enum: ['Required', 'Preferred', 'Optional'] },
   portfolioRequired: { type: 'string', required: false, enum: ['Required', 'Preferred', 'Optional'] },
   referencesRequired: { type: 'string', required: false, enum: ['Required', 'Upon Request', 'Optional'] },
@@ -55,8 +57,6 @@ export const JobOpportunitySchema = {
   applicants: { type: 'number', required: false, default: 0 },
   datePosted: { type: 'date', required: false },
   remote: { type: 'boolean', required: false, default: false },
-
-  // Custom Fields
   customFields: { type: 'array', required: false, default: [] }
 }
 
@@ -101,9 +101,8 @@ export const transformToDatabase = (formData) => {
     // Status and Metadata
     status: formData.status || 'Active',
     applicants: formData.applicants || 0,
+    date_posted: formData.datePosted || null,
     remote: formData.workArrangement === 'Remote' || formData.workArrangement === 'Hybrid',
-
-    // Custom Fields
     custom_fields: Array.isArray(formData.customFields) ? formData.customFields : []
   }
 
@@ -118,56 +117,45 @@ export const transformToDatabase = (formData) => {
 }
 
 /**
- * Transform database data to frontend format
- * @param {Object} dbData - Data from database
- * @returns {Object} Transformed data for frontend consumption
+ * Transform database data to form format
+ * @param {Object} dbData - Data from the database
+ * @returns {Object} Transformed data for form display
  */
 export const transformFromDatabase = (dbData) => {
-  if (!dbData) return null
+  if (!dbData) return getDefaultJobOpportunityData()
 
   return {
-    // Basic Information
     id: dbData.id,
-    title: dbData.title,
-    company: dbData.company,
-    location: dbData.location,
-    type: dbData.type,
-    salary: dbData.salary,
-    workArrangement: dbData.work_arrangement,
-    description: dbData.description,
-    benefits: dbData.benefits,
-
-    // Candidate Requirements
-    experienceRequired: dbData.experience_required,
-    educationLevel: dbData.education_level,
-    fieldOfStudy: dbData.field_of_study,
-    industryExperience: dbData.industry_experience,
-    requiredSkills: dbData.required_skills,
-    softSkills: dbData.soft_skills,
-    toolsRequired: dbData.tools_required,
-    certificationsRequired: dbData.certifications_required,
-    visaSponsorship: dbData.visa_sponsorship,
-    travelRequirements: dbData.travel_requirements,
-
-    // Application Requirements
-    employmentTypes: dbData.employment_types || [],
-    resumeRequired: dbData.resume_required,
-    coverLetterRequired: dbData.cover_letter_required,
-    portfolioRequired: dbData.portfolio_required,
-    referencesRequired: dbData.references_required,
-    applicationInstructions: dbData.application_instructions,
-    screeningQuestions: dbData.screening_questions,
-
-    // Status and Metadata
-    status: dbData.status,
+    title: dbData.title || '',
+    company: dbData.company || '',
+    location: dbData.location || '',
+    type: dbData.type || '',
+    salary: dbData.salary || '',
+    workArrangement: dbData.work_arrangement || '',
+    description: dbData.description || '',
+    benefits: dbData.benefits || '',
+    experienceRequired: dbData.experience_required || '',
+    educationLevel: dbData.education_level || '',
+    fieldOfStudy: dbData.field_of_study || '',
+    industryExperience: dbData.industry_experience || '',
+    requiredSkills: dbData.required_skills || '',
+    softSkills: dbData.soft_skills || '',
+    toolsRequired: dbData.tools_required || '',
+    certificationsRequired: dbData.certifications_required || '',
+    visaSponsorship: dbData.visa_sponsorship || '',
+    travelRequirements: dbData.travel_requirements || '',
+    employmentTypes: Array.isArray(dbData.employment_types) ? dbData.employment_types : [],
+    resumeRequired: dbData.resume_required !== undefined ? dbData.resume_required : true,
+    coverLetterRequired: dbData.cover_letter_required || '',
+    portfolioRequired: dbData.portfolio_required || '',
+    referencesRequired: dbData.references_required || '',
+    applicationInstructions: dbData.application_instructions || '',
+    screeningQuestions: dbData.screening_questions || '',
+    status: dbData.status || 'Active',
     applicants: dbData.applicants || 0,
-    datePosted: dbData.date_posted || dbData.created_at?.split('T')[0],
-    remote: dbData.remote,
-
-    // Custom Fields
-    customFields: dbData.custom_fields || [],
-
-    // Audit fields
+    datePosted: dbData.date_posted || null,
+    remote: dbData.remote || false,
+    customFields: Array.isArray(dbData.custom_fields) ? dbData.custom_fields : [],
     createdAt: dbData.created_at,
     modifiedAt: dbData.modified_at,
     createdBy: dbData.created_by,
@@ -177,58 +165,108 @@ export const transformFromDatabase = (dbData) => {
 
 /**
  * Validate job opportunity data
- * @param {Object} data - Data to validate
- * @returns {Object} Validation result with success status and errors
+ * @param {Object} data - Job opportunity data to validate
+ * @returns {Object} Validation result with success flag and errors array
  */
 export const validateJobOpportunity = (data) => {
   const errors = []
 
   // Required field validation
-  const requiredFields = [
-    { field: 'title', message: 'Job title is required' },
-    { field: 'company', message: 'Company name is required' },
-    { field: 'location', message: 'Location is required' },
-    { field: 'type', message: 'Job type is required' },
-    { field: 'salary', message: 'Salary range is required' },
-    { field: 'workArrangement', message: 'Work arrangement is required' },
-    { field: 'description', message: 'Job description is required' },
-    { field: 'experienceRequired', message: 'Experience level is required' },
-    { field: 'requiredSkills', message: 'Required skills are required' },
-    { field: 'employmentTypes', message: 'Employment types are required' }
-  ]
+  if (!data.title?.trim()) {
+    errors.push('Job title is required')
+  } else if (data.title.length > 255) {
+    errors.push('Job title must be 255 characters or less')
+  }
 
-  requiredFields.forEach(({ field, message }) => {
-    if (!data[field] || (Array.isArray(data[field]) && data[field].length === 0)) {
-      errors.push(message)
-    }
-  })
+  if (!data.company?.trim()) {
+    errors.push('Company name is required')
+  } else if (data.company.length > 255) {
+    errors.push('Company name must be 255 characters or less')
+  }
+
+  if (!data.location?.trim()) {
+    errors.push('Location is required')
+  } else if (data.location.length > 255) {
+    errors.push('Location must be 255 characters or less')
+  }
+
+  if (!data.type) {
+    errors.push('Job type is required')
+  } else if (!JobOpportunitySchema.type.enum.includes(data.type)) {
+    errors.push('Invalid job type')
+  }
+
+  if (!data.salary?.trim()) {
+    errors.push('Salary is required')
+  } else if (data.salary.length > 100) {
+    errors.push('Salary must be 100 characters or less')
+  }
+
+  if (!data.workArrangement) {
+    errors.push('Work arrangement is required')
+  } else if (!JobOpportunitySchema.workArrangement.enum.includes(data.workArrangement)) {
+    errors.push('Invalid work arrangement')
+  }
+
+  if (!data.description?.trim()) {
+    errors.push('Job description is required')
+  }
+
+  if (!data.experienceRequired) {
+    errors.push('Experience required is required')
+  } else if (!JobOpportunitySchema.experienceRequired.enum.includes(data.experienceRequired)) {
+    errors.push('Invalid experience level')
+  }
+
+  if (!data.requiredSkills?.trim()) {
+    errors.push('Required skills are required')
+  }
+
+  if (!Array.isArray(data.employmentTypes) || data.employmentTypes.length === 0) {
+    errors.push('At least one employment type is required')
+  }
+
+  // Optional field validation with enum checks
+  if (data.educationLevel && !JobOpportunitySchema.educationLevel.enum.includes(data.educationLevel)) {
+    errors.push('Invalid education level')
+  }
+
+  if (data.industryExperience && !JobOpportunitySchema.industryExperience.enum.includes(data.industryExperience)) {
+    errors.push('Invalid industry experience')
+  }
+
+  if (data.visaSponsorship && !JobOpportunitySchema.visaSponsorship.enum.includes(data.visaSponsorship)) {
+    errors.push('Invalid visa sponsorship option')
+  }
+
+  if (data.travelRequirements && !JobOpportunitySchema.travelRequirements.enum.includes(data.travelRequirements)) {
+    errors.push('Invalid travel requirements option')
+  }
+
+  if (data.coverLetterRequired && !JobOpportunitySchema.coverLetterRequired.enum.includes(data.coverLetterRequired)) {
+    errors.push('Invalid cover letter requirement option')
+  }
+
+  if (data.portfolioRequired && !JobOpportunitySchema.portfolioRequired.enum.includes(data.portfolioRequired)) {
+    errors.push('Invalid portfolio requirement option')
+  }
+
+  if (data.referencesRequired && !JobOpportunitySchema.referencesRequired.enum.includes(data.referencesRequired)) {
+    errors.push('Invalid references requirement option')
+  }
+
+  if (data.status && !JobOpportunitySchema.status.enum.includes(data.status)) {
+    errors.push('Invalid status')
+  }
 
   // String length validation
-  if (data.title && data.title.length > 255) {
-    errors.push('Job title must be less than 255 characters')
+  if (data.fieldOfStudy && data.fieldOfStudy.length > 255) {
+    errors.push('Field of study must be 255 characters or less')
   }
 
-  if (data.company && data.company.length > 255) {
-    errors.push('Company name must be less than 255 characters')
+  if (data.certificationsRequired && data.certificationsRequired.length > 255) {
+    errors.push('Certifications required must be 255 characters or less')
   }
-
-  if (data.location && data.location.length > 255) {
-    errors.push('Location must be less than 255 characters')
-  }
-
-  // Enum validation
-  const enumValidations = [
-    { field: 'type', values: ['Full-time', 'Part-time', 'Contract', 'Internship'] },
-    { field: 'workArrangement', values: ['On-site', 'Remote', 'Hybrid', 'Flexible'] },
-    { field: 'experienceRequired', values: ['0-1', '2-4', '5-7', '8+'] },
-    { field: 'status', values: ['Active', 'Paused', 'Closed'] }
-  ]
-
-  enumValidations.forEach(({ field, values }) => {
-    if (data[field] && !values.includes(data[field])) {
-      errors.push(`Invalid ${field}: ${data[field]}`)
-    }
-  })
 
   return {
     success: errors.length === 0,
@@ -237,16 +275,16 @@ export const validateJobOpportunity = (data) => {
 }
 
 /**
- * Create default job opportunity object
+ * Get default job opportunity data for new forms
  * @returns {Object} Default job opportunity data
  */
-export const createDefaultJobOpportunity = () => ({
+export const getDefaultJobOpportunityData = () => ({
   title: '',
   company: '',
   location: '',
-  type: 'Full-time',
+  type: '',
   salary: '',
-  workArrangement: 'On-site',
+  workArrangement: '',
   description: '',
   benefits: '',
   experienceRequired: '2-4',
@@ -268,6 +306,88 @@ export const createDefaultJobOpportunity = () => ({
   screeningQuestions: '',
   status: 'Active',
   applicants: 0,
+  datePosted: null,
   remote: false,
   customFields: []
+})
+
+/**
+ * Get dropdown options for various form fields
+ */
+export const getDropdownOptions = () => ({
+  type: [
+    { value: 'Full-time', label: 'Full-time' },
+    { value: 'Part-time', label: 'Part-time' },
+    { value: 'Contract', label: 'Contract' },
+    { value: 'Internship', label: 'Internship' }
+  ],
+  workArrangement: [
+    { value: 'On-site', label: 'On-site' },
+    { value: 'Remote', label: 'Remote' },
+    { value: 'Hybrid', label: 'Hybrid' },
+    { value: 'Flexible', label: 'Flexible' }
+  ],
+  experienceRequired: [
+    { value: '0-1', label: '0-1 years' },
+    { value: '2-4', label: '2-4 years' },
+    { value: '5-7', label: '5-7 years' },
+    { value: '8+', label: '8+ years' }
+  ],
+  educationLevel: [
+    { value: 'High School', label: 'High School' },
+    { value: 'Diploma', label: 'Diploma' },
+    { value: "Bachelor's Degree", label: "Bachelor's Degree" },
+    { value: "Master's Degree", label: "Master's Degree" },
+    { value: 'PhD', label: 'PhD' }
+  ],
+  industryExperience: [
+    { value: 'Technology', label: 'Technology' },
+    { value: 'Healthcare', label: 'Healthcare' },
+    { value: 'Finance', label: 'Finance' },
+    { value: 'Retail', label: 'Retail' },
+    { value: 'Manufacturing', label: 'Manufacturing' },
+    { value: 'Education', label: 'Education' },
+    { value: 'Marketing', label: 'Marketing' },
+    { value: 'Other', label: 'Other' }
+  ],
+  visaSponsorship: [
+    { value: 'Available', label: 'Available' },
+    { value: 'Not Available', label: 'Not Available' },
+    { value: 'Case by Case', label: 'Case by Case' }
+  ],
+  travelRequirements: [
+    { value: 'None', label: 'None' },
+    { value: 'Occasional', label: 'Occasional' },
+    { value: 'Frequent', label: 'Frequent' },
+    { value: 'Extensive', label: 'Extensive' }
+  ],
+  coverLetterRequired: [
+    { value: 'Required', label: 'Required' },
+    { value: 'Preferred', label: 'Preferred' },
+    { value: 'Optional', label: 'Optional' }
+  ],
+  portfolioRequired: [
+    { value: 'Required', label: 'Required' },
+    { value: 'Preferred', label: 'Preferred' },
+    { value: 'Optional', label: 'Optional' }
+  ],
+  referencesRequired: [
+    { value: 'Required', label: 'Required' },
+    { value: 'Upon Request', label: 'Upon Request' },
+    { value: 'Optional', label: 'Optional' }
+  ],
+  status: [
+    { value: 'Active', label: 'Active' },
+    { value: 'Paused', label: 'Paused' },
+    { value: 'Closed', label: 'Closed' }
+  ],
+  employmentTypes: [
+    { value: 'Full-time', label: 'Full-time' },
+    { value: 'Part-time', label: 'Part-time' },
+    { value: 'Contract', label: 'Contract' },
+    { value: 'Temporary', label: 'Temporary' },
+    { value: 'Internship', label: 'Internship' },
+    { value: 'Volunteer', label: 'Volunteer' },
+    { value: 'Freelance', label: 'Freelance' }
+  ]
 })

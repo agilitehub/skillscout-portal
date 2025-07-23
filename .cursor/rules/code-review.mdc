@@ -1,0 +1,29 @@
+---
+alwaysApply: false
+---
+# ✅ Code Review Standards
+
+### **Purpose**
+Review all **git code changes** and verify that they **strictly conform** to the established development standards.
+
+### **Reference Rules**
+The review must be based on:
+
+1. **Global Development Standards** (`global-instructions.mdc`):
+  - Reference the @global-instructions.mdc for all global rules
+
+2. **Frontend UI Standards** (`frontend-instructions.mdc`):
+  - Reference the @frontend-instructions.mdc for all frontend UI rules
+
+---
+
+### **Code Review Instructions**
+For every code change:
+1. **Analyze added/modified files** and compare against the above rules.
+2. **List all violations clearly**, referencing the exact rule being broken.
+3. **Apply fixes** for each violation.
+4. If the changes fully comply, respond with:  
+   ✅ `All changes conform to the defined standards.`
+
+---
+
