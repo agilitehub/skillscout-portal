@@ -21,12 +21,7 @@ import TableView from '../../../../core/components/view-components/table-view/Ta
 import TableActions from '../../../../core/components/view-components/table-view/TableActions'
 
 // Import controller functions
-import {
-  getAllAssessments,
-  updateAssessment,
-  deleteAssessment,
-  searchAssessments
-} from '../utils/controller'
+import { getAllAssessments, updateAssessment, deleteAssessment, searchAssessments } from '../utils/controller'
 
 // Import question controller functions
 import {
@@ -54,8 +49,6 @@ const Assessments = React.memo(({ user }) => {
   const [selectedStatus, setSelectedStatus] = useState('all')
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [editingAssessment, setEditingAssessment] = useState(null)
-  const [isViewModalVisible, setIsViewModalVisible] = useState(false)
-  const [selectedAssessment, setSelectedAssessment] = useState(null)
 
   // Question management state
   const [isQuestionModalVisible, setIsQuestionModalVisible] = useState(false)
@@ -222,17 +215,6 @@ const Assessments = React.memo(({ user }) => {
       await fetchQuestionsForAssessment(assessment.id)
     },
     [form, fetchQuestionsForAssessment]
-  )
-
-  // Handle view assessment
-  const handleView = useCallback(
-    async (assessment) => {
-      setSelectedAssessment(assessment)
-      setIsViewModalVisible(true)
-      // Fetch questions for viewing
-      await fetchQuestionsForAssessment(assessment.id)
-    },
-    [fetchQuestionsForAssessment]
   )
 
   // Handle form submission - edit only
@@ -404,8 +386,15 @@ const Assessments = React.memo(({ user }) => {
       title: 'TITLE',
       dataIndex: 'title',
       key: 'title',
-      render: (text) => (
-        <div className={`font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{truncateText(text, 80)}</div>
+      render: (text, record) => (
+        <div
+          className={`font-medium cursor-pointer transition-colors duration-200 ${
+            darkMode ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-800'
+          }`}
+          onClick={() => handleEdit(record)}
+        >
+          {truncateText(text, 80)}
+        </div>
       )
     },
     {
@@ -467,14 +456,6 @@ const Assessments = React.memo(({ user }) => {
         <TableActions
           record={record}
           actions={[
-            {
-              key: 'view',
-              onClick: handleView
-            },
-            {
-              key: 'edit',
-              onClick: handleEdit
-            },
             {
               key: 'delete',
               confirm: {
@@ -653,9 +634,7 @@ const Assessments = React.memo(({ user }) => {
         <Modal
           title={
             <div className='flex items-center justify-between w-full'>
-              <span className='text-white font-semibold text-lg'>
-                Edit Assessment
-              </span>
+              <span className='text-white font-semibold text-lg'>Edit Assessment</span>
               <button
                 onClick={() => {
                   if (!submitLoading) {
@@ -708,139 +687,119 @@ const Assessments = React.memo(({ user }) => {
               }}
               initialValues={{ isActive: true, status: 'Draft' }}
             >
-                {/* Assessment Details Section */}
+              {/* Assessment Details Section */}
+              <div className='mb-6'>
+                <h3 className={`text-lg font-semibold mb-4 ${darkMode ? 'text-emerald-400' : 'text-emerald-700'}`}>
+                  Assessment Details
+                </h3>
+
+                {/* Active Toggle */}
                 <div className='mb-6'>
-                  <h3 className={`text-lg font-semibold mb-4 ${darkMode ? 'text-emerald-400' : 'text-emerald-700'}`}>
-                    Assessment Details
-                  </h3>
-
-                  {/* Active Toggle */}
-                  <div className='mb-6'>
-                    <Form.Item
-                      label='Active'
-                      name='isActive'
-                      valuePropName='checked'
-                    >
-                      <Switch defaultChecked={true} className='mr-3' />
-                    </Form.Item>
-                  </div>
-
-                  <Row gutter={16}>
-                    <Col span={12}>
-                      <Form.Item
-                        label='Assessment Title'
-                        name='title'
-                        rules={[{ required: true, message: 'Please enter an assessment title' }]}
-                      >
-                        <Input
-                          placeholder='Enter assessment title...'
-                          style={{
-                            borderColor: darkMode ? BRAND_COLORS.emeraldLight : BRAND_COLORS.emeraldLight,
-                            fontWeight: '500'
-                          }}
-                        />
-                      </Form.Item>
-                    </Col>
-                    <Col span={6}>
-                      <Form.Item
-                        label='Status'
-                        name='status'
-                        rules={[{ required: true, message: 'Please select a status' }]}
-                      >
-                        <Select
-                          placeholder='Select status'
-                          style={{ fontWeight: '500' }}
-                        >
-                          <Option value='Draft'>Draft</Option>
-                          <Option value='Active'>Active</Option>
-                          <Option value='Inactive'>Inactive</Option>
-                          <Option value='Archived'>Archived</Option>
-                        </Select>
-                      </Form.Item>
-                    </Col>
-                    <Col span={6}>
-                      <Form.Item
-                        label='Category'
-                        name='category'
-                      >
-                        <Select
-                          placeholder='Select category'
-                          style={{ fontWeight: '500' }}
-                        >
-                          <Option value='Technical'>Technical</Option>
-                          <Option value='Behavioral'>Behavioral</Option>
-                          <Option value='Cognitive'>Cognitive</Option>
-                          <Option value='Portfolio'>Portfolio</Option>
-                        </Select>
-                      </Form.Item>
-                    </Col>
-                  </Row>
-
-                  <Form.Item
-                    label='Tags'
-                    name='tags'
-                  >
-                    <Select
-                      mode='tags'
-                      placeholder='Add tags (press Enter to add)'
-                      style={{ fontWeight: '500' }}
-                    />
+                  <Form.Item label='Active' name='isActive' valuePropName='checked'>
+                    <Switch defaultChecked={true} className='mr-3' />
                   </Form.Item>
                 </div>
 
-                <Divider />
-
-                {/* Questions Management Section */}
-                <div className='mb-6'>
-                  <div className='flex items-center justify-between mb-4'>
-                    <h3 className={`text-lg font-semibold ${darkMode ? 'text-emerald-400' : 'text-emerald-700'}`}>
-                      Assessment Questions ({assessmentQuestions.length})
-                    </h3>
-                    <Button
-                      variant='primary'
-                      icon={<FontAwesomeIcon icon={faQuestion} />}
-                      onClick={handleAddQuestion}
-                      className='bg-emerald-600 hover:bg-emerald-700 border-emerald-600'
+                <Row gutter={16}>
+                  <Col span={12}>
+                    <Form.Item
+                      label='Assessment Title'
+                      name='title'
+                      rules={[{ required: true, message: 'Please enter an assessment title' }]}
                     >
-                      Add Question
-                    </Button>
-                  </div>
+                      <Input
+                        placeholder='Enter assessment title...'
+                        style={{
+                          borderColor: darkMode ? BRAND_COLORS.emeraldLight : BRAND_COLORS.emeraldLight,
+                          fontWeight: '500'
+                        }}
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col span={6}>
+                    <Form.Item
+                      label='Status'
+                      name='status'
+                      rules={[{ required: true, message: 'Please select a status' }]}
+                    >
+                      <Select placeholder='Select status' style={{ fontWeight: '500' }}>
+                        <Option value='Draft'>Draft</Option>
+                        <Option value='Active'>Active</Option>
+                        <Option value='Inactive'>Inactive</Option>
+                        <Option value='Archived'>Archived</Option>
+                      </Select>
+                    </Form.Item>
+                  </Col>
+                  <Col span={6}>
+                    <Form.Item label='Category' name='category'>
+                      <Select placeholder='Select category' style={{ fontWeight: '500' }}>
+                        <Option value='Technical'>Technical</Option>
+                        <Option value='Behavioral'>Behavioral</Option>
+                        <Option value='Cognitive'>Cognitive</Option>
+                        <Option value='Portfolio'>Portfolio</Option>
+                      </Select>
+                    </Form.Item>
+                  </Col>
+                </Row>
 
-                  <Spin spinning={questionLoading} tip='Loading questions...'>
-                    <TableView
-                      columns={questionColumns}
-                      dataSource={assessmentQuestions}
-                      rowKey='id'
-                      pagination={false}
-                      emptyText='No questions added yet. Click "Add Question" to get started.'
-                      size='small'
-                    />
-                  </Spin>
+                <Form.Item label='Tags' name='tags'>
+                  <Select mode='tags' placeholder='Add tags (press Enter to add)' style={{ fontWeight: '500' }} />
+                </Form.Item>
+              </div>
+
+              <Divider />
+
+              {/* Questions Management Section */}
+              <div className='mb-6'>
+                <div className='flex items-center justify-between mb-4'>
+                  <h3 className={`text-lg font-semibold ${darkMode ? 'text-emerald-400' : 'text-emerald-700'}`}>
+                    Assessment Questions ({assessmentQuestions.length})
+                  </h3>
+                  <Button
+                    variant='primary'
+                    icon={<FontAwesomeIcon icon={faQuestion} />}
+                    onClick={handleAddQuestion}
+                    className='bg-emerald-600 hover:bg-emerald-700 border-emerald-600'
+                  >
+                    Add Question
+                  </Button>
                 </div>
 
-                <div className='flex justify-end space-x-3 mt-8'>
-                  <Button
-                    variant='danger'
-                    onClick={() => {
-                      if (!submitLoading) {
-                        setIsModalVisible(false)
-                        setEditingAssessment(null)
-                        setAssessmentQuestions([])
-                        form.resetFields()
-                      }
-                    }}
-                    disabled={submitLoading}
-                    className='px-6 py-2'
-                  >
-                    Cancel
-                  </Button>
-                  <Button variant='success' htmlType='submit' loading={submitLoading} className='px-6 py-2'>
-                    Update Assessment
-                  </Button>
-                                 </div>
-               </Form>
-           </div>
-         </Modal>
+                <Spin spinning={questionLoading} tip='Loading questions...'>
+                  <TableView
+                    columns={questionColumns}
+                    dataSource={assessmentQuestions}
+                    rowKey='id'
+                    pagination={false}
+                    emptyText='No questions added yet. Click "Add Question" to get started.'
+                    size='small'
+                  />
+                </Spin>
+              </div>
+
+              <div className='flex justify-end space-x-3 mt-8'>
+                <Button
+                  variant='danger'
+                  onClick={() => {
+                    if (!submitLoading) {
+                      setIsModalVisible(false)
+                      setEditingAssessment(null)
+                      setAssessmentQuestions([])
+                      form.resetFields()
+                    }
+                  }}
+                  disabled={submitLoading}
+                  className='px-6 py-2'
+                >
+                  Cancel
+                </Button>
+                <Button variant='success' htmlType='submit' loading={submitLoading} className='px-6 py-2'>
+                  Update Assessment
+                </Button>
+              </div>
+            </Form>
+          </div>
+        </Modal>
 
         {/* Add/Edit Question Modal */}
         <Modal
@@ -850,13 +809,13 @@ const Assessments = React.memo(({ user }) => {
             </span>
           }
           open={isQuestionModalVisible}
-                     onCancel={() => {
-             if (!questionSubmitLoading) {
-               setIsQuestionModalVisible(false)
-               setEditingQuestion(null)
-               questionForm.resetFields()
-             }
-           }}
+          onCancel={() => {
+            if (!questionSubmitLoading) {
+              setIsQuestionModalVisible(false)
+              setEditingQuestion(null)
+              questionForm.resetFields()
+            }
+          }}
           footer={null}
           width={800}
           styles={{
@@ -929,170 +888,24 @@ const Assessments = React.memo(({ user }) => {
               </Form.Item>
 
               <div className='flex justify-end space-x-3 mt-6'>
-                                 <Button
-                   variant='danger'
-                   onClick={() => {
-                     setIsQuestionModalVisible(false)
-                     setEditingQuestion(null)
-                     questionForm.resetFields()
-                   }}
-                   disabled={questionSubmitLoading}
-                   className='px-6 py-2'
-                 >
-                   Cancel
-                 </Button>
-                                 <Button variant='success' htmlType='submit' loading={questionSubmitLoading} className='px-6 py-2'>
-                   {editingQuestion ? 'Update Question' : 'Add Question'}
-                 </Button>
+                <Button
+                  variant='danger'
+                  onClick={() => {
+                    setIsQuestionModalVisible(false)
+                    setEditingQuestion(null)
+                    questionForm.resetFields()
+                  }}
+                  disabled={questionSubmitLoading}
+                  className='px-6 py-2'
+                >
+                  Cancel
+                </Button>
+                <Button variant='success' htmlType='submit' loading={questionSubmitLoading} className='px-6 py-2'>
+                  {editingQuestion ? 'Update Question' : 'Add Question'}
+                </Button>
               </div>
             </Form>
           </div>
-        </Modal>
-
-        {/* View Assessment Modal */}
-        <Modal
-          title={
-            <div className='flex items-center justify-between w-full'>
-              <span className='text-white font-semibold text-lg'>Assessment Details</span>
-              <button
-                onClick={() => setIsViewModalVisible(false)}
-                className='text-white hover:text-gray-200 transition-colors duration-200 p-1 rounded'
-              >
-                <FontAwesomeIcon icon={faTimes} className='text-lg' />
-              </button>
-            </div>
-          }
-          open={isViewModalVisible}
-          onCancel={() => {
-            setIsViewModalVisible(false)
-            setSelectedAssessment(null)
-            setAssessmentQuestions([])
-          }}
-          footer={null}
-          width={1000}
-          styles={{
-            content: {
-              backgroundColor: darkMode ? DARK_THEME.background.secondary : BRAND_COLORS.white,
-              borderRadius: '12px',
-              border: `2px solid ${darkMode ? BRAND_COLORS.emeraldPrimary : BRAND_COLORS.emeraldLight}`
-            },
-            header: {
-              backgroundColor: darkMode ? BRAND_COLORS.emeraldPrimary : BRAND_COLORS.emeraldLight,
-              borderBottom: 'none',
-              borderRadius: '12px 12px 0 0',
-              padding: '20px 24px'
-            }
-          }}
-          className={darkMode ? 'dark-modal' : ''}
-          closable={false}
-        >
-          {selectedAssessment && (
-            <div className={`p-6 ${darkMode ? 'bg-gray-800' : 'bg-gray-50'} rounded-lg`}>
-              <div className='space-y-6'>
-                <div>
-                  <h3 className={`text-lg font-semibold mb-3 ${darkMode ? 'text-emerald-400' : 'text-emerald-700'}`}>
-                    {selectedAssessment.title}
-                  </h3>
-                </div>
-
-                <div className='grid grid-cols-2 gap-4'>
-                  <div>
-                    <h4 className={`font-medium mb-2 ${darkMode ? 'text-emerald-400' : 'text-emerald-700'}`}>
-                      Category
-                    </h4>
-                    <Tag color={selectedAssessment.category === 'Technical' ? 'blue' : 'green'}>
-                      {selectedAssessment.category}
-                    </Tag>
-                  </div>
-                  <div>
-                    <h4 className={`font-medium mb-2 ${darkMode ? 'text-emerald-400' : 'text-emerald-700'}`}>Status</h4>
-                    <Tag color={selectedAssessment.status === 'Active' ? 'green' : 'orange'}>
-                      {selectedAssessment.status}
-                    </Tag>
-                  </div>
-                </div>
-
-                {selectedAssessment.tags && selectedAssessment.tags.length > 0 && (
-                  <div>
-                    <h4 className={`font-medium mb-2 ${darkMode ? 'text-emerald-400' : 'text-emerald-700'}`}>Tags</h4>
-                    <div className='flex flex-wrap gap-2'>
-                      {selectedAssessment.tags.map((tag, index) => (
-                        <Tag key={index} color='blue'>
-                          {tag}
-                        </Tag>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                <div className='grid grid-cols-3 gap-4 mt-6'>
-                  <div className={`text-center p-4 rounded-lg ${darkMode ? 'bg-gray-700' : 'bg-white'}`}>
-                    <div className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                      {selectedAssessment.completions}
-                    </div>
-                    <div className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Completions</div>
-                  </div>
-                  <div className={`text-center p-4 rounded-lg ${darkMode ? 'bg-gray-700' : 'bg-white'}`}>
-                    <div className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                      {selectedAssessment.totalAttempts}
-                    </div>
-                    <div className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Total Attempts</div>
-                  </div>
-                  <div className={`text-center p-4 rounded-lg ${darkMode ? 'bg-gray-700' : 'bg-white'}`}>
-                    <div
-                      className={`text-2xl font-bold ${
-                        selectedAssessment.averageScore >= 80
-                          ? 'text-green-500'
-                          : selectedAssessment.averageScore >= 60
-                            ? 'text-yellow-500'
-                            : 'text-red-500'
-                      }`}
-                    >
-                      {selectedAssessment.averageScore}%
-                    </div>
-                    <div className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Average Score</div>
-                  </div>
-                </div>
-
-                <Divider />
-
-                <div>
-                  <h4 className={`font-medium mb-4 ${darkMode ? 'text-emerald-400' : 'text-emerald-700'}`}>
-                    Questions ({assessmentQuestions.length})
-                  </h4>
-                  <Spin spinning={questionLoading} tip='Loading questions...'>
-                    <div className='space-y-4'>
-                      {assessmentQuestions.map((question, index) => (
-                        <div key={question.id} className={`p-4 rounded-lg ${darkMode ? 'bg-gray-700' : 'bg-white'}`}>
-                          <div className='flex items-start space-x-3'>
-                            <span className={`font-bold text-lg ${darkMode ? 'text-emerald-400' : 'text-emerald-700'}`}>
-                              #{index + 1}
-                            </span>
-                            <div className='flex-1'>
-                              <h5 className={`font-medium mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                                {question.question}
-                              </h5>
-                              <p className={`text-sm mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                                <strong>Context:</strong> {question.context}
-                              </p>
-                              <p className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                                <strong>Feedback:</strong> {question.preferredFeedback}
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                      {assessmentQuestions.length === 0 && (
-                        <div className={`text-center py-8 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                          No questions found for this assessment.
-                        </div>
-                      )}
-                    </div>
-                  </Spin>
-                </div>
-              </div>
-            </div>
-          )}
         </Modal>
       </div>
     </>

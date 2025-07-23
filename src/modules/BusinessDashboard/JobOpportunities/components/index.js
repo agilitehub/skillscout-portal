@@ -1,7 +1,7 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
 import React, { useState, useEffect, useMemo, useCallback } from 'react'
-import { Modal, Tag, Card, Statistic, message, Popconfirm } from 'antd'
+import { Tag, Card, Statistic, message } from 'antd'
 import { Button } from '../../../../core/components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
@@ -12,20 +12,12 @@ import {
   faDollarSign,
   faCalendarAlt,
   faBuilding,
-  faEdit,
-  faTrash,
-  faEye,
-  faClone
+  faTrash
 } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../../core/context/ThemeContext'
-import { useNavigate } from 'react-router-dom'
+
 import BusinessSidebar from '../../components/BusinessSidebar'
-import {
-  getAllJobOpportunities,
-  deleteJobOpportunity,
-  updateJobOpportunityStatus,
-  duplicateJobOpportunity
-} from '../utils/controller'
+import { getAllJobOpportunities, deleteJobOpportunity, updateJobOpportunityStatus } from '../utils/controller'
 import TableView from '../../../../core/components/view-components/table-view/TableView'
 import TableActions from '../../../../core/components/view-components/table-view/TableActions'
 import JobOpportunityForm from './JobOpportunityForm'
@@ -36,13 +28,10 @@ import JobOpportunityForm from './JobOpportunityForm'
  */
 const BusinessDashboard = React.memo(({ user }) => {
   const { darkMode } = useTheme()
-  const navigate = useNavigate()
 
   // State management
   const [jobOpportunities, setJobOpportunities] = useState([])
   const [loading, setLoading] = useState(false)
-  const [isModalVisible, setIsModalVisible] = useState(false)
-  const [selectedJob, setSelectedJob] = useState(null)
 
   // Form modal state
   const [isFormVisible, setIsFormVisible] = useState(false)
@@ -87,11 +76,6 @@ const BusinessDashboard = React.memo(({ user }) => {
     setIsFormVisible(true)
   }, [])
 
-  const handleViewJob = useCallback((job) => {
-    setSelectedJob(job)
-    setIsModalVisible(true)
-  }, [])
-
   const handleDeleteJob = useCallback(
     async (jobId) => {
       try {
@@ -107,26 +91,6 @@ const BusinessDashboard = React.memo(({ user }) => {
       } catch (error) {
         console.error('Unexpected error deleting job opportunity:', error)
         message.error('An unexpected error occurred while deleting the job opportunity')
-      }
-    },
-    [loadJobOpportunities]
-  )
-
-  const handleDuplicateJob = useCallback(
-    async (job) => {
-      try {
-        const result = await duplicateJobOpportunity(job.id)
-        if (result.success) {
-          message.success('Job opportunity duplicated successfully')
-          // Refresh the list
-          loadJobOpportunities()
-        } else {
-          console.error('Error duplicating job opportunity:', result.error)
-          message.error('Failed to duplicate job opportunity: ' + result.error)
-        }
-      } catch (error) {
-        console.error('Unexpected error duplicating job opportunity:', error)
-        message.error('An unexpected error occurred while duplicating the job opportunity')
       }
     },
     [loadJobOpportunities]
@@ -152,11 +116,6 @@ const BusinessDashboard = React.memo(({ user }) => {
     [loadJobOpportunities]
   )
 
-  const handleModalClose = useCallback(() => {
-    setIsModalVisible(false)
-    setSelectedJob(null)
-  }, [])
-
   const handleFormClose = useCallback(() => {
     setIsFormVisible(false)
     setEditingJobId(null)
@@ -171,31 +130,6 @@ const BusinessDashboard = React.memo(({ user }) => {
     [loadJobOpportunities]
   )
 
-  // Handle navigation to linked pages with job context
-  const handleViewJobDescription = useCallback(
-    (job) => {
-      navigate('/business-dashboard/job-descriptions', {
-        state: {
-          jobContext: job,
-          highlightJobId: job.id
-        }
-      })
-    },
-    [navigate]
-  )
-
-  const handleViewJobAssessment = useCallback(
-    (job) => {
-      navigate('/business-dashboard/assessments', {
-        state: {
-          jobContext: job,
-          highlightJobId: job.id
-        }
-      })
-    },
-    [navigate]
-  )
-
   // Table columns configuration
   const columns = useMemo(
     () => [
@@ -205,7 +139,12 @@ const BusinessDashboard = React.memo(({ user }) => {
         key: 'title',
         render: (text, record) => (
           <div>
-            <div className='font-semibold text-gray-900 dark:text-white'>{text}</div>
+            <div
+              className='font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 cursor-pointer transition-colors duration-200'
+              onClick={() => handleEditJob(record)}
+            >
+              {text}
+            </div>
             <div className='text-sm text-gray-500 dark:text-gray-400 flex items-center'>
               <FontAwesomeIcon icon={faBuilding} className='mr-1' />
               {record.company}
@@ -334,34 +273,6 @@ const BusinessDashboard = React.memo(({ user }) => {
             record={record}
             actions={[
               {
-                key: 'view',
-                icon: faEye,
-                tooltip: 'View Details',
-                onClick: handleViewJob
-              },
-              {
-                key: 'edit',
-                icon: faEdit,
-                tooltip: 'Edit Job',
-                onClick: handleEditJob
-              },
-              {
-                key: 'duplicate',
-                icon: faClone,
-                tooltip: 'Duplicate Job',
-                onClick: handleDuplicateJob
-              },
-              {
-                key: 'description',
-                label: 'Job Description',
-                onClick: handleViewJobDescription
-              },
-              {
-                key: 'assessment',
-                label: 'Assessment',
-                onClick: handleViewJobAssessment
-              },
-              {
                 key: 'delete',
                 icon: faTrash,
                 tooltip: 'Delete Job',
@@ -379,15 +290,7 @@ const BusinessDashboard = React.memo(({ user }) => {
         )
       }
     ],
-    [
-      handleViewJob,
-      handleEditJob,
-      handleDeleteJob,
-      handleDuplicateJob,
-      handleStatusChange,
-      handleViewJobDescription,
-      handleViewJobAssessment
-    ]
+    [handleEditJob, handleDeleteJob, handleStatusChange]
   )
 
   // Statistics calculations
@@ -506,116 +409,6 @@ const BusinessDashboard = React.memo(({ user }) => {
             scroll={{ x: 1200 }}
           />
         </Card>
-
-        {/* Job Details Modal */}
-        <Modal
-          title={
-            <div className='flex items-center'>
-              <FontAwesomeIcon icon={faBriefcase} className='mr-2' />
-              Job Details
-            </div>
-          }
-          open={isModalVisible}
-          onCancel={handleModalClose}
-          footer={[
-            <Button key='close' onClick={handleModalClose}>
-              Close
-            </Button>,
-            <Button key='edit' type='primary' onClick={() => handleEditJob(selectedJob)}>
-              Edit Job
-            </Button>
-          ]}
-          width={800}
-          className={darkMode ? 'modal-dark' : ''}
-          styles={{
-            content: {
-              backgroundColor: darkMode ? '#374151' : '#ffffff'
-            },
-            body: {
-              backgroundColor: darkMode ? '#374151' : '#ffffff'
-            },
-            header: {
-              backgroundColor: darkMode ? '#374151' : '#ffffff',
-              borderBottom: darkMode ? '1px solid #4B5563' : '1px solid #e5e7eb'
-            },
-            footer: {
-              backgroundColor: darkMode ? '#374151' : '#ffffff',
-              borderTop: darkMode ? '1px solid #4B5563' : '1px solid #e5e7eb'
-            }
-          }}
-        >
-          {selectedJob ? (
-            <div className='space-y-6 max-h-[70vh] overflow-y-auto'>
-              {/* Header Section */}
-              <div className='border-b pb-4'>
-                <h3 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                  {selectedJob.title}
-                </h3>
-                <p className={`text-lg ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                  {selectedJob.company} • {selectedJob.location}
-                </p>
-                <div className='flex flex-wrap gap-2 mt-2'>
-                  <Tag color='blue'>{selectedJob.type}</Tag>
-                  <Tag color={selectedJob.status === 'Active' ? 'green' : 'orange'}>{selectedJob.status}</Tag>
-                  {selectedJob.remote && <Tag color='purple'>Remote Available</Tag>}
-                  <Tag color='cyan'>{selectedJob.workArrangement}</Tag>
-                </div>
-              </div>
-
-              {/* Basic Information */}
-              <div className='grid grid-cols-2 gap-4'>
-                <div>
-                  <span className={`font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Salary:</span>
-                  <span className={`ml-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{selectedJob.salary}</span>
-                </div>
-                <div>
-                  <span className={`font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Experience:</span>
-                  <span className={`ml-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                    {selectedJob.experienceRequired} years
-                  </span>
-                </div>
-                <div>
-                  <span className={`font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Applicants:</span>
-                  <span className={`ml-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{selectedJob.applicants}</span>
-                </div>
-                <div>
-                  <span className={`font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Posted:</span>
-                  <span className={`ml-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                    {selectedJob.datePosted ? new Date(selectedJob.datePosted).toLocaleDateString() : 'Not set'}
-                  </span>
-                </div>
-              </div>
-
-              {/* Description */}
-              <div>
-                <h4 className={`font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Description</h4>
-                <p className={`${darkMode ? 'text-white' : 'text-gray-900'} whitespace-pre-wrap`}>
-                  {selectedJob.description}
-                </p>
-              </div>
-
-              {/* Required Skills */}
-              {selectedJob.requiredSkills && (
-                <div>
-                  <h4 className={`font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                    Required Skills
-                  </h4>
-                  <p className={`${darkMode ? 'text-white' : 'text-gray-900'}`}>{selectedJob.requiredSkills}</p>
-                </div>
-              )}
-
-              {/* Benefits */}
-              {selectedJob.benefits && (
-                <div>
-                  <h4 className={`font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Benefits</h4>
-                  <p className={`${darkMode ? 'text-white' : 'text-gray-900'} whitespace-pre-wrap`}>
-                    {selectedJob.benefits}
-                  </p>
-                </div>
-              )}
-            </div>
-          ) : null}
-        </Modal>
 
         {/* Job Opportunity Form Modal */}
         <JobOpportunityForm
