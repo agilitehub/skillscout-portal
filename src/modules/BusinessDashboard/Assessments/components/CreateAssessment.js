@@ -15,10 +15,8 @@ import { parseTags } from '../utils/data-model'
 
 // Import enhanced form field components
 import FormSelect from '../../../../core/components/form-components/form-fields/FormSelect'
-import FormTextArea from '../../../../core/components/form-components/form-fields/FormTextArea'
+import FormInput from '../../../../core/components/form-components/form-fields/FormInput'
 import FormSwitch from '../../../../core/components/form-components/form-fields/FormSwitch'
-
-// Enhanced form components imported above
 
 /**
  * CreateAssessment page for creating new skill assessments
@@ -29,6 +27,9 @@ const CreateAssessment = React.memo(({ user }) => {
   const navigate = useNavigate()
   const [form] = Form.useForm()
   const [loading, setLoading] = useState(false)
+
+  // Debug logging
+  console.log('CreateAssessment component loaded, user:', user)
 
   // Handle navigation back to assessments list
   const handleGoBack = useCallback(() => {
@@ -90,53 +91,68 @@ const CreateAssessment = React.memo(({ user }) => {
 
         <BusinessSidebar />
 
-        <div className='p-4 ml-64 relative z-10'>
-          <div className='max-w-6xl mx-auto'>
-            {/* Header */}
-            <div className='flex items-center justify-between mb-6'>
-              <div className='flex items-center space-x-4'>
-                <Button
-                  variant='ghost'
-                  icon={<FontAwesomeIcon icon={faArrowLeft} />}
-                  onClick={handleGoBack}
-                  className={`${
-                    darkMode
-                      ? 'text-gray-300 hover:text-white hover:bg-gray-700'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-                  }`}
-                >
-                  Back to Assessments
-                </Button>
-                <div>
-                  <h1 className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                    Create New Assessment
-                  </h1>
-                  <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                    Create assessment with Question, Context, and Preferred Feedback
-                  </p>
+        <div className='ml-64 relative z-10'>
+          {/* Breadcrumb Navigation */}
+          <div className='p-6 pb-4'>
+            <div className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+              Business Dashboard / Assessments / Create New
+            </div>
+          </div>
+
+          {/* Toolbar with Title */}
+          <div className='px-6 pb-6'>
+            <div
+              className={`rounded-lg mb-6 px-6 py-4 shadow-lg ${
+                darkMode
+                  ? 'bg-gradient-to-r from-emerald-700 to-emerald-600 border border-emerald-600'
+                  : 'bg-gradient-to-r from-emerald-500 to-emerald-600'
+              }`}
+            >
+              <div className='flex items-center justify-between'>
+                <div className='flex items-center'>
+                  <Button
+                    variant='ghost'
+                    icon={<FontAwesomeIcon icon={faArrowLeft} />}
+                    onClick={handleGoBack}
+                    className='text-white hover:text-emerald-100 hover:bg-emerald-600/30 mr-4'
+                  >
+                    Back to Assessments
+                  </Button>
+                  <FontAwesomeIcon
+                    icon={faClipboardCheck}
+                    className={`text-lg mr-3 ${darkMode ? 'text-emerald-100' : 'text-white'}`}
+                  />
+                  <div>
+                    <h1 className='text-xl font-bold text-white'>Create New Assessment</h1>
+                    <p className='text-emerald-100 text-sm mt-1'>
+                      Create a new assessment with title, category, and other details
+                    </p>
+                  </div>
                 </div>
-              </div>
-              <div className='flex space-x-3'>
-                <Button
-                  variant='ghost'
-                  icon={<FontAwesomeIcon icon={faEye} />}
-                  onClick={handlePreview}
-                  className={`${
-                    darkMode
-                      ? 'text-gray-300 hover:text-white hover:bg-gray-700'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-                  }`}
-                >
-                  Preview
-                </Button>
-                <Button
-                  variant='success'
-                  icon={<FontAwesomeIcon icon={faSave} />}
-                  onClick={() => form.submit()}
-                  loading={loading}
-                >
-                  Create Assessment
-                </Button>
+
+                <div className='flex items-center space-x-3'>
+                  <Button
+                    variant='ghost'
+                    icon={<FontAwesomeIcon icon={faEye} />}
+                    onClick={handlePreview}
+                    className='text-white hover:text-emerald-100 hover:bg-emerald-600/30'
+                  >
+                    Preview
+                  </Button>
+                  <Button
+                    variant='success'
+                    icon={<FontAwesomeIcon icon={faSave} />}
+                    onClick={() => form.submit()}
+                    loading={loading}
+                    className={`${
+                      darkMode 
+                        ? 'bg-emerald-100 text-emerald-800 hover:bg-white border-emerald-100' 
+                        : 'bg-white text-emerald-700 hover:bg-emerald-50 border-white'
+                    }`}
+                  >
+                    Create Assessment
+                  </Button>
+                </div>
               </div>
             </div>
 
@@ -158,9 +174,8 @@ const CreateAssessment = React.memo(({ user }) => {
                   backgroundColor: darkMode ? DARK_THEME.background.secondary : BRAND_COLORS.white
                 }}
               >
-                <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
-                  {/* Left Column */}
-                  <div className='space-y-4'>
+                <div className='max-w-4xl mx-auto'>
+                  <div className='space-y-6'>
                     {/* Active Toggle */}
                     <div className='mb-4'>
                       <FormSwitch
@@ -173,7 +188,19 @@ const CreateAssessment = React.memo(({ user }) => {
                       />
                     </div>
 
-                    <div className='grid grid-cols-2 gap-4'>
+                    {/* Assessment Title */}
+                    <FormInput
+                      label='Assessment Title'
+                      name='title'
+                      placeholder='Enter assessment title...'
+                      rules={[{ required: true, message: 'Please enter an assessment title' }]}
+                      customStyle={{
+                        fontWeight: '500'
+                      }}
+                    />
+
+                    {/* Status and Category Row */}
+                    <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
                       <FormSelect
                         label='Status'
                         name='status'
@@ -206,54 +233,7 @@ const CreateAssessment = React.memo(({ user }) => {
                       />
                     </div>
 
-                    <FormTextArea
-                      label='Question'
-                      name='question'
-                      placeholder='Enter the assessment question...'
-                      rows={4}
-                      rules={[{ required: true, message: 'Please enter a question' }]}
-                      textAreaProps={{
-                        showCount: true,
-                        maxLength: 1000
-                      }}
-                      customStyle={{
-                        fontWeight: '500'
-                      }}
-                    />
-
-                    <FormTextArea
-                      label='Context'
-                      name='context'
-                      placeholder='Provide context about what this question assesses...'
-                      rows={4}
-                      rules={[{ required: true, message: 'Please enter the context' }]}
-                      textAreaProps={{
-                        showCount: true,
-                        maxLength: 2000
-                      }}
-                      customStyle={{
-                        fontWeight: '500'
-                      }}
-                    />
-                  </div>
-
-                  {/* Right Column */}
-                  <div className='space-y-4'>
-                    <FormTextArea
-                      label='Preferred Feedback'
-                      name='preferredFeedback'
-                      placeholder='Describe what to look for in good answers and how to evaluate responses...'
-                      rows={8}
-                      rules={[{ required: true, message: 'Please enter preferred feedback guidelines' }]}
-                      textAreaProps={{
-                        showCount: true,
-                        maxLength: 2000
-                      }}
-                      customStyle={{
-                        fontWeight: '500'
-                      }}
-                    />
-
+                    {/* Tags */}
                     <FormSelect
                       label='Tags'
                       name='tags'
@@ -270,66 +250,73 @@ const CreateAssessment = React.memo(({ user }) => {
 
                     {/* Summary Card */}
                     <div
-                      className={`p-4 rounded-lg border-2 ${
+                      className={`p-6 rounded-lg border-2 ${
                         darkMode ? 'bg-gray-700 border-emerald-600' : 'bg-emerald-50 border-emerald-200'
                       }`}
                     >
                       <h4
-                        className={`text-base font-semibold mb-3 flex items-center ${
+                        className={`text-lg font-semibold mb-4 flex items-center ${
                           darkMode ? 'text-emerald-100' : 'text-emerald-800'
                         }`}
                       >
                         <FontAwesomeIcon icon={faClipboardCheck} className='mr-2' />
-                        Quick Summary
+                        Assessment Summary
                       </h4>
-                      <div className='space-y-2 text-sm'>
+                      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm'>
+                        <div>
+                          <span className={`font-medium ${darkMode ? 'text-emerald-200' : 'text-emerald-700'}`}>
+                            Title:
+                          </span>
+                          <div className={`mt-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                            {form.getFieldValue('title') || 'Not specified'}
+                          </div>
+                        </div>
                         <div>
                           <span className={`font-medium ${darkMode ? 'text-emerald-200' : 'text-emerald-700'}`}>
                             Status:
                           </span>
-                          <span className={`ml-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                          <div className={`mt-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                             {form.getFieldValue('status') || 'Draft'}
-                          </span>
+                          </div>
                         </div>
                         <div>
                           <span className={`font-medium ${darkMode ? 'text-emerald-200' : 'text-emerald-700'}`}>
                             Category:
                           </span>
-                          <span className={`ml-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                          <div className={`mt-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                             {form.getFieldValue('category') || 'Not specified'}
-                          </span>
+                          </div>
                         </div>
                         <div>
                           <span className={`font-medium ${darkMode ? 'text-emerald-200' : 'text-emerald-700'}`}>
-                            Question:
+                            Tags:
                           </span>
-                          <span className={`ml-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                            {form.getFieldValue('question')
-                              ? form.getFieldValue('question').length > 50
-                                ? form.getFieldValue('question').substring(0, 50) + '...'
-                                : form.getFieldValue('question')
-                              : 'Not specified'}
-                          </span>
+                          <div className={`mt-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                            {form.getFieldValue('tags')?.length > 0 
+                              ? form.getFieldValue('tags').join(', ') 
+                              : 'None'}
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                </div>
 
-                <div className='flex justify-end space-x-3 mt-6 pt-4 border-t border-gray-200 dark:border-gray-600'>
-                  <Button
-                    variant='danger'
-                    onClick={() => {
-                      form.resetFields()
-                      navigate('/business-dashboard/assessments')
-                    }}
-                    size='large'
-                  >
-                    Cancel
-                  </Button>
-                  <Button variant='success' htmlType='submit' size='large' loading={loading}>
-                    Create Assessment
-                  </Button>
+                    {/* Action Buttons */}
+                    <div className='flex justify-end space-x-3 pt-6 border-t border-gray-200 dark:border-gray-600'>
+                      <Button
+                        variant='danger'
+                        onClick={() => {
+                          form.resetFields()
+                          navigate('/business-dashboard/assessments')
+                        }}
+                        size='large'
+                      >
+                        Cancel
+                      </Button>
+                      <Button variant='success' htmlType='submit' size='large' loading={loading}>
+                        Create Assessment
+                      </Button>
+                    </div>
+                  </div>
                 </div>
               </Card>
             </Form>

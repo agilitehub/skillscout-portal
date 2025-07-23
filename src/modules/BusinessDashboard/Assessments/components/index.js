@@ -29,7 +29,6 @@ import FormInput from '../../../../core/components/form-components/form-fields/F
 // Import controller functions
 import {
   getAllAssessments,
-  createAssessment,
   updateAssessment,
   deleteAssessment,
   searchAssessments
@@ -197,13 +196,17 @@ const Assessments = React.memo(({ user }) => {
     return matchesSearch && matchesStatus
   })
 
-  // Handle add new assessment
+  // Handle add new assessment - navigate to separate page
   const handleAdd = useCallback(() => {
-    setIsModalVisible(true)
-    setEditingAssessment(null)
-    setAssessmentQuestions([])
-    form.resetFields()
-  }, [form])
+    console.log('Create Assessment button clicked - navigating to create page')
+    try {
+      navigate('/business-dashboard/assessments/create')
+      console.log('Navigation called successfully')
+    } catch (error) {
+      console.error('Navigation error:', error)
+      message.error('Failed to navigate to create page: ' + error.message)
+    }
+  }, [navigate])
 
   // Handle edit existing assessment
   const handleEdit = useCallback(
@@ -237,31 +240,23 @@ const Assessments = React.memo(({ user }) => {
     [fetchQuestionsForAssessment]
   )
 
-  // Handle form submission
+  // Handle form submission - edit only
   const handleSubmit = useCallback(
     async (values) => {
+      if (!editingAssessment) {
+        message.error('No assessment selected for editing')
+        return
+      }
+
       try {
         setSubmitLoading(true)
         setError(null)
 
-        let result
-        if (editingAssessment) {
-          // Update existing assessment
-          result = await updateAssessment(editingAssessment.id, values)
-        } else {
-          // Create new assessment
-          result = await createAssessment(values)
-        }
+        // Update existing assessment
+        const result = await updateAssessment(editingAssessment.id, values)
 
         if (result.success) {
-          message.success(`${editingAssessment ? 'Updated' : 'Created'} assessment successfully`)
-
-          // If we have questions to save and this is a new assessment, save them
-          if (!editingAssessment && assessmentQuestions.length > 0) {
-            for (const question of assessmentQuestions) {
-              await createAssessmentQuestion(result.data.id, question)
-            }
-          }
+          message.success('Updated assessment successfully')
 
           setIsModalVisible(false)
           setEditingAssessment(null)
@@ -271,16 +266,16 @@ const Assessments = React.memo(({ user }) => {
           // Refresh the assessments list
           await fetchAssessments()
         } else {
-          message.error(`Failed to ${editingAssessment ? 'update' : 'create'} assessment: ${result.error}`)
+          message.error(`Failed to update assessment: ${result.error}`)
         }
       } catch (error) {
-        message.error(`Failed to ${editingAssessment ? 'update' : 'create'} assessment`)
-        console.error('Error submitting assessment:', error)
+        message.error('Failed to update assessment')
+        console.error('Error updating assessment:', error)
       } finally {
         setSubmitLoading(false)
       }
     },
-    [editingAssessment, form, fetchAssessments, assessmentQuestions]
+    [editingAssessment, form, fetchAssessments]
   )
 
   // Handle delete assessment
@@ -645,7 +640,7 @@ const Assessments = React.memo(({ user }) => {
                 searchPlaceholder='Search assessments...'
                 toolbarActions={[
                   <Button key='create' variant='primary' icon={<FontAwesomeIcon icon={faPlus} />} onClick={handleAdd}>
-                    Create New
+                    Create Assessment
                   </Button>
                 ]}
                 pagination={{
@@ -659,12 +654,12 @@ const Assessments = React.memo(({ user }) => {
           </div>
         </div>
 
-        {/* Add/Edit Assessment Modal */}
+        {/* Edit Assessment Modal */}
         <Modal
           title={
             <div className='flex items-center justify-between w-full'>
               <span className='text-white font-semibold text-lg'>
-                {editingAssessment ? 'Edit Assessment' : 'New Assessment'}
+                Edit Assessment
               </span>
               <button
                 onClick={() => {
@@ -845,7 +840,7 @@ const Assessments = React.memo(({ user }) => {
                     Cancel
                   </Button>
                   <Button variant='success' htmlType='submit' loading={submitLoading} className='px-6 py-2'>
-                    {editingAssessment ? 'Update Assessment' : 'Create Assessment'}
+                    Update Assessment
                   </Button>
                                  </div>
                </Form>
