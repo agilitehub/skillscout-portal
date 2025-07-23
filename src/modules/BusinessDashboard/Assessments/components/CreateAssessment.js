@@ -6,7 +6,7 @@ import { Card, Form, message, Input, Select, Switch } from 'antd'
 import { Button } from '../../../../core/components'
 import { useNavigate } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowLeft, faSave, faEye, faClipboardCheck } from '@fortawesome/free-solid-svg-icons'
+import { faArrowLeft, faClipboardCheck } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../../core/context/ThemeContext'
 import { BRAND_COLORS, DARK_THEME } from '../../../../core/theme/colors'
 import BusinessSidebar from '../../components/BusinessSidebar'
@@ -78,6 +78,190 @@ const CreateAssessment = React.memo(({ user }) => {
 
         <BusinessSidebar />
 
+        {/* Dark Mode Form Styling */}
+        {darkMode && (
+          <style>
+            {`
+              /* Enhanced Dark Mode Form Styling with Higher Specificity */
+              body .dark-form .ant-form-item-label > label,
+              .dark-form .ant-form-item-label > label {
+                color: #E5E7EB !important;
+                font-weight: 500 !important;
+              }
+              body .dark-form .ant-form-item-extra,
+              .dark-form .ant-form-item-extra {
+                color: #9CA3AF !important;
+              }
+              
+              /* Input Fields - Multiple selectors for maximum coverage */
+              body .dark-form .ant-input,
+              body .dark-form input.ant-input,
+              body .dark-form input[type="text"],
+              body .dark-form input,
+              .dark-form .ant-input,
+              .dark-form input.ant-input,
+              .dark-form input[type="text"],
+              .dark-form input {
+                background-color: #4B5563 !important;
+                border-color: #6B7280 !important;
+                color: #F9FAFB !important;
+                box-shadow: none !important;
+              }
+              
+              body .dark-form .ant-input:focus,
+              body .dark-form input.ant-input:focus,
+              body .dark-form input[type="text"]:focus,
+              body .dark-form input:focus,
+              .dark-form .ant-input:focus,
+              .dark-form input.ant-input:focus,
+              .dark-form input[type="text"]:focus,
+              .dark-form input:focus {
+                border-color: #059669 !important;
+                box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
+                background-color: #4B5563 !important;
+                color: #F9FAFB !important;
+              }
+              
+              body .dark-form .ant-input::placeholder,
+              body .dark-form input::placeholder,
+              .dark-form .ant-input::placeholder,
+              .dark-form input::placeholder {
+                color: #9CA3AF !important;
+                opacity: 1 !important;
+              }
+              
+              /* TextArea Fields */
+              body .dark-form textarea.ant-input,
+              body .dark-form textarea,
+              .dark-form textarea.ant-input,
+              .dark-form textarea {
+                background-color: #4B5563 !important;
+                border-color: #6B7280 !important;
+                color: #F9FAFB !important;
+                box-shadow: none !important;
+              }
+              
+              body .dark-form textarea.ant-input:focus,
+              body .dark-form textarea:focus,
+              .dark-form textarea.ant-input:focus,
+              .dark-form textarea:focus {
+                border-color: #059669 !important;
+                box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
+                background-color: #4B5563 !important;
+                color: #F9FAFB !important;
+              }
+              
+              /* Select Components */
+              body .dark-form .ant-select,
+              body .dark-form .ant-select-selector,
+              body .dark-form .ant-select-single .ant-select-selector,
+              .dark-form .ant-select,
+              .dark-form .ant-select-selector,
+              .dark-form .ant-select-single .ant-select-selector {
+                background-color: #4B5563 !important;
+                border-color: #6B7280 !important;
+                color: #F9FAFB !important;
+                box-shadow: none !important;
+              }
+              
+              body .dark-form .ant-select-focused .ant-select-selector,
+              body .dark-form .ant-select:focus .ant-select-selector,
+              .dark-form .ant-select-focused .ant-select-selector,
+              .dark-form .ant-select:focus .ant-select-selector {
+                border-color: #059669 !important;
+                box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
+                background-color: #4B5563 !important;
+              }
+              
+              body .dark-form .ant-select-selection-placeholder,
+              .dark-form .ant-select-selection-placeholder {
+                color: #9CA3AF !important;
+                opacity: 1 !important;
+              }
+              
+              body .dark-form .ant-select-selection-item,
+              .dark-form .ant-select-selection-item {
+                color: #F9FAFB !important;
+                background-color: transparent !important;
+              }
+              
+              body .dark-form .ant-select-arrow,
+              .dark-form .ant-select-arrow {
+                color: #9CA3AF !important;
+              }
+              
+              /* Switch Components */
+              body .dark-form .ant-switch,
+              .dark-form .ant-switch {
+                background-color: #6B7280 !important;
+              }
+              
+              body .dark-form .ant-switch-checked,
+              .dark-form .ant-switch-checked {
+                background-color: #10B981 !important;
+              }
+              
+              body .dark-form .ant-switch-inner,
+              .dark-form .ant-switch-inner {
+                color: #F9FAFB !important;
+              }
+              
+              /* Tags in Select */
+              body .dark-form .ant-select-multiple .ant-select-selection-item,
+              .dark-form .ant-select-multiple .ant-select-selection-item {
+                background-color: #374151 !important;
+                border-color: #6B7280 !important;
+                color: #F9FAFB !important;
+              }
+              
+              /* Global Dropdown Styling */
+              .ant-select-dropdown {
+                background-color: #374151 !important;
+                border: 1px solid #4B5563 !important;
+              }
+              .ant-select-item {
+                color: #F9FAFB !important;
+                background-color: transparent !important;
+              }
+              .ant-select-item:hover {
+                background-color: #4B5563 !important;
+              }
+              .ant-select-item-option-selected {
+                background-color: #10B981 !important;
+                color: #FFFFFF !important;
+              }
+              .ant-select-item-option-active {
+                background-color: #4B5563 !important;
+              }
+              
+              /* Form Item Controls - Ultimate Override */
+              body .dark-form .ant-form-item-control-input,
+              .dark-form .ant-form-item-control-input {
+                background-color: transparent !important;
+              }
+              
+              body .dark-form .ant-form-item-control-input-content input,
+              body .dark-form .ant-form-item-control-input-content textarea,
+              body .dark-form .ant-form-item-control-input-content .ant-select-selector,
+              .dark-form .ant-form-item-control-input-content input,
+              .dark-form .ant-form-item-control-input-content textarea,
+              .dark-form .ant-form-item-control-input-content .ant-select-selector {
+                background-color: #4B5563 !important;
+                color: #F9FAFB !important;
+                border-color: #6B7280 !important;
+              }
+              
+              /* Validation and Helper Text */
+              .ant-form-item-explain-error {
+                color: #F87171 !important;
+              }
+              .ant-input-data-count {
+                color: #9CA3AF !important;
+              }
+            `}
+          </style>
+        )}
+
         <div className='ml-64 relative z-10'>
           {/* Breadcrumb Navigation */}
           <div className='p-6 pb-4'>
@@ -115,22 +299,6 @@ const CreateAssessment = React.memo(({ user }) => {
                       Create a new assessment with title, category, and other details
                     </p>
                   </div>
-                </div>
-
-                <div className='flex items-center space-x-3'>
-                  <Button
-                    variant='success'
-                    icon={<FontAwesomeIcon icon={faSave} />}
-                    onClick={() => form.submit()}
-                    loading={loading}
-                    className={`${
-                      darkMode 
-                        ? 'bg-emerald-100 text-emerald-800 hover:bg-white border-emerald-100' 
-                        : 'bg-white text-emerald-700 hover:bg-emerald-50 border-white'
-                    }`}
-                  >
-                    Create Assessment
-                  </Button>
                 </div>
               </div>
             </div>

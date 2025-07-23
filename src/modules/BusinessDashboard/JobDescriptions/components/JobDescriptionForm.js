@@ -246,37 +246,6 @@ const CreateJobDescription = React.memo(({ user }) => {
                 </div>
               </div>
             </div>
-
-            {/* Right Side - Actions */}
-            <div className='flex items-center space-x-3'>
-              <Button
-                icon={<FontAwesomeIcon icon={faTimes} />}
-                onClick={handleGoBack}
-                size='large'
-                className={
-                  darkMode
-                    ? 'bg-red-600 text-white border-red-600 hover:bg-red-700 hover:border-red-700 font-medium'
-                    : 'bg-white/10 text-white border-white/20 hover:bg-white/20 hover:border-white/30 font-medium'
-                }
-              >
-                Cancel
-              </Button>
-              <Button
-                type='primary'
-                icon={<FontAwesomeIcon icon={faSave} />}
-                onClick={() => form.submit()}
-                loading={loading}
-                disabled={initialDataLoading}
-                size='large'
-                className={
-                  darkMode
-                    ? 'bg-emerald-600 text-white border-emerald-600 hover:bg-emerald-700 hover:border-emerald-700 font-medium'
-                    : 'bg-white text-emerald-600 border-white hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-100 font-medium'
-                }
-              >
-                {isEditMode ? 'Update Job Description' : 'Save Job Description'}
-              </Button>
-            </div>
           </div>
         </div>
 
@@ -745,6 +714,37 @@ const CreateJobDescription = React.memo(({ user }) => {
                   </Row>
                 </TabPane>
               </Tabs>
+
+              {/* Form Actions at Bottom */}
+              <div className={`flex justify-end space-x-3 pt-6 mt-6 border-t ${darkMode ? 'border-gray-600' : 'border-gray-200'}`}>
+                <Button
+                  icon={<FontAwesomeIcon icon={faTimes} />}
+                  onClick={handleGoBack}
+                  size='large'
+                  className={
+                    darkMode
+                      ? 'bg-red-600 text-white border-red-600 hover:bg-red-700 hover:border-red-700 font-medium'
+                      : 'bg-gray-500 text-white border-gray-500 hover:bg-gray-600 hover:border-gray-600 font-medium'
+                  }
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type='primary'
+                  icon={<FontAwesomeIcon icon={faSave} />}
+                  onClick={() => form.submit()}
+                  loading={loading}
+                  disabled={initialDataLoading}
+                  size='large'
+                  className={
+                    darkMode
+                      ? 'bg-emerald-600 text-white border-emerald-600 hover:bg-emerald-700 hover:border-emerald-700 font-medium'
+                      : 'bg-emerald-600 text-white border-emerald-600 hover:bg-emerald-700 hover:border-emerald-700 font-medium'
+                  }
+                >
+                  {isEditMode ? 'Update Job Description' : 'Save Job Description'}
+                </Button>
+              </div>
             </Form>
           )}
         </Card>
