@@ -61,11 +61,11 @@ const CreateAssessment = React.memo(({ user }) => {
   return (
     <>
       <div
-        className={`min-h-screen relative overflow-hidden ${
+        className={`min-h-screen ${
           darkMode
             ? 'bg-gradient-to-br from-slate-700 via-slate-600 to-emerald-800'
             : 'bg-gradient-to-br from-sky-100 via-gray-50 to-emerald-100'
-        }`}
+        } relative overflow-hidden`}
       >
         {/* Background overlay for full coverage */}
         <div
@@ -282,12 +282,18 @@ const CreateAssessment = React.memo(({ user }) => {
               <div className='flex items-center justify-between'>
                 <div className='flex items-center'>
                   <Button
-                    variant='ghost'
                     icon={<FontAwesomeIcon icon={faArrowLeft} />}
                     onClick={handleGoBack}
-                    className='text-white hover:text-emerald-100 hover:bg-emerald-600/30 mr-4'
+                    className={`mr-4 ${
+                      darkMode
+                        ? 'border-gray-500 text-gray-200 hover:bg-gray-700 hover:border-gray-400'
+                        : 'border-white/30 text-white hover:bg-white/10 hover:border-white/50'
+                    }`}
+                    style={{
+                      backgroundColor: darkMode ? '#4B5563' : 'rgba(255, 255, 255, 0.1)'
+                    }}
                   >
-                    Back to Assessments
+                    Back
                   </Button>
                   <FontAwesomeIcon
                     icon={faClipboardCheck}
@@ -315,21 +321,17 @@ const CreateAssessment = React.memo(({ user }) => {
               }}
             >
               <Card
-                className={`${darkMode ? 'bg-gray-800 border-gray-600' : 'bg-white border-gray-200'} shadow-lg`}
-                bodyStyle={{
-                  padding: '24px',
-                  backgroundColor: darkMode ? DARK_THEME.background.secondary : BRAND_COLORS.white
+                className={`max-w-5xl mx-auto shadow-xl ${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-200'}`}
+                style={{
+                  backgroundColor: darkMode ? '#374151' : '#ffffff',
+                  borderColor: darkMode ? '#4B5563' : '#e5e7eb'
                 }}
               >
                 <div className='max-w-4xl mx-auto'>
                   <div className='space-y-6'>
                     {/* Active Toggle */}
                     <div className='mb-4'>
-                      <Form.Item
-                        label='Active'
-                        name='isActive'
-                        valuePropName='checked'
-                      >
+                      <Form.Item label='Active' name='isActive' valuePropName='checked'>
                         <Switch defaultChecked={true} className='mr-3' />
                       </Form.Item>
                     </div>
@@ -340,10 +342,7 @@ const CreateAssessment = React.memo(({ user }) => {
                       name='title'
                       rules={[{ required: true, message: 'Please enter an assessment title' }]}
                     >
-                      <Input
-                        placeholder='Enter assessment title...'
-                        style={{ fontWeight: '500' }}
-                      />
+                      <Input placeholder='Enter assessment title...' style={{ fontWeight: '500' }} />
                     </Form.Item>
 
                     {/* Status and Category Row */}
@@ -361,10 +360,7 @@ const CreateAssessment = React.memo(({ user }) => {
                         </Select>
                       </Form.Item>
 
-                      <Form.Item
-                        label='Category'
-                        name='category'
-                      >
+                      <Form.Item label='Category' name='category'>
                         <Select placeholder='Select category' style={{ fontWeight: '500' }}>
                           <Option value='Technical'>Technical</Option>
                           <Option value='Behavioral'>Behavioral</Option>
@@ -375,10 +371,7 @@ const CreateAssessment = React.memo(({ user }) => {
                     </div>
 
                     {/* Tags */}
-                    <Form.Item
-                      label='Tags'
-                      name='tags'
-                    >
+                    <Form.Item label='Tags' name='tags'>
                       <Select
                         mode='tags'
                         placeholder='Add tags (press Enter to add)'

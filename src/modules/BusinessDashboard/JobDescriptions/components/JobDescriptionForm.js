@@ -557,7 +557,9 @@ const CreateJobDescription = React.memo(({ user }) => {
                             style={{ fontWeight: '500' }}
                           >
                             {departments.map((dept) => (
-                              <Option key={dept.id} value={dept.id}>{dept.label}</Option>
+                              <Option key={dept.id} value={dept.id}>
+                                {dept.label}
+                              </Option>
                             ))}
                           </Select>
                         </Form.Item>
@@ -581,7 +583,9 @@ const CreateJobDescription = React.memo(({ user }) => {
                             style={{ fontWeight: '500' }}
                           >
                             {experienceLevels.map((level) => (
-                              <Option key={level.id} value={level.id}>{level.label}</Option>
+                              <Option key={level.id} value={level.id}>
+                                {level.label}
+                              </Option>
                             ))}
                           </Select>
                         </Form.Item>
@@ -716,7 +720,9 @@ const CreateJobDescription = React.memo(({ user }) => {
               </Tabs>
 
               {/* Form Actions at Bottom */}
-              <div className={`flex justify-end space-x-3 pt-6 mt-6 border-t ${darkMode ? 'border-gray-600' : 'border-gray-200'}`}>
+              <div
+                className={`flex justify-end space-x-3 pt-6 mt-6 border-t ${darkMode ? 'border-gray-600' : 'border-gray-200'}`}
+              >
                 <Button
                   icon={<FontAwesomeIcon icon={faTimes} />}
                   onClick={handleGoBack}
