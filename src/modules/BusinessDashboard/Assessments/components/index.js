@@ -567,8 +567,8 @@ const Assessments = React.memo(({ user }) => {
         ></div>
 
         <BusinessSidebar />
-        <div className='p-6 ml-64 relative z-10'>
-          <div className='max-w-7xl mx-auto'>
+        <div className='ml-64 relative z-10'>
+          <div className='p-6'>
             {/* Breadcrumb Navigation */}
             <div className='flex items-center mb-4'>
               <Button
