@@ -6,16 +6,11 @@ import { useTheme } from '../../../../core/context/ThemeContext'
 import BusinessSidebar from '../../components/BusinessSidebar'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faList, faPlus, faFilter, faArrowLeft, faTimes, faSpinner } from '@fortawesome/free-solid-svg-icons'
-import { Select, Modal, Form, message, Row, Col, Spin } from 'antd'
+import { Select, Modal, Form, message, Row, Col, Spin, Input, Switch } from 'antd'
 import { Button } from '../../../../core/components'
 import TableView from '../../../../core/components/view-components/table-view/TableView'
 import TableActions from '../../../../core/components/view-components/table-view/TableActions'
 import { getAllLookups, createLookup, updateLookup, deleteLookup } from '../utils/controller'
-
-// Import enhanced form field components
-import FormInput from '../../../../core/components/form-components/form-fields/FormInput'
-import FormSelect from '../../../../core/components/form-components/form-fields/FormSelect'
-import FormSwitch from '../../../../core/components/form-components/form-fields/FormSwitch'
 
 const { Option } = Select
 
@@ -601,64 +596,70 @@ const Lookups = React.memo(({ user }) => {
             <Form form={form} layout='vertical' onFinish={handleSubmit} initialValues={{ isActive: true }}>
               {/* Active Toggle */}
               <div className='mb-6'>
-                <FormSwitch
+                <Form.Item
                   label='Active'
                   name='isActive'
-                  defaultChecked={true}
-                  switchProps={{
-                    className: 'mr-3',
-                    style: {
+                  valuePropName='checked'
+                >
+                  <Switch
+                    defaultChecked={true}
+                    className='mr-3'
+                    style={{
                       backgroundColor: darkMode ? '#059669' : '#10b981'
-                    }
-                  }}
-                />
+                    }}
+                  />
+                </Form.Item>
               </div>
 
               <Row gutter={16}>
                 <Col span={12}>
-                  <FormInput
+                  <Form.Item
                     label='Profile Key'
                     name='profileKey'
-                    placeholder='Provide a unique Profile Key'
                     rules={[{ required: true, message: 'Please enter a profile key' }]}
-                    customStyle={{
-                      borderColor: darkMode ? '#10b981' : '#10b981',
-                      fontWeight: '500'
-                    }}
-                  />
+                  >
+                    <Input
+                      placeholder='Provide a unique Profile Key'
+                      style={{
+                        borderColor: darkMode ? '#10b981' : '#10b981',
+                        fontWeight: '500'
+                      }}
+                    />
+                  </Form.Item>
                 </Col>
                 <Col span={12}>
-                  <FormInput
+                  <Form.Item
                     label='Group Name (optional)'
                     name='groupName'
-                    placeholder='Used to group Profiles'
-                    customStyle={{
-                      borderColor: darkMode ? '#10b981' : '#10b981',
-                      fontWeight: '500'
-                    }}
-                  />
+                  >
+                    <Input
+                      placeholder='Used to group Profiles'
+                      style={{
+                        borderColor: darkMode ? '#10b981' : '#10b981',
+                        fontWeight: '500'
+                      }}
+                    />
+                  </Form.Item>
                 </Col>
               </Row>
 
-              <FormSelect
+              <Form.Item
                 label='Solution(s) (optional)'
                 name='solutions'
-                placeholder='Used to link solutions'
-                options={[
-                  { label: 'Solution A', value: 'solution-a' },
-                  { label: 'Solution B', value: 'solution-b' },
-                  { label: 'Solution C', value: 'solution-c' }
-                ]}
-                selectProps={{
-                  mode: 'multiple',
-                  dropdownStyle: {
+              >
+                <Select
+                  mode='multiple'
+                  placeholder='Used to link solutions'
+                  style={{ fontWeight: '500' }}
+                  dropdownStyle={{
                     backgroundColor: darkMode ? '#374151' : '#ffffff'
-                  }
-                }}
-                customStyle={{
-                  fontWeight: '500'
-                }}
-              />
+                  }}
+                >
+                  <Option value='solution-a'>Solution A</Option>
+                  <Option value='solution-b'>Solution B</Option>
+                  <Option value='solution-c'>Solution C</Option>
+                </Select>
+              </Form.Item>
 
               {/* Label-Value Pairs Section */}
               <div
@@ -719,24 +720,22 @@ const Lookups = React.memo(({ user }) => {
                   {labelValuePairs.map((pair, index) => (
                     <Row key={index} gutter={8} align='middle' className='mb-2'>
                       <Col span={10}>
-                        <FormInput
+                        <Input
                           placeholder='Provide a Label'
                           value={pair.label}
                           onChange={(e) => handleLabelValueChange(index, 'label', e.target.value)}
-                          standalone={true}
-                          customStyle={{
+                          style={{
                             borderColor: darkMode ? '#10b981' : '#10b981',
                             fontWeight: '500'
                           }}
                         />
                       </Col>
                       <Col span={10}>
-                        <FormInput
+                        <Input
                           placeholder='Provide a Value'
                           value={pair.value}
                           onChange={(e) => handleLabelValueChange(index, 'value', e.target.value)}
-                          standalone={true}
-                          customStyle={{
+                          style={{
                             borderColor: darkMode ? '#10b981' : '#10b981',
                             fontWeight: '500'
                           }}

@@ -15,16 +15,10 @@ import {
   faTimes,
   faQuestion
 } from '@fortawesome/free-solid-svg-icons'
-import { Select, Modal, Form, message, Row, Col, Tag, Spin, Alert, Divider } from 'antd'
+import { Select, Modal, Form, message, Row, Col, Tag, Spin, Alert, Divider, Input, Switch } from 'antd'
 import { Button } from '../../../../core/components'
 import TableView from '../../../../core/components/view-components/table-view/TableView'
 import TableActions from '../../../../core/components/view-components/table-view/TableActions'
-
-// Import enhanced form field components
-import FormSelect from '../../../../core/components/form-components/form-fields/FormSelect'
-import FormTextArea from '../../../../core/components/form-components/form-fields/FormTextArea'
-import FormSwitch from '../../../../core/components/form-components/form-fields/FormSwitch'
-import FormInput from '../../../../core/components/form-components/form-fields/FormInput'
 
 // Import controller functions
 import {
@@ -43,6 +37,7 @@ import {
 } from '../utils/assessment-questions-controller'
 
 const { Option } = Select
+const { TextArea } = Input
 
 /**
  * Assessments Management Page
@@ -721,76 +716,76 @@ const Assessments = React.memo(({ user }) => {
 
                   {/* Active Toggle */}
                   <div className='mb-6'>
-                    <FormSwitch
+                    <Form.Item
                       label='Active'
                       name='isActive'
-                      defaultChecked={true}
-                      switchProps={{
-                        className: 'mr-3'
-                      }}
-                    />
+                      valuePropName='checked'
+                    >
+                      <Switch defaultChecked={true} className='mr-3' />
+                    </Form.Item>
                   </div>
 
                   <Row gutter={16}>
                     <Col span={12}>
-                      <FormInput
+                      <Form.Item
                         label='Assessment Title'
                         name='title'
-                        placeholder='Enter assessment title...'
                         rules={[{ required: true, message: 'Please enter an assessment title' }]}
-                        customStyle={{
-                          borderColor: darkMode ? BRAND_COLORS.emeraldLight : BRAND_COLORS.emeraldLight,
-                          fontWeight: '500'
-                        }}
-                      />
+                      >
+                        <Input
+                          placeholder='Enter assessment title...'
+                          style={{
+                            borderColor: darkMode ? BRAND_COLORS.emeraldLight : BRAND_COLORS.emeraldLight,
+                            fontWeight: '500'
+                          }}
+                        />
+                      </Form.Item>
                     </Col>
                     <Col span={6}>
-                      <FormSelect
+                      <Form.Item
                         label='Status'
                         name='status'
-                        placeholder='Select status'
                         rules={[{ required: true, message: 'Please select a status' }]}
-                        options={[
-                          { label: 'Draft', value: 'Draft' },
-                          { label: 'Active', value: 'Active' },
-                          { label: 'Inactive', value: 'Inactive' },
-                          { label: 'Archived', value: 'Archived' }
-                        ]}
-                        customStyle={{
-                          fontWeight: '500'
-                        }}
-                      />
+                      >
+                        <Select
+                          placeholder='Select status'
+                          style={{ fontWeight: '500' }}
+                        >
+                          <Option value='Draft'>Draft</Option>
+                          <Option value='Active'>Active</Option>
+                          <Option value='Inactive'>Inactive</Option>
+                          <Option value='Archived'>Archived</Option>
+                        </Select>
+                      </Form.Item>
                     </Col>
                     <Col span={6}>
-                      <FormSelect
+                      <Form.Item
                         label='Category'
                         name='category'
-                        placeholder='Select category'
-                        options={[
-                          { label: 'Technical', value: 'Technical' },
-                          { label: 'Behavioral', value: 'Behavioral' },
-                          { label: 'Cognitive', value: 'Cognitive' },
-                          { label: 'Portfolio', value: 'Portfolio' }
-                        ]}
-                        customStyle={{
-                          fontWeight: '500'
-                        }}
-                      />
+                      >
+                        <Select
+                          placeholder='Select category'
+                          style={{ fontWeight: '500' }}
+                        >
+                          <Option value='Technical'>Technical</Option>
+                          <Option value='Behavioral'>Behavioral</Option>
+                          <Option value='Cognitive'>Cognitive</Option>
+                          <Option value='Portfolio'>Portfolio</Option>
+                        </Select>
+                      </Form.Item>
                     </Col>
                   </Row>
 
-                  <FormSelect
+                  <Form.Item
                     label='Tags'
                     name='tags'
-                    placeholder='Add tags (press Enter to add)'
-                    options={[]}
-                    selectProps={{
-                      mode: 'tags'
-                    }}
-                    customStyle={{
-                      fontWeight: '500'
-                    }}
-                  />
+                  >
+                    <Select
+                      mode='tags'
+                      placeholder='Add tags (press Enter to add)'
+                      style={{ fontWeight: '500' }}
+                    />
+                  </Form.Item>
                 </div>
 
                 <Divider />
@@ -888,41 +883,50 @@ const Assessments = React.memo(({ user }) => {
                 message.error('Please fill in all required fields')
               }}
             >
-              <FormTextArea
+              <Form.Item
                 label='Question'
                 name='question'
-                placeholder='Enter the assessment question...'
-                rows={3}
                 rules={[{ required: true, message: 'Please enter a question' }]}
-                customStyle={{
-                  borderColor: darkMode ? BRAND_COLORS.emeraldLight : BRAND_COLORS.emeraldLight,
-                  fontWeight: '500'
-                }}
-              />
+              >
+                <TextArea
+                  placeholder='Enter the assessment question...'
+                  rows={3}
+                  style={{
+                    borderColor: darkMode ? BRAND_COLORS.emeraldLight : BRAND_COLORS.emeraldLight,
+                    fontWeight: '500'
+                  }}
+                />
+              </Form.Item>
 
-              <FormTextArea
+              <Form.Item
                 label='Context'
                 name='context'
-                placeholder='Provide context about what this question assesses...'
-                rows={4}
                 rules={[{ required: true, message: 'Please enter the context' }]}
-                customStyle={{
-                  borderColor: darkMode ? BRAND_COLORS.emeraldLight : BRAND_COLORS.emeraldLight,
-                  fontWeight: '500'
-                }}
-              />
+              >
+                <TextArea
+                  placeholder='Provide context about what this question assesses...'
+                  rows={4}
+                  style={{
+                    borderColor: darkMode ? BRAND_COLORS.emeraldLight : BRAND_COLORS.emeraldLight,
+                    fontWeight: '500'
+                  }}
+                />
+              </Form.Item>
 
-              <FormTextArea
+              <Form.Item
                 label='Preferred Feedback'
                 name='preferredFeedback'
-                placeholder='Describe what to look for in good answers and how to evaluate responses...'
-                rows={4}
                 rules={[{ required: true, message: 'Please enter preferred feedback guidelines' }]}
-                customStyle={{
-                  borderColor: darkMode ? BRAND_COLORS.emeraldLight : BRAND_COLORS.emeraldLight,
-                  fontWeight: '500'
-                }}
-              />
+              >
+                <TextArea
+                  placeholder='Describe what to look for in good answers and how to evaluate responses...'
+                  rows={4}
+                  style={{
+                    borderColor: darkMode ? BRAND_COLORS.emeraldLight : BRAND_COLORS.emeraldLight,
+                    fontWeight: '500'
+                  }}
+                />
+              </Form.Item>
 
               <div className='flex justify-end space-x-3 mt-6'>
                                  <Button

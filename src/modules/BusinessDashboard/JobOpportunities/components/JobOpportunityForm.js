@@ -2,18 +2,16 @@
 // Frontend Instructions Rule Applied!
 
 import React, { useState, useCallback, useEffect, useMemo } from 'react'
-import { Modal, Form, Row, Col, Divider, Tabs, message } from 'antd'
+import { Modal, Form, Row, Col, Divider, Tabs, message, Input, Select, Switch, Checkbox } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSave, faTimes, faBriefcase, faUser, faFileText, faCog } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../../core/context/ThemeContext'
 import { Button } from '../../../../core/components'
-import FormInput from '../../../../core/components/form-components/form-fields/FormInput'
-import FormTextArea from '../../../../core/components/form-components/form-fields/FormTextArea'
-import FormSelect from '../../../../core/components/form-components/form-fields/FormSelect'
-import FormCheckbox from '../../../../core/components/form-components/form-fields/FormCheckbox'
-import FormSwitch from '../../../../core/components/form-components/form-fields/FormSwitch'
 import { createJobOpportunity, updateJobOpportunity, getJobOpportunityById } from '../utils/controller'
 import { getDefaultJobOpportunityData, getDropdownOptions } from '../utils/data-model'
+
+const { TextArea } = Input
+const { Option } = Select
 
 /**
  * Comprehensive Job Opportunity Form Component
@@ -186,96 +184,122 @@ const JobOpportunityForm = React.memo(({ visible, onClose, onSuccess, editId = n
         <div className='space-y-4'>
           <Row gutter={16}>
             <Col xs={24} lg={12}>
-              <FormInput
+              <Form.Item
                 label='Job Title'
                 name='title'
-                placeholder='e.g. Senior Software Engineer'
                 rules={[
                   { required: true, message: 'Job title is required' },
                   { max: 255, message: 'Job title must be 255 characters or less' }
                 ]}
-              />
+              >
+                <Input placeholder='e.g. Senior Software Engineer' />
+              </Form.Item>
             </Col>
             <Col xs={24} lg={12}>
-              <FormInput
+              <Form.Item
                 label='Company'
                 name='company'
-                placeholder='e.g. TechCorp Inc.'
                 rules={[
                   { required: true, message: 'Company name is required' },
                   { max: 255, message: 'Company name must be 255 characters or less' }
                 ]}
-              />
+              >
+                <Input placeholder='e.g. TechCorp Inc.' />
+              </Form.Item>
             </Col>
           </Row>
 
           <Row gutter={16}>
             <Col xs={24} lg={12}>
-              <FormInput
+              <Form.Item
                 label='Location'
                 name='location'
-                placeholder='e.g. New York, NY'
                 rules={[
                   { required: true, message: 'Location is required' },
                   { max: 255, message: 'Location must be 255 characters or less' }
                 ]}
-              />
+              >
+                <Input placeholder='e.g. New York, NY' />
+              </Form.Item>
             </Col>
             <Col xs={24} lg={12}>
-              <FormSelect
+              <Form.Item
                 label='Job Type'
                 name='type'
-                placeholder='Select job type'
-                options={dropdownOptions.type}
                 rules={[{ required: true, message: 'Job type is required' }]}
-              />
+              >
+                <Select placeholder='Select job type'>
+                  {dropdownOptions.type.map(option => (
+                    <Option key={option.value} value={option.value}>{option.label}</Option>
+                  ))}
+                </Select>
+              </Form.Item>
             </Col>
           </Row>
 
           <Row gutter={16}>
             <Col xs={24} lg={12}>
-              <FormInput
+              <Form.Item
                 label='Salary Range'
                 name='salary'
-                placeholder='e.g. $80,000 - $120,000'
                 rules={[
                   { required: true, message: 'Salary range is required' },
                   { max: 100, message: 'Salary must be 100 characters or less' }
                 ]}
-              />
+              >
+                <Input placeholder='e.g. $80,000 - $120,000' />
+              </Form.Item>
             </Col>
             <Col xs={24} lg={12}>
-              <FormSelect
+              <Form.Item
                 label='Work Arrangement'
                 name='workArrangement'
-                placeholder='Select work arrangement'
-                options={dropdownOptions.workArrangement}
                 rules={[{ required: true, message: 'Work arrangement is required' }]}
-              />
+              >
+                <Select placeholder='Select work arrangement'>
+                  {dropdownOptions.workArrangement.map(option => (
+                    <Option key={option.value} value={option.value}>{option.label}</Option>
+                  ))}
+                </Select>
+              </Form.Item>
             </Col>
           </Row>
 
-          <FormTextArea
+          <Form.Item
             label='Job Description'
             name='description'
-            placeholder='Detailed description of the role, responsibilities, and what makes this opportunity unique...'
-            rows={4}
             rules={[{ required: true, message: 'Job description is required' }]}
-          />
+          >
+            <TextArea
+              placeholder='Detailed description of the role, responsibilities, and what makes this opportunity unique...'
+              rows={4}
+            />
+          </Form.Item>
 
-          <FormTextArea
+          <Form.Item
             label='Benefits & Perks'
             name='benefits'
-            placeholder='Health insurance, retirement plans, flexible PTO, professional development...'
-            rows={3}
-          />
+          >
+            <TextArea
+              placeholder='Health insurance, retirement plans, flexible PTO, professional development...'
+              rows={3}
+            />
+          </Form.Item>
 
           <Row gutter={16}>
             <Col xs={24} lg={12}>
-              <FormSelect label='Status' name='status' placeholder='Select status' options={dropdownOptions.status} />
+              <Form.Item label='Status' name='status'>
+                <Select placeholder='Select status'>
+                  {dropdownOptions.status.map(option => (
+                    <Option key={option.value} value={option.value}>{option.label}</Option>
+                  ))}
+                </Select>
+              </Form.Item>
             </Col>
             <Col xs={24} lg={12}>
-              <FormSwitch label='Remote Work Available' name='remote' checkedChildren='Yes' unCheckedChildren='No' />
+              <Form.Item label='Remote Work Available' name='remote' valuePropName='checked'>
+                <Switch checkedChildren='Yes' unCheckedChildren='No' />
+              </Form.Item>
             </Col>
           </Row>
         </div>
@@ -293,99 +317,124 @@ const JobOpportunityForm = React.memo(({ visible, onClose, onSuccess, editId = n
         <div className='space-y-4'>
           <Row gutter={16}>
             <Col xs={24} lg={12}>
-              <FormSelect
+              <Form.Item
                 label='Experience Required'
                 name='experienceRequired'
-                placeholder='Select experience level'
-                options={dropdownOptions.experienceRequired}
                 rules={[{ required: true, message: 'Experience level is required' }]}
-              />
+              >
+                <Select placeholder='Select experience level'>
+                  {dropdownOptions.experienceRequired.map(option => (
+                    <Option key={option.value} value={option.value}>{option.label}</Option>
+                  ))}
+                </Select>
+              </Form.Item>
             </Col>
             <Col xs={24} lg={12}>
-              <FormSelect
+              <Form.Item
                 label='Education Level'
                 name='educationLevel'
-                placeholder='Select education level'
-                options={dropdownOptions.educationLevel}
-              />
+              >
+                <Select placeholder='Select education level'>
+                  {dropdownOptions.educationLevel.map(option => (
+                    <Option key={option.value} value={option.value}>{option.label}</Option>
+                  ))}
+                </Select>
+              </Form.Item>
             </Col>
           </Row>
 
           <Row gutter={16}>
             <Col xs={24} lg={12}>
-              <FormInput
+              <Form.Item
                 label='Field of Study'
                 name='fieldOfStudy'
-                placeholder='e.g. Computer Science, Engineering'
                 rules={[{ max: 255, message: 'Field of study must be 255 characters or less' }]}
-              />
+              >
+                <Input placeholder='e.g. Computer Science, Engineering' />
+              </Form.Item>
             </Col>
             <Col xs={24} lg={12}>
-              <FormSelect
+              <Form.Item
                 label='Industry Experience'
                 name='industryExperience'
-                placeholder='Select industry'
-                options={dropdownOptions.industryExperience}
-              />
+              >
+                <Select placeholder='Select industry'>
+                  {dropdownOptions.industryExperience.map(option => (
+                    <Option key={option.value} value={option.value}>{option.label}</Option>
+                  ))}
+                </Select>
+              </Form.Item>
             </Col>
           </Row>
 
-          <FormTextArea
+          <Form.Item
             label='Required Skills'
             name='requiredSkills'
-            placeholder='JavaScript, React, Node.js, SQL, Git...'
-            rows={3}
             rules={[{ required: true, message: 'Required skills are required' }]}
-            formItemProps={{
-              extra: 'List the essential technical and professional skills'
-            }}
-          />
+            extra='List the essential technical and professional skills'
+          >
+            <TextArea
+              placeholder='JavaScript, React, Node.js, SQL, Git...'
+              rows={3}
+            />
+          </Form.Item>
 
-          <FormTextArea
+          <Form.Item
             label='Soft Skills'
             name='softSkills'
-            placeholder='Communication, teamwork, problem-solving, leadership...'
-            rows={3}
-            formItemProps={{
-              extra: 'List desired interpersonal and soft skills'
-            }}
-          />
+            extra='List desired interpersonal and soft skills'
+          >
+            <TextArea
+              placeholder='Communication, teamwork, problem-solving, leadership...'
+              rows={3}
+            />
+          </Form.Item>
 
-          <FormTextArea
+          <Form.Item
             label='Tools & Technologies'
             name='toolsRequired'
-            placeholder='VS Code, Jira, Slack, AWS, Docker...'
-            rows={3}
-            formItemProps={{
-              extra: 'List specific tools and technologies'
-            }}
-          />
+            extra='List specific tools and technologies'
+          >
+            <TextArea
+              placeholder='VS Code, Jira, Slack, AWS, Docker...'
+              rows={3}
+            />
+          </Form.Item>
 
           <Row gutter={16}>
             <Col xs={24} lg={12}>
-              <FormInput
+              <Form.Item
                 label='Certifications Required'
                 name='certificationsRequired'
-                placeholder='e.g. AWS Certified, PMP, etc.'
                 rules={[{ max: 255, message: 'Certifications must be 255 characters or less' }]}
-              />
+              >
+                <Input placeholder='e.g. AWS Certified, PMP, etc.' />
+              </Form.Item>
             </Col>
             <Col xs={24} lg={12}>
-              <FormSelect
+              <Form.Item
                 label='Visa Sponsorship'
                 name='visaSponsorship'
-                placeholder='Select sponsorship availability'
-                options={dropdownOptions.visaSponsorship}
-              />
+              >
+                <Select placeholder='Select sponsorship availability'>
+                  {dropdownOptions.visaSponsorship.map(option => (
+                    <Option key={option.value} value={option.value}>{option.label}</Option>
+                  ))}
+                </Select>
+              </Form.Item>
             </Col>
           </Row>
 
-          <FormSelect
+          <Form.Item
             label='Travel Requirements'
             name='travelRequirements'
-            placeholder='Select travel requirements'
-            options={dropdownOptions.travelRequirements}
-          />
+          >
+            <Select placeholder='Select travel requirements'>
+              {dropdownOptions.travelRequirements.map(option => (
+                <Option key={option.value} value={option.value}>{option.label}</Option>
+              ))}
+            </Select>
+          </Form.Item>
         </div>
       )
     },
@@ -399,76 +448,97 @@ const JobOpportunityForm = React.memo(({ visible, onClose, onSuccess, editId = n
       ),
       children: (
         <div className='space-y-4'>
-          <FormCheckbox
+          <Form.Item
             label='Employment Types'
             name='employmentTypes'
-            options={dropdownOptions.employmentTypes}
             rules={[{ required: true, message: 'At least one employment type is required' }]}
-            formItemProps={{
-              extra: 'Select all applicable employment types'
-            }}
-          />
+            extra='Select all applicable employment types'
+          >
+            <Checkbox.Group>
+              {dropdownOptions.employmentTypes.map(option => (
+                <Checkbox key={option.value} value={option.value}>{option.label}</Checkbox>
+              ))}
+            </Checkbox.Group>
+          </Form.Item>
 
           <Divider>Application Requirements</Divider>
 
           <Row gutter={16}>
             <Col xs={24} lg={12}>
-              <FormSwitch
+              <Form.Item
                 label='Resume Required'
                 name='resumeRequired'
-                checkedChildren='Required'
-                unCheckedChildren='Optional'
-                defaultChecked={true}
-              />
+                valuePropName='checked'
+              >
+                <Switch
+                  checkedChildren='Required'
+                  unCheckedChildren='Optional'
+                  defaultChecked={true}
+                />
+              </Form.Item>
             </Col>
             <Col xs={24} lg={12}>
-              <FormSelect
+              <Form.Item
                 label='Cover Letter'
                 name='coverLetterRequired'
-                placeholder='Select requirement level'
-                options={dropdownOptions.coverLetterRequired}
-              />
+              >
+                <Select placeholder='Select requirement level'>
+                  {dropdownOptions.coverLetterRequired.map(option => (
+                    <Option key={option.value} value={option.value}>{option.label}</Option>
+                  ))}
+                </Select>
+              </Form.Item>
             </Col>
           </Row>
 
           <Row gutter={16}>
             <Col xs={24} lg={12}>
-              <FormSelect
+              <Form.Item
                 label='Portfolio'
                 name='portfolioRequired'
-                placeholder='Select requirement level'
-                options={dropdownOptions.portfolioRequired}
-              />
+              >
+                <Select placeholder='Select requirement level'>
+                  {dropdownOptions.portfolioRequired.map(option => (
+                    <Option key={option.value} value={option.value}>{option.label}</Option>
+                  ))}
+                </Select>
+              </Form.Item>
             </Col>
             <Col xs={24} lg={12}>
-              <FormSelect
+              <Form.Item
                 label='References'
                 name='referencesRequired'
-                placeholder='Select requirement level'
-                options={dropdownOptions.referencesRequired}
-              />
+              >
+                <Select placeholder='Select requirement level'>
+                  {dropdownOptions.referencesRequired.map(option => (
+                    <Option key={option.value} value={option.value}>{option.label}</Option>
+                  ))}
+                </Select>
+              </Form.Item>
             </Col>
           </Row>
 
-          <FormTextArea
+          <Form.Item
             label='Application Instructions'
             name='applicationInstructions'
-            placeholder='Special instructions for applicants, submission guidelines, or additional requirements...'
-            rows={4}
-            formItemProps={{
-              extra: 'Provide any special instructions for applicants'
-            }}
-          />
+            extra='Provide any special instructions for applicants'
+          >
+            <TextArea
+              placeholder='Special instructions for applicants, submission guidelines, or additional requirements...'
+              rows={4}
+            />
+          </Form.Item>
 
-          <FormTextArea
+          <Form.Item
             label='Screening Questions'
             name='screeningQuestions'
-            placeholder='1. Why are you interested in this role?&#10;2. What is your experience with [specific technology]?&#10;3. Are you authorized to work in [country]?'
-            rows={4}
-            formItemProps={{
-              extra: 'Add custom questions to screen candidates'
-            }}
-          />
+            extra='Add custom questions to screen candidates'
+          >
+            <TextArea
+              placeholder='1. Why are you interested in this role?&#10;2. What is your experience with [specific technology]?&#10;3. Are you authorized to work in [country]?'
+              rows={4}
+            />
+          </Form.Item>
         </div>
       )
     },
@@ -484,38 +554,39 @@ const JobOpportunityForm = React.memo(({ visible, onClose, onSuccess, editId = n
         <div className='space-y-4'>
           <Row gutter={16}>
             <Col xs={24} lg={12}>
-              <FormInput
+              <Form.Item
                 label='Current Applicants'
                 name='applicants'
-                placeholder='0'
-                type='number'
-                min={0}
-                formItemProps={{
-                  extra: 'Current number of applicants (auto-updated)'
-                }}
-              />
+                extra='Current number of applicants (auto-updated)'
+              >
+                <Input
+                  placeholder='0'
+                  type='number'
+                  min={0}
+                />
+              </Form.Item>
             </Col>
             <Col xs={24} lg={12}>
-              <FormInput
+              <Form.Item
                 label='Date Posted'
                 name='datePosted'
-                type='date'
-                formItemProps={{
-                  extra: 'When this job was first posted'
-                }}
-              />
+                extra='When this job was first posted'
+              >
+                <Input type='date' />
+              </Form.Item>
             </Col>
           </Row>
 
-          <FormTextArea
+          <Form.Item
             label='Custom Fields (JSON)'
             name='customFields'
-            placeholder='[{"field": "value"}, {"another": "field"}]'
-            rows={4}
-            formItemProps={{
-              extra: 'Additional custom data in JSON format (for advanced users)'
-            }}
-          />
+            extra='Additional custom data in JSON format (for advanced users)'
+          >
+            <TextArea
+              placeholder='[{"field": "value"}, {"another": "field"}]'
+              rows={4}
+            />
+          </Form.Item>
         </div>
       )
     }

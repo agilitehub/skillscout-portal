@@ -2,7 +2,7 @@
 // Frontend Instructions Rule Applied!
 
 import React, { useState, useCallback } from 'react'
-import { Card, Form, message } from 'antd'
+import { Card, Form, message, Input, Select, Switch } from 'antd'
 import { Button } from '../../../../core/components'
 import { useNavigate } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -13,10 +13,7 @@ import BusinessSidebar from '../../components/BusinessSidebar'
 import { createAssessment } from '../utils/controller'
 import { parseTags } from '../utils/data-model'
 
-// Import enhanced form field components
-import FormSelect from '../../../../core/components/form-components/form-fields/FormSelect'
-import FormInput from '../../../../core/components/form-components/form-fields/FormInput'
-import FormSwitch from '../../../../core/components/form-components/form-fields/FormSwitch'
+const { Option } = Select
 
 /**
  * CreateAssessment page for creating new skill assessments
@@ -28,20 +25,10 @@ const CreateAssessment = React.memo(({ user }) => {
   const [form] = Form.useForm()
   const [loading, setLoading] = useState(false)
 
-  // Debug logging
-  console.log('CreateAssessment component loaded, user:', user)
-
   // Handle navigation back to assessments list
   const handleGoBack = useCallback(() => {
     navigate('/business-dashboard/assessments')
   }, [navigate])
-
-  // Handle preview
-  const handlePreview = useCallback(() => {
-    const values = form.getFieldsValue()
-    console.log('Preview assessment:', values)
-    message.info('Preview functionality would show assessment preview')
-  }, [form])
 
   // Handle form submission
   const handleFormSubmit = useCallback(
@@ -132,14 +119,6 @@ const CreateAssessment = React.memo(({ user }) => {
 
                 <div className='flex items-center space-x-3'>
                   <Button
-                    variant='ghost'
-                    icon={<FontAwesomeIcon icon={faEye} />}
-                    onClick={handlePreview}
-                    className='text-white hover:text-emerald-100 hover:bg-emerald-600/30'
-                  >
-                    Preview
-                  </Button>
-                  <Button
                     variant='success'
                     icon={<FontAwesomeIcon icon={faSave} />}
                     onClick={() => form.submit()}
@@ -178,127 +157,67 @@ const CreateAssessment = React.memo(({ user }) => {
                   <div className='space-y-6'>
                     {/* Active Toggle */}
                     <div className='mb-4'>
-                      <FormSwitch
+                      <Form.Item
                         label='Active'
                         name='isActive'
-                        defaultChecked={true}
-                        switchProps={{
-                          className: 'mr-3'
-                        }}
-                      />
+                        valuePropName='checked'
+                      >
+                        <Switch defaultChecked={true} className='mr-3' />
+                      </Form.Item>
                     </div>
 
                     {/* Assessment Title */}
-                    <FormInput
+                    <Form.Item
                       label='Assessment Title'
                       name='title'
-                      placeholder='Enter assessment title...'
                       rules={[{ required: true, message: 'Please enter an assessment title' }]}
-                      customStyle={{
-                        fontWeight: '500'
-                      }}
-                    />
+                    >
+                      <Input
+                        placeholder='Enter assessment title...'
+                        style={{ fontWeight: '500' }}
+                      />
+                    </Form.Item>
 
                     {/* Status and Category Row */}
                     <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-                      <FormSelect
+                      <Form.Item
                         label='Status'
                         name='status'
-                        placeholder='Select status'
                         rules={[{ required: true, message: 'Please select a status' }]}
-                        options={[
-                          { label: 'Draft', value: 'Draft' },
-                          { label: 'Active', value: 'Active' },
-                          { label: 'Inactive', value: 'Inactive' },
-                          { label: 'Archived', value: 'Archived' }
-                        ]}
-                        customStyle={{
-                          fontWeight: '500'
-                        }}
-                      />
+                      >
+                        <Select placeholder='Select status' style={{ fontWeight: '500' }}>
+                          <Option value='Draft'>Draft</Option>
+                          <Option value='Active'>Active</Option>
+                          <Option value='Inactive'>Inactive</Option>
+                          <Option value='Archived'>Archived</Option>
+                        </Select>
+                      </Form.Item>
 
-                      <FormSelect
+                      <Form.Item
                         label='Category'
                         name='category'
-                        placeholder='Select category'
-                        options={[
-                          { label: 'Technical', value: 'Technical' },
-                          { label: 'Behavioral', value: 'Behavioral' },
-                          { label: 'Cognitive', value: 'Cognitive' },
-                          { label: 'Portfolio', value: 'Portfolio' }
-                        ]}
-                        customStyle={{
-                          fontWeight: '500'
-                        }}
-                      />
+                      >
+                        <Select placeholder='Select category' style={{ fontWeight: '500' }}>
+                          <Option value='Technical'>Technical</Option>
+                          <Option value='Behavioral'>Behavioral</Option>
+                          <Option value='Cognitive'>Cognitive</Option>
+                          <Option value='Portfolio'>Portfolio</Option>
+                        </Select>
+                      </Form.Item>
                     </div>
 
                     {/* Tags */}
-                    <FormSelect
+                    <Form.Item
                       label='Tags'
                       name='tags'
-                      placeholder='Add tags (press Enter to add)'
-                      options={[]}
-                      selectProps={{
-                        mode: 'tags',
-                        className: 'w-full'
-                      }}
-                      customStyle={{
-                        fontWeight: '500'
-                      }}
-                    />
-
-                    {/* Summary Card */}
-                    <div
-                      className={`p-6 rounded-lg border-2 ${
-                        darkMode ? 'bg-gray-700 border-emerald-600' : 'bg-emerald-50 border-emerald-200'
-                      }`}
                     >
-                      <h4
-                        className={`text-lg font-semibold mb-4 flex items-center ${
-                          darkMode ? 'text-emerald-100' : 'text-emerald-800'
-                        }`}
-                      >
-                        <FontAwesomeIcon icon={faClipboardCheck} className='mr-2' />
-                        Assessment Summary
-                      </h4>
-                      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm'>
-                        <div>
-                          <span className={`font-medium ${darkMode ? 'text-emerald-200' : 'text-emerald-700'}`}>
-                            Title:
-                          </span>
-                          <div className={`mt-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                            {form.getFieldValue('title') || 'Not specified'}
-                          </div>
-                        </div>
-                        <div>
-                          <span className={`font-medium ${darkMode ? 'text-emerald-200' : 'text-emerald-700'}`}>
-                            Status:
-                          </span>
-                          <div className={`mt-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                            {form.getFieldValue('status') || 'Draft'}
-                          </div>
-                        </div>
-                        <div>
-                          <span className={`font-medium ${darkMode ? 'text-emerald-200' : 'text-emerald-700'}`}>
-                            Category:
-                          </span>
-                          <div className={`mt-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                            {form.getFieldValue('category') || 'Not specified'}
-                          </div>
-                        </div>
-                        <div>
-                          <span className={`font-medium ${darkMode ? 'text-emerald-200' : 'text-emerald-700'}`}>
-                            Tags:
-                          </span>
-                          <div className={`mt-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                            {form.getFieldValue('tags')?.length > 0 
-                              ? form.getFieldValue('tags').join(', ') 
-                              : 'None'}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                      <Select
+                        mode='tags'
+                        placeholder='Add tags (press Enter to add)'
+                        className='w-full'
+                        style={{ fontWeight: '500' }}
+                      />
+                    </Form.Item>
 
                     {/* Action Buttons */}
                     <div className='flex justify-end space-x-3 pt-6 border-t border-gray-200 dark:border-gray-600'>

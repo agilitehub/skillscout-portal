@@ -23,7 +23,6 @@ alwaysApply: true
 ### **UI Components**
 - **Icons:** Use **FontAwesome** for all icons.  
 - **Buttons:** Always use the reusable button in `src/core/components/Button.js`.  
-- **Forms:** Use form fields from `src/core/components/form-components/form-fields`.  
 - **Charts/Reports:** Use the **Recharts** module for all visual reports.
 - **Tables:** Don't use native Ant Design Tables, use the reusable TableView and TableActions components in `src/core/components/view-components/table-view` for all tables
 
