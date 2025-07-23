@@ -68,6 +68,7 @@ const Assessments = React.memo(({ user }) => {
   const [editingQuestion, setEditingQuestion] = useState(null)
   const [assessmentQuestions, setAssessmentQuestions] = useState([])
   const [questionLoading, setQuestionLoading] = useState(false)
+  const [questionSubmitLoading, setQuestionSubmitLoading] = useState(false)
 
   // Data states
   const [assessmentData, setAssessmentData] = useState([])
@@ -350,6 +351,7 @@ const Assessments = React.memo(({ user }) => {
   const handleQuestionSubmit = useCallback(
     async (values) => {
       try {
+        setQuestionSubmitLoading(true)
         if (editingAssessment) {
           // If editing existing assessment, save to database
           let result
@@ -393,6 +395,8 @@ const Assessments = React.memo(({ user }) => {
       } catch (error) {
         message.error('Failed to save question')
         console.error('Error saving question:', error)
+      } finally {
+        setQuestionSubmitLoading(false)
       }
     },
     [editingAssessment, editingQuestion, questionForm, fetchQuestionsForAssessment, assessmentQuestions]
@@ -705,16 +709,15 @@ const Assessments = React.memo(({ user }) => {
           closable={false}
         >
           <div className={`p-6 ${darkMode ? 'bg-gray-800' : 'bg-gray-50'} rounded-lg mb-4`}>
-            <Spin spinning={submitLoading} tip={`${editingAssessment ? 'Updating' : 'Creating'} assessment...`}>
-              <Form
-                form={form}
-                layout='vertical'
-                onFinish={handleSubmit}
-                onFinishFailed={(errorInfo) => {
-                  message.error('Please fill in all required fields')
-                }}
-                initialValues={{ isActive: true, status: 'Draft' }}
-              >
+            <Form
+              form={form}
+              layout='vertical'
+              onFinish={handleSubmit}
+              onFinishFailed={(errorInfo) => {
+                message.error('Please fill in all required fields')
+              }}
+              initialValues={{ isActive: true, status: 'Draft' }}
+            >
                 {/* Assessment Details Section */}
                 <div className='mb-6'>
                   <h3 className={`text-lg font-semibold mb-4 ${darkMode ? 'text-emerald-400' : 'text-emerald-700'}`}>
@@ -844,11 +847,10 @@ const Assessments = React.memo(({ user }) => {
                   <Button variant='success' htmlType='submit' loading={submitLoading} className='px-6 py-2'>
                     {editingAssessment ? 'Update Assessment' : 'Create Assessment'}
                   </Button>
-                </div>
-              </Form>
-            </Spin>
-          </div>
-        </Modal>
+                                 </div>
+               </Form>
+           </div>
+         </Modal>
 
         {/* Add/Edit Question Modal */}
         <Modal
@@ -858,11 +860,13 @@ const Assessments = React.memo(({ user }) => {
             </span>
           }
           open={isQuestionModalVisible}
-          onCancel={() => {
-            setIsQuestionModalVisible(false)
-            setEditingQuestion(null)
-            questionForm.resetFields()
-          }}
+                     onCancel={() => {
+             if (!questionSubmitLoading) {
+               setIsQuestionModalVisible(false)
+               setEditingQuestion(null)
+               questionForm.resetFields()
+             }
+           }}
           footer={null}
           width={800}
           styles={{
@@ -926,20 +930,21 @@ const Assessments = React.memo(({ user }) => {
               />
 
               <div className='flex justify-end space-x-3 mt-6'>
-                <Button
-                  variant='danger'
-                  onClick={() => {
-                    setIsQuestionModalVisible(false)
-                    setEditingQuestion(null)
-                    questionForm.resetFields()
-                  }}
-                  className='px-6 py-2'
-                >
-                  Cancel
-                </Button>
-                <Button variant='success' htmlType='submit' className='px-6 py-2'>
-                  {editingQuestion ? 'Update Question' : 'Add Question'}
-                </Button>
+                                 <Button
+                   variant='danger'
+                   onClick={() => {
+                     setIsQuestionModalVisible(false)
+                     setEditingQuestion(null)
+                     questionForm.resetFields()
+                   }}
+                   disabled={questionSubmitLoading}
+                   className='px-6 py-2'
+                 >
+                   Cancel
+                 </Button>
+                                 <Button variant='success' htmlType='submit' loading={questionSubmitLoading} className='px-6 py-2'>
+                   {editingQuestion ? 'Update Question' : 'Add Question'}
+                 </Button>
               </div>
             </Form>
           </div>
