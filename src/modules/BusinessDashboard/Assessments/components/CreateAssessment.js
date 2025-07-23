@@ -8,7 +8,6 @@ import { useNavigate } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowLeft, faClipboardCheck } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../../core/context/ThemeContext'
-import { BRAND_COLORS, DARK_THEME } from '../../../../core/theme/colors'
 import BusinessSidebar from '../../components/BusinessSidebar'
 import { createAssessment } from '../utils/controller'
 import { parseTags } from '../utils/data-model'
@@ -35,9 +34,10 @@ const CreateAssessment = React.memo(({ user }) => {
     async (values) => {
       setLoading(true)
       try {
+        // Handle tags properly - Select with mode='tags' returns an array
         const processedValues = {
           ...values,
-          tags: parseTags(values.tags)
+          tags: Array.isArray(values.tags) ? values.tags : parseTags(values.tags)
         }
 
         const result = await createAssessment(processedValues, user)
