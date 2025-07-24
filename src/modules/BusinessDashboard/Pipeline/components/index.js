@@ -483,7 +483,7 @@ const Pipeline = React.memo(({ user }) => {
       <BusinessSidebar />
 
       {/* Main Content */}
-      <div className='flex-1 ml-64 pt-20 relative'>
+      <div className='flex-1 ml-64 relative'>
         {/* Header */}
         <div
           className={`relative px-8 py-4 border-b flex-shrink-0 ${
