@@ -180,30 +180,7 @@ const BusinessSidebar = React.memo(() => {
         ))}
       </nav>
 
-      {/* Quick Stats */}
-      <div
-        className={`mx-4 mt-6 p-3 rounded-lg ${
-          darkMode ? 'bg-gray-800 border-gray-700' : 'bg-gray-50 border-gray-200'
-        } border`}
-      >
-        <h3
-          className={`text-xs font-semibold uppercase tracking-wide mb-2 ${
-            darkMode ? 'text-gray-400' : 'text-gray-500'
-          }`}
-        >
-          Quick Stats
-        </h3>
-        <div className='space-y-2'>
-          <div className='flex justify-between items-center'>
-            <span className={`text-xs ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>Active Jobs</span>
-            <span className={`text-xs font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>4</span>
-          </div>
-          <div className='flex justify-between items-center'>
-            <span className={`text-xs ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>Total Applicants</span>
-            <span className={`text-xs font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>172</span>
-          </div>
-        </div>
-      </div>
+
     </div>
   )
 })
