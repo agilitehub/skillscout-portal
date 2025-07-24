@@ -2,7 +2,7 @@
 // Frontend Instructions Rule Applied!
 
 import React, { useState, useEffect } from 'react'
-import { Card, Tag, Divider, Spin, Collapse, Button } from 'antd'
+import { Card, Tag, Divider, Spin, Button } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faBriefcase,
@@ -11,13 +11,10 @@ import {
   faStar,
   faCalendarAlt,
   faChevronDown,
-  faChevronUp,
-  faEye
+  faChevronUp
 } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../../core/context/ThemeContext'
 import { getJobDescriptionById } from '../../JobDescriptions/utils/controller'
-
-const { Panel } = Collapse
 
 /**
  * JobDescriptionPreview component
