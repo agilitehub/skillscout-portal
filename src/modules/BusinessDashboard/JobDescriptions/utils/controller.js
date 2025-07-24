@@ -1,6 +1,6 @@
 // Global Instructions Rule Applied!
 import { createClient } from '@supabase/supabase-js'
-import { transformToDatabase, transformFromDatabase, validateJobDescription, generateSearchTerms } from './data-model'
+import { transformToDatabase, transformFromDatabase, validateJobDescription } from './data-model'
 
 /**
  * Job Descriptions Controller

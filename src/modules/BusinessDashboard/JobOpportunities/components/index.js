@@ -17,12 +17,7 @@ import {
 import { useTheme } from '../../../../core/context/ThemeContext'
 
 import BusinessSidebar from '../../components/BusinessSidebar'
-import {
-  getAllJobOpportunities,
-  deleteJobOpportunity,
-  updateJobOpportunityStatus,
-  createJobOpportunity
-} from '../utils/controller'
+import { getAllJobOpportunities, deleteJobOpportunity, updateJobOpportunityStatus } from '../utils/controller'
 import TableView from '../../../../core/components/view-components/table-view/TableView'
 import TableActions from '../../../../core/components/view-components/table-view/TableActions'
 
@@ -37,8 +32,6 @@ const BusinessDashboard = React.memo(({ user }) => {
   // State management
   const [jobOpportunities, setJobOpportunities] = useState([])
   const [loading, setLoading] = useState(false)
-
-
 
   // Load job opportunities from database
   const loadJobOpportunities = useCallback(async () => {
@@ -70,14 +63,17 @@ const BusinessDashboard = React.memo(({ user }) => {
     navigate('/business-dashboard/create-job-listing')
   }, [navigate])
 
-  const handleEditJob = useCallback((job) => {
-    navigate('/business-dashboard/edit-job-listing', {
-      state: {
-        editId: job.id,
-        initialData: job
-      }
-    })
-  }, [navigate])
+  const handleEditJob = useCallback(
+    (job) => {
+      navigate('/business-dashboard/edit-job-listing', {
+        state: {
+          editId: job.id,
+          initialData: job
+        }
+      })
+    },
+    [navigate]
+  )
 
   const handleDeleteJob = useCallback(
     async (jobId) => {
@@ -118,8 +114,6 @@ const BusinessDashboard = React.memo(({ user }) => {
     },
     [loadJobOpportunities]
   )
-
-
 
   // Table columns configuration
   const columns = useMemo(
@@ -396,8 +390,6 @@ const BusinessDashboard = React.memo(({ user }) => {
             scroll={{ x: 1200 }}
           />
         </Card>
-
-
       </div>
     </div>
   )

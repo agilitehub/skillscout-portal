@@ -6,7 +6,7 @@ import { Button } from '../../../core/components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPaperPlane, faPaperclip, faCloudUploadAlt, faSpinner } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../core/context/ThemeContext'
-import { BRAND_COLORS, DARK_THEME } from '../../../core/theme/colors'
+import { BRAND_COLORS } from '../../../core/theme/colors'
 
 const { TextArea } = Input
 

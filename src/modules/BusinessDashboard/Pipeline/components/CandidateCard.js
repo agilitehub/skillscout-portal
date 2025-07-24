@@ -12,52 +12,50 @@ import {
   faCalendar,
   faExclamationTriangle
 } from '@fortawesome/free-solid-svg-icons'
-import { useSortable } from '@dnd-kit/sortable'
-import { CSS } from '@dnd-kit/utilities'
+import { useDrag } from 'react-dnd'
 import { Button } from '../../../../core/components'
 
 /**
  * Individual candidate card component with drag functionality
  */
 const CandidateCard = React.memo(
-  ({ candidate, stageKey, onEditCandidate, onCandidateAction, darkMode, isBeingDragged = false }) => {
-    const {
-      attributes,
-      listeners,
-      setNodeRef,
-      transform,
-      transition,
-      isDragging: isDraggingState,
-      isSorting
-    } = useSortable({
-      id: candidate?.id || 'invalid',
-      transition: {
-        duration: 200,
-        easing: 'cubic-bezier(0.25, 1, 0.5, 1)'
-      }
+  ({
+    candidate,
+    stageKey,
+    onEditCandidate,
+    onCandidateAction,
+    onDragStart,
+    onDragEnd,
+    lastDroppedCard,
+    darkMode,
+    isBeingDragged = false
+  }) => {
+    const [{ isDragging }, drag] = useDrag({
+      type: 'candidate',
+      item: () => {
+        onDragStart?.(candidate)
+        return { candidate, stageKey }
+      },
+      end: () => {
+        onDragEnd?.()
+      },
+      collect: (monitor) => ({
+        isDragging: monitor.isDragging()
+      })
     })
 
     // Safety check for candidate data (after hooks)
     if (!candidate || !candidate.id || !candidate.name) {
       return (
-        <div 
-          ref={setNodeRef} 
+        <div
+          ref={drag}
           className={`p-3 rounded-lg border text-center ${
             darkMode ? 'bg-gray-700 border-gray-600 text-gray-400' : 'bg-gray-100 border-gray-200 text-gray-500'
           }`}
         >
-          <p className="text-xs">Invalid candidate data</p>
+          <p className='text-xs'>Invalid candidate data</p>
         </div>
       )
-    }
-
-    const style = {
-      transform: isDraggingState ? 'none' : CSS.Transform.toString(transform),
-      transition: transition || (isSorting ? 'transform 200ms ease-out' : undefined),
-      zIndex: isDraggingState ? 1000 : 1,
-      // Ensure consistent width during drag operations
-      width: isDraggingState || isBeingDragged ? '280px' : 'auto',
-      opacity: isDraggingState ? 0.5 : 1
     }
 
     const getPriorityColor = (priority) => {
@@ -132,43 +130,40 @@ const CandidateCard = React.memo(
       onClick: () => onEditCandidate(candidate)
     })
 
-      const formatDate = (dateString) => {
-    try {
-      if (!dateString) return 'No date'
-      const date = new Date(dateString)
-      if (isNaN(date.getTime())) return dateString
-      
-      return date.toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric'
-      })
-    } catch (error) {
-      console.warn('Error formatting date:', error)
-      return dateString || 'Invalid date'
+    const formatDate = (dateString) => {
+      try {
+        if (!dateString) return 'No date'
+        const date = new Date(dateString)
+        if (isNaN(date.getTime())) return dateString
+
+        return date.toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric'
+        })
+      } catch (error) {
+        console.warn('Error formatting date:', error)
+        return dateString || 'Invalid date'
+      }
     }
-  }
 
     const cardClasses = `
-    group relative p-3 rounded-lg border
-    ${
-      isDraggingState || isBeingDragged
-        ? `${
-            darkMode
-              ? 'bg-gray-700/95 border-gray-600 backdrop-blur-sm'
-              : 'bg-white/95 border-gray-300 backdrop-blur-sm'
-          } shadow-lg`
-        : `opacity-100 hover:shadow-md transition-all duration-200 ${
-            darkMode
-              ? 'bg-gray-700/80 border-gray-600/60 hover:border-gray-500 hover:bg-gray-700/90 backdrop-blur-sm'
-              : 'bg-white/80 border-gray-200/60 hover:border-gray-300 hover:bg-white/90 backdrop-blur-sm'
-          }`
-    }
-    ${isDraggingState ? 'cursor-grabbing' : 'cursor-grab'}
+    group relative p-3 rounded-lg border cursor-grab
+    hover:shadow-md transition-all duration-200 ${
+      darkMode
+        ? 'bg-gray-700/80 border-gray-600/60 hover:border-gray-500 hover:bg-gray-700/90 backdrop-blur-sm'
+        : 'bg-white/80 border-gray-200/60 hover:border-gray-300 hover:bg-white/90 backdrop-blur-sm'
+    } ${isDragging || isBeingDragged ? 'opacity-50 shadow-xl ring-2 ring-emerald-500/50' : ''}
+    ${lastDroppedCard === candidate.id ? 'animate-pulse ring-2 ring-emerald-500 shadow-lg' : ''}
   `
 
+    // Hide the card if it's being dragged to prevent duplication
+    if (isDragging) {
+      return <div className='h-20 opacity-0 pointer-events-none'>{/* Invisible placeholder to maintain layout */}</div>
+    }
+
     return (
-      <div ref={setNodeRef} style={style} className={cardClasses} {...attributes} {...listeners}>
+      <div ref={drag} className={cardClasses}>
         {/* Drag Handle Indicator */}
         <div
           className={`absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none ${
@@ -254,12 +249,7 @@ const CandidateCard = React.memo(
 
           {/* Action Buttons */}
           <div className='flex items-center justify-start pt-2'>
-            <Dropdown
-              menu={{ items: actionItems }}
-              placement='bottomLeft'
-              trigger={['click']}
-              disabled={isDraggingState || isBeingDragged}
-            >
+            <Dropdown menu={{ items: actionItems }} placement='bottomLeft' trigger={['click']} disabled={isDragging}>
               <Button
                 size='small'
                 type='text'

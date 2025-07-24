@@ -5,23 +5,13 @@ import { useNavigate } from 'react-router-dom'
 import { Form, message } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faColumns, faArrowLeft, faPlus } from '@fortawesome/free-solid-svg-icons'
-import {
-  DndContext,
-  closestCenter,
-  pointerWithin,
-  DragOverlay,
-  useSensor,
-  useSensors,
-  PointerSensor,
-  KeyboardSensor
-} from '@dnd-kit/core'
-import { sortableKeyboardCoordinates } from '@dnd-kit/sortable'
+import { DndProvider } from 'react-dnd'
+import { HTML5Backend } from 'react-dnd-html5-backend'
 import { useTheme } from '../../../../core/context/ThemeContext'
 import { Button } from '../../../../core/components'
 import BusinessSidebar from '../../components/BusinessSidebar'
 import KanbanBoard from './KanbanBoard'
 import CandidateModal from './CandidateModal'
-import CandidateCard from './CandidateCard'
 
 /**
  * Pipeline Management Page
@@ -35,8 +25,8 @@ const Pipeline = React.memo(({ user }) => {
   // State management
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [editingCandidate, setEditingCandidate] = useState(null)
-  const [activeCandidate, setActiveCandidate] = useState(null)
-  const [dragOverId, setDragOverId] = useState(null)
+  const [draggedCandidate, setDraggedCandidate] = useState(null)
+  const [lastDroppedCard, setLastDroppedCard] = useState(null)
 
   // Sample pipeline data - in real app this would come from API
   const [pipelineData, setPipelineData] = useState({
@@ -174,6 +164,26 @@ const Pipeline = React.memo(({ user }) => {
     [pipelineData]
   )
 
+  // Helper function to find candidate and its location
+  const findCandidateById = useCallback(
+    (candidateId) => {
+      const id = typeof candidateId === 'string' ? parseInt(candidateId) : candidateId
+
+      for (const [stageKey, candidates] of Object.entries(pipelineData)) {
+        const candidateIndex = candidates.findIndex((c) => c.id === id)
+        if (candidateIndex !== -1) {
+          return {
+            candidate: candidates[candidateIndex],
+            stageKey,
+            index: candidateIndex
+          }
+        }
+      }
+      return null
+    },
+    [pipelineData]
+  )
+
   // Handle add new candidate
   const handleAdd = useCallback(() => {
     setIsModalVisible(true)
@@ -223,7 +233,7 @@ const Pipeline = React.memo(({ user }) => {
             }
           } else {
             // Add new candidate to "application-received" stage
-            newData['application-received'].push(newCandidate)
+            newData['application-received'] = [...newData['application-received'], newCandidate]
           }
 
           return newData
@@ -234,6 +244,7 @@ const Pipeline = React.memo(({ user }) => {
         setEditingCandidate(null)
         form.resetFields()
       } catch (error) {
+        console.error('Error saving candidate:', error)
         message.error('Failed to save candidate')
       }
     },
@@ -243,27 +254,16 @@ const Pipeline = React.memo(({ user }) => {
   // Handle candidate actions (non-drag actions)
   const handleCandidateAction = useCallback(
     (candidate, action) => {
-      let targetStage = null
-
-      switch (action) {
-        case 'move-to-screening':
-          targetStage = 'screening'
-          break
-        case 'move-to-assessment':
-          targetStage = 'assessment'
-          break
-        case 'move-to-technical':
-          targetStage = 'technical-interview'
-          break
-        case 'move-to-final':
-          targetStage = 'final-interview'
-          break
-        case 'move-to-offer':
-          targetStage = 'offer-extended'
-          break
-        default:
-          return
+      const actionStageMap = {
+        'move-to-screening': 'screening',
+        'move-to-assessment': 'assessment',
+        'move-to-technical': 'technical-interview',
+        'move-to-final': 'final-interview',
+        'move-to-offer': 'offer-extended'
       }
+
+      const targetStage = actionStageMap[action]
+      if (!targetStage) return
 
       setPipelineData((prev) => {
         const newData = { ...prev }
@@ -272,327 +272,190 @@ const Pipeline = React.memo(({ user }) => {
         for (const stageKey in newData) {
           const candidateIndex = newData[stageKey].findIndex((c) => c.id === candidate.id)
           if (candidateIndex !== -1) {
-            newData[stageKey].splice(candidateIndex, 1)
+            newData[stageKey] = newData[stageKey].filter((c) => c.id !== candidate.id)
             break
           }
         }
 
         // Add candidate to target stage
-        if (targetStage) {
-          newData[targetStage].push(candidate)
-        }
+        newData[targetStage] = [...newData[targetStage], candidate]
 
         return newData
       })
 
-      message.success(`Moved ${candidate.name} to ${stages.find((s) => s.key === targetStage)?.title}`)
+      const targetStageTitle = stages.find((s) => s.key === targetStage)?.title
+      message.success(`Moved ${candidate.name} to ${targetStageTitle}`)
     },
     [stages]
   )
 
   // Handle drag start
-  const handleDragStart = useCallback(
-    (event) => {
-      try {
-        const { active } = event
-        const candidateId = parseInt(active.id)
-
-        // Find the candidate being dragged
-        for (const stageKey in pipelineData) {
-          const candidate = pipelineData[stageKey].find((c) => c.id === candidateId)
-          if (candidate) {
-            setActiveCandidate(candidate)
-            return
-          }
-        }
-
-        // If candidate not found, reset state
-        setActiveCandidate(null)
-      } catch (error) {
-        console.error('Error in drag start:', error)
-        setActiveCandidate(null)
-      }
-    },
-    [pipelineData]
-  )
-
-  // Handle drag end with reordering & cross-stage moves
-  const handleDragEnd = useCallback(
-    ({ active, over }) => {
-      try {
-        // Clear drag state with small delay to prevent flashing
-        setTimeout(() => {
-          setActiveCandidate(null)
-          setDragOverId(null)
-        }, 50)
-
-        // If not dropped over anything, abort
-        if (!over || !active) return
-
-        const activeId = parseInt(active.id)
-        const overIdRaw = over.id
-
-        // Identify source stage & index
-        let sourceStage = null
-        let sourceIndex = -1
-        for (const stageKey in pipelineData) {
-          const idx = pipelineData[stageKey].findIndex((c) => c.id === activeId)
-          if (idx !== -1) {
-            sourceStage = stageKey
-            sourceIndex = idx
-            break
-          }
-        }
-
-        if (sourceStage === null) return
-
-        // Determine target stage & index
-        let targetStage = sourceStage
-        let targetIndex = null
-
-        const overIdNum = parseInt(overIdRaw)
-        if (!Number.isNaN(overIdNum)) {
-          // Dropped over another candidate card
-          for (const stageKey in pipelineData) {
-            const idx = pipelineData[stageKey].findIndex((c) => c.id === overIdNum)
-            if (idx !== -1) {
-              targetStage = stageKey
-              targetIndex = idx
-              break
-            }
-          }
-        } else if (typeof overIdRaw === 'string') {
-          // Dropped over stage area - check if it's a valid stage key
-          if (pipelineData.hasOwnProperty(overIdRaw)) {
-            targetStage = overIdRaw
-            targetIndex = pipelineData[targetStage]?.length ?? 0
-          }
-        }
-
-        // Debug log to help troubleshoot
-        console.log('Drag end debug:', {
-          activeId,
-          overIdRaw,
-          sourceStage,
-          targetStage,
-          targetIndex
-        })
-
-        if (targetStage === null || targetIndex === null) return
-
-        // No change
-        if (sourceStage === targetStage && sourceIndex === targetIndex) return
-
-        setPipelineData((prev) => {
-          const newData = { ...prev }
-
-          const candidate = newData[sourceStage][sourceIndex]
-
-          // Prepare new arrays
-          newData[sourceStage] = [...newData[sourceStage]]
-          newData[targetStage] = [...newData[targetStage]]
-
-          // Remove from source
-          newData[sourceStage].splice(sourceIndex, 1)
-
-          // Adjust targetIndex if moving within same list and removing earlier element
-          let insertIndex = targetIndex
-          if (sourceStage === targetStage && sourceIndex < targetIndex) {
-            insertIndex = targetIndex - 1
-          }
-
-          // Insert into target
-          newData[targetStage].splice(insertIndex, 0, candidate)
-
-          // Message
-          if (sourceStage !== targetStage) {
-            const targetStageTitle = stages.find((s) => s.key === targetStage)?.title
-            message.success(`Moved ${candidate.name} to ${targetStageTitle}`)
-          }
-
-          return newData
-        })
-      } catch (error) {
-        console.error('Error in drag end:', error)
-        // Reset drag state on error
-        setActiveCandidate(null)
-        setDragOverId(null)
-        message.error('Failed to move candidate')
-      }
-    },
-    [pipelineData, stages]
-  )
-
-  // Track current drag over id to show placeholder line
-  const handleDragOver = useCallback(({ over }) => {
-    const newOverId = over ? over.id : null
-    // Only update if different to prevent unnecessary re-renders
-    setDragOverId((prev) => (prev !== newOverId ? newOverId : prev))
+  const handleDragStart = useCallback((candidate) => {
+    setDraggedCandidate(candidate)
   }, [])
 
-  // Memoize active candidate ID for performance
-  const activeCandidateId = useMemo(() => {
-    return activeCandidate ? activeCandidate.id : null
-  }, [activeCandidate])
-
-  // Custom collision detection for kanban board
-  const customCollisionDetection = useCallback((args) => {
-    // First try to detect collisions with stage columns (droppable areas)
-    const pointerCollisions = pointerWithin(args)
-
-    if (pointerCollisions.length > 0) {
-      return pointerCollisions
-    }
-
-    // Fallback to closest center for better UX
-    return closestCenter(args)
+  // Handle drag end
+  const handleDragEnd = useCallback(() => {
+    setDraggedCandidate(null)
   }, [])
 
-  // Configure sensors for better drag/drop experience
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 3, // Minimal distance for reliable drag detection
-        delay: 0,
-        tolerance: 5
+  // Handle drop on stage
+  const handleDropOnStage = useCallback(
+    (candidate, targetStage, position) => {
+      if (!candidate || !targetStage) return
+
+      const sourceInfo = findCandidateById(candidate.id)
+      if (!sourceInfo) return
+
+      const { stageKey: sourceStage } = sourceInfo
+
+      // Don't move if already in target stage at the same position
+      if (sourceStage === targetStage) {
+        const currentIndex = pipelineData[sourceStage].findIndex((c) => c.id === candidate.id)
+        if (currentIndex === position || (currentIndex === position - 1 && position > 0)) {
+          return // No change needed
+        }
       }
-    }),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates
-    })
+
+      setPipelineData((prev) => {
+        const newData = { ...prev }
+
+        // Remove from source stage
+        newData[sourceStage] = newData[sourceStage].filter((c) => c.id !== candidate.id)
+
+        // Add to target stage at specified position
+        const targetCandidates = [...newData[targetStage]]
+
+        if (position >= targetCandidates.length) {
+          // Add to end
+          targetCandidates.push(candidate)
+        } else {
+          // Insert at specific position
+          targetCandidates.splice(position, 0, candidate)
+        }
+
+        newData[targetStage] = targetCandidates
+
+        return newData
+      })
+
+      // Set the dropped card for flash effect
+      setLastDroppedCard(candidate.id)
+
+      // Clear the flash effect after 2 seconds
+      setTimeout(() => {
+        setLastDroppedCard(null)
+      }, 2000)
+
+      // Show success message for cross-stage moves or reordering
+      if (sourceStage !== targetStage) {
+        const targetStageTitle = stages.find((s) => s.key === targetStage)?.title
+        message.success(`Moved ${candidate.name} to ${targetStageTitle}`)
+      } else {
+        message.success(`Reordered ${candidate.name}`)
+      }
+    },
+    [findCandidateById, pipelineData, stages]
   )
 
   return (
-    <div
-      className={`min-h-screen ${
-        darkMode
-          ? 'bg-gradient-to-br from-slate-700 via-slate-600 to-emerald-800'
-          : 'bg-gradient-to-br from-sky-100 via-gray-50 to-emerald-100'
-      }`}
-    >
-      {/* Background overlay for full coverage */}
+    <DndProvider backend={HTML5Backend}>
       <div
-        className={`fixed inset-0 ${
+        className={`min-h-screen ${
           darkMode
-            ? 'bg-gradient-to-b from-transparent via-slate-700/30 to-emerald-800/40'
-            : 'bg-gradient-to-b from-transparent via-sky-100/40 to-emerald-100/50'
-        } pointer-events-none`}
-      ></div>
-
-      {/* Sidebar */}
-      <BusinessSidebar />
-
-      {/* Main Content */}
-      <div className='flex-1 ml-64 pt-20 relative'>
-        {/* Header */}
+            ? 'bg-gradient-to-br from-slate-700 via-slate-600 to-emerald-800'
+            : 'bg-gradient-to-br from-sky-100 via-gray-50 to-emerald-100'
+        }`}
+      >
+        {/* Background overlay for full coverage */}
         <div
-          className={`relative px-8 py-4 border-b flex-shrink-0 ${
+          className={`fixed inset-0 ${
             darkMode
-              ? 'border-gray-700/50 bg-gray-800/30 backdrop-blur-sm'
-              : 'border-gray-200/50 bg-white/30 backdrop-blur-sm'
-          }`}
-        >
-          <div className='flex items-center justify-between'>
-            <div className='flex items-center space-x-4'>
-              <Button
-                type='text'
-                icon={<FontAwesomeIcon icon={faArrowLeft} />}
-                onClick={() => navigate('/business-dashboard')}
-                className={`${darkMode ? 'text-gray-400 hover:text-white' : 'text-gray-500 hover:text-gray-700'}`}
-              />
-              <div className='flex items-center space-x-3'>
-                <div
-                  className={`w-8 h-8 rounded-lg flex items-center justify-center bg-gradient-to-br ${
-                    darkMode ? 'from-purple-600 to-purple-800' : 'from-purple-500 to-purple-700'
-                  }`}
-                >
-                  <FontAwesomeIcon icon={faColumns} className='text-white text-sm' />
-                </div>
-                <div>
-                  <h1 className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Pipeline</h1>
-                  <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                    Manage your recruitment pipeline - drag candidates between stages
-                  </p>
+              ? 'bg-gradient-to-b from-transparent via-slate-700/30 to-emerald-800/40'
+              : 'bg-gradient-to-b from-transparent via-sky-100/40 to-emerald-100/50'
+          } pointer-events-none`}
+        />
+
+        {/* Sidebar */}
+        <BusinessSidebar />
+
+        {/* Main Content */}
+        <div className='flex-1 ml-64 pt-20 relative'>
+          {/* Header */}
+          <div
+            className={`relative px-8 py-4 border-b flex-shrink-0 ${
+              darkMode
+                ? 'border-gray-700/50 bg-gray-800/30 backdrop-blur-sm'
+                : 'border-gray-200/50 bg-white/30 backdrop-blur-sm'
+            }`}
+          >
+            <div className='flex items-center justify-between'>
+              <div className='flex items-center space-x-4'>
+                <Button
+                  type='text'
+                  icon={<FontAwesomeIcon icon={faArrowLeft} />}
+                  onClick={() => navigate('/business-dashboard')}
+                  className={`${darkMode ? 'text-gray-400 hover:text-white' : 'text-gray-500 hover:text-gray-700'}`}
+                />
+                <div className='flex items-center space-x-3'>
+                  <div
+                    className={`w-8 h-8 rounded-lg flex items-center justify-center bg-gradient-to-br ${
+                      darkMode ? 'from-purple-600 to-purple-800' : 'from-purple-500 to-purple-700'
+                    }`}
+                  >
+                    <FontAwesomeIcon icon={faColumns} className='text-white text-sm' />
+                  </div>
+                  <div>
+                    <h1 className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Pipeline</h1>
+                    <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                      Manage your recruitment pipeline - drag candidates between stages
+                    </p>
+                  </div>
                 </div>
               </div>
+              <Button
+                type='primary'
+                icon={<FontAwesomeIcon icon={faPlus} />}
+                onClick={handleAdd}
+                className='bg-emerald-600 hover:bg-emerald-700 border-emerald-600'
+              >
+                Add Candidate
+              </Button>
             </div>
-            <Button
-              type='primary'
-              icon={<FontAwesomeIcon icon={faPlus} />}
-              onClick={handleAdd}
-              className='bg-emerald-600 hover:bg-emerald-700 border-emerald-600'
-            >
-              Add Candidate
-            </Button>
           </div>
-        </div>
 
-        {/* Kanban Board with Drag and Drop */}
-        <div
-          className={`relative p-2 ${darkMode ? 'bg-gray-800/20 backdrop-blur-sm' : 'bg-white/20 backdrop-blur-sm'}`}
-        >
-          <DndContext
-            sensors={sensors}
-            collisionDetection={customCollisionDetection}
-            onDragStart={handleDragStart}
-            onDragOver={handleDragOver}
-            onDragEnd={handleDragEnd}
-          >
+          {/* Kanban Board with Drag and Drop */}
+          <div className='relative p-6'>
             <KanbanBoard
               pipelineData={pipelineData}
               stages={stages}
               onEditCandidate={handleEdit}
               onCandidateAction={handleCandidateAction}
+              onDragStart={handleDragStart}
+              onDragEnd={handleDragEnd}
+              onDropOnStage={handleDropOnStage}
+              draggedCandidate={draggedCandidate}
+              lastDroppedCard={lastDroppedCard}
               darkMode={darkMode}
-              activeId={activeCandidateId}
-              overId={dragOverId}
             />
-            <DragOverlay
-              dropAnimation={{
-                duration: 200,
-                easing: 'cubic-bezier(0.25, 1, 0.5, 1)'
-              }}
-            >
-              {activeCandidate ? (
-                <div
-                  className={`${
-                    darkMode ? 'bg-gray-800/95 backdrop-blur-sm' : 'bg-white/95 backdrop-blur-sm'
-                  } shadow-lg rounded-lg border ${darkMode ? 'border-gray-600' : 'border-gray-300'} opacity-90`}
-                  style={{
-                    width: '280px',
-                    cursor: 'grabbing',
-                    pointerEvents: 'none'
-                  }}
-                >
-                  <CandidateCard
-                    candidate={activeCandidate}
-                    stageKey='dragging'
-                    onEditCandidate={() => {}}
-                    onCandidateAction={() => {}}
-                    darkMode={darkMode}
-                    isBeingDragged={true}
-                  />
-                </div>
-              ) : null}
-            </DragOverlay>
-          </DndContext>
+          </div>
         </div>
-      </div>
 
-      {/* Add/Edit Candidate Modal */}
-      <CandidateModal
-        visible={isModalVisible}
-        onCancel={() => {
-          setIsModalVisible(false)
-          setEditingCandidate(null)
-          form.resetFields()
-        }}
-        onSubmit={handleSubmit}
-        form={form}
-        editingCandidate={editingCandidate}
-        darkMode={darkMode}
-      />
-    </div>
+        {/* Add/Edit Candidate Modal */}
+        <CandidateModal
+          visible={isModalVisible}
+          onCancel={() => {
+            setIsModalVisible(false)
+            setEditingCandidate(null)
+            form.resetFields()
+          }}
+          onSubmit={handleSubmit}
+          form={form}
+          editingCandidate={editingCandidate}
+          darkMode={darkMode}
+        />
+      </div>
+    </DndProvider>
   )
 })
 

@@ -13,12 +13,7 @@ import HeroSection from './components/HeroSection'
  * Adheres to module-driven development principles
  */
 const Login = React.memo(() => {
-  const {
-    loading,
-    colors,
-    handleLogin,
-    darkMode
-  } = useLoginData()
+  const { loading, handleLogin, darkMode } = useLoginData()
 
   // Handle body scroll prevention with comprehensive error handling
   const handleBodyScrollPrevention = useCallback(() => {
@@ -28,7 +23,7 @@ const Login = React.memo(() => {
         overflowX: document.documentElement.style.overflowX,
         overflowY: document.documentElement.style.overflowY
       }
-      
+
       // Prevent scrolling with validation
       if (document.body && document.documentElement) {
         document.body.style.overflow = 'hidden'
@@ -37,7 +32,7 @@ const Login = React.memo(() => {
       } else {
         console.warn('Login: Document body or documentElement not available for scroll prevention')
       }
-      
+
       // Return cleanup function
       return () => {
         try {
@@ -59,13 +54,13 @@ const Login = React.memo(() => {
   // Effect to prevent body scrolling on this page with error handling
   useEffect(() => {
     let cleanup
-    
+
     try {
       cleanup = handleBodyScrollPrevention()
     } catch (error) {
       console.error('Login: Error in scroll prevention effect:', error)
     }
-    
+
     // Cleanup function with error handling
     return () => {
       try {
@@ -82,30 +77,27 @@ const Login = React.memo(() => {
   if (!handleLogin || typeof handleLogin !== 'function') {
     console.error('Login: Login handler is missing or invalid')
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-red-500">Login functionality unavailable. Please refresh the page.</p>
+      <div className='min-h-screen flex items-center justify-center'>
+        <p className='text-red-500'>Login functionality unavailable. Please refresh the page.</p>
       </div>
     )
   }
 
   return (
-    <main 
+    <main
       className={`fixed inset-0 flex flex-col items-center justify-start overflow-auto w-full max-w-full pt-16 ${
-        darkMode 
+        darkMode
           ? 'bg-gradient-to-br from-slate-700 via-slate-600 to-emerald-800'
           : 'bg-gradient-to-br from-sky-100 via-gray-50 to-emerald-100'
       }`}
-      role="main"
-      aria-label="SkillScout login page"
+      role='main'
+      aria-label='SkillScout login page'
     >
       {/* Animated background elements */}
       <BackgroundElements />
-      
+
       {/* Hero section with banner and logo */}
-      <HeroSection 
-        loading={loading} 
-        onLogin={handleLogin} 
-      />
+      <HeroSection loading={loading} onLogin={handleLogin} />
     </main>
   )
 })
