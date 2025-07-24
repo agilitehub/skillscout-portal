@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Route, Navigate, Routes, useLocation } from 'react-router-dom'
 import Login from './modules/Login'
 import Dashboard from './modules/Dashboard'
-import BusinessDashboard from './modules/BusinessDashboard/JobListings/components'
+import JobListings from './modules/BusinessDashboard/JobListings/components'
 import JobDescriptions from './modules/BusinessDashboard/JobDescriptions/components'
 import JobDescriptionForm from './modules/BusinessDashboard/JobDescriptions/components/JobDescriptionForm'
 import Assessments from './modules/BusinessDashboard/Assessments/components'
@@ -112,7 +112,20 @@ const AppRoutes = () => {
         element={
           user ? (
             <DashboardLayout user={user}>
-              <BusinessDashboard user={user} />
+              <Pipeline user={user} />
+            </DashboardLayout>
+          ) : (
+            <Navigate to='/' replace state={{ from: location }} />
+          )
+        }
+      />
+
+      <Route
+        path='/business-dashboard/job-listings'
+        element={
+          user ? (
+            <DashboardLayout user={user}>
+              <JobListings user={user} />
             </DashboardLayout>
           ) : (
             <Navigate to='/' replace state={{ from: location }} />

@@ -30,16 +30,16 @@ const BusinessSidebar = React.memo(() => {
       icon: faCog,
       items: [
         {
-          path: '/business-dashboard/pipeline',
+          path: '/business-dashboard',
           icon: faColumns,
           label: 'Pipeline',
-          exact: false
+          exact: true
         },
         {
-          path: '/business-dashboard',
+          path: '/business-dashboard/job-listings',
           icon: faTachometerAlt,
           label: 'Job Listings',
-          exact: true
+          exact: false
         },
         {
           path: '/business-dashboard/assessments',

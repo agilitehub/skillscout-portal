@@ -494,12 +494,6 @@ const Pipeline = React.memo(({ user }) => {
         >
           <div className='flex items-center justify-between'>
             <div className='flex items-center space-x-4'>
-              <Button
-                type='text'
-                icon={<FontAwesomeIcon icon={faArrowLeft} />}
-                onClick={() => navigate('/business-dashboard')}
-                className={`${darkMode ? 'text-gray-400 hover:text-white' : 'text-gray-500 hover:text-gray-700'}`}
-              />
               <div className='flex items-center space-x-3'>
                 <div
                   className={`w-8 h-8 rounded-lg flex items-center justify-center bg-gradient-to-br ${
