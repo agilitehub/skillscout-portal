@@ -20,15 +20,14 @@ import BusinessSidebar from '../../components/BusinessSidebar'
 import {
   getAllJobOpportunities,
   deleteJobOpportunity,
-  updateJobOpportunityStatus,
-  createJobOpportunity
+  updateJobOpportunityStatus
 } from '../utils/controller'
 import TableView from '../../../../core/components/view-components/table-view/TableView'
 import TableActions from '../../../../core/components/view-components/table-view/TableActions'
 
 /**
  * Business Dashboard component for Recruiters and Employers
- * Manages job opportunities, applications, and recruitment activities
+ * Manages job listings, applications, and recruitment activities
  */
 const BusinessDashboard = React.memo(({ user }) => {
   const { darkMode } = useTheme()
@@ -40,7 +39,7 @@ const BusinessDashboard = React.memo(({ user }) => {
 
 
 
-  // Load job opportunities from database
+  // Load job listings from database
   const loadJobOpportunities = useCallback(async () => {
     setLoading(true)
     try {
@@ -48,13 +47,13 @@ const BusinessDashboard = React.memo(({ user }) => {
       if (result.success) {
         setJobOpportunities(result.data)
       } else {
-        console.error('Error loading job opportunities:', result.error)
-        message.error('Failed to load job opportunities: ' + result.error)
+        console.error('Error loading job listings:', result.error)
+        message.error('Failed to load job listings: ' + result.error)
         setJobOpportunities([])
       }
     } catch (error) {
-      console.error('Unexpected error loading job opportunities:', error)
-      message.error('An unexpected error occurred while loading job opportunities')
+      console.error('Unexpected error loading job listings:', error)
+      message.error('An unexpected error occurred while loading job listings')
       setJobOpportunities([])
     } finally {
       setLoading(false)
@@ -319,7 +318,7 @@ const BusinessDashboard = React.memo(({ user }) => {
             <div>
               <h1 className='text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2'>Business Dashboard</h1>
               <p className='text-gray-600 dark:text-gray-300'>
-                Manage your job opportunities and recruitment activities
+                Manage your job listings and recruitment activities
               </p>
             </div>
             <div className='flex flex-col sm:flex-row gap-3 mt-4 sm:mt-0'>
@@ -375,7 +374,7 @@ const BusinessDashboard = React.memo(({ user }) => {
           </div>
         </div>
 
-        {/* Job Opportunities Table */}
+        {/* Job Listings Table */}
         <Card className={`${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white'} shadow-lg`}>
           <div className='mb-4'>
             <h2 className={`text-xl font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Job Listings</h2>
