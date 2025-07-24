@@ -3,17 +3,9 @@
 import React, { useState, useCallback, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTheme } from '../../../../core/context/ThemeContext'
-import { BRAND_COLORS, DARK_THEME } from '../../../../core/theme/colors'
 import BusinessSidebar from '../../components/BusinessSidebar'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {
-  faClipboardCheck,
-  faPlus,
-  faCheckCircle,
-  faTimesCircle,
-  faTimes,
-  faQuestion
-} from '@fortawesome/free-solid-svg-icons'
+import { faClipboardCheck, faPlus, faCheckCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons'
 import { Select, message, Tag, Spin, Alert } from 'antd'
 import { Button } from '../../../../core/components'
 import TableView from '../../../../core/components/view-components/table-view/TableView'
@@ -35,8 +27,6 @@ const Assessments = React.memo(({ user }) => {
   // State management
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedStatus, setSelectedStatus] = useState('all')
-
-
 
   // Data states
   const [assessmentData, setAssessmentData] = useState([])
@@ -65,8 +55,6 @@ const Assessments = React.memo(({ user }) => {
       setLoading(false)
     }
   }, [])
-
-
 
   // Search assessments
   const handleSearch = useCallback(
@@ -153,16 +141,17 @@ const Assessments = React.memo(({ user }) => {
   }, [navigate])
 
   // Handle edit existing assessment
-  const handleEdit = useCallback((assessment) => {
-    navigate('/business-dashboard/assessments/edit', {
-      state: {
-        editId: assessment.id,
-        initialData: assessment
-      }
-    })
-  }, [navigate])
-
-
+  const handleEdit = useCallback(
+    (assessment) => {
+      navigate('/business-dashboard/assessments/edit', {
+        state: {
+          editId: assessment.id,
+          initialData: assessment
+        }
+      })
+    },
+    [navigate]
+  )
 
   // Handle delete assessment
   const handleDelete = useCallback(
@@ -183,8 +172,6 @@ const Assessments = React.memo(({ user }) => {
     },
     [fetchAssessments]
   )
-
-
 
   // Truncate text for display
   const truncateText = (text, maxLength = 100) => {
@@ -285,8 +272,6 @@ const Assessments = React.memo(({ user }) => {
     }
   ]
 
-
-
   return (
     <>
       <div
@@ -308,8 +293,6 @@ const Assessments = React.memo(({ user }) => {
         <BusinessSidebar />
         <div className='ml-64 relative z-10'>
           <div className='p-6'>
-
-
             {/* Error Alert */}
             {error && (
               <Alert
@@ -380,8 +363,6 @@ const Assessments = React.memo(({ user }) => {
             </Spin>
           </div>
         </div>
-
-
       </div>
     </>
   )
