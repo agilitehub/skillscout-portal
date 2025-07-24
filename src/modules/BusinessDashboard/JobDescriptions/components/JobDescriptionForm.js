@@ -14,7 +14,6 @@ import {
   faTasks,
   faClipboardList,
   faGift,
-  faArrowLeft,
   faEdit
 } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../../core/context/ThemeContext'
@@ -128,10 +127,7 @@ const CreateJobDescription = React.memo(({ user }) => {
     }
   }, [])
 
-  // Handle navigation back to job descriptions list
-  const handleGoBack = useCallback(() => {
-    navigate('/business-dashboard/job-descriptions')
-  }, [navigate])
+
 
   // Handle form submission
   const handleFormSubmit = useCallback(
@@ -203,47 +199,32 @@ const CreateJobDescription = React.memo(({ user }) => {
 
       {/* Main Content */}
       <div className='p-6 ml-64 relative z-10'>
-        {/* Toolbar */}
-        <div
-          className={`rounded-lg mb-6 px-6 py-4 shadow-lg ${darkMode ? 'bg-gray-800 border border-gray-700' : ''}`}
-          style={{
-            background: darkMode
-              ? 'linear-gradient(135deg, #065f46 0%, #047857 50%, #059669 100%)'
-              : 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
-          }}
-        >
-          <div className='flex items-center justify-between'>
-            {/* Left Side - Back Button, Title and Description */}
+        <div className='max-w-7xl mx-auto'>
+          {/* Toolbar */}
+          <div
+            className={`rounded-lg mb-6 px-6 py-4 shadow-lg ${darkMode ? 'bg-gray-800 border border-gray-700' : ''}`}
+            style={{
+              background: darkMode
+                ? 'linear-gradient(135deg, #065f46 0%, #047857 50%, #059669 100%)'
+                : 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
+            }}
+          >
+          <div className='flex items-center'>
+            {/* Title and Description */}
             <div className='flex items-center'>
-              <Button
-                icon={<FontAwesomeIcon icon={faArrowLeft} />}
-                onClick={handleGoBack}
-                className={`mr-4 ${
-                  darkMode
-                    ? 'border-gray-500 text-gray-200 hover:bg-gray-700 hover:border-gray-400'
-                    : 'border-white/30 text-white hover:bg-white/10 hover:border-white/50'
-                }`}
-                style={{
-                  backgroundColor: darkMode ? '#4B5563' : 'rgba(255, 255, 255, 0.1)'
-                }}
-              >
-                Back
-              </Button>
-              <div className='flex items-center mr-6'>
-                <FontAwesomeIcon
-                  icon={isEditMode ? faEdit : faFileText}
-                  className={`text-lg mr-3 ${darkMode ? 'text-emerald-400' : 'text-white'}`}
-                />
-                <div>
-                  <h1 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-white'}`}>
-                    {isEditMode ? 'Edit Job Description' : 'Create New Job Description'}
-                  </h1>
-                  <p className={`text-sm mt-1 ${darkMode ? 'text-gray-300' : 'text-white/90'}`}>
-                    {isEditMode
-                      ? 'Update the job description details below'
-                      : 'Create a comprehensive job description to attract the right candidates'}
-                  </p>
-                </div>
+              <FontAwesomeIcon
+                icon={isEditMode ? faEdit : faFileText}
+                className={`text-lg mr-3 ${darkMode ? 'text-emerald-400' : 'text-white'}`}
+              />
+              <div>
+                <h1 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-white'}`}>
+                  {isEditMode ? 'Edit Job Description' : 'Create New Job Description'}
+                </h1>
+                <p className={`text-sm mt-1 ${darkMode ? 'text-gray-300' : 'text-white/90'}`}>
+                  {isEditMode
+                    ? 'Update the job description details below'
+                    : 'Create a comprehensive job description to attract the right candidates'}
+                </p>
               </div>
             </div>
           </div>
@@ -348,7 +329,7 @@ const CreateJobDescription = React.memo(({ user }) => {
         )}
 
         <Card
-          className={`max-w-7xl mx-auto shadow-xl ${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-200'}`}
+          className={`shadow-xl ${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-200'}`}
           style={{
             backgroundColor: darkMode ? '#374151' : '#ffffff',
             borderColor: darkMode ? '#4B5563' : '#e5e7eb'
@@ -725,7 +706,7 @@ const CreateJobDescription = React.memo(({ user }) => {
               >
                 <Button
                   icon={<FontAwesomeIcon icon={faTimes} />}
-                  onClick={handleGoBack}
+                  onClick={() => navigate('/business-dashboard/job-descriptions')}
                   size='large'
                   className={
                     darkMode
@@ -754,6 +735,7 @@ const CreateJobDescription = React.memo(({ user }) => {
             </Form>
           )}
         </Card>
+        </div>
       </div>
     </div>
   )
