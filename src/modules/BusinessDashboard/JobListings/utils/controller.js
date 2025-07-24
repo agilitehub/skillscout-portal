@@ -5,8 +5,8 @@ import { createClient } from '@supabase/supabase-js'
 import { transformToDatabase, transformFromDatabase, validateJobOpportunity } from './data-model'
 
 /**
- * Job Opportunities Controller
- * Handles all CRUD operations for job opportunities
+ * Job Listings Controller
+ * Handles all CRUD operations for job listings
  */
 
 // Initialize Supabase client
@@ -18,15 +18,15 @@ let supabase = null
 if (SUPABASE_URL && SUPABASE_ANON_KEY) {
   supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 } else {
-  console.error('Job Opportunities Controller: Supabase credentials not configured')
+  console.error('Job Listings Controller: Supabase credentials not configured')
   console.error('REACT_APP_SUPABASE_URL:', SUPABASE_URL ? 'Set' : 'Missing')
   console.error('REACT_APP_SUPABASE_ANON_KEY:', SUPABASE_ANON_KEY ? 'Set' : 'Missing')
 }
 
 /**
- * Get all job opportunities
+ * Get all job listings
  * @param {Object} filters - Optional filters for querying
- * @returns {Promise<Object>} Result with job opportunities data
+ * @returns {Promise<Object>} Result with job listings data
  */
 export const getAllJobOpportunities = async (filters = {}) => {
   try {
@@ -60,7 +60,7 @@ export const getAllJobOpportunities = async (filters = {}) => {
     const { data, error } = await query
 
     if (error) {
-      console.error('Job Opportunities Controller: Error fetching job opportunities:', error)
+              console.error('Job Listings Controller: Error fetching job listings:', error)
       return {
         success: false,
         error: error.message,
@@ -77,12 +77,12 @@ export const getAllJobOpportunities = async (filters = {}) => {
       error: null
     }
   } catch (error) {
-    console.error('Job Opportunities Controller: Unexpected error in getAllJobOpportunities:', error)
-    return {
-      success: false,
-      error: 'An unexpected error occurred while fetching job opportunities',
-      data: []
-    }
+          console.error('Job Listings Controller: Unexpected error in getAllJobOpportunities:', error)
+      return {
+        success: false,
+        error: 'An unexpected error occurred while fetching job listings',
+        data: []
+      }
   }
 }
 
@@ -108,7 +108,7 @@ export const getJobOpportunityById = async (id) => {
     const { data, error } = await supabase.from('job_opportunities').select('*').eq('id', id).single()
 
     if (error) {
-      console.error('Job Opportunities Controller: Error fetching job opportunity:', error)
+      console.error('Job Listings Controller: Error fetching job listing:', error)
       return {
         success: false,
         error: error.message,
@@ -124,10 +124,10 @@ export const getJobOpportunityById = async (id) => {
       error: null
     }
   } catch (error) {
-    console.error('Job Opportunities Controller: Unexpected error in getJobOpportunityById:', error)
+    console.error('Job Listings Controller: Unexpected error in getJobOpportunityById:', error)
     return {
       success: false,
-      error: 'An unexpected error occurred while fetching the job opportunity',
+      error: 'An unexpected error occurred while fetching the job listing',
       data: null
     }
   }
@@ -147,7 +147,7 @@ export const createJobOpportunity = async (jobData) => {
     // Validate the job data
     const validation = validateJobOpportunity(jobData)
     if (!validation.success) {
-      console.error('Job Opportunities Controller: Validation failed:', validation.errors)
+      console.error('Job Listings Controller: Validation failed:', validation.errors)
       return {
         success: false,
         error: validation.errors.join(', '),
@@ -161,7 +161,7 @@ export const createJobOpportunity = async (jobData) => {
     const { data, error } = await supabase.from('job_opportunities').insert([dbData]).select().single()
 
     if (error) {
-      console.error('Job Opportunities Controller: Error creating job opportunity:', error)
+      console.error('Job Listings Controller: Error creating job listing:', error)
       return {
         success: false,
         error: error.message,
@@ -177,10 +177,10 @@ export const createJobOpportunity = async (jobData) => {
       error: null
     }
   } catch (error) {
-    console.error('Job Opportunities Controller: Unexpected error in createJobOpportunity:', error)
+    console.error('Job Listings Controller: Unexpected error in createJobOpportunity:', error)
     return {
       success: false,
-      error: 'An unexpected error occurred while creating the job opportunity',
+      error: 'An unexpected error occurred while creating the job listing',
       data: null
     }
   }
@@ -201,7 +201,7 @@ export const updateJobOpportunity = async (id, jobData) => {
     if (!id) {
       return {
         success: false,
-        error: 'Job opportunity ID is required',
+        error: 'Job listing ID is required',
         data: null
       }
     }
@@ -209,7 +209,7 @@ export const updateJobOpportunity = async (id, jobData) => {
     // Validate the job data
     const validation = validateJobOpportunity(jobData)
     if (!validation.success) {
-      console.error('Job Opportunities Controller: Validation failed:', validation.errors)
+      console.error('Job Listings Controller: Validation failed:', validation.errors)
       return {
         success: false,
         error: validation.errors.join(', '),
@@ -223,7 +223,7 @@ export const updateJobOpportunity = async (id, jobData) => {
     const { data, error } = await supabase.from('job_opportunities').update(dbData).eq('id', id).select().single()
 
     if (error) {
-      console.error('Job Opportunities Controller: Error updating job opportunity:', error)
+      console.error('Job Listings Controller: Error updating job listing:', error)
       return {
         success: false,
         error: error.message,
@@ -239,7 +239,7 @@ export const updateJobOpportunity = async (id, jobData) => {
       error: null
     }
   } catch (error) {
-    console.error('Job Opportunities Controller: Unexpected error in updateJobOpportunity:', error)
+    console.error('Job Listings Controller: Unexpected error in updateJobOpportunity:', error)
     return {
       success: false,
       error: 'An unexpected error occurred while updating the job opportunity',
@@ -270,7 +270,7 @@ export const deleteJobOpportunity = async (id) => {
     const { error } = await supabase.from('job_opportunities').delete().eq('id', id)
 
     if (error) {
-      console.error('Job Opportunities Controller: Error deleting job opportunity:', error)
+      console.error('Job Listings Controller: Error deleting job listing:', error)
       return {
         success: false,
         error: error.message,
@@ -284,7 +284,7 @@ export const deleteJobOpportunity = async (id) => {
       data: { id }
     }
   } catch (error) {
-    console.error('Job Opportunities Controller: Unexpected error in deleteJobOpportunity:', error)
+    console.error('Job Listings Controller: Unexpected error in deleteJobOpportunity:', error)
     return {
       success: false,
       error: 'An unexpected error occurred while deleting the job opportunity',
@@ -324,7 +324,7 @@ export const updateJobOpportunityStatus = async (id, status) => {
     const { data, error } = await supabase.from('job_opportunities').update({ status }).eq('id', id).select().single()
 
     if (error) {
-      console.error('Job Opportunities Controller: Error updating job opportunity status:', error)
+      console.error('Job Listings Controller: Error updating job listing status:', error)
       return {
         success: false,
         error: error.message,
@@ -340,7 +340,7 @@ export const updateJobOpportunityStatus = async (id, status) => {
       error: null
     }
   } catch (error) {
-    console.error('Job Opportunities Controller: Unexpected error in updateJobOpportunityStatus:', error)
+    console.error('Job Listings Controller: Unexpected error in updateJobOpportunityStatus:', error)
     return {
       success: false,
       error: 'An unexpected error occurred while updating the job opportunity status',
@@ -350,7 +350,7 @@ export const updateJobOpportunityStatus = async (id, status) => {
 }
 
 /**
- * Get job opportunities statistics
+ * Get job listings statistics
  * @param {Object} filters - Optional filters for statistics
  * @returns {Promise<Object>} Result with statistics data
  */
@@ -370,7 +370,7 @@ export const getJobOpportunitiesStats = async (filters = {}) => {
     const { data, error } = await query
 
     if (error) {
-      console.error('Error fetching job opportunities statistics:', error)
+              console.error('Error fetching job listings statistics:', error)
       return {
         success: false,
         error: error.message,
@@ -415,10 +415,10 @@ export const getJobOpportunitiesStats = async (filters = {}) => {
 }
 
 /**
- * Search job opportunities
+ * Search job listings
  * @param {string} searchTerm - Search term
  * @param {Object} filters - Optional filters
- * @returns {Promise<Object>} Result with filtered job opportunities
+ * @returns {Promise<Object>} Result with filtered job listings
  */
 export const searchJobOpportunities = async (searchTerm, filters = {}) => {
   try {
@@ -451,7 +451,7 @@ export const searchJobOpportunities = async (searchTerm, filters = {}) => {
     const { data, error } = await query
 
     if (error) {
-      console.error('Error searching job opportunities:', error)
+              console.error('Error searching job listings:', error)
       return {
         success: false,
         error: error.message,
@@ -471,7 +471,7 @@ export const searchJobOpportunities = async (searchTerm, filters = {}) => {
     console.error('Unexpected error in searchJobOpportunities:', error)
     return {
       success: false,
-      error: 'An unexpected error occurred while searching job opportunities',
+      error: 'An unexpected error occurred while searching job listings',
       data: []
     }
   }
@@ -548,7 +548,7 @@ export const getJobDescriptionsForSelection = async () => {
       .order('title', { ascending: true })
 
     if (error) {
-      console.error('Job Opportunities Controller: Error fetching job descriptions:', error)
+      console.error('Job Listings Controller: Error fetching job descriptions:', error)
       return {
         success: false,
         error: error.message,
@@ -562,7 +562,7 @@ export const getJobDescriptionsForSelection = async () => {
       error: null
     }
   } catch (error) {
-    console.error('Job Opportunities Controller: Unexpected error in getJobDescriptionsForSelection:', error)
+    console.error('Job Listings Controller: Unexpected error in getJobDescriptionsForSelection:', error)
     return {
       success: false,
       error: 'An unexpected error occurred while fetching job descriptions',
@@ -589,7 +589,7 @@ export const getAssessmentsForSelection = async () => {
       .order('title', { ascending: true })
 
     if (error) {
-      console.error('Job Opportunities Controller: Error fetching assessments:', error)
+      console.error('Job Listings Controller: Error fetching assessments:', error)
       return {
         success: false,
         error: error.message,
@@ -603,7 +603,7 @@ export const getAssessmentsForSelection = async () => {
       error: null
     }
   } catch (error) {
-    console.error('Job Opportunities Controller: Unexpected error in getAssessmentsForSelection:', error)
+    console.error('Job Listings Controller: Unexpected error in getAssessmentsForSelection:', error)
     return {
       success: false,
       error: 'An unexpected error occurred while fetching assessments',

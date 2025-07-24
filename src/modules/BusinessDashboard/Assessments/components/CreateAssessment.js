@@ -211,6 +211,18 @@ const CreateAssessment = React.memo(({ user }) => {
                 color: #F9FAFB !important;
               }
               
+              /* Tags Remove Icons */
+              body .dark-form .ant-select-selection-item-remove,
+              .dark-form .ant-select-selection-item-remove {
+                color: #9CA3AF !important;
+              }
+              
+              body .dark-form .ant-select-selection-item-remove:hover,
+              .dark-form .ant-select-selection-item-remove:hover {
+                color: #F9FAFB !important;
+                background-color: rgba(239, 68, 68, 0.2) !important;
+              }
+              
               /* Global Dropdown Styling */
               .ant-select-dropdown {
                 background-color: #374151 !important;

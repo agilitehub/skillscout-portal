@@ -2,7 +2,7 @@
 // Frontend Instructions Rule Applied!
 
 /**
- * Data Model for Job Opportunities
+ * Data Model for Job Listings
  * Provides validation, transformation, and mapping functions
  * Updated to match complete Supabase schema
  */
