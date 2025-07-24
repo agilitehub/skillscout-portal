@@ -12,6 +12,7 @@ import JobOpportunityForm from './modules/BusinessDashboard/JobListings/componen
 import Lookups from './modules/BusinessDashboard/Lookups/components'
 import LookupForm from './modules/BusinessDashboard/Lookups/components/LookupForm'
 import Pipeline from './modules/BusinessDashboard/Pipeline/components'
+import CandidateForm from './modules/BusinessDashboard/Pipeline/components/CandidateForm'
 import Header from './core/components/layout/Header'
 import { useAuth } from './core/context/AuthContext'
 import { useTheme } from './core/context/ThemeContext'
@@ -275,6 +276,32 @@ const AppRoutes = () => {
           user ? (
             <DashboardLayout user={user}>
               <Pipeline user={user} />
+            </DashboardLayout>
+          ) : (
+            <Navigate to='/' replace state={{ from: location }} />
+          )
+        }
+      />
+
+      <Route
+        path='/business-dashboard/candidates/create'
+        element={
+          user ? (
+            <DashboardLayout user={user}>
+              <CandidateForm user={user} />
+            </DashboardLayout>
+          ) : (
+            <Navigate to='/' replace state={{ from: location }} />
+          )
+        }
+      />
+
+      <Route
+        path='/business-dashboard/candidates/edit'
+        element={
+          user ? (
+            <DashboardLayout user={user}>
+              <CandidateForm user={user} />
             </DashboardLayout>
           ) : (
             <Navigate to='/' replace state={{ from: location }} />

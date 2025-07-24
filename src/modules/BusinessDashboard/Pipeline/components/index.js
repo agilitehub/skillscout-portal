@@ -1,7 +1,8 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
 import React, { useState, useCallback, useMemo } from 'react'
-import { Form, message } from 'antd'
+import { useNavigate } from 'react-router-dom'
+import { message } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { DndProvider } from 'react-dnd'
@@ -10,7 +11,6 @@ import { useTheme } from '../../../../core/context/ThemeContext'
 import { Button } from '../../../../core/components'
 import BusinessSidebar from '../../components/BusinessSidebar'
 import KanbanBoard from './KanbanBoard'
-import CandidateModal from './CandidateModal'
 
 /**
  * Pipeline Management Page
@@ -18,11 +18,9 @@ import CandidateModal from './CandidateModal'
  */
 const Pipeline = React.memo(({ user }) => {
   const { darkMode } = useTheme()
-  const [form] = Form.useForm()
+  const navigate = useNavigate()
 
   // State management
-  const [isModalVisible, setIsModalVisible] = useState(false)
-  const [editingCandidate, setEditingCandidate] = useState(null)
   const [draggedCandidate, setDraggedCandidate] = useState(null)
   const [lastDroppedCard, setLastDroppedCard] = useState(null)
 
@@ -184,70 +182,23 @@ const Pipeline = React.memo(({ user }) => {
 
   // Handle add new candidate
   const handleAdd = useCallback(() => {
-    setIsModalVisible(true)
-    setEditingCandidate(null)
-    form.resetFields()
-  }, [form])
+    navigate('/business-dashboard/candidates/create')
+  }, [navigate])
 
   // Handle edit candidate
   const handleEdit = useCallback(
     (candidate) => {
-      setEditingCandidate(candidate)
-      setIsModalVisible(true)
-      form.setFieldsValue({
-        name: candidate.name,
-        position: candidate.position,
-        email: candidate.email,
-        phone: candidate.phone,
-        priority: candidate.priority,
-        tags: candidate.tags || [],
-        notes: candidate.notes
+      navigate('/business-dashboard/candidates/edit', {
+        state: {
+          editId: candidate.id,
+          initialData: candidate
+        }
       })
     },
-    [form]
+    [navigate]
   )
 
-  // Handle form submission
-  const handleSubmit = useCallback(
-    async (values) => {
-      try {
-        const newCandidate = {
-          ...values,
-          id: editingCandidate ? editingCandidate.id : Date.now(),
-          appliedDate: editingCandidate ? editingCandidate.appliedDate : new Date().toISOString().split('T')[0]
-        }
 
-        setPipelineData((prev) => {
-          const newData = { ...prev }
-
-          if (editingCandidate) {
-            // Find and update existing candidate
-            for (const stageKey in newData) {
-              const stageIndex = newData[stageKey].findIndex((c) => c.id === editingCandidate.id)
-              if (stageIndex !== -1) {
-                newData[stageKey][stageIndex] = newCandidate
-                break
-              }
-            }
-          } else {
-            // Add new candidate to "application-received" stage
-            newData['application-received'] = [...newData['application-received'], newCandidate]
-          }
-
-          return newData
-        })
-
-        message.success(`${editingCandidate ? 'Updated' : 'Added'} candidate successfully`)
-        setIsModalVisible(false)
-        setEditingCandidate(null)
-        form.resetFields()
-      } catch (error) {
-        console.error('Error saving candidate:', error)
-        message.error('Failed to save candidate')
-      }
-    },
-    [editingCandidate, form]
-  )
 
   // Handle candidate actions (non-drag actions)
   const handleCandidateAction = useCallback(
@@ -381,18 +332,18 @@ const Pipeline = React.memo(({ user }) => {
         <div className='flex-1 ml-64 relative'>
           {/* Header */}
           <div
-            className={`relative px-8 py-4 border-b flex-shrink-0 ${
+            className={`relative px-8 py-4 border-b flex-shrink-0 shadow-lg ${
               darkMode
-                ? 'border-gray-700/50 bg-gray-800/30 backdrop-blur-sm'
-                : 'border-gray-200/50 bg-white/30 backdrop-blur-sm'
+                ? 'bg-gradient-to-r from-emerald-700 to-emerald-600 border border-emerald-600'
+                : 'bg-gradient-to-r from-emerald-500 to-emerald-600'
             }`}
           >
             <div className='flex items-center justify-between'>
               <div className='flex items-center space-x-4'>
                 <div className='flex items-center space-x-3'>
                   <div>
-                    <h1 className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Pipeline</h1>
-                    <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                    <h1 className='text-2xl font-bold text-white'>Pipeline</h1>
+                    <p className='text-sm text-emerald-100'>
                       Manage your recruitment pipeline - drag candidates between stages
                     </p>
                   </div>
@@ -402,7 +353,16 @@ const Pipeline = React.memo(({ user }) => {
                 type='primary'
                 icon={<FontAwesomeIcon icon={faPlus} />}
                 onClick={handleAdd}
-                className='bg-emerald-600 hover:bg-emerald-700 border-emerald-600'
+                className={`shadow-md hover:shadow-lg transition-all duration-200 ${
+                  darkMode
+                    ? 'bg-white text-emerald-600 hover:bg-emerald-50 border-white'
+                    : 'bg-white text-emerald-600 hover:bg-emerald-50 border-white'
+                }`}
+                style={{
+                  backgroundColor: 'white',
+                  color: '#059669',
+                  borderColor: 'white'
+                }}
               >
                 Add Candidate
               </Button>
@@ -426,19 +386,7 @@ const Pipeline = React.memo(({ user }) => {
           </div>
         </div>
 
-        {/* Add/Edit Candidate Modal */}
-        <CandidateModal
-          visible={isModalVisible}
-          onCancel={() => {
-            setIsModalVisible(false)
-            setEditingCandidate(null)
-            form.resetFields()
-          }}
-          onSubmit={handleSubmit}
-          form={form}
-          editingCandidate={editingCandidate}
-          darkMode={darkMode}
-        />
+
       </div>
     </DndProvider>
   )
