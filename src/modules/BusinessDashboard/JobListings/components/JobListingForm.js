@@ -128,7 +128,7 @@ const CreateJobListing = React.memo(({ user }) => {
               }
               .dark-form .ant-input::placeholder,
               .dark-form input::placeholder {
-                color: #9CA3AF !important;
+                color: #D1D5DB !important;
               }
               .dark-form textarea.ant-input,
               .dark-form textarea {
@@ -145,7 +145,7 @@ const CreateJobListing = React.memo(({ user }) => {
               }
               .dark-form textarea.ant-input::placeholder,
               .dark-form textarea::placeholder {
-                color: #9CA3AF !important;
+                color: #D1D5DB !important;
               }
               .dark-form .ant-input-show-count-suffix {
                 color: #9CA3AF !important;
@@ -164,7 +164,7 @@ const CreateJobListing = React.memo(({ user }) => {
                 background-color: #4B5563 !important;
               }
               .dark-form .ant-select-selection-placeholder {
-                color: #9CA3AF !important;
+                color: #D1D5DB !important;
               }
               .dark-form .ant-select-selection-item {
                 color: #F9FAFB !important;
