@@ -280,6 +280,32 @@ const TableView = React.memo(
             .dark-pagination .ant-pagination-total-text {
               color: #ffffff !important;
             }
+            .dark-table .ant-table-filter-trigger {
+              color: #9ca3af !important;
+            }
+            .dark-table .ant-table-filter-trigger:hover {
+              color: #ffffff !important;
+            }
+            .dark-table .ant-table-filter-trigger-container {
+              background-color: transparent !important;
+            }
+            .dark-table .ant-table-filter-icon {
+              color: #9ca3af !important;
+            }
+            .dark-table .ant-table-column-sorter {
+              color: #9ca3af !important;
+            }
+            .dark-table .ant-table-column-sorter:hover {
+              color: #ffffff !important;
+            }
+            .dark-table .ant-table-column-sorter-up,
+            .dark-table .ant-table-column-sorter-down {
+              color: #9ca3af !important;
+            }
+            .dark-table .ant-table-column-sorter-up:hover,
+            .dark-table .ant-table-column-sorter-down:hover {
+              color: #ffffff !important;
+            }
           `}</style>
         )}
 

@@ -22,10 +22,10 @@ import TableView from '../../../../core/components/view-components/table-view/Ta
 import TableActions from '../../../../core/components/view-components/table-view/TableActions'
 
 /**
- * Business Dashboard component for Recruiters and Employers
+ * Job Listings component for Recruiters and Employers
  * Manages job listings, applications, and recruitment activities
  */
-const BusinessDashboard = React.memo(({ user }) => {
+const JobListings = React.memo(({ user }) => {
   const { darkMode } = useTheme()
   const navigate = useNavigate()
 
@@ -138,7 +138,11 @@ const BusinessDashboard = React.memo(({ user }) => {
         key: 'location',
         render: (location) => (
           <div className='flex items-center'>
-            <FontAwesomeIcon icon={faMapMarkerAlt} className='mr-1 text-gray-400' />
+            <FontAwesomeIcon 
+              icon={faMapMarkerAlt} 
+              className={`mr-1 ${darkMode ? 'text-white' : 'text-gray-500'}`}
+              style={{ color: darkMode ? '#ffffff' : '#6b7280' }}
+            />
             {location}
           </div>
         ),
@@ -188,7 +192,11 @@ const BusinessDashboard = React.memo(({ user }) => {
         key: 'salary',
         render: (salary) => (
           <div className='flex items-center'>
-            <FontAwesomeIcon icon={faDollarSign} className='mr-1 text-green-500' />
+            <FontAwesomeIcon 
+              icon={faDollarSign} 
+              className={`mr-1 ${darkMode ? 'text-green-300' : 'text-green-500'}`}
+              style={{ color: darkMode ? '#86efac' : '#10b981' }}
+            />
             {salary}
           </div>
         )
@@ -222,7 +230,11 @@ const BusinessDashboard = React.memo(({ user }) => {
         key: 'applicants',
         render: (count) => (
           <div className='flex items-center'>
-            <FontAwesomeIcon icon={faUsers} className='mr-1 text-blue-500' />
+            <FontAwesomeIcon 
+              icon={faUsers} 
+              className={`mr-1 ${darkMode ? 'text-blue-300' : 'text-blue-500'}`}
+              style={{ color: darkMode ? '#93c5fd' : '#3b82f6' }}
+            />
             {count}
           </div>
         ),
@@ -235,7 +247,11 @@ const BusinessDashboard = React.memo(({ user }) => {
         render: (date) => {
           return (
             <div className='flex items-center'>
-              <FontAwesomeIcon icon={faCalendarAlt} className='mr-1 text-gray-400' />
+              <FontAwesomeIcon 
+                icon={faCalendarAlt} 
+                className={`mr-1 ${darkMode ? 'text-white' : 'text-gray-500'}`}
+                style={{ color: darkMode ? '#ffffff' : '#6b7280' }}
+              />
               {date ? new Date(date).toLocaleDateString() : 'Not set'}
             </div>
           )
@@ -271,7 +287,7 @@ const BusinessDashboard = React.memo(({ user }) => {
         )
       }
     ],
-    [handleEditJob, handleDeleteJob, handleStatusChange]
+    [handleEditJob, handleDeleteJob, handleStatusChange, darkMode]
   )
 
   // Statistics calculations
@@ -308,11 +324,23 @@ const BusinessDashboard = React.memo(({ user }) => {
       <BusinessSidebar />
       <div className='ml-64 p-4 md:p-6 relative z-10'>
         {/* Header */}
-        <div className='mb-6'>
+        <div
+          className={`mb-6 px-8 py-6 rounded-lg shadow-lg border ${
+            darkMode
+              ? 'bg-gradient-to-r from-emerald-700 via-emerald-600 to-emerald-600 border-emerald-600'
+              : 'bg-gradient-to-r from-emerald-500 via-emerald-600 to-emerald-600 border-emerald-500'
+          }`}
+          style={{
+            background: darkMode 
+              ? 'linear-gradient(to right, #047857, #059669, #059669)'
+              : 'linear-gradient(to right, #10b981, #059669, #059669)',
+            borderColor: darkMode ? '#059669' : '#10b981'
+          }}
+        >
           <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4'>
             <div>
-              <h1 className='text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2'>Business Dashboard</h1>
-              <p className='text-gray-600 dark:text-gray-300'>Manage your job listings and recruitment activities</p>
+              <h1 className='text-2xl md:text-3xl font-bold text-white mb-2'>Job Listings</h1>
+              <p className='text-emerald-100'>Manage your job listings and recruitment activities</p>
             </div>
             <div className='flex flex-col sm:flex-row gap-3 mt-4 sm:mt-0'>
               <Button
@@ -320,9 +348,15 @@ const BusinessDashboard = React.memo(({ user }) => {
                 size='large'
                 icon={<FontAwesomeIcon icon={faPlus} />}
                 onClick={handleCreateJobOpportunity}
+                className={`shadow-md hover:shadow-lg transition-all duration-200 ${
+                  darkMode
+                    ? 'bg-white text-emerald-600 hover:bg-emerald-50 border-white'
+                    : 'bg-white text-emerald-600 hover:bg-emerald-50 border-white'
+                }`}
                 style={{
-                  background: darkMode ? '#059669' : '#10b981',
-                  borderColor: darkMode ? '#059669' : '#10b981'
+                  backgroundColor: 'white',
+                  color: '#059669',
+                  borderColor: 'white'
                 }}
               >
                 Create Job Listing
@@ -336,7 +370,7 @@ const BusinessDashboard = React.memo(({ user }) => {
               <Statistic
                 title={<span className={darkMode ? 'text-gray-300' : 'text-gray-600'}>Total Jobs</span>}
                 value={stats.totalJobs}
-                prefix={<FontAwesomeIcon icon={faBriefcase} className='text-blue-500' />}
+                prefix={<FontAwesomeIcon icon={faBriefcase} className={darkMode ? 'text-blue-300' : 'text-blue-500'} style={{ color: darkMode ? '#93c5fd' : '#3b82f6' }} />}
                 valueStyle={{ color: darkMode ? '#ffffff' : '#1f2937' }}
               />
             </Card>
@@ -344,7 +378,7 @@ const BusinessDashboard = React.memo(({ user }) => {
               <Statistic
                 title={<span className={darkMode ? 'text-gray-300' : 'text-gray-600'}>Active Jobs</span>}
                 value={stats.activeJobs}
-                prefix={<FontAwesomeIcon icon={faBriefcase} className='text-green-500' />}
+                prefix={<FontAwesomeIcon icon={faBriefcase} className={darkMode ? 'text-green-300' : 'text-green-500'} style={{ color: darkMode ? '#86efac' : '#10b981' }} />}
                 valueStyle={{ color: darkMode ? '#ffffff' : '#1f2937' }}
               />
             </Card>
@@ -352,7 +386,7 @@ const BusinessDashboard = React.memo(({ user }) => {
               <Statistic
                 title={<span className={darkMode ? 'text-gray-300' : 'text-gray-600'}>Total Applicants</span>}
                 value={stats.totalApplicants}
-                prefix={<FontAwesomeIcon icon={faUsers} className='text-purple-500' />}
+                prefix={<FontAwesomeIcon icon={faUsers} className={darkMode ? 'text-purple-300' : 'text-purple-500'} style={{ color: darkMode ? '#c4b5fd' : '#8b5cf6' }} />}
                 valueStyle={{ color: darkMode ? '#ffffff' : '#1f2937' }}
               />
             </Card>
@@ -360,7 +394,7 @@ const BusinessDashboard = React.memo(({ user }) => {
               <Statistic
                 title={<span className={darkMode ? 'text-gray-300' : 'text-gray-600'}>Avg Applicants</span>}
                 value={stats.avgApplicants}
-                prefix={<FontAwesomeIcon icon={faUsers} className='text-orange-500' />}
+                prefix={<FontAwesomeIcon icon={faUsers} className={darkMode ? 'text-orange-300' : 'text-orange-500'} style={{ color: darkMode ? '#fdba74' : '#f97316' }} />}
                 valueStyle={{ color: darkMode ? '#ffffff' : '#1f2937' }}
               />
             </Card>
@@ -393,6 +427,6 @@ const BusinessDashboard = React.memo(({ user }) => {
   )
 })
 
-BusinessDashboard.displayName = 'BusinessDashboard'
+JobListings.displayName = 'JobListings'
 
-export default BusinessDashboard
+export default JobListings
