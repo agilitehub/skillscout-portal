@@ -1,8 +1,8 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
 
-import React, { useState, useCallback } from 'react'
-import { Card, Form, message, Row, Col, Input } from 'antd'
+import React, { useState, useCallback, useEffect } from 'react'
+import { Card, Form, message, Row, Col, Input, Select } from 'antd'
 import { Button } from '../../../../core/components'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -10,6 +10,8 @@ import { faSave, faTimes } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../../core/context/ThemeContext'
 import BusinessSidebar from '../../components/BusinessSidebar'
 import { createJobListing } from '../utils/listing-controller'
+import { getJobDescriptionsForSelection } from '../utils/controller'
+import JobDescriptionPreview from './JobDescriptionPreview'
 
 const { TextArea } = Input
 
@@ -21,6 +23,9 @@ const CreateJobListing = React.memo(({ user }) => {
   const navigate = useNavigate()
   const [form] = Form.useForm()
   const [loading, setLoading] = useState(false)
+  const [jobDescriptions, setJobDescriptions] = useState([])
+  const [loadingJobDescriptions, setLoadingJobDescriptions] = useState(false)
+  const [selectedJobDescriptionId, setSelectedJobDescriptionId] = useState(null)
   const state = useLocation().state
 
   const handleFormSubmit = useCallback(
@@ -44,6 +49,34 @@ const CreateJobListing = React.memo(({ user }) => {
     navigate('/business-dashboard')
   }, [navigate])
 
+  // Load job descriptions on component mount
+  useEffect(() => {
+    const loadJobDescriptions = async () => {
+      try {
+        setLoadingJobDescriptions(true)
+        const result = await getJobDescriptionsForSelection()
+        if (result.success) {
+          setJobDescriptions(result.data)
+        } else {
+          console.error('Error loading job descriptions:', result.error)
+          message.error('Failed to load job descriptions')
+        }
+      } catch (error) {
+        console.error('Error loading job descriptions:', error)
+        message.error('Failed to load job descriptions')
+      } finally {
+        setLoadingJobDescriptions(false)
+      }
+    }
+
+    loadJobDescriptions()
+  }, [])
+
+  // Handle job description selection
+  const handleJobDescriptionChange = useCallback((value) => {
+    setSelectedJobDescriptionId(value)
+  }, [])
+
   return (
     <div className='flex h-screen bg-gray-100'>
       <BusinessSidebar />
@@ -51,9 +84,7 @@ const CreateJobListing = React.memo(({ user }) => {
         {/* Header */}
         <div
           className={`sticky top-0 z-10 border-b px-6 py-4 ml-64 ${
-            darkMode 
-              ? 'bg-gray-700 border-gray-600 shadow-lg' 
-              : 'bg-white border-gray-200 shadow-sm'
+            darkMode ? 'bg-gray-700 border-gray-600 shadow-lg' : 'bg-white border-gray-200 shadow-sm'
           }`}
           style={{
             backgroundColor: darkMode ? '#374151' : '#ffffff',
@@ -163,6 +194,15 @@ const CreateJobListing = React.memo(({ user }) => {
                 color: #F9FAFB !important;
               }
               
+              /* Job Description Preview Card Styling */
+              .dark-form .job-description-preview {
+                background-color: #374151 !important;
+                border-color: #4B5563 !important;
+              }
+              .dark-form .job-description-preview .ant-card-body {
+                background-color: #374151 !important;
+              }
+              
               /* Dropdown Options */
               .ant-select-dropdown {
                 background-color: #374151 !important;
@@ -243,6 +283,31 @@ const CreateJobListing = React.memo(({ user }) => {
               className={`${darkMode ? 'dark-form' : ''}`}
               initialValues={state?.jobData}
             >
+              {/* Job Description Selection */}
+              <Form.Item
+                label='Job Description'
+                name='jobDescriptionId'
+                rules={[{ required: true, message: 'Please select a job description' }]}
+              >
+                <Select
+                  placeholder='Select a job description'
+                  loading={loadingJobDescriptions}
+                  showSearch
+                  filterOption={(input, option) => option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                  onChange={handleJobDescriptionChange}
+                  style={{ fontWeight: '500' }}
+                >
+                  {jobDescriptions.map((jobDesc) => (
+                    <Select.Option key={jobDesc.id} value={jobDesc.id}>
+                      {jobDesc.title}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+
+              {/* Job Description Preview */}
+              <JobDescriptionPreview jobDescriptionId={selectedJobDescriptionId} visible={!!selectedJobDescriptionId} />
+
               {/* Job Title and Source */}
               <Row gutter={24}>
                 <Col span={16}>

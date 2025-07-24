@@ -17,6 +17,7 @@ import {
   getAssessmentsForSelection
 } from '../utils/controller'
 import { getDefaultJobOpportunityData, getDropdownOptions } from '../utils/data-model'
+import JobDescriptionPreview from './JobDescriptionPreview'
 
 const { TextArea } = Input
 const { Option } = Select
@@ -35,13 +36,19 @@ const JobOpportunityForm = React.memo(() => {
   const [jobDescriptions, setJobDescriptions] = useState([])
   const [assessments, setAssessments] = useState([])
   const [loadingOptions, setLoadingOptions] = useState(false)
+  const [selectedJobDescriptionId, setSelectedJobDescriptionId] = useState(null)
 
   // Get edit data from navigation state
   const editId = location.state?.editId || null
   const initialData = location.state?.initialData || null
   const isEditMode = Boolean(editId)
-  
+
   const dropdownOptions = useMemo(() => getDropdownOptions(), [])
+
+  // Handle job description selection change
+  const handleJobDescriptionChange = useCallback((value) => {
+    setSelectedJobDescriptionId(value)
+  }, [])
 
   // Load job descriptions and assessments for dropdowns
   useEffect(() => {
@@ -105,6 +112,10 @@ const JobOpportunityForm = React.memo(() => {
           // Use setTimeout to ensure form is fully rendered
           setTimeout(() => {
             form.setFieldsValue(processedData)
+            // Set selected job description for preview
+            if (initialData.jobDescription) {
+              setSelectedJobDescriptionId(initialData.jobDescription)
+            }
           }, 0)
         } else if (editId) {
           // Fallback: fetch if somehow we don't have the data
@@ -116,6 +127,10 @@ const JobOpportunityForm = React.memo(() => {
                 ...result.data
               }
               form.setFieldsValue(processedData)
+              // Set selected job description for preview
+              if (result.data.jobDescription) {
+                setSelectedJobDescriptionId(result.data.jobDescription)
+              }
             } else {
               message.error('Failed to load job listing data: ' + result.error)
               navigate('/business-dashboard')
@@ -195,8 +210,6 @@ const JobOpportunityForm = React.memo(() => {
 
       <BusinessSidebar />
       <div className='ml-64 p-4 md:p-6 relative z-10'>
-
-
         {/* Header */}
         <div
           className={`rounded-lg mb-6 px-6 py-4 shadow-lg ${
@@ -211,9 +224,7 @@ const JobOpportunityForm = React.memo(() => {
               className={`text-lg mr-3 ${darkMode ? 'text-emerald-100' : 'text-white'}`}
             />
             <div>
-              <h1 className='text-xl font-bold text-white'>
-                {isEditMode ? 'Edit Job Listing' : 'Create Job Listing'}
-              </h1>
+              <h1 className='text-xl font-bold text-white'>{isEditMode ? 'Edit Job Listing' : 'Create Job Listing'}</h1>
               <p className={`text-sm mt-1 ${darkMode ? 'text-gray-300' : 'text-white/90'}`}>
                 {isEditMode ? 'Update your job listing details' : 'Create a new job listing for your organization'}
               </p>
@@ -457,6 +468,7 @@ const JobOpportunityForm = React.memo(() => {
                       loading={loadingOptions}
                       showSearch
                       filterOption={(input, option) => option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                      onChange={handleJobDescriptionChange}
                     >
                       {jobDescriptions.map((jobDesc) => (
                         <Option key={jobDesc.id} value={jobDesc.id}>
@@ -488,6 +500,9 @@ const JobOpportunityForm = React.memo(() => {
                   </Form.Item>
                 </Col>
               </Row>
+
+              {/* Job Description Preview */}
+              <JobDescriptionPreview jobDescriptionId={selectedJobDescriptionId} visible={!!selectedJobDescriptionId} />
 
               <Form.Item
                 label='Overview'
