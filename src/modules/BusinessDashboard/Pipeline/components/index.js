@@ -1,10 +1,9 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
 import React, { useState, useCallback, useMemo } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { Form, message } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faColumns, faArrowLeft, faPlus } from '@fortawesome/free-solid-svg-icons'
+import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import { useTheme } from '../../../../core/context/ThemeContext'
@@ -19,7 +18,6 @@ import CandidateModal from './CandidateModal'
  */
 const Pipeline = React.memo(({ user }) => {
   const { darkMode } = useTheme()
-  const navigate = useNavigate()
   const [form] = Form.useForm()
 
   // State management
