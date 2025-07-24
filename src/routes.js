@@ -7,6 +7,7 @@ import JobDescriptions from './modules/BusinessDashboard/JobDescriptions/compone
 import JobDescriptionForm from './modules/BusinessDashboard/JobDescriptions/components/JobDescriptionForm'
 import Assessments from './modules/BusinessDashboard/Assessments/components'
 import CreateAssessment from './modules/BusinessDashboard/Assessments/components/CreateAssessment'
+import AssessmentForm from './modules/BusinessDashboard/Assessments/components/AssessmentForm'
 import JobOpportunityForm from './modules/BusinessDashboard/JobListings/components/JobOpportunityForm'
 import Lookups from './modules/BusinessDashboard/Lookups/components'
 import LookupForm from './modules/BusinessDashboard/Lookups/components/LookupForm'
@@ -178,6 +179,19 @@ const AppRoutes = () => {
           user ? (
             <DashboardLayout user={user}>
               <CreateAssessment user={user} />
+            </DashboardLayout>
+          ) : (
+            <Navigate to='/' replace state={{ from: location }} />
+          )
+        }
+      />
+
+      <Route
+        path='/business-dashboard/assessments/edit'
+        element={
+          user ? (
+            <DashboardLayout user={user}>
+              <AssessmentForm user={user} />
             </DashboardLayout>
           ) : (
             <Navigate to='/' replace state={{ from: location }} />
