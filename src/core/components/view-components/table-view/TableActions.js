@@ -121,7 +121,14 @@ const TableActions = React.memo(({ record, actions = [], size = 'small', wrap = 
           <Popconfirm
             title={config.confirm.title}
             description={config.confirm.description}
-            onConfirm={() => config.onClick(record)}
+            onConfirm={() => {
+              // Use onConfirm if provided, otherwise fall back to onClick
+              if (config.confirm.onConfirm) {
+                config.confirm.onConfirm(record)
+              } else {
+                config.onClick(record)
+              }
+            }}
             okText={config.confirm.okText}
             cancelText={config.confirm.cancelText}
             okType={config.confirm.okType}
