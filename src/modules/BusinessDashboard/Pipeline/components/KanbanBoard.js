@@ -93,30 +93,30 @@ const StageColumn = React.memo(
 
     const getStageColor = (color) => {
       const colors = {
+        teal: 'bg-teal-100 text-teal-800 border-teal-200',
+        emerald: 'bg-emerald-100 text-emerald-800 border-emerald-200',
+        'emerald-light': 'bg-emerald-50 text-emerald-700 border-emerald-150',
+        'emerald-success': 'bg-green-100 text-green-800 border-green-200',
         blue: 'bg-blue-100 text-blue-800 border-blue-200',
-        orange: 'bg-orange-100 text-orange-800 border-orange-200',
-        indigo: 'bg-indigo-100 text-indigo-800 border-indigo-200',
-        purple: 'bg-purple-100 text-purple-800 border-purple-200',
-        cyan: 'bg-cyan-100 text-cyan-800 border-cyan-200',
-        gold: 'bg-yellow-100 text-yellow-800 border-yellow-200',
+        'blue-light': 'bg-sky-100 text-sky-800 border-sky-200',
         green: 'bg-green-100 text-green-800 border-green-200',
         red: 'bg-red-100 text-red-800 border-red-200'
       }
-      return colors[color] || colors.blue
+      return colors[color] || colors.emerald
     }
 
     const getStageDarkColor = (color) => {
       const colors = {
+        teal: 'bg-teal-900 text-teal-200 border-teal-700',
+        emerald: 'bg-emerald-900 text-emerald-200 border-emerald-700',
+        'emerald-light': 'bg-emerald-800 text-emerald-100 border-emerald-600',
+        'emerald-success': 'bg-green-900 text-green-200 border-green-700',
         blue: 'bg-blue-900 text-blue-200 border-blue-700',
-        orange: 'bg-orange-900 text-orange-200 border-orange-700',
-        indigo: 'bg-indigo-900 text-indigo-200 border-indigo-700',
-        purple: 'bg-purple-900 text-purple-200 border-purple-700',
-        cyan: 'bg-cyan-900 text-cyan-200 border-cyan-700',
-        gold: 'bg-yellow-900 text-yellow-200 border-yellow-700',
+        'blue-light': 'bg-sky-900 text-sky-200 border-sky-700',
         green: 'bg-green-900 text-green-200 border-green-700',
         red: 'bg-red-900 text-red-200 border-red-700'
       }
-      return colors[color] || colors.blue
+      return colors[color] || colors.emerald
     }
 
     return (

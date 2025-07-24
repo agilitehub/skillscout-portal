@@ -125,37 +125,37 @@ const Pipeline = React.memo(({ user }) => {
       {
         key: 'application-received',
         title: 'Application Received',
-        color: 'blue',
+        color: 'teal',
         count: pipelineData['application-received'].length
       },
       {
         key: 'screening',
         title: 'Screening',
-        color: 'orange',
+        color: 'emerald',
         count: pipelineData['screening'].length
       },
       {
         key: 'assessment',
         title: 'Assessment',
-        color: 'indigo',
+        color: 'blue',
         count: pipelineData['assessment'].length
       },
       {
         key: 'technical-interview',
         title: 'Technical Interview',
-        color: 'purple',
+        color: 'emerald-light',
         count: pipelineData['technical-interview'].length
       },
       {
         key: 'final-interview',
         title: 'Final Interview',
-        color: 'cyan',
+        color: 'blue-light',
         count: pipelineData['final-interview'].length
       },
       {
         key: 'offer-extended',
         title: 'Offer Extended',
-        color: 'gold',
+        color: 'emerald-success',
         count: pipelineData['offer-extended'].length
       }
     ],
