@@ -126,24 +126,27 @@ const StageColumn = React.memo(
         } rounded-lg border ${darkMode ? 'border-gray-700/50' : 'border-gray-200/50'} transition-all duration-200`}
       >
         {/* Stage Header */}
-        <div className={`p-4 border-b ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-          <div className='flex items-center justify-between'>
-            <div className='flex items-center space-x-3'>
-              <div
-                className={`px-3 py-1 rounded-full text-xs font-medium border ${
-                  darkMode ? getStageDarkColor(stage.color) : getStageColor(stage.color)
-                }`}
-              >
-                {stage.count}
-              </div>
-              <h3
-                className={`text-sm font-semibold whitespace-nowrap truncate ${
-                  darkMode ? 'text-white' : 'text-gray-900'
-                }`}
-              >
-                {stage.title}
-              </h3>
+        <div className={`p-3 border-b ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+          <div className='text-center space-y-2'>
+            <div
+              className={`inline-flex px-2.5 py-1 rounded-full text-xs font-bold border ${
+                darkMode ? getStageDarkColor(stage.color) : getStageColor(stage.color)
+              }`}
+            >
+              {stage.count}
             </div>
+            <h3
+              className={`text-xs font-semibold leading-tight ${
+                darkMode ? 'text-white' : 'text-gray-900'
+              }`}
+              style={{ 
+                wordBreak: 'break-word',
+                hyphens: 'auto',
+                lineHeight: '1.2'
+              }}
+            >
+              {stage.title}
+            </h3>
           </div>
         </div>
 
