@@ -7,7 +7,7 @@ import JobDescriptions from './modules/BusinessDashboard/JobDescriptions/compone
 import JobDescriptionForm from './modules/BusinessDashboard/JobDescriptions/components/JobDescriptionForm'
 import Assessments from './modules/BusinessDashboard/Assessments/components'
 import CreateAssessment from './modules/BusinessDashboard/Assessments/components/CreateAssessment'
-import JobListingForm from './modules/BusinessDashboard/JobOpportunities/components/JobListingForm'
+import JobOpportunityForm from './modules/BusinessDashboard/JobOpportunities/components/JobOpportunityForm'
 import Lookups from './modules/BusinessDashboard/Lookups/components'
 import Pipeline from './modules/BusinessDashboard/Pipeline/components'
 import Header from './core/components/layout/Header'
@@ -176,7 +176,20 @@ const AppRoutes = () => {
         element={
           user ? (
             <DashboardLayout user={user}>
-              <JobListingForm user={user} />
+              <JobOpportunityForm user={user} />
+            </DashboardLayout>
+          ) : (
+            <Navigate to='/' replace state={{ from: location }} />
+          )
+        }
+      />
+
+      <Route
+        path='/business-dashboard/edit-job-listing'
+        element={
+          user ? (
+            <DashboardLayout user={user}>
+              <JobOpportunityForm user={user} />
             </DashboardLayout>
           ) : (
             <Navigate to='/' replace state={{ from: location }} />

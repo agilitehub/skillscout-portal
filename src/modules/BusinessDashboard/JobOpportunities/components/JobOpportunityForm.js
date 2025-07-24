@@ -2,11 +2,13 @@
 // Frontend Instructions Rule Applied!
 
 import React, { useState, useCallback, useEffect, useMemo } from 'react'
-import { Modal, Form, Row, Col, message, Input, Select } from 'antd'
+import { Form, Row, Col, message, Input, Select, Card } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSave, faTimes, faBriefcase } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../../core/context/ThemeContext'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { Button } from '../../../../core/components'
+import BusinessSidebar from '../../components/BusinessSidebar'
 import {
   createJobOpportunity,
   updateJobOpportunity,
@@ -20,11 +22,13 @@ const { TextArea } = Input
 const { Option } = Select
 
 /**
- * Simplified Job Opportunity Form Component
- * Supports creating and editing job opportunities with essential fields only
+ * Job Listing Form Page Component
+ * Supports creating and editing job listings with essential fields only
  */
-const JobOpportunityForm = React.memo(({ visible, onClose, onSuccess, editId = null, initialData = null }) => {
+const JobOpportunityForm = React.memo(() => {
   const { darkMode } = useTheme()
+  const navigate = useNavigate()
+  const location = useLocation()
   const [form] = Form.useForm()
   const [loading, setLoading] = useState(false)
   const [loadingData, setLoadingData] = useState(false)
@@ -32,43 +36,45 @@ const JobOpportunityForm = React.memo(({ visible, onClose, onSuccess, editId = n
   const [assessments, setAssessments] = useState([])
   const [loadingOptions, setLoadingOptions] = useState(false)
 
+  // Get edit data from navigation state
+  const editId = location.state?.editId || null
+  const initialData = location.state?.initialData || null
   const isEditMode = Boolean(editId)
+  
   const dropdownOptions = useMemo(() => getDropdownOptions(), [])
 
   // Load job descriptions and assessments for dropdowns
   useEffect(() => {
     const loadOptions = async () => {
-      if (visible) {
-        setLoadingOptions(true)
-        try {
-          // Load job descriptions
-          const jobDescriptionsResult = await getJobDescriptionsForSelection()
-          if (jobDescriptionsResult.success) {
-            setJobDescriptions(jobDescriptionsResult.data)
-          } else {
-            console.error('Error loading job descriptions:', jobDescriptionsResult.error)
-            message.error('Failed to load job descriptions: ' + jobDescriptionsResult.error)
-          }
-
-          // Load assessments
-          const assessmentsResult = await getAssessmentsForSelection()
-          if (assessmentsResult.success) {
-            setAssessments(assessmentsResult.data)
-          } else {
-            console.error('Error loading assessments:', assessmentsResult.error)
-            message.error('Failed to load assessments: ' + assessmentsResult.error)
-          }
-        } catch (error) {
-          console.error('Unexpected error loading options:', error)
-          message.error('An unexpected error occurred while loading form options')
-        } finally {
-          setLoadingOptions(false)
+      setLoadingOptions(true)
+      try {
+        // Load job descriptions
+        const jobDescriptionsResult = await getJobDescriptionsForSelection()
+        if (jobDescriptionsResult.success) {
+          setJobDescriptions(jobDescriptionsResult.data)
+        } else {
+          console.error('Error loading job descriptions:', jobDescriptionsResult.error)
+          message.error('Failed to load job descriptions: ' + jobDescriptionsResult.error)
         }
+
+        // Load assessments
+        const assessmentsResult = await getAssessmentsForSelection()
+        if (assessmentsResult.success) {
+          setAssessments(assessmentsResult.data)
+        } else {
+          console.error('Error loading assessments:', assessmentsResult.error)
+          message.error('Failed to load assessments: ' + assessmentsResult.error)
+        }
+      } catch (error) {
+        console.error('Unexpected error loading options:', error)
+        message.error('An unexpected error occurred while loading form options')
+      } finally {
+        setLoadingOptions(false)
       }
     }
 
     loadOptions()
-  }, [visible])
+  }, [])
 
   // Prepare initial values for the form
   const formInitialValues = useMemo(() => {
@@ -89,9 +95,7 @@ const JobOpportunityForm = React.memo(({ visible, onClose, onSuccess, editId = n
   // Load data for edit mode
   useEffect(() => {
     const loadJobData = async () => {
-      if (isEditMode && visible) {
-        // Use provided initialData if available, otherwise fetch (fallback)
-
+      if (isEditMode) {
         if (initialData) {
           // Process the data to ensure compatibility with form fields
           const processedData = {
@@ -113,18 +117,18 @@ const JobOpportunityForm = React.memo(({ visible, onClose, onSuccess, editId = n
               }
               form.setFieldsValue(processedData)
             } else {
-              message.error('Failed to load job opportunity data: ' + result.error)
-              onClose()
+              message.error('Failed to load job listing data: ' + result.error)
+              navigate('/business-dashboard')
             }
           } catch (error) {
             console.error('Error loading job data:', error)
             message.error('An unexpected error occurred while loading job data')
-            onClose()
+            navigate('/business-dashboard')
           } finally {
             setLoadingData(false)
           }
         }
-      } else if (visible && !isEditMode) {
+      } else {
         // Set default values for new job
         const defaultData = initialData || getDefaultJobOpportunityData()
         const processedData = {
@@ -137,14 +141,7 @@ const JobOpportunityForm = React.memo(({ visible, onClose, onSuccess, editId = n
     }
 
     loadJobData()
-  }, [visible, editId, isEditMode, form, initialData, onClose])
-
-  // Reset form when modal closes
-  useEffect(() => {
-    if (!visible) {
-      form.resetFields()
-    }
-  }, [visible, form])
+  }, [editId, isEditMode, form, initialData, navigate])
 
   const handleFormSubmit = useCallback(
     async (values) => {
@@ -159,385 +156,383 @@ const JobOpportunityForm = React.memo(({ visible, onClose, onSuccess, editId = n
         }
 
         if (result.success) {
-          message.success(`Job opportunity ${isEditMode ? 'updated' : 'created'} successfully`)
-          onSuccess?.(result.data)
-          onClose()
+          message.success(`Job listing ${isEditMode ? 'updated' : 'created'} successfully`)
+          navigate('/business-dashboard')
         } else {
-          message.error(`Failed to ${isEditMode ? 'update' : 'create'} job opportunity: ${result.error}`)
+          message.error(`Failed to ${isEditMode ? 'update' : 'create'} job listing: ${result.error}`)
         }
       } catch (error) {
         console.error('Error submitting form:', error)
-        message.error(`An unexpected error occurred while ${isEditMode ? 'updating' : 'creating'} the job opportunity`)
+        message.error(`An unexpected error occurred while ${isEditMode ? 'updating' : 'creating'} the job listing`)
       } finally {
         setLoading(false)
       }
     },
-    [isEditMode, editId, onSuccess, onClose]
+    [isEditMode, editId, navigate]
   )
 
   const handleCancel = useCallback(() => {
     form.resetFields()
-    onClose()
-  }, [form, onClose])
+    navigate('/business-dashboard')
+  }, [form, navigate])
 
   return (
-    <Modal
-      title={
-        <div className='flex items-center'>
-          <FontAwesomeIcon icon={faBriefcase} className='mr-2' />
-          {isEditMode ? 'Edit Job Opportunity' : 'Create Job Opportunity'}
-        </div>
-      }
-      open={visible}
-      onCancel={handleCancel}
-      footer={[
-        <Button
-          key='cancel'
-          icon={<FontAwesomeIcon icon={faTimes} />}
-          onClick={handleCancel}
-          disabled={loading}
-          size='large'
-        >
-          Cancel
-        </Button>,
-        <Button
-          key='submit'
-          type='primary'
-          icon={<FontAwesomeIcon icon={faSave} />}
-          onClick={() => form.submit()}
-          loading={loading}
-          size='large'
-          style={{
-            background: darkMode ? '#059669' : '#10b981',
-            borderColor: darkMode ? '#059669' : '#10b981'
-          }}
-        >
-          {isEditMode ? 'Update Job' : 'Create Job'}
-        </Button>
-      ]}
-      width={800}
-      destroyOnClose
-      loading={loadingData || loadingOptions}
-      className={darkMode ? 'modal-dark' : ''}
-      styles={{
-        content: {
-          backgroundColor: darkMode ? '#374151' : '#ffffff'
-        },
-        body: {
-          backgroundColor: darkMode ? '#374151' : '#ffffff',
-          maxHeight: '70vh',
-          overflowY: 'auto',
-          overflowX: 'hidden',
-          padding: '24px'
-        },
-        header: {
-          backgroundColor: darkMode ? '#374151' : '#ffffff',
-          borderBottom: darkMode ? '1px solid #4B5563' : '1px solid #e5e7eb'
-        },
-        footer: {
-          backgroundColor: darkMode ? '#374151' : '#ffffff',
-          borderTop: darkMode ? '1px solid #4B5563' : '1px solid #e5e7eb'
-        }
-      }}
+    <div
+      className={`min-h-screen ${
+        darkMode
+          ? 'bg-gradient-to-br from-slate-700 via-slate-600 to-emerald-800'
+          : 'bg-gradient-to-br from-sky-100 via-gray-50 to-emerald-100'
+      }`}
     >
-      {/* Dark Mode Form Styling */}
-      {darkMode && (
-        <style>
-          {`
-            .modal-dark .ant-form-item-label > label {
-              color: #E5E7EB !important;
-            }
-            .modal-dark .ant-form-item-extra {
-              color: #9CA3AF !important;
-            }
-            .modal-dark .ant-input,
-            .modal-dark input.ant-input,
-            .modal-dark input[type="text"],
-            .modal-dark input[type="number"],
-            .modal-dark input[type="date"],
-            .modal-dark input {
-              background-color: #4B5563 !important;
-              border-color: #6B7280 !important;
-              color: #F9FAFB !important;
-            }
-            .modal-dark .ant-input:focus,
-            .modal-dark input.ant-input:focus,
-            .modal-dark input[type="text"]:focus,
-            .modal-dark input[type="number"]:focus,
-            .modal-dark input[type="date"]:focus,
-            .modal-dark input:focus {
-              border-color: #059669 !important;
-              box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
-              background-color: #4B5563 !important;
-              color: #F9FAFB !important;
-            }
-            .modal-dark .ant-input::placeholder,
-            .modal-dark input::placeholder {
-              color: #9CA3AF !important;
-            }
-            .modal-dark textarea.ant-input,
-            .modal-dark textarea {
-              background-color: #4B5563 !important;
-              border-color: #6B7280 !important;
-              color: #F9FAFB !important;
-            }
-            .modal-dark textarea.ant-input:focus,
-            .modal-dark textarea:focus {
-              border-color: #059669 !important;
-              box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
-              background-color: #4B5563 !important;
-              color: #F9FAFB !important;
-            }
-            .modal-dark textarea.ant-input::placeholder,
-            .modal-dark textarea::placeholder {
-              color: #9CA3AF !important;
-            }
-            .modal-dark .ant-input-show-count-suffix {
-              color: #9CA3AF !important;
-            }
-            .modal-dark .ant-select,
-            .modal-dark .ant-select-selector,
-            .modal-dark .ant-select-single .ant-select-selector {
-              background-color: #4B5563 !important;
-              border-color: #6B7280 !important;
-              color: #F9FAFB !important;
-            }
-            .modal-dark .ant-select-focused .ant-select-selector,
-            .modal-dark .ant-select:focus .ant-select-selector {
-              border-color: #059669 !important;
-              box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
-              background-color: #4B5563 !important;
-            }
-            .modal-dark .ant-select-selection-placeholder {
-              color: #9CA3AF !important;
-            }
-            .modal-dark .ant-select-selection-item {
-              color: #F9FAFB !important;
-              background-color: transparent !important;
-            }
-            .modal-dark .ant-select-arrow {
-              color: #9CA3AF !important;
-            }
-            
-            /* Dropdown Options */
-            .ant-select-dropdown {
-              background-color: #374151 !important;
-            }
-            .ant-select-item {
-              color: #F9FAFB !important;
-            }
-            .ant-select-item:hover {
-              background-color: #4B5563 !important;
-            }
-            .ant-select-item-option-selected {
-              background-color: #10B981 !important;
-              color: #FFFFFF !important;
-            }
-            
-            /* Form validation messages */
-            .ant-form-item-explain-error {
-              color: #F87171 !important;
-            }
-            
-            /* Character count */
-            .ant-input-data-count {
-              color: #9CA3AF !important;
-            }
-            
-            /* Additional comprehensive styling */
-            .modal-dark .ant-form-item-control-input {
-              background-color: transparent !important;
-            }
-            .modal-dark .ant-form-item-control-input-content input {
-              background-color: #4B5563 !important;
-              color: #F9FAFB !important;
-              border-color: #6B7280 !important;
-            }
-            .modal-dark .ant-form-item-control-input-content textarea {
-              background-color: #4B5563 !important;
-              color: #F9FAFB !important;
-              border-color: #6B7280 !important;
-            }
-            .modal-dark .ant-form-item-control-input-content .ant-select-selector {
-              background-color: #4B5563 !important;
-              color: #F9FAFB !important;
-              border-color: #6B7280 !important;
-            }
-            
-            /* Ultimate override for any remaining light elements */
-            .modal-dark * {
-              scrollbar-color: #6B7280 #374151;
-            }
-            .modal-dark .ant-form-item input,
-            .modal-dark .ant-form-item textarea,
-            .modal-dark .ant-form-item .ant-select-selector {
-              background-color: #4B5563 !important;
-              color: #F9FAFB !important;
-              border-color: #6B7280 !important;
-            }
-            .modal-dark .ant-form-item .ant-input-affix-wrapper {
-              background-color: #4B5563 !important;
-              border-color: #6B7280 !important;
-            }
-            .modal-dark .ant-form-item .ant-input-affix-wrapper input {
-              background-color: transparent !important;
-              color: #F9FAFB !important;
-            }
-            .modal-dark .ant-form-item .ant-input-prefix {
-              color: #9CA3AF !important;
-            }
-          `}
-        </style>
-      )}
+      {/* Background overlay for full coverage */}
+      <div
+        className={`fixed inset-0 ${
+          darkMode
+            ? 'bg-gradient-to-b from-transparent via-slate-700/30 to-emerald-800/40'
+            : 'bg-gradient-to-b from-transparent via-sky-100/40 to-emerald-100/50'
+        } pointer-events-none`}
+      ></div>
 
-      <Form
-        form={form}
-        layout='vertical'
-        onFinish={handleFormSubmit}
-        className={darkMode ? 'modal-dark' : ''}
-        preserve={false}
-        initialValues={formInitialValues}
-      >
-        <div className='space-y-4'>
-          <Row gutter={16}>
-            <Col xs={24} lg={12}>
-              <Form.Item
-                label='Job Title'
-                name='title'
-                rules={[
-                  { required: true, message: 'Job title is required' },
-                  { max: 255, message: 'Job title must be 255 characters or less' }
-                ]}
-              >
-                <Input placeholder='e.g. Senior Software Engineer' />
-              </Form.Item>
-            </Col>
-            <Col xs={24} lg={12}>
-              <Form.Item
-                label='Location'
-                name='location'
-                rules={[
-                  { required: true, message: 'Location is required' },
-                  { max: 255, message: 'Location must be 255 characters or less' }
-                ]}
-              >
-                <Input placeholder='e.g. New York, NY' />
-              </Form.Item>
-            </Col>
-          </Row>
+      <BusinessSidebar />
+      <div className='ml-64 p-4 md:p-6 relative z-10'>
 
-          <Row gutter={16}>
-            <Col xs={24} lg={12}>
-              <Form.Item label='Job Type' name='type' rules={[{ required: true, message: 'Job type is required' }]}>
-                <Select placeholder='Select job type'>
-                  {dropdownOptions.type.map((option) => (
-                    <Option key={option.value} value={option.value}>
-                      {option.label}
-                    </Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col xs={24} lg={12}>
-              <Form.Item
-                label='Work Arrangement'
-                name='workArrangement'
-                rules={[{ required: true, message: 'Work arrangement is required' }]}
-              >
-                <Select placeholder='Select work arrangement'>
-                  {dropdownOptions.workArrangement.map((option) => (
-                    <Option key={option.value} value={option.value}>
-                      {option.label}
-                    </Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </Col>
-          </Row>
 
-          <Row gutter={16}>
-            <Col xs={24} lg={12}>
-              <Form.Item
-                label='Salary Range'
-                name='salary'
-                rules={[
-                  { required: true, message: 'Salary range is required' },
-                  { max: 100, message: 'Salary must be 100 characters or less' }
-                ]}
-              >
-                <Input placeholder='e.g. $80,000 - $120,000' />
-              </Form.Item>
-            </Col>
-            <Col xs={24} lg={12}>
-              <Form.Item label='Status' name='status'>
-                <Select placeholder='Select status'>
-                  {dropdownOptions.status.map((option) => (
-                    <Option key={option.value} value={option.value}>
-                      {option.label}
-                    </Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </Col>
-          </Row>
-
-          <Row gutter={16}>
-            <Col xs={24} lg={12}>
-              <Form.Item
-                label='Job Description'
-                name='jobDescription'
-                rules={[{ required: true, message: 'Job description is required' }]}
-              >
-                <Select
-                  placeholder='Select a job description'
-                  loading={loadingOptions}
-                  showSearch
-                  filterOption={(input, option) => option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-                >
-                  {jobDescriptions.map((jobDesc) => (
-                    <Option key={jobDesc.id} value={jobDesc.id}>
-                      {jobDesc.title}
-                    </Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col xs={24} lg={12}>
-              <Form.Item
-                label='Assessments'
-                name='assessments'
-                rules={[{ required: true, message: 'At least one assessment is required' }]}
-              >
-                <Select
-                  mode='multiple'
-                  placeholder='Select assessments'
-                  loading={loadingOptions}
-                  showSearch
-                  filterOption={(input, option) => option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-                >
-                  {assessments.map((assessment) => (
-                    <Option key={assessment.id} value={assessment.id}>
-                      {assessment.title}
-                    </Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </Col>
-          </Row>
-
-          <Form.Item
-            label='Overview'
-            name='description'
-            rules={[{ required: true, message: 'Job overview is required' }]}
-          >
-            <TextArea
-              placeholder='Detailed overview of the role, responsibilities, and what makes this opportunity unique...'
-              rows={4}
+        {/* Header */}
+        <div
+          className={`rounded-lg mb-6 px-6 py-4 shadow-lg ${
+            darkMode
+              ? 'bg-gradient-to-r from-emerald-700 to-emerald-600 border border-emerald-600'
+              : 'bg-gradient-to-r from-emerald-500 to-emerald-600'
+          }`}
+        >
+          <div className='flex items-center'>
+            <FontAwesomeIcon
+              icon={faBriefcase}
+              className={`text-lg mr-3 ${darkMode ? 'text-emerald-100' : 'text-white'}`}
             />
-          </Form.Item>
+            <div>
+              <h1 className='text-xl font-bold text-white'>
+                {isEditMode ? 'Edit Job Listing' : 'Create Job Listing'}
+              </h1>
+              <p className={`text-sm mt-1 ${darkMode ? 'text-gray-300' : 'text-white/90'}`}>
+                {isEditMode ? 'Update your job listing details' : 'Create a new job listing for your organization'}
+              </p>
+            </div>
+          </div>
         </div>
-      </Form>
-    </Modal>
+
+        {/* Form Card */}
+        <Card className={`${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white'} shadow-lg`}>
+          {/* Dark Mode Form Styling */}
+          {darkMode && (
+            <style>
+              {`
+                .page-dark .ant-form-item-label > label {
+                  color: #E5E7EB !important;
+                }
+                .page-dark .ant-form-item-extra {
+                  color: #9CA3AF !important;
+                }
+                .page-dark .ant-input,
+                .page-dark input.ant-input,
+                .page-dark input[type="text"],
+                .page-dark input[type="number"],
+                .page-dark input[type="date"],
+                .page-dark input {
+                  background-color: #4B5563 !important;
+                  border-color: #6B7280 !important;
+                  color: #F9FAFB !important;
+                }
+                .page-dark .ant-input:focus,
+                .page-dark input.ant-input:focus,
+                .page-dark input[type="text"]:focus,
+                .page-dark input[type="number"]:focus,
+                .page-dark input[type="date"]:focus,
+                .page-dark input:focus {
+                  border-color: #059669 !important;
+                  box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
+                  background-color: #4B5563 !important;
+                  color: #F9FAFB !important;
+                }
+                .page-dark .ant-input::placeholder,
+                .page-dark input::placeholder {
+                  color: #9CA3AF !important;
+                }
+                .page-dark textarea.ant-input,
+                .page-dark textarea {
+                  background-color: #4B5563 !important;
+                  border-color: #6B7280 !important;
+                  color: #F9FAFB !important;
+                }
+                .page-dark textarea.ant-input:focus,
+                .page-dark textarea:focus {
+                  border-color: #059669 !important;
+                  box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
+                  background-color: #4B5563 !important;
+                  color: #F9FAFB !important;
+                }
+                .page-dark textarea.ant-input::placeholder,
+                .page-dark textarea::placeholder {
+                  color: #9CA3AF !important;
+                }
+                .page-dark .ant-input-show-count-suffix {
+                  color: #9CA3AF !important;
+                }
+                .page-dark .ant-select,
+                .page-dark .ant-select-selector,
+                .page-dark .ant-select-single .ant-select-selector {
+                  background-color: #4B5563 !important;
+                  border-color: #6B7280 !important;
+                  color: #F9FAFB !important;
+                }
+                .page-dark .ant-select-focused .ant-select-selector,
+                .page-dark .ant-select:focus .ant-select-selector {
+                  border-color: #059669 !important;
+                  box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
+                  background-color: #4B5563 !important;
+                }
+                .page-dark .ant-select-selection-placeholder {
+                  color: #9CA3AF !important;
+                }
+                .page-dark .ant-select-selection-item {
+                  color: #F9FAFB !important;
+                  background-color: transparent !important;
+                }
+                .page-dark .ant-select-arrow {
+                  color: #9CA3AF !important;
+                }
+                
+                /* Dropdown Options */
+                .ant-select-dropdown {
+                  background-color: #374151 !important;
+                }
+                .ant-select-item {
+                  color: #F9FAFB !important;
+                }
+                .ant-select-item:hover {
+                  background-color: #4B5563 !important;
+                }
+                .ant-select-item-option-selected {
+                  background-color: #10B981 !important;
+                  color: #FFFFFF !important;
+                }
+                
+                /* Form validation messages */
+                .ant-form-item-explain-error {
+                  color: #F87171 !important;
+                }
+                
+                /* Character count */
+                .ant-input-data-count {
+                  color: #9CA3AF !important;
+                }
+                
+                /* Additional comprehensive styling */
+                .page-dark .ant-form-item-control-input {
+                  background-color: transparent !important;
+                }
+                .page-dark .ant-form-item input,
+                .page-dark .ant-form-item textarea,
+                .page-dark .ant-form-item .ant-select-selector {
+                  background-color: #4B5563 !important;
+                  color: #F9FAFB !important;
+                  border-color: #6B7280 !important;
+                }
+                .page-dark .ant-form-item .ant-input-affix-wrapper {
+                  background-color: #4B5563 !important;
+                  border-color: #6B7280 !important;
+                }
+                .page-dark .ant-form-item .ant-input-affix-wrapper input {
+                  background-color: transparent !important;
+                  color: #F9FAFB !important;
+                }
+                .page-dark .ant-form-item .ant-input-prefix {
+                  color: #9CA3AF !important;
+                }
+              `}
+            </style>
+          )}
+
+          <Form
+            form={form}
+            layout='vertical'
+            onFinish={handleFormSubmit}
+            className={darkMode ? 'page-dark' : ''}
+            preserve={false}
+            initialValues={formInitialValues}
+            loading={loadingData || loadingOptions}
+          >
+            <div className='space-y-4'>
+              <Row gutter={16}>
+                <Col xs={24} lg={12}>
+                  <Form.Item
+                    label='Job Title'
+                    name='title'
+                    rules={[
+                      { required: true, message: 'Job title is required' },
+                      { max: 255, message: 'Job title must be 255 characters or less' }
+                    ]}
+                  >
+                    <Input placeholder='e.g. Senior Software Engineer' />
+                  </Form.Item>
+                </Col>
+                <Col xs={24} lg={12}>
+                  <Form.Item
+                    label='Location'
+                    name='location'
+                    rules={[
+                      { required: true, message: 'Location is required' },
+                      { max: 255, message: 'Location must be 255 characters or less' }
+                    ]}
+                  >
+                    <Input placeholder='e.g. New York, NY' />
+                  </Form.Item>
+                </Col>
+              </Row>
+
+              <Row gutter={16}>
+                <Col xs={24} lg={12}>
+                  <Form.Item label='Job Type' name='type' rules={[{ required: true, message: 'Job type is required' }]}>
+                    <Select placeholder='Select job type'>
+                      {dropdownOptions.type.map((option) => (
+                        <Option key={option.value} value={option.value}>
+                          {option.label}
+                        </Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+                </Col>
+                <Col xs={24} lg={12}>
+                  <Form.Item
+                    label='Work Arrangement'
+                    name='workArrangement'
+                    rules={[{ required: true, message: 'Work arrangement is required' }]}
+                  >
+                    <Select placeholder='Select work arrangement'>
+                      {dropdownOptions.workArrangement.map((option) => (
+                        <Option key={option.value} value={option.value}>
+                          {option.label}
+                        </Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+                </Col>
+              </Row>
+
+              <Row gutter={16}>
+                <Col xs={24} lg={12}>
+                  <Form.Item
+                    label='Salary Range'
+                    name='salary'
+                    rules={[
+                      { required: true, message: 'Salary range is required' },
+                      { max: 100, message: 'Salary must be 100 characters or less' }
+                    ]}
+                  >
+                    <Input placeholder='e.g. $80,000 - $120,000' />
+                  </Form.Item>
+                </Col>
+                <Col xs={24} lg={12}>
+                  <Form.Item label='Status' name='status'>
+                    <Select placeholder='Select status'>
+                      {dropdownOptions.status.map((option) => (
+                        <Option key={option.value} value={option.value}>
+                          {option.label}
+                        </Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+                </Col>
+              </Row>
+
+              <Row gutter={16}>
+                <Col xs={24} lg={12}>
+                  <Form.Item
+                    label='Job Description'
+                    name='jobDescription'
+                    rules={[{ required: true, message: 'Job description is required' }]}
+                  >
+                    <Select
+                      placeholder='Select a job description'
+                      loading={loadingOptions}
+                      showSearch
+                      filterOption={(input, option) => option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                    >
+                      {jobDescriptions.map((jobDesc) => (
+                        <Option key={jobDesc.id} value={jobDesc.id}>
+                          {jobDesc.title}
+                        </Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+                </Col>
+                <Col xs={24} lg={12}>
+                  <Form.Item
+                    label='Assessments'
+                    name='assessments'
+                    rules={[{ required: true, message: 'At least one assessment is required' }]}
+                  >
+                    <Select
+                      mode='multiple'
+                      placeholder='Select assessments'
+                      loading={loadingOptions}
+                      showSearch
+                      filterOption={(input, option) => option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                    >
+                      {assessments.map((assessment) => (
+                        <Option key={assessment.id} value={assessment.id}>
+                          {assessment.title}
+                        </Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+                </Col>
+              </Row>
+
+              <Form.Item
+                label='Overview'
+                name='description'
+                rules={[{ required: true, message: 'Job overview is required' }]}
+              >
+                <TextArea
+                  placeholder='Detailed overview of the role, responsibilities, and what makes this opportunity unique...'
+                  rows={4}
+                />
+              </Form.Item>
+            </div>
+
+            {/* Form Actions */}
+            <div className='flex justify-end space-x-4 mt-8 pt-6 border-t border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 -mx-6 -mb-6 px-6 pb-6 rounded-b-lg'>
+              <Button
+                variant='secondary'
+                icon={<FontAwesomeIcon icon={faTimes} />}
+                onClick={handleCancel}
+                disabled={loading}
+                size='large'
+                className='px-8 py-3'
+              >
+                Cancel
+              </Button>
+              <Button
+                type='primary'
+                icon={<FontAwesomeIcon icon={faSave} />}
+                onClick={() => form.submit()}
+                loading={loading}
+                size='large'
+                className='px-8 py-3'
+                style={{
+                  background: darkMode ? '#059669' : '#10b981',
+                  borderColor: darkMode ? '#059669' : '#10b981',
+                  minWidth: '180px'
+                }}
+              >
+                {isEditMode ? 'Update Job Listing' : 'Create Job Listing'}
+              </Button>
+            </div>
+          </Form>
+        </Card>
+      </div>
+    </div>
   )
 })
 

@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react'
 import { Tag, Card, Statistic, message } from 'antd'
 import { Button } from '../../../../core/components'
+import { useNavigate } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faPlus,
@@ -24,7 +25,6 @@ import {
 } from '../utils/controller'
 import TableView from '../../../../core/components/view-components/table-view/TableView'
 import TableActions from '../../../../core/components/view-components/table-view/TableActions'
-import JobOpportunityForm from './JobOpportunityForm'
 
 /**
  * Business Dashboard component for Recruiters and Employers
@@ -32,15 +32,13 @@ import JobOpportunityForm from './JobOpportunityForm'
  */
 const BusinessDashboard = React.memo(({ user }) => {
   const { darkMode } = useTheme()
+  const navigate = useNavigate()
 
   // State management
   const [jobOpportunities, setJobOpportunities] = useState([])
   const [loading, setLoading] = useState(false)
 
-  // Form modal state
-  const [isFormVisible, setIsFormVisible] = useState(false)
-  const [editingJobId, setEditingJobId] = useState(null)
-  const [editingJobData, setEditingJobData] = useState(null)
+
 
   // Load job opportunities from database
   const loadJobOpportunities = useCallback(async () => {
@@ -68,33 +66,18 @@ const BusinessDashboard = React.memo(({ user }) => {
   }, [loadJobOpportunities])
 
   // Handle navigation operations
-  const handleCreateJobOpportunity = useCallback(async () => {
-    try {
-      const result = await createJobOpportunity()
-
-      if (result.success) {
-        message.success('Job listing created successfully')
-        loadJobOpportunities()
-      } else {
-        console.error('Error creating job listing:', result.error)
-        message.error('Failed to create job listing: ' + result.error)
-      }
-    } catch (e) {
-      console.error('Unexpected error creating job listing:', e)
-      message.error('An unexpected error occurred while creating the job listing')
-    }
-    setEditingJobId(null)
-    setEditingJobData(null)
-    setIsFormVisible(true)
-
-    // eslint-disable-next-line
-  }, [])
+  const handleCreateJobOpportunity = useCallback(() => {
+    navigate('/business-dashboard/create-job-listing')
+  }, [navigate])
 
   const handleEditJob = useCallback((job) => {
-    setEditingJobId(job.id)
-    setEditingJobData(job) // Pass the full record
-    setIsFormVisible(true)
-  }, [])
+    navigate('/business-dashboard/edit-job-listing', {
+      state: {
+        editId: job.id,
+        initialData: job
+      }
+    })
+  }, [navigate])
 
   const handleDeleteJob = useCallback(
     async (jobId) => {
@@ -136,19 +119,7 @@ const BusinessDashboard = React.memo(({ user }) => {
     [loadJobOpportunities]
   )
 
-  const handleFormClose = useCallback(() => {
-    setIsFormVisible(false)
-    setEditingJobId(null)
-    setEditingJobData(null)
-  }, [])
 
-  const handleFormSuccess = useCallback(
-    (data) => {
-      // Refresh the job opportunities list
-      loadJobOpportunities()
-    },
-    [loadJobOpportunities]
-  )
 
   // Table columns configuration
   const columns = useMemo(
@@ -426,14 +397,7 @@ const BusinessDashboard = React.memo(({ user }) => {
           />
         </Card>
 
-        {/* Job Listing Form Modal */}
-        <JobOpportunityForm
-          visible={isFormVisible}
-          onClose={handleFormClose}
-          onSuccess={handleFormSuccess}
-          editId={editingJobId}
-          initialData={editingJobData}
-        />
+
       </div>
     </div>
   )
