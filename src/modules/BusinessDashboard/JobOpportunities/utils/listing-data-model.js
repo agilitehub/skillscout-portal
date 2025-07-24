@@ -11,7 +11,6 @@
 export const JobListingSchema = {
   // Basic Information
   title: { type: 'string', required: true, maxLength: 255 },
-  organization: { type: 'string', required: true, maxLength: 255 },
   industry: { type: 'string', required: true, maxLength: 100 },
   category: { type: 'string', required: true, enum: ['Full-time', 'Part-time', 'Contract', 'Freelance', 'Internship'] },
   location: { type: 'string', required: true, maxLength: 255 },
@@ -20,10 +19,10 @@ export const JobListingSchema = {
   experienceLevel: { type: 'string', required: false, enum: ['Entry', 'Mid', 'Senior', 'Lead', 'Executive'] },
 
   // Listing Style
-  listingStyle: { 
-    type: 'string', 
-    required: true, 
-    enum: ['purpose-driven', 'impact-mission', 'challenge-call'] 
+  listingStyle: {
+    type: 'string',
+    required: true,
+    enum: ['purpose-driven', 'impact-mission', 'challenge-call']
   },
 
   // Purpose-Driven Format Fields
@@ -63,7 +62,6 @@ export const transformListingToDatabase = (formData) => {
   const transformed = {
     // Basic Information
     title: formData.title?.trim(),
-    organization: formData.organization?.trim(),
     industry: formData.industry,
     category: formData.category,
     location: formData.location?.trim(),
@@ -121,7 +119,6 @@ export const transformListingFromDatabase = (dbData) => {
   return {
     id: dbData.id,
     title: dbData.title,
-    organization: dbData.organization,
     industry: dbData.industry,
     category: dbData.category,
     location: dbData.location,
@@ -176,7 +173,6 @@ export const validateJobListing = (data) => {
   // Basic required fields
   const basicRequired = [
     { field: 'title', message: 'Job title is required' },
-    { field: 'organization', message: 'Organization name is required' },
     { field: 'industry', message: 'Industry is required' },
     { field: 'category', message: 'Job category is required' },
     { field: 'location', message: 'Location is required' },
@@ -196,10 +192,10 @@ export const validateJobListing = (data) => {
   if (data.listingStyle === 'purpose-driven') {
     const purposeRequired = [
       { field: 'intro', message: 'Opening hook/intro is required for purpose-driven listings' },
-      { field: 'whatYoullDo', message: 'What you\'ll do section is required for purpose-driven listings' },
+      { field: 'whatYoullDo', message: "What you'll do section is required for purpose-driven listings" },
       { field: 'whyUs', message: 'Why us section is required for purpose-driven listings' }
     ]
-    
+
     purposeRequired.forEach(({ field, message }) => {
       if (!data[field] || data[field].trim() === '') {
         errors.push(message)
@@ -213,7 +209,7 @@ export const validateJobListing = (data) => {
       { field: 'responsibilities', message: 'Key responsibilities are required for impact-mission listings' },
       { field: 'whyResonates', message: 'Why it resonates section is required for impact-mission listings' }
     ]
-    
+
     impactRequired.forEach(({ field, message }) => {
       if (!data[field] || data[field].trim() === '') {
         errors.push(message)
@@ -227,7 +223,7 @@ export const validateJobListing = (data) => {
       { field: 'duties', message: 'Core duties are required for challenge-call listings' },
       { field: 'tone', message: 'Tone & culture section is required for challenge-call listings' }
     ]
-    
+
     challengeRequired.forEach(({ field, message }) => {
       if (!data[field] || data[field].trim() === '') {
         errors.push(message)
@@ -238,10 +234,6 @@ export const validateJobListing = (data) => {
   // Length validation
   if (data.title && data.title.length > 255) {
     errors.push('Job title must be 255 characters or less')
-  }
-
-  if (data.organization && data.organization.length > 255) {
-    errors.push('Organization name must be 255 characters or less')
   }
 
   if (data.intro && data.intro.length > 300) {
@@ -267,7 +259,6 @@ export const validateJobListing = (data) => {
  */
 export const createDefaultJobListing = () => ({
   title: '',
-  organization: '',
   industry: '',
   category: 'Full-time',
   location: '',
@@ -275,32 +266,32 @@ export const createDefaultJobListing = () => ({
   compensation: '',
   experienceLevel: 'Mid',
   listingStyle: 'purpose-driven',
-  
+
   // Purpose-driven fields
   intro: '',
   whatYoullDo: '',
   whyUs: '',
   values: '',
-  
+
   // Impact-mission fields
   headline: '',
   responsibilities: '',
   whyResonates: '',
   impactMetrics: '',
-  
+
   // Challenge-call fields
   hook: '',
   duties: '',
   tone: '',
   techStack: '',
-  
+
   // Application details
   howToApply: '',
   requirements: '',
   contact: '',
   deadline: '',
   additionalNotes: '',
-  
+
   // Metadata
   status: 'Active',
   applicants: 0
@@ -317,7 +308,7 @@ export const generateListingPreview = (data) => {
       title: `${data.intro ? '🎯 ' : ''}${data.title}`,
       sections: [
         { label: 'Intro', content: data.intro, icon: '💡' },
-        { label: 'What You\'ll Do', content: data.whatYoullDo, icon: '🚀' },
+        { label: "What You'll Do", content: data.whatYoullDo, icon: '🚀' },
         { label: 'Why Us', content: data.whyUs, icon: '❤️' },
         { label: 'Values', content: data.values, icon: '🌟' }
       ]
@@ -349,4 +340,4 @@ export const generateListingPreview = (data) => {
   }
 
   return { title: data.title, sections: [] }
-} 
+}

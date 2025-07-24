@@ -11,13 +11,17 @@ import {
   faMapMarkerAlt,
   faDollarSign,
   faCalendarAlt,
-  faBuilding,
   faTrash
 } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../../core/context/ThemeContext'
 
 import BusinessSidebar from '../../components/BusinessSidebar'
-import { getAllJobOpportunities, deleteJobOpportunity, updateJobOpportunityStatus } from '../utils/controller'
+import {
+  getAllJobOpportunities,
+  deleteJobOpportunity,
+  updateJobOpportunityStatus,
+  createJobOpportunity
+} from '../utils/controller'
 import TableView from '../../../../core/components/view-components/table-view/TableView'
 import TableActions from '../../../../core/components/view-components/table-view/TableActions'
 import JobOpportunityForm from './JobOpportunityForm'
@@ -64,10 +68,26 @@ const BusinessDashboard = React.memo(({ user }) => {
   }, [loadJobOpportunities])
 
   // Handle navigation operations
-  const handleCreateJobOpportunity = useCallback(() => {
+  const handleCreateJobOpportunity = useCallback(async () => {
+    try {
+      const result = await createJobOpportunity()
+
+      if (result.success) {
+        message.success('Job opportunity created successfully')
+        loadJobOpportunities()
+      } else {
+        console.error('Error creating job opportunity:', result.error)
+        message.error('Failed to create job opportunity: ' + result.error)
+      }
+    } catch (e) {
+      console.error('Unexpected error creating job opportunity:', e)
+      message.error('An unexpected error occurred while creating the job opportunity')
+    }
     setEditingJobId(null)
     setEditingJobData(null)
     setIsFormVisible(true)
+
+    // eslint-disable-next-line
   }, [])
 
   const handleEditJob = useCallback((job) => {
@@ -138,17 +158,11 @@ const BusinessDashboard = React.memo(({ user }) => {
         dataIndex: 'title',
         key: 'title',
         render: (text, record) => (
-          <div>
-            <div
-              className='font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 cursor-pointer transition-colors duration-200'
-              onClick={() => handleEditJob(record)}
-            >
-              {text}
-            </div>
-            <div className='text-sm text-gray-500 dark:text-gray-400 flex items-center'>
-              <FontAwesomeIcon icon={faBuilding} className='mr-1' />
-              {record.company}
-            </div>
+          <div
+            className='font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 cursor-pointer transition-colors duration-200'
+            onClick={() => handleEditJob(record)}
+          >
+            {text}
           </div>
         ),
         sorter: (a, b) => a.title.localeCompare(b.title)
@@ -251,14 +265,16 @@ const BusinessDashboard = React.memo(({ user }) => {
       },
       {
         title: 'Date Posted',
-        dataIndex: 'datePosted',
-        key: 'datePosted',
-        render: (date) => (
-          <div className='flex items-center'>
-            <FontAwesomeIcon icon={faCalendarAlt} className='mr-1 text-gray-400' />
-            {date ? new Date(date).toLocaleDateString() : 'Not set'}
-          </div>
-        ),
+        dataIndex: 'createdAt',
+        key: 'createdAt',
+        render: (date) => {
+          return (
+            <div className='flex items-center'>
+              <FontAwesomeIcon icon={faCalendarAlt} className='mr-1 text-gray-400' />
+              {date ? new Date(date).toLocaleDateString() : 'Not set'}
+            </div>
+          )
+        },
         sorter: (a, b) => {
           if (!a.datePosted) return 1
           if (!b.datePosted) return -1
@@ -276,7 +292,7 @@ const BusinessDashboard = React.memo(({ user }) => {
                 key: 'delete',
                 icon: faTrash,
                 tooltip: 'Delete Job',
-                onClick: (record) => handleDeleteJob(record.id),
+                onClick: () => handleDeleteJob(record.id),
                 confirm: {
                   title: 'Delete Job Opportunity',
                   description: 'Are you sure you want to delete this job opportunity? This action cannot be undone.',

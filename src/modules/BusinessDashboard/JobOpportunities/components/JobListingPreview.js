@@ -207,9 +207,7 @@ const JobListingPreview = React.memo(({ listing, onApply, onShare }) => {
               {listing.status && <Tag color={listing.status === 'Active' ? 'green' : 'orange'}>{listing.status}</Tag>}
             </div>
 
-            <h1 className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'} mb-2`}>{listing.title}</h1>
-
-            <h2 className={`text-lg ${darkMode ? 'text-gray-300' : 'text-gray-600'} mb-4`}>{listing.organization}</h2>
+            <h1 className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'} mb-4`}>{listing.title}</h1>
 
             <div className='flex flex-wrap gap-4 text-sm text-gray-600 dark:text-gray-400'>
               {listing.location && (

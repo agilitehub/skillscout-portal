@@ -117,18 +117,26 @@ const TableActions = React.memo(({ record, actions = [], size = 'small', wrap = 
     // Wrap with confirmation if needed
     if (config.confirm) {
       return (
-        <Popconfirm
-          key={config.key}
-          title={config.confirm.title}
-          description={config.confirm.description}
-          onConfirm={() => config.onClick(record)}
-          okText={config.confirm.okText}
-          cancelText={config.confirm.cancelText}
-          okType={config.confirm.okType}
-          placement='topRight'
-        >
-          <Tooltip title={config.tooltip}>{button}</Tooltip>
-        </Popconfirm>
+        <Tooltip key={config.key} title={config.tooltip}>
+          <Popconfirm
+            title={config.confirm.title}
+            description={config.confirm.description}
+            onConfirm={() => config.onClick(record)}
+            okText={config.confirm.okText}
+            cancelText={config.confirm.cancelText}
+            okType={config.confirm.okType}
+            placement='topRight'
+          >
+            <Button
+              type='text'
+              size={size}
+              icon={<FontAwesomeIcon icon={config.icon} className={`${config.color} transition-colors duration-200`} />}
+              className={`!bg-transparent !border-transparent hover:!bg-gray-100 dark:hover:!bg-gray-700 transition-all duration-200`}
+              disabled={config.disabled}
+              style={config.style}
+            />
+          </Popconfirm>
+        </Tooltip>
       )
     }
 

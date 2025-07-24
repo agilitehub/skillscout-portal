@@ -243,22 +243,12 @@ const CreateJobListing = React.memo(({ user }) => {
                     name='title'
                     rules={[{ required: true, message: 'Please enter job title' }]}
                   >
-                    <Input
-                      placeholder='e.g. Marketing Manager'
-                      style={{ fontWeight: '500' }}
-                    />
+                    <Input placeholder='e.g. Marketing Manager' style={{ fontWeight: '500' }} />
                   </Form.Item>
                 </Col>
                 <Col span={8}>
-                  <Form.Item
-                    label='Source'
-                    name='source'
-                    rules={[{ required: true, message: 'Please enter source' }]}
-                  >
-                    <Input
-                      placeholder='e.g. Indeed'
-                      style={{ fontWeight: '500' }}
-                    />
+                  <Form.Item label='Source' name='source' rules={[{ required: true, message: 'Please enter source' }]}>
+                    <Input placeholder='e.g. Indeed' style={{ fontWeight: '500' }} />
                   </Form.Item>
                 </Col>
               </Row>
@@ -314,26 +304,11 @@ const CreateJobListing = React.memo(({ user }) => {
               <Row gutter={24}>
                 <Col span={12}>
                   <Form.Item
-                    label='Company'
-                    name='company'
-                    rules={[{ required: true, message: 'Please enter company name' }]}
-                  >
-                    <Input
-                      placeholder='Company name'
-                      style={{ fontWeight: '500' }}
-                    />
-                  </Form.Item>
-                </Col>
-                <Col span={12}>
-                  <Form.Item
                     label='Last Updated'
                     name='lastUpdated'
                     rules={[{ required: true, message: 'Please enter last updated date' }]}
                   >
-                    <Input
-                      placeholder='e.g. June 24, 2025'
-                      style={{ fontWeight: '500' }}
-                    />
+                    <Input placeholder='e.g. June 24, 2025' style={{ fontWeight: '500' }} />
                   </Form.Item>
                 </Col>
               </Row>

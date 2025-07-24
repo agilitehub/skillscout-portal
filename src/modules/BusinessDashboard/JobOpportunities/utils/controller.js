@@ -19,6 +19,8 @@ if (SUPABASE_URL && SUPABASE_ANON_KEY) {
   supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 } else {
   console.error('Job Opportunities Controller: Supabase credentials not configured')
+  console.error('REACT_APP_SUPABASE_URL:', SUPABASE_URL ? 'Set' : 'Missing')
+  console.error('REACT_APP_SUPABASE_ANON_KEY:', SUPABASE_ANON_KEY ? 'Set' : 'Missing')
 }
 
 /**
@@ -55,22 +57,10 @@ export const getAllJobOpportunities = async (filters = {}) => {
       query = query.ilike('location', `%${filters.location}%`)
     }
 
-    if (filters.company) {
-      query = query.ilike('company', `%${filters.company}%`)
-    }
-
-    if (filters.experienceRequired) {
-      query = query.eq('experience_required', filters.experienceRequired)
-    }
-
-    if (filters.remote !== undefined) {
-      query = query.eq('remote', filters.remote)
-    }
-
     const { data, error } = await query
 
     if (error) {
-      console.error('Error fetching job opportunities:', error)
+      console.error('Job Opportunities Controller: Error fetching job opportunities:', error)
       return {
         success: false,
         error: error.message,
@@ -87,7 +77,7 @@ export const getAllJobOpportunities = async (filters = {}) => {
       error: null
     }
   } catch (error) {
-    console.error('Unexpected error in getAllJobOpportunities:', error)
+    console.error('Job Opportunities Controller: Unexpected error in getAllJobOpportunities:', error)
     return {
       success: false,
       error: 'An unexpected error occurred while fetching job opportunities',
@@ -118,7 +108,7 @@ export const getJobOpportunityById = async (id) => {
     const { data, error } = await supabase.from('job_opportunities').select('*').eq('id', id).single()
 
     if (error) {
-      console.error('Error fetching job opportunity:', error)
+      console.error('Job Opportunities Controller: Error fetching job opportunity:', error)
       return {
         success: false,
         error: error.message,
@@ -134,7 +124,7 @@ export const getJobOpportunityById = async (id) => {
       error: null
     }
   } catch (error) {
-    console.error('Unexpected error in getJobOpportunityById:', error)
+    console.error('Job Opportunities Controller: Unexpected error in getJobOpportunityById:', error)
     return {
       success: false,
       error: 'An unexpected error occurred while fetching the job opportunity',
@@ -157,6 +147,7 @@ export const createJobOpportunity = async (jobData) => {
     // Validate the job data
     const validation = validateJobOpportunity(jobData)
     if (!validation.success) {
+      console.error('Job Opportunities Controller: Validation failed:', validation.errors)
       return {
         success: false,
         error: validation.errors.join(', '),
@@ -170,7 +161,7 @@ export const createJobOpportunity = async (jobData) => {
     const { data, error } = await supabase.from('job_opportunities').insert([dbData]).select().single()
 
     if (error) {
-      console.error('Error creating job opportunity:', error)
+      console.error('Job Opportunities Controller: Error creating job opportunity:', error)
       return {
         success: false,
         error: error.message,
@@ -186,7 +177,7 @@ export const createJobOpportunity = async (jobData) => {
       error: null
     }
   } catch (error) {
-    console.error('Unexpected error in createJobOpportunity:', error)
+    console.error('Job Opportunities Controller: Unexpected error in createJobOpportunity:', error)
     return {
       success: false,
       error: 'An unexpected error occurred while creating the job opportunity',
@@ -218,6 +209,7 @@ export const updateJobOpportunity = async (id, jobData) => {
     // Validate the job data
     const validation = validateJobOpportunity(jobData)
     if (!validation.success) {
+      console.error('Job Opportunities Controller: Validation failed:', validation.errors)
       return {
         success: false,
         error: validation.errors.join(', '),
@@ -231,7 +223,7 @@ export const updateJobOpportunity = async (id, jobData) => {
     const { data, error } = await supabase.from('job_opportunities').update(dbData).eq('id', id).select().single()
 
     if (error) {
-      console.error('Error updating job opportunity:', error)
+      console.error('Job Opportunities Controller: Error updating job opportunity:', error)
       return {
         success: false,
         error: error.message,
@@ -247,7 +239,7 @@ export const updateJobOpportunity = async (id, jobData) => {
       error: null
     }
   } catch (error) {
-    console.error('Unexpected error in updateJobOpportunity:', error)
+    console.error('Job Opportunities Controller: Unexpected error in updateJobOpportunity:', error)
     return {
       success: false,
       error: 'An unexpected error occurred while updating the job opportunity',
@@ -278,7 +270,7 @@ export const deleteJobOpportunity = async (id) => {
     const { error } = await supabase.from('job_opportunities').delete().eq('id', id)
 
     if (error) {
-      console.error('Error deleting job opportunity:', error)
+      console.error('Job Opportunities Controller: Error deleting job opportunity:', error)
       return {
         success: false,
         error: error.message,
@@ -292,7 +284,7 @@ export const deleteJobOpportunity = async (id) => {
       data: { id }
     }
   } catch (error) {
-    console.error('Unexpected error in deleteJobOpportunity:', error)
+    console.error('Job Opportunities Controller: Unexpected error in deleteJobOpportunity:', error)
     return {
       success: false,
       error: 'An unexpected error occurred while deleting the job opportunity',
@@ -332,7 +324,7 @@ export const updateJobOpportunityStatus = async (id, status) => {
     const { data, error } = await supabase.from('job_opportunities').update({ status }).eq('id', id).select().single()
 
     if (error) {
-      console.error('Error updating job opportunity status:', error)
+      console.error('Job Opportunities Controller: Error updating job opportunity status:', error)
       return {
         success: false,
         error: error.message,
@@ -348,7 +340,7 @@ export const updateJobOpportunityStatus = async (id, status) => {
       error: null
     }
   } catch (error) {
-    console.error('Unexpected error in updateJobOpportunityStatus:', error)
+    console.error('Job Opportunities Controller: Unexpected error in updateJobOpportunityStatus:', error)
     return {
       success: false,
       error: 'An unexpected error occurred while updating the job opportunity status',
@@ -438,9 +430,7 @@ export const searchJobOpportunities = async (searchTerm, filters = {}) => {
 
     // Apply text search
     if (searchTerm) {
-      query = query.or(
-        `title.ilike.%${searchTerm}%,company.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%,required_skills.ilike.%${searchTerm}%`
-      )
+      query = query.or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`)
     }
 
     // Apply additional filters
@@ -454,14 +444,6 @@ export const searchJobOpportunities = async (searchTerm, filters = {}) => {
 
     if (filters.workArrangement) {
       query = query.eq('work_arrangement', filters.workArrangement)
-    }
-
-    if (filters.experienceRequired) {
-      query = query.eq('experience_required', filters.experienceRequired)
-    }
-
-    if (filters.remote !== undefined) {
-      query = query.eq('remote', filters.remote)
     }
 
     query = query.order('created_at', { ascending: false })
@@ -546,6 +528,86 @@ export const duplicateJobOpportunity = async (id, overrides = {}) => {
       success: false,
       error: 'An unexpected error occurred while duplicating the job opportunity',
       data: null
+    }
+  }
+}
+
+/**
+ * Get all job descriptions for dropdown selection
+ * @returns {Promise<Object>} Result with job descriptions data
+ */
+export const getJobDescriptionsForSelection = async () => {
+  try {
+    if (!supabase) {
+      throw new Error('Supabase client not initialized')
+    }
+
+    const { data, error } = await supabase
+      .from('job_descriptions')
+      .select('id, title, department, experience_level')
+      .order('title', { ascending: true })
+
+    if (error) {
+      console.error('Job Opportunities Controller: Error fetching job descriptions:', error)
+      return {
+        success: false,
+        error: error.message,
+        data: []
+      }
+    }
+
+    return {
+      success: true,
+      data: data || [],
+      error: null
+    }
+  } catch (error) {
+    console.error('Job Opportunities Controller: Unexpected error in getJobDescriptionsForSelection:', error)
+    return {
+      success: false,
+      error: 'An unexpected error occurred while fetching job descriptions',
+      data: []
+    }
+  }
+}
+
+/**
+ * Get all assessments for dropdown selection
+ * @returns {Promise<Object>} Result with assessments data
+ */
+export const getAssessmentsForSelection = async () => {
+  try {
+    if (!supabase) {
+      throw new Error('Supabase client not initialized')
+    }
+
+    const { data, error } = await supabase
+      .from('assessments')
+      .select('id, title, category, status')
+      .eq('is_active', true)
+      .eq('status', 'Active')
+      .order('title', { ascending: true })
+
+    if (error) {
+      console.error('Job Opportunities Controller: Error fetching assessments:', error)
+      return {
+        success: false,
+        error: error.message,
+        data: []
+      }
+    }
+
+    return {
+      success: true,
+      data: data || [],
+      error: null
+    }
+  } catch (error) {
+    console.error('Job Opportunities Controller: Unexpected error in getAssessmentsForSelection:', error)
+    return {
+      success: false,
+      error: 'An unexpected error occurred while fetching assessments',
+      data: []
     }
   }
 }
