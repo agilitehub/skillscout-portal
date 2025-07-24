@@ -260,17 +260,16 @@ const CreateAssessment = React.memo(({ user }) => {
         )}
 
         <div className='ml-64 relative z-10'>
-
-
-          {/* Toolbar with Title */}
           <div className='px-6 pb-6'>
-            <div
-              className={`rounded-lg mb-6 px-6 py-4 shadow-lg ${
-                darkMode
-                  ? 'bg-gradient-to-r from-emerald-700 to-emerald-600 border border-emerald-600'
-                  : 'bg-gradient-to-r from-emerald-500 to-emerald-600'
-              }`}
-            >
+            <div className='max-w-5xl mx-auto'>
+              {/* Toolbar with Title */}
+              <div
+                className={`rounded-lg mb-6 px-6 py-4 shadow-lg ${
+                  darkMode
+                    ? 'bg-gradient-to-r from-emerald-700 to-emerald-600 border border-emerald-600'
+                    : 'bg-gradient-to-r from-emerald-500 to-emerald-600'
+                }`}
+              >
               <div className='flex items-center'>
                 <FontAwesomeIcon
                   icon={faClipboardCheck}
@@ -297,13 +296,12 @@ const CreateAssessment = React.memo(({ user }) => {
               }}
             >
               <Card
-                className={`max-w-5xl mx-auto shadow-xl ${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-200'}`}
+                className={`shadow-xl ${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-200'}`}
                 style={{
                   backgroundColor: darkMode ? '#374151' : '#ffffff',
                   borderColor: darkMode ? '#4B5563' : '#e5e7eb'
                 }}
               >
-                <div className='max-w-4xl mx-auto'>
                   <div className='space-y-6'>
                     {/* Active Toggle */}
                     <div className='mb-4'>
@@ -373,9 +371,9 @@ const CreateAssessment = React.memo(({ user }) => {
                       </Button>
                     </div>
                   </div>
-                </div>
-              </Card>
-            </Form>
+                </Card>
+              </Form>
+            </div>
           </div>
         </div>
       </div>
