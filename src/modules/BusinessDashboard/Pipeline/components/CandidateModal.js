@@ -18,8 +18,8 @@ const CandidateModal = React.memo(({ visible, onCancel, onSubmit, form, editingC
   }
 
   const priorityOptions = [
-    { value: 'low', label: 'Low Priority', colorClass: 'bg-green-500' },
-    { value: 'medium', label: 'Medium Priority', colorClass: 'bg-orange-500' },
+    { value: 'low', label: 'Low Priority', colorClass: 'bg-emerald-500' },
+    { value: 'medium', label: 'Medium Priority', colorClass: 'bg-blue-500' },
     { value: 'high', label: 'High Priority', colorClass: 'bg-red-500' }
   ]
 
@@ -63,7 +63,7 @@ const CandidateModal = React.memo(({ visible, onCancel, onSubmit, form, editingC
     <Modal
       title={
         <div className='flex items-center space-x-2'>
-          <FontAwesomeIcon icon={faUser} className='text-blue-600' />
+                      <FontAwesomeIcon icon={faUser} className='text-emerald-600' />
           <span>{editingCandidate ? 'Edit Candidate' : 'Add New Candidate'}</span>
         </div>
       }
@@ -239,7 +239,7 @@ const CandidateModal = React.memo(({ visible, onCancel, onSubmit, form, editingC
         <Form.Item className='mb-0 pt-4'>
           <div className='flex justify-end space-x-2'>
             <Button onClick={onCancel}>Cancel</Button>
-            <Button type='primary' htmlType='submit' className='bg-blue-600 hover:bg-blue-700 border-blue-600'>
+            <Button type='primary' htmlType='submit' className='bg-emerald-600 hover:bg-emerald-700 border-emerald-600'>
               {editingCandidate ? 'Update Candidate' : 'Add Candidate'}
             </Button>
           </div>

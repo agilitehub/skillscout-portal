@@ -62,9 +62,9 @@ const CandidateCard = React.memo(
       const colors = {
         high: darkMode ? 'bg-red-900 text-red-200 border-red-700' : 'bg-red-100 text-red-800 border-red-200',
         medium: darkMode
-          ? 'bg-yellow-900 text-yellow-200 border-yellow-700'
-          : 'bg-yellow-100 text-yellow-800 border-yellow-200',
-        low: darkMode ? 'bg-green-900 text-green-200 border-green-700' : 'bg-green-100 text-green-800 border-green-200'
+          ? 'bg-blue-900 text-blue-200 border-blue-700'
+          : 'bg-blue-100 text-blue-800 border-blue-200',
+        low: darkMode ? 'bg-emerald-900 text-emerald-200 border-emerald-700' : 'bg-emerald-100 text-emerald-800 border-emerald-200'
       }
       return colors[priority] || colors.medium
     }
@@ -108,7 +108,7 @@ const CandidateCard = React.memo(
       label: (
         <div
           className={`flex items-center space-x-2 ${
-            action.danger ? 'text-red-600' : action.success ? 'text-green-600' : 'text-gray-700'
+            action.danger ? 'text-red-600' : action.success ? 'text-emerald-600' : 'text-gray-700'
           }`}
         >
           <FontAwesomeIcon icon={action.icon} className='w-3 h-3' />
@@ -122,7 +122,7 @@ const CandidateCard = React.memo(
     actionItems.unshift({
       key: 'edit',
       label: (
-        <div className='flex items-center space-x-2 text-blue-600'>
+        <div className='flex items-center space-x-2 text-emerald-600'>
           <FontAwesomeIcon icon={faEdit} className='w-3 h-3' />
           <span>Edit Candidate</span>
         </div>
