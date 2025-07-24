@@ -380,7 +380,7 @@ const Pipeline = React.memo(({ user }) => {
         <BusinessSidebar />
 
         {/* Main Content */}
-        <div className='flex-1 ml-64 pt-20 relative'>
+        <div className='flex-1 ml-64 relative'>
           {/* Header */}
           <div
             className={`relative px-8 py-4 border-b flex-shrink-0 ${
@@ -391,20 +391,7 @@ const Pipeline = React.memo(({ user }) => {
           >
             <div className='flex items-center justify-between'>
               <div className='flex items-center space-x-4'>
-                <Button
-                  type='text'
-                  icon={<FontAwesomeIcon icon={faArrowLeft} />}
-                  onClick={() => navigate('/business-dashboard')}
-                  className={`${darkMode ? 'text-gray-400 hover:text-white' : 'text-gray-500 hover:text-gray-700'}`}
-                />
                 <div className='flex items-center space-x-3'>
-                  <div
-                    className={`w-8 h-8 rounded-lg flex items-center justify-center bg-gradient-to-br ${
-                      darkMode ? 'from-purple-600 to-purple-800' : 'from-purple-500 to-purple-700'
-                    }`}
-                  >
-                    <FontAwesomeIcon icon={faColumns} className='text-white text-sm' />
-                  </div>
                   <div>
                     <h1 className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Pipeline</h1>
                     <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
