@@ -9,7 +9,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faClipboardCheck,
   faPlus,
-  faArrowLeft,
   faCheckCircle,
   faTimesCircle,
   faTimes,
@@ -540,24 +539,7 @@ const Assessments = React.memo(({ user }) => {
         <BusinessSidebar />
         <div className='ml-64 relative z-10'>
           <div className='p-6'>
-            {/* Breadcrumb Navigation */}
-            <div className='flex items-center mb-4'>
-              <Button
-                variant='ghost'
-                icon={<FontAwesomeIcon icon={faArrowLeft} />}
-                onClick={() => navigate('/business-dashboard')}
-                className={`mr-3 ${
-                  darkMode
-                    ? 'text-gray-300 hover:text-white hover:bg-gray-700'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-                }`}
-              >
-                Back to Dashboard
-              </Button>
-              <div className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                Business Dashboard / Assessments
-              </div>
-            </div>
+
 
             {/* Error Alert */}
             {error && (

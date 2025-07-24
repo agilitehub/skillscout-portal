@@ -10,8 +10,7 @@ import {
   faUsers,
   faCalendarAlt,
   faClipboardCheck,
-  faFileText,
-  faArrowLeft
+  faFileText
 } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../../core/context/ThemeContext'
 import { BRAND_COLORS } from '../../../../core/theme/colors'
@@ -252,24 +251,7 @@ const JobDescriptions = React.memo(({ user }) => {
 
         <BusinessSidebar />
         <div className='p-6 ml-64 relative z-10'>
-          {/* Breadcrumb Navigation */}
-          <div className='flex items-center mb-4'>
-            <Button
-              variant='ghost'
-              icon={<FontAwesomeIcon icon={faArrowLeft} />}
-              onClick={() => navigate('/business-dashboard')}
-              className={`mr-3 ${
-                darkMode
-                  ? 'text-gray-300 hover:text-white hover:bg-gray-700'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-              }`}
-            >
-              Back to Dashboard
-            </Button>
-            <div className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-              Business Dashboard / Job Descriptions
-            </div>
-          </div>
+
 
           {/* Header */}
           <div
