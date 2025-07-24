@@ -85,7 +85,12 @@ const AppRoutes = () => {
         path='/'
         element={
           user ? (
-            <Navigate to='/dashboard' replace user={user} />
+            (() => {
+              // Check for saved dashboard preference
+              const savedDashboard = localStorage.getItem('skillscout_dashboard_type')
+              const targetPath = savedDashboard === 'business' ? '/business-dashboard' : '/dashboard'
+              return <Navigate to={targetPath} replace user={user} />
+            })()
           ) : (
             <DefaultLayout>
               <Login />

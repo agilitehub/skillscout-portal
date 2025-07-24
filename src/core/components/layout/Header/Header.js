@@ -79,9 +79,13 @@ const Header = ({ user }) => {
           return
         }
         setSelectedDashboard(dashboardType)
+        // Store dashboard preference in localStorage
+        localStorage.setItem('skillscout_dashboard_type', dashboardType)
         navigate('/business-dashboard')
       } else {
         setSelectedDashboard(dashboardType)
+        // Store dashboard preference in localStorage
+        localStorage.setItem('skillscout_dashboard_type', dashboardType)
         navigate('/dashboard')
       }
     },
@@ -105,6 +109,8 @@ const Header = ({ user }) => {
         message.success('Business information saved successfully!')
         setIsBusinessSetupOpen(false)
         setSelectedDashboard('business')
+        // Store dashboard preference in localStorage
+        localStorage.setItem('skillscout_dashboard_type', 'business')
         navigate('/business-dashboard')
       } catch (error) {
         console.error('Error saving business info:', error)
@@ -130,6 +136,14 @@ const Header = ({ user }) => {
       } catch (error) {
         console.error('Error parsing saved business info:', error)
       }
+    }
+  }, [])
+
+  // Load saved dashboard preference on mount
+  useEffect(() => {
+    const savedDashboard = localStorage.getItem('skillscout_dashboard_type')
+    if (savedDashboard) {
+      setSelectedDashboard(savedDashboard)
     }
   }, [])
 
