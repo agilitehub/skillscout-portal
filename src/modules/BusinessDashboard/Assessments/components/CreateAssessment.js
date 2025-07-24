@@ -6,7 +6,7 @@ import { Card, Form, message, Input, Select, Switch } from 'antd'
 import { Button } from '../../../../core/components'
 import { useNavigate } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowLeft, faClipboardCheck } from '@fortawesome/free-solid-svg-icons'
+import { faClipboardCheck } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../../core/context/ThemeContext'
 import BusinessSidebar from '../../components/BusinessSidebar'
 import { createAssessment } from '../utils/controller'
@@ -24,10 +24,7 @@ const CreateAssessment = React.memo(({ user }) => {
   const [form] = Form.useForm()
   const [loading, setLoading] = useState(false)
 
-  // Handle navigation back to assessments list
-  const handleGoBack = useCallback(() => {
-    navigate('/business-dashboard/assessments')
-  }, [navigate])
+
 
   // Handle form submission
   const handleFormSubmit = useCallback(
@@ -263,12 +260,7 @@ const CreateAssessment = React.memo(({ user }) => {
         )}
 
         <div className='ml-64 relative z-10'>
-          {/* Breadcrumb Navigation */}
-          <div className='p-6 pb-4'>
-            <div className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-              Business Dashboard / Assessments / Create New
-            </div>
-          </div>
+
 
           {/* Toolbar with Title */}
           <div className='px-6 pb-6'>
@@ -279,32 +271,16 @@ const CreateAssessment = React.memo(({ user }) => {
                   : 'bg-gradient-to-r from-emerald-500 to-emerald-600'
               }`}
             >
-              <div className='flex items-center justify-between'>
-                <div className='flex items-center'>
-                  <Button
-                    icon={<FontAwesomeIcon icon={faArrowLeft} />}
-                    onClick={handleGoBack}
-                    className={`mr-4 ${
-                      darkMode
-                        ? 'border-gray-500 text-gray-200 hover:bg-gray-700 hover:border-gray-400'
-                        : 'border-white/30 text-white hover:bg-white/10 hover:border-white/50'
-                    }`}
-                    style={{
-                      backgroundColor: darkMode ? '#4B5563' : 'rgba(255, 255, 255, 0.1)'
-                    }}
-                  >
-                    Back
-                  </Button>
-                  <FontAwesomeIcon
-                    icon={faClipboardCheck}
-                    className={`text-lg mr-3 ${darkMode ? 'text-emerald-100' : 'text-white'}`}
-                  />
-                  <div>
-                    <h1 className='text-xl font-bold text-white'>Create New Assessment</h1>
-                    <p className='text-emerald-100 text-sm mt-1'>
-                      Create a new assessment with title, category, and other details
-                    </p>
-                  </div>
+              <div className='flex items-center'>
+                <FontAwesomeIcon
+                  icon={faClipboardCheck}
+                  className={`text-lg mr-3 ${darkMode ? 'text-emerald-100' : 'text-white'}`}
+                />
+                <div>
+                  <h1 className='text-xl font-bold text-white'>Create New Assessment</h1>
+                  <p className='text-emerald-100 text-sm mt-1'>
+                    Create a new assessment with title, category, and other details
+                  </p>
                 </div>
               </div>
             </div>
