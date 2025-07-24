@@ -50,7 +50,15 @@ const CreateJobListing = React.memo(({ user }) => {
       <div className={`flex-1 flex flex-col overflow-hidden ${darkMode ? 'bg-gray-800' : 'bg-gray-100'}`}>
         {/* Header */}
         <div
-          className={`sticky top-0 z-10 ${darkMode ? 'bg-gray-700' : 'bg-white'} border-b ${darkMode ? 'border-gray-600' : 'border-gray-200'} px-6 py-4 ml-64`}
+          className={`sticky top-0 z-10 border-b px-6 py-4 ml-64 ${
+            darkMode 
+              ? 'bg-gray-700 border-gray-600 shadow-lg' 
+              : 'bg-white border-gray-200 shadow-sm'
+          }`}
+          style={{
+            backgroundColor: darkMode ? '#374151' : '#ffffff',
+            borderBottomColor: darkMode ? '#4B5563' : '#E5E7EB'
+          }}
         >
           <div className='flex items-center justify-between'>
             <div>

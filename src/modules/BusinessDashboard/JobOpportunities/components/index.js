@@ -73,15 +73,15 @@ const BusinessDashboard = React.memo(({ user }) => {
       const result = await createJobOpportunity()
 
       if (result.success) {
-        message.success('Job opportunity created successfully')
+        message.success('Job listing created successfully')
         loadJobOpportunities()
       } else {
-        console.error('Error creating job opportunity:', result.error)
-        message.error('Failed to create job opportunity: ' + result.error)
+        console.error('Error creating job listing:', result.error)
+        message.error('Failed to create job listing: ' + result.error)
       }
     } catch (e) {
-      console.error('Unexpected error creating job opportunity:', e)
-      message.error('An unexpected error occurred while creating the job opportunity')
+      console.error('Unexpected error creating job listing:', e)
+      message.error('An unexpected error occurred while creating the job listing')
     }
     setEditingJobId(null)
     setEditingJobData(null)
@@ -101,16 +101,16 @@ const BusinessDashboard = React.memo(({ user }) => {
       try {
         const result = await deleteJobOpportunity(jobId)
         if (result.success) {
-          message.success('Job opportunity deleted successfully')
+          message.success('Job listing deleted successfully')
           // Refresh the list
           loadJobOpportunities()
         } else {
-          console.error('Error deleting job opportunity:', result.error)
-          message.error('Failed to delete job opportunity: ' + result.error)
+          console.error('Error deleting job listing:', result.error)
+          message.error('Failed to delete job listing: ' + result.error)
         }
       } catch (error) {
-        console.error('Unexpected error deleting job opportunity:', error)
-        message.error('An unexpected error occurred while deleting the job opportunity')
+        console.error('Unexpected error deleting job listing:', error)
+        message.error('An unexpected error occurred while deleting the job listing')
       }
     },
     [loadJobOpportunities]
@@ -294,8 +294,8 @@ const BusinessDashboard = React.memo(({ user }) => {
                 tooltip: 'Delete Job',
                 onClick: () => handleDeleteJob(record.id),
                 confirm: {
-                  title: 'Delete Job Opportunity',
-                  description: 'Are you sure you want to delete this job opportunity? This action cannot be undone.',
+                  title: 'Delete Job Listing',
+                  description: 'Are you sure you want to delete this job listing? This action cannot be undone.',
                   okText: 'Delete',
                   cancelText: 'Cancel',
                   okType: 'danger'
@@ -362,7 +362,7 @@ const BusinessDashboard = React.memo(({ user }) => {
                   borderColor: darkMode ? '#059669' : '#10b981'
                 }}
               >
-                Create Job Opportunity
+                Create Job Listing
               </Button>
             </div>
           </div>
@@ -407,7 +407,7 @@ const BusinessDashboard = React.memo(({ user }) => {
         {/* Job Opportunities Table */}
         <Card className={`${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white'} shadow-lg`}>
           <div className='mb-4'>
-            <h2 className={`text-xl font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Job Opportunities</h2>
+            <h2 className={`text-xl font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Job Listings</h2>
             <p className={`${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>Manage and track your job postings</p>
           </div>
 
@@ -426,7 +426,7 @@ const BusinessDashboard = React.memo(({ user }) => {
           />
         </Card>
 
-        {/* Job Opportunity Form Modal */}
+        {/* Job Listing Form Modal */}
         <JobOpportunityForm
           visible={isFormVisible}
           onClose={handleFormClose}
