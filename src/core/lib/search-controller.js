@@ -70,7 +70,7 @@ const generateEmbedding = async (text) => {
       },
       body: JSON.stringify({
         input: text,
-        model: 'text-embedding-ada-002'
+        model: 'text-embedding-3-small'
       })
     })
 
@@ -115,10 +115,9 @@ export const performVectorSearch = async (searchTerm, options = {}) => {
 
     // Default search options
     const {
-      matchThreshold = 0.7,
+      matchThreshold = 0.8,
       matchCount = 20,
-      sourceTables = null, // Filter by specific source tables
-      userId = null // Filter by user if provided
+      sourceTables = null // Filter by specific source tables
     } = options
 
     // Build the query using the RPC function
@@ -130,46 +129,7 @@ export const performVectorSearch = async (searchTerm, options = {}) => {
 
     // If the main function fails, try the simpler version
     if (error) {
-      console.log('Main function failed, trying simpler version...')
-      const { data: simpleData, error: simpleError } = await supabase.rpc('match_search_index_simple', {
-        query_embedding: embedding,
-        match_threshold: matchThreshold,
-        match_count: matchCount
-      })
-
-      if (simpleError) {
-        console.error('Both functions failed:', simpleError)
-        // Fall back to direct query
-        const { data: directData, error: directError } = await supabase
-          .from('search_index')
-          .select('source_table, source_id, title, content, metadata')
-          .not('embedding', 'is', null)
-          .limit(matchCount)
-
-        if (directError) {
-          return {
-            success: false,
-            error: directError.message,
-            data: []
-          }
-        }
-
-        // For direct query, we can't calculate similarity, so we'll use a default
-        const directResults = directData.map((item) => ({
-          ...item,
-          similarity: 0.5 // Default similarity for direct query results
-        }))
-
-        return {
-          success: true,
-          data: categorizeSearchResults(directResults),
-          error: null
-        }
-      }
-
-      // Use the simpler function results
-      data = simpleData
-      error = simpleError
+      console.log('error', error)
     }
 
     // Apply additional filters if provided (filter the results after getting them)
@@ -202,6 +162,9 @@ export const performVectorSearch = async (searchTerm, options = {}) => {
  * @returns {Array} Categorized results
  */
 const categorizeSearchResults = (results) => {
+  // First, sort all results by similarity (relevance) in descending order
+  const sortedResults = [...results].sort((a, b) => (b.similarity || 0) - (a.similarity || 0))
+
   const categories = {
     assessments: {
       category: 'Assessments',
@@ -221,14 +184,37 @@ const categorizeSearchResults = (results) => {
     }
   }
 
-  // Group results by source table
-  results.forEach((result) => {
+  // Group results by source table, maintaining the sorted order
+  sortedResults.forEach((result) => {
     const category = categories[result.source_table]
     if (category) {
+      // Generate meaningful subtitle based on source table and metadata
+      let subtitle = 'No content'
+      if (result.metadata) {
+        switch (result.source_table) {
+          case 'assessments':
+            subtitle = `${result.metadata.category} ${result.metadata.tags?.join(', ')}`
+            break
+          case 'job_descriptions':
+            subtitle = `${result.metadata.overview} ${result.metadata.keywords?.join(', ')}`
+            break
+          case 'job_opportunities':
+            subtitle = `${result.metadata.description} ${result.metadata.location} ${result.metadata.salary} ${result.metadata.work_arrangement}`
+            break
+          case 'assessment_questions':
+            subtitle = `${result.metadata.question} ${result.metadata.context} ${result.metadata.preferred_feedback}`
+            break
+          default:
+            subtitle = result.content ? result.content.substring(0, 100) + '...' : 'No content'
+        }
+      } else if (result.content) {
+        subtitle = result.content.substring(0, 100) + '...'
+      }
+
       category.items.push({
         id: result.source_id,
         title: result.title || 'Untitled',
-        subtitle: result.content ? result.content.substring(0, 100) + '...' : 'No content',
+        subtitle,
         similarity: result.similarity,
         sourceTable: result.source_table,
         metadata: result.metadata,
@@ -238,8 +224,15 @@ const categorizeSearchResults = (results) => {
     }
   })
 
-  // Return only categories that have items
-  return Object.values(categories).filter((category) => category.items.length > 0)
+  // Sort categories by their highest similarity score and return only categories that have items
+  const categoriesWithItems = Object.values(categories).filter((category) => category.items.length > 0)
+
+  // Sort categories by the highest similarity score within each category
+  return categoriesWithItems.sort((a, b) => {
+    const maxSimilarityA = Math.max(...a.items.map((item) => item.similarity || 0))
+    const maxSimilarityB = Math.max(...b.items.map((item) => item.similarity || 0))
+    return maxSimilarityB - maxSimilarityA
+  })
 }
 
 /**
@@ -341,7 +334,7 @@ const performTextSearch = async (searchTerm, options = {}) => {
 }
 
 /**
- * Get search suggestions based on recent searches and popular terms
+ * Get search suggestions based on recent searches
  * @param {Array} recentSearches - Recent search terms
  * @returns {Array} Search suggestions
  */
@@ -361,30 +354,6 @@ export const getSearchSuggestions = (recentSearches = []) => {
       }))
     })
   }
-
-  // Add popular searches
-  const popularSearches = [
-    'Software Engineer',
-    'Product Manager',
-    'Frontend Developer',
-    'Data Analyst',
-    'Remote Jobs',
-    'Technical Assessment',
-    'Leadership Skills',
-    'JavaScript Proficiency',
-    'Communication Skills',
-    'Problem Solving'
-  ]
-
-  suggestions.push({
-    category: 'Popular Searches',
-    items: popularSearches.map((search, index) => ({
-      id: `popular-${index}`,
-      title: search,
-      subtitle: 'Popular search',
-      type: 'popular'
-    }))
-  })
 
   return suggestions
 }
@@ -411,6 +380,34 @@ export const saveToRecentSearches = (searchTerm, recentSearches = []) => {
   }
 
   return updated
+}
+
+/**
+ * Highlight matching search terms in text
+ * @param {string} text - Original text
+ * @param {string} searchTerm - User's search term
+ * @returns {JSX.Element} Text with <mark> highlights
+ */
+export const highlightText = (text, searchTerm) => {
+  if (!text || !searchTerm) return text
+
+  // Escape regex special chars and build regex
+  const regex = new RegExp(`(${searchTerm})`, 'gi')
+
+  const parts = text.split(regex)
+  return (
+    <>
+      {parts.map((part, index) =>
+        regex.test(part) ? (
+          <mark key={index} style={{ backgroundColor: '#ffe58f', padding: '0 2px' }}>
+            {part}
+          </mark>
+        ) : (
+          part
+        )
+      )}
+    </>
+  )
 }
 
 /**

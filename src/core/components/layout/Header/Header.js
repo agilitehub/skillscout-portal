@@ -15,7 +15,8 @@ import {
   faTimes,
   faQuestionCircle,
   faBriefcase,
-  faFile
+  faFile,
+  faSpinner
 } from '@fortawesome/free-solid-svg-icons'
 import { Dropdown, Modal, Form, Input, message } from 'antd'
 import { Button } from '../../index'
@@ -26,7 +27,8 @@ import {
   searchWithFallback,
   getSearchSuggestions,
   saveToRecentSearches,
-  clearRecentSearches
+  clearRecentSearches,
+  highlightText
 } from '../../../lib/search-controller'
 
 /**
@@ -213,18 +215,6 @@ const Header = ({ user }) => {
     })
   }, [])
 
-  // Get popular/suggested searches
-  const getPopularSearches = useCallback(
-    () => [
-      { id: 'popular-1', query: 'Software Engineer', type: 'popular' },
-      { id: 'popular-2', query: 'Product Manager', type: 'popular' },
-      { id: 'popular-3', query: 'Remote Jobs', type: 'popular' },
-      { id: 'popular-4', query: 'Frontend Developer', type: 'popular' },
-      { id: 'popular-5', query: 'Data Analyst', type: 'popular' }
-    ],
-    []
-  )
-
   // Handle search functionality with debouncing
   const handleSearchChange = useCallback(
     (e) => {
@@ -243,7 +233,7 @@ const Header = ({ user }) => {
           try {
             // Perform vector search with fallback
             const searchResults = await searchWithFallback(value, {
-              matchThreshold: 0.6,
+              matchThreshold: 0.8,
               matchCount: 20
             })
 
@@ -267,7 +257,7 @@ const Header = ({ user }) => {
           } finally {
             setIsSearchLoading(false)
           }
-        }, 300)
+        }, 1000)
       } else {
         // Show recent and popular searches when input is empty
         const suggestions = getSearchSuggestions(recentSearches)
@@ -275,6 +265,7 @@ const Header = ({ user }) => {
         setIsSearchLoading(false)
       }
     },
+    // eslint-disable-next-line
     [recentSearches]
   )
 
@@ -481,10 +472,10 @@ const Header = ({ user }) => {
       <div className={`relative transition-all duration-200 ${isSearchFocused ? 'transform scale-105' : ''}`}>
         <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
           {isSearchLoading ? (
-            <div className='animate-spin h-4 w-4'>
+            <div className='animate-spin h-4 w-4 flex items-center justify-center'>
               <FontAwesomeIcon
-                icon={faSearch}
-                className={`transition-colors duration-200 ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}
+                icon={faSpinner}
+                className={`transition-colors duration-200 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}
               />
             </div>
           ) : (
@@ -504,12 +495,13 @@ const Header = ({ user }) => {
         </div>
         <input
           type='text'
-          placeholder='Search candidates, jobs, assessments...'
+          placeholder={isSearchLoading ? 'Searching...' : 'Search candidates, jobs, assessments...'}
           value={searchQuery}
           onChange={handleSearchChange}
           onFocus={handleSearchFocus}
           onBlur={handleSearchBlur}
           onKeyDown={handleSearchSubmit}
+          disabled={isSearchLoading}
           className={`block w-full pl-10 pr-10 py-2 border rounded-full text-sm transition-all duration-200 ${
             darkMode
               ? 'bg-gray-800/60 border-gray-600 text-white placeholder-gray-400 backdrop-blur-sm'
@@ -520,9 +512,15 @@ const Header = ({ user }) => {
                 ? 'border-emerald-500 ring-2 ring-emerald-500/20 bg-gray-800/80'
                 : 'border-emerald-500 ring-2 ring-emerald-500/20 bg-white'
               : 'hover:border-gray-400 dark:hover:border-gray-500'
+          } ${
+            isSearchLoading
+              ? darkMode
+                ? 'opacity-70 cursor-not-allowed bg-gray-800/40'
+                : 'opacity-70 cursor-not-allowed bg-gray-100/50'
+              : ''
           } focus:outline-none`}
         />
-        {searchQuery && (
+        {searchQuery && !isSearchLoading && (
           <div className='absolute inset-y-0 right-0 pr-3 flex items-center'>
             <button
               onClick={handleSearchClear}
@@ -537,62 +535,75 @@ const Header = ({ user }) => {
       </div>
 
       {/* Search Results Dropdown */}
-      {isSearchFocused && searchResults.length > 0 && (
+      {isSearchFocused && (searchResults.length > 0 || isSearchLoading) && (
         <div
           className={`absolute top-full left-0 right-0 mt-2 rounded-lg shadow-xl border z-50 max-h-96 overflow-y-auto ${
             darkMode ? 'bg-gray-800 border-gray-600' : 'bg-white border-gray-200'
           }`}
         >
-          {searchResults.map((category, categoryIndex) => (
-            <div key={categoryIndex}>
-              <div
-                className={`px-4 py-2 text-xs font-semibold uppercase tracking-wide ${
-                  darkMode ? 'text-gray-400 bg-gray-700/50' : 'text-gray-500 bg-gray-50'
-                }`}
-              >
-                {category.category}
-              </div>
-              {category.items.map((item, itemIndex) => (
-                <button
-                  key={item.id}
-                  className={`w-full px-4 py-3 text-left flex items-center space-x-3 transition-colors duration-150 ${
-                    darkMode ? 'hover:bg-gray-700 text-white' : 'hover:bg-gray-50 text-gray-900'
-                  }`}
-                  onClick={() => handleSearchResultClick(item)}
-                >
-                  <div
-                    className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                      darkMode ? 'bg-gray-700' : 'bg-gray-100'
-                    }`}
-                  >
-                    <FontAwesomeIcon
-                      icon={item.icon}
-                      className={`text-sm ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}
-                    />
-                  </div>
-                  <div className='flex-1 min-w-0'>
-                    <div className={`text-sm font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                      {item.title}
-                    </div>
-                    <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{item.subtitle}</div>
-                  </div>
-                </button>
-              ))}
-              {/* Clear recent searches option */}
-              {category.category === 'Recent Searches' && category.items.length > 0 && (
-                <div className={`px-4 py-2 border-t ${darkMode ? 'border-gray-600' : 'border-gray-200'}`}>
-                  <button
-                    onClick={clearRecentSearchesLocal}
-                    className={`text-xs font-medium transition-colors duration-150 ${
-                      darkMode ? 'text-red-400 hover:text-red-300' : 'text-red-600 hover:text-red-700'
-                    }`}
-                  >
-                    Clear recent searches
-                  </button>
+          {isSearchLoading && searchResults.length === 0 ? (
+            <div className='px-4 py-6 text-center'>
+              <div className='flex items-center justify-center space-x-2'>
+                <div className='animate-spin h-4 w-4 flex items-center justify-center'>
+                  <FontAwesomeIcon icon={faSpinner} className={`${darkMode ? 'text-blue-400' : 'text-blue-600'}`} />
                 </div>
-              )}
+                <span className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>Searching...</span>
+              </div>
             </div>
-          ))}
+          ) : (
+            searchResults.map((category, categoryIndex) => (
+              <div key={categoryIndex}>
+                <div
+                  className={`px-4 py-2 text-xs font-semibold uppercase tracking-wide ${
+                    darkMode ? 'text-gray-400 bg-gray-700/50' : 'text-gray-500 bg-gray-50'
+                  }`}
+                >
+                  {category.category}
+                </div>
+                {category.items.map((item, itemIndex) => (
+                  <button
+                    key={item.id}
+                    className={`w-full px-4 py-3 text-left flex items-center space-x-3 transition-colors duration-150 ${
+                      darkMode ? 'hover:bg-gray-700 text-white' : 'hover:bg-gray-50 text-gray-900'
+                    }`}
+                    onClick={() => handleSearchResultClick(item)}
+                  >
+                    <div
+                      className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                        darkMode ? 'bg-gray-700' : 'bg-gray-100'
+                      }`}
+                    >
+                      <FontAwesomeIcon
+                        icon={item.icon}
+                        className={`text-sm ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}
+                      />
+                    </div>
+                    <div className='flex-1 min-w-0'>
+                      <div className={`text-sm font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                        {highlightText(item.title, searchQuery)}
+                      </div>
+                      <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                        {highlightText(item.subtitle, searchQuery)}
+                      </div>
+                    </div>
+                  </button>
+                ))}
+                {/* Clear recent searches option */}
+                {category.category === 'Recent Searches' && category.items.length > 0 && (
+                  <div className={`px-4 py-2 border-t ${darkMode ? 'border-gray-600' : 'border-gray-200'}`}>
+                    <button
+                      onClick={clearRecentSearchesLocal}
+                      className={`text-xs font-medium transition-colors duration-150 ${
+                        darkMode ? 'text-red-400 hover:text-red-300' : 'text-red-600 hover:text-red-700'
+                      }`}
+                    >
+                      Clear recent searches
+                    </button>
+                  </div>
+                )}
+              </div>
+            ))
+          )}
           {searchQuery.trim() && (
             <div className={`px-4 py-3 text-center border-t ${darkMode ? 'border-gray-600' : 'border-gray-200'}`}>
               <button
