@@ -1,48 +1,26 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
-import React from 'react'
+import React, { useState, useRef } from 'react'
 import { useDrop } from 'react-dnd'
 import CandidateCard from './CandidateCard'
 
 /**
- * Drop zone component for precise positioning
+ * Smart drop indicator that shows where card will be inserted
  */
-const DropZone = React.memo(({ position, onDrop, darkMode }) => {
-  const [{ isOver, canDrop }, drop] = useDrop({
-    accept: 'candidate',
-    drop: (item) => {
-      onDrop(item.candidate)
-    },
-    collect: (monitor) => ({
-      isOver: monitor.isOver(),
-      canDrop: monitor.canDrop()
-    })
-  })
-
-  const isActive = isOver && canDrop
-
+const DropIndicator = React.memo(({ position, darkMode }) => {
   return (
-    <div
-      ref={drop}
-      className={`transition-all duration-150 rounded ${
-        isActive
-          ? `${darkMode ? 'bg-emerald-500/30' : 'bg-emerald-500/20'} border-emerald-500/60 border-dashed`
-          : 'bg-transparent border-transparent'
-      } border`}
-      style={{
-        minHeight: isActive ? '40px' : '16px',
-        margin: '6px 0',
-        transition: 'all 0.15s ease-out',
-        // Much larger hit area
-        padding: '12px 8px',
-        cursor: isActive ? 'copy' : 'default'
-      }}
+    <div 
+      className="relative w-full flex justify-center"
+      style={{ height: '4px', margin: '8px 0' }}
     >
-      {isActive && (
-        <div className={`text-center ${darkMode ? 'text-emerald-300' : 'text-emerald-600'}`}>
-          <div className="text-xs font-medium">Drop here (position {position})</div>
-        </div>
-      )}
+      <div
+        className={`w-full h-1 rounded-full transition-all duration-200 ${
+          darkMode ? 'bg-emerald-400' : 'bg-emerald-500'
+        }`}
+        style={{
+          boxShadow: `0 0 12px ${darkMode ? 'rgba(52, 211, 153, 0.8)' : 'rgba(16, 185, 129, 0.8)'}`
+        }}
+      />
     </div>
   )
 })
@@ -64,15 +42,56 @@ const StageColumn = React.memo(
     lastDroppedCard,
     darkMode
   }) => {
-    // Column-level drop for visual feedback only - doesn't handle drops, just provides hover state
-    const [{ isOver: columnIsOver, canDrop: columnCanDrop }, columnDrop] = useDrop({
+    const [dropPosition, setDropPosition] = useState(null)
+    const columnRef = useRef(null)
+
+    // Smart column drop that calculates insertion position automatically
+    const [{ isOver: columnIsOver }, drop] = useDrop({
       accept: 'candidate',
-      // No drop handler - let DropZones handle the actual drops
+      drop: (item, monitor) => {
+        const finalPosition = dropPosition !== null ? dropPosition : (candidates || []).length
+        onDropOnStage(item.candidate, stage.key, finalPosition)
+        setDropPosition(null)
+      },
+      hover: (item, monitor) => {
+        if (!columnRef.current) return
+
+        const hoverBoundingRect = columnRef.current.getBoundingClientRect()
+        const clientOffset = monitor.getClientOffset()
+        
+        if (!clientOffset) return
+
+        // Calculate mouse position relative to column
+        const hoverClientY = clientOffset.y - hoverBoundingRect.top
+        
+        // Find all candidate cards and their positions
+        const candidateElements = columnRef.current.querySelectorAll('[data-candidate-id]')
+        const candidates = safeCandidates || []
+        
+        let newPosition = candidates.length // Default to end
+
+        // Find the best insertion position based on mouse Y position
+        for (let i = 0; i < candidateElements.length; i++) {
+          const candidateRect = candidateElements[i].getBoundingClientRect()
+          const candidateY = candidateRect.top - hoverBoundingRect.top
+          const candidateHeight = candidateRect.height
+          const candidateCenter = candidateY + candidateHeight / 2
+
+          if (hoverClientY < candidateCenter) {
+            newPosition = i
+            break
+          }
+        }
+
+        setDropPosition(newPosition)
+      },
       collect: (monitor) => ({
-        isOver: monitor.isOver({ shallow: true }), // Only when directly over column
-        canDrop: monitor.canDrop()
+        isOver: monitor.isOver()
       })
     })
+
+    // Combine refs
+    drop(columnRef)
 
     // Safety check for stage data
     if (!stage || !stage.key) {
@@ -118,45 +137,43 @@ const StageColumn = React.memo(
       return colors[color] || colors.emerald
     }
 
-    const isColumnDropActive = columnIsOver && columnCanDrop
-
     return (
       <div
-        ref={columnDrop}
-        className={`w-full min-h-[500px] flex flex-col ${
+        ref={columnRef}
+        className={`w-full min-h-[500px] flex flex-col transition-all duration-200 cursor-pointer ${
           darkMode ? 'bg-gray-800/80 backdrop-blur-sm shadow-xl' : 'bg-white/80 backdrop-blur-sm shadow-lg'
         } rounded-lg border ${
-          isColumnDropActive
-            ? darkMode
-              ? 'border-emerald-400/60 bg-emerald-500/10 shadow-2xl ring-2 ring-emerald-500/20'
-              : 'border-emerald-400/60 bg-emerald-500/8 shadow-2xl ring-2 ring-emerald-500/20'
-            : darkMode
-            ? 'border-gray-700/50'
-            : 'border-gray-200/50'
-        } transition-all duration-200`}
+          columnIsOver 
+            ? darkMode 
+              ? 'border-emerald-500/60 bg-emerald-500/8 shadow-2xl ring-2 ring-emerald-500/20' 
+              : 'border-emerald-500/60 bg-emerald-500/8 shadow-2xl ring-2 ring-emerald-500/20'
+            : darkMode 
+              ? 'border-gray-700/50' 
+              : 'border-gray-200/50'
+        }`}
       >
         {/* Stage Header */}
-        <div className={`p-3 border-b ${
-          isColumnDropActive 
+        <div className={`p-3 border-b transition-colors duration-200 ${
+          columnIsOver
             ? darkMode ? 'border-emerald-500/50' : 'border-emerald-500/50'
             : darkMode ? 'border-gray-700' : 'border-gray-200'
-        } transition-colors duration-200`}>
+        }`}>
           <div className='text-center space-y-2'>
             <div
-              className={`inline-flex px-2.5 py-1 rounded-full text-xs font-bold border ${
-                isColumnDropActive
+              className={`inline-flex px-2.5 py-1 rounded-full text-xs font-bold border transition-colors duration-200 ${
+                columnIsOver
                   ? darkMode ? 'bg-emerald-800 text-emerald-200 border-emerald-600' : 'bg-emerald-100 text-emerald-800 border-emerald-300'
                   : darkMode ? getStageDarkColor(stage.color) : getStageColor(stage.color)
-              } transition-colors duration-200`}
+              }`}
             >
               {stage.count}
             </div>
             <h3
-              className={`text-xs font-semibold leading-tight ${
-                isColumnDropActive
+              className={`text-xs font-semibold leading-tight transition-colors duration-200 ${
+                columnIsOver
                   ? darkMode ? 'text-emerald-200' : 'text-emerald-800'
                   : darkMode ? 'text-white' : 'text-gray-900'
-              } transition-colors duration-200`}
+              }`}
               style={{ 
                 wordBreak: 'break-word',
                 hyphens: 'auto',
@@ -170,49 +187,48 @@ const StageColumn = React.memo(
 
         {/* Droppable Area */}
         <div className='p-4 min-h-32 flex-1'>
-          <div className='space-y-1'>
-            {/* Drop zone at the beginning */}
-            <DropZone
-              position='start'
-              onDrop={(candidate) => onDropOnStage(candidate, stage.key, 0)}
-              darkMode={darkMode}
-            />
+          <div className='space-y-3'>
+            {/* Smart drop indicator before first card */}
+            {columnIsOver && dropPosition === 0 && (
+              <DropIndicator position={0} darkMode={darkMode} />
+            )}
 
-            {/* Candidate cards with drop zones between them */}
+            {/* Candidate cards with smart drop indicators */}
             {safeCandidates.map((candidate, index) => (
               <React.Fragment key={candidate.id}>
-                <CandidateCard
-                  candidate={candidate}
-                  stageKey={stage.key}
-                  onEditCandidate={onEditCandidate}
-                  onCandidateAction={onCandidateAction}
-                  onDragStart={onDragStart}
-                  onDragEnd={onDragEnd}
-                  darkMode={darkMode}
-                />
-                {/* Drop zone after each card */}
-                <DropZone
-                  position={index + 1}
-                  onDrop={(candidate) => onDropOnStage(candidate, stage.key, index + 1)}
-                  darkMode={darkMode}
-                />
+                <div data-candidate-id={candidate.id}>
+                  <CandidateCard
+                    candidate={candidate}
+                    stageKey={stage.key}
+                    onEditCandidate={onEditCandidate}
+                    onCandidateAction={onCandidateAction}
+                    onDragStart={onDragStart}
+                    onDragEnd={onDragEnd}
+                    darkMode={darkMode}
+                  />
+                </div>
+                {/* Smart drop indicator after each card */}
+                {columnIsOver && dropPosition === index + 1 && (
+                  <DropIndicator position={index + 1} darkMode={darkMode} />
+                )}
               </React.Fragment>
             ))}
 
-            {/* For empty columns, show a message but the first drop zone will handle drops */}
-            {safeCandidates.length === 0 && (
-              <div className={`text-center py-4 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                <p className='text-sm opacity-40'>No candidates</p>
+            {/* Drop indicator at the end */}
+            {columnIsOver && dropPosition === safeCandidates.length && safeCandidates.length > 0 && (
+              <DropIndicator position={safeCandidates.length} darkMode={darkMode} />
+            )}
+
+            {/* For empty columns */}
+            {safeCandidates.length === 0 && !columnIsOver && (
+              <div className={`text-center py-8 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                <p className='text-sm opacity-40'>Drop candidates here</p>
               </div>
             )}
 
-            {/* Final drop zone for dropping at the very end */}
-            {safeCandidates.length > 0 && (
-              <DropZone
-                position="end"
-                onDrop={(candidate) => onDropOnStage(candidate, stage.key, safeCandidates.length)}
-                darkMode={darkMode}
-              />
+            {/* Drop indicator for empty columns */}
+            {safeCandidates.length === 0 && columnIsOver && (
+              <DropIndicator position={0} darkMode={darkMode} />
             )}
           </div>
         </div>
