@@ -6,7 +6,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faEdit,
   faArrowRight,
-  faGripVertical,
   faEnvelope,
   faPhone,
   faCalendar,
@@ -118,17 +117,7 @@ const CandidateCard = React.memo(
       onClick: () => onCandidateAction(candidate, action.key)
     }))
 
-    // Add edit option to all actions
-    actionItems.unshift({
-      key: 'edit',
-      label: (
-        <div className='flex items-center space-x-2 text-emerald-600'>
-          <FontAwesomeIcon icon={faEdit} className='w-3 h-3' />
-          <span>Edit Candidate</span>
-        </div>
-      ),
-      onClick: () => onEditCandidate(candidate)
-    })
+    // Edit option is now handled by the dedicated edit button
 
     const formatDate = (dateString) => {
       try {
@@ -164,13 +153,23 @@ const CandidateCard = React.memo(
 
     return (
       <div ref={drag} className={cardClasses}>
-        {/* Drag Handle Indicator */}
+        {/* Edit Button */}
         <div
-          className={`absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none ${
-            darkMode ? 'text-gray-400' : 'text-gray-400'
+          className={`absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 ${
+            darkMode ? 'text-gray-400 hover:text-white' : 'text-gray-400 hover:text-gray-600'
           }`}
         >
-          <FontAwesomeIcon icon={faGripVertical} className='w-3 h-3' />
+          <Button
+            size='small'
+            type='text'
+            icon={<FontAwesomeIcon icon={faEdit} className='w-3 h-3' />}
+            className={`p-1 ${darkMode ? 'text-gray-400 hover:text-white' : 'text-gray-400 hover:text-gray-600'}`}
+            onClick={(e) => {
+              e.stopPropagation()
+              onEditCandidate(candidate)
+            }}
+            onMouseDown={(e) => e.stopPropagation()}
+          />
         </div>
 
         {/* Candidate Info */}
@@ -248,21 +247,23 @@ const CandidateCard = React.memo(
           )}
 
           {/* Action Buttons */}
-          <div className='flex items-center justify-start pt-2'>
-            <Dropdown menu={{ items: actionItems }} placement='bottomLeft' trigger={['click']} disabled={isDragging}>
-              <Button
-                size='small'
-                type='text'
-                className={`opacity-0 group-hover:opacity-100 transition-opacity duration-200 ${
-                  darkMode ? 'text-gray-400 hover:text-white' : 'text-gray-500 hover:text-gray-700'
-                }`}
-                onMouseDown={(e) => e.stopPropagation()}
-                onClick={(e) => e.stopPropagation()}
-              >
-                Actions
-              </Button>
-            </Dropdown>
-          </div>
+          {actionItems.length > 0 && (
+            <div className='flex items-center justify-start pt-2'>
+              <Dropdown menu={{ items: actionItems }} placement='bottomLeft' trigger={['click']} disabled={isDragging}>
+                <Button
+                  size='small'
+                  type='text'
+                  className={`opacity-0 group-hover:opacity-100 transition-opacity duration-200 ${
+                    darkMode ? 'text-gray-400 hover:text-white' : 'text-gray-500 hover:text-gray-700'
+                  }`}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  Actions
+                </Button>
+              </Dropdown>
+            </div>
+          )}
         </div>
       </div>
     )

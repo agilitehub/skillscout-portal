@@ -1,16 +1,14 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
 import React from 'react'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { useDrop } from 'react-dnd'
 import CandidateCard from './CandidateCard'
 
 /**
- * Drop zone component for inserting cards at specific positions
+ * Drop zone component for precise positioning
  */
-const DropZone = React.memo(({ position, onDrop, darkMode, isOver, canDrop }) => {
-  const [{ isOver: isOverLocal, canDrop: canDropLocal }, drop] = useDrop({
+const DropZone = React.memo(({ position, onDrop, darkMode }) => {
+  const [{ isOver, canDrop }, drop] = useDrop({
     accept: 'candidate',
     drop: (item) => {
       onDrop(item.candidate)
@@ -18,47 +16,38 @@ const DropZone = React.memo(({ position, onDrop, darkMode, isOver, canDrop }) =>
     collect: (monitor) => ({
       isOver: monitor.isOver(),
       canDrop: monitor.canDrop()
-    }),
-    hover: (item, monitor) => {
-      // Add a small delay to prevent jumping
-      if (!monitor.isOver({ shallow: true })) {
-        return
-      }
-    }
+    })
   })
 
-  const isActive = isOver || isOverLocal
-  const canDropHere = canDrop && canDropLocal
+  const isActive = isOver && canDrop
 
   return (
     <div
       ref={drop}
-      className={`transition-all duration-300 rounded-lg ${
-        isActive && canDropHere
-          ? 'bg-gray-100/90 h-32 border-2 border-gray-300 border-dashed shadow-lg'
-          : 'bg-transparent h-2 border-2 border-transparent'
-      }`}
+      className={`transition-all duration-150 rounded ${
+        isActive
+          ? `${darkMode ? 'bg-emerald-500/30' : 'bg-emerald-500/20'} border-emerald-500/60 border-dashed`
+          : 'bg-transparent border-transparent'
+      } border`}
       style={{
-        minHeight: isActive && canDropHere ? '128px' : '8px',
-        margin: isActive && canDropHere ? '16px 0' : '2px 0',
-        transform: isActive && canDropHere ? 'scale(1.05)' : 'scale(1)',
-        transition: 'all 0.3s ease-out',
-        // Add padding to create a larger hit area
-        padding: isActive && canDropHere ? '8px' : '0px'
+        minHeight: isActive ? '40px' : '16px',
+        margin: '6px 0',
+        transition: 'all 0.15s ease-out',
+        // Much larger hit area
+        padding: '12px 8px',
+        cursor: isActive ? 'copy' : 'default'
       }}
     >
-      {isActive && canDropHere && (
-        <div className='flex items-center justify-center h-full'>
-          <div className={`text-center ${darkMode ? 'text-gray-200' : 'text-gray-800'}`}>
-            <FontAwesomeIcon icon={faPlus} className='text-4xl mb-4 opacity-30' />
-            <p className='text-sm font-medium mb-2'>Drop candidates here</p>
-            <p className='text-xs opacity-70'>or use the action menu to move them</p>
-          </div>
+      {isActive && (
+        <div className={`text-center ${darkMode ? 'text-emerald-300' : 'text-emerald-600'}`}>
+          <div className="text-xs font-medium">Drop here (position {position})</div>
         </div>
       )}
     </div>
   )
 })
+
+
 
 /**
  * Individual stage column for the Kanban board
@@ -75,6 +64,16 @@ const StageColumn = React.memo(
     lastDroppedCard,
     darkMode
   }) => {
+    // Column-level drop for visual feedback only - doesn't handle drops, just provides hover state
+    const [{ isOver: columnIsOver, canDrop: columnCanDrop }, columnDrop] = useDrop({
+      accept: 'candidate',
+      // No drop handler - let DropZones handle the actual drops
+      collect: (monitor) => ({
+        isOver: monitor.isOver({ shallow: true }), // Only when directly over column
+        canDrop: monitor.canDrop()
+      })
+    })
+
     // Safety check for stage data
     if (!stage || !stage.key) {
       return (
@@ -119,26 +118,45 @@ const StageColumn = React.memo(
       return colors[color] || colors.emerald
     }
 
+    const isColumnDropActive = columnIsOver && columnCanDrop
+
     return (
       <div
+        ref={columnDrop}
         className={`w-full min-h-[500px] flex flex-col ${
           darkMode ? 'bg-gray-800/80 backdrop-blur-sm shadow-xl' : 'bg-white/80 backdrop-blur-sm shadow-lg'
-        } rounded-lg border ${darkMode ? 'border-gray-700/50' : 'border-gray-200/50'} transition-all duration-200`}
+        } rounded-lg border ${
+          isColumnDropActive
+            ? darkMode
+              ? 'border-emerald-400/60 bg-emerald-500/10 shadow-2xl ring-2 ring-emerald-500/20'
+              : 'border-emerald-400/60 bg-emerald-500/8 shadow-2xl ring-2 ring-emerald-500/20'
+            : darkMode
+            ? 'border-gray-700/50'
+            : 'border-gray-200/50'
+        } transition-all duration-200`}
       >
         {/* Stage Header */}
-        <div className={`p-3 border-b ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+        <div className={`p-3 border-b ${
+          isColumnDropActive 
+            ? darkMode ? 'border-emerald-500/50' : 'border-emerald-500/50'
+            : darkMode ? 'border-gray-700' : 'border-gray-200'
+        } transition-colors duration-200`}>
           <div className='text-center space-y-2'>
             <div
               className={`inline-flex px-2.5 py-1 rounded-full text-xs font-bold border ${
-                darkMode ? getStageDarkColor(stage.color) : getStageColor(stage.color)
-              }`}
+                isColumnDropActive
+                  ? darkMode ? 'bg-emerald-800 text-emerald-200 border-emerald-600' : 'bg-emerald-100 text-emerald-800 border-emerald-300'
+                  : darkMode ? getStageDarkColor(stage.color) : getStageColor(stage.color)
+              } transition-colors duration-200`}
             >
               {stage.count}
             </div>
             <h3
               className={`text-xs font-semibold leading-tight ${
-                darkMode ? 'text-white' : 'text-gray-900'
-              }`}
+                isColumnDropActive
+                  ? darkMode ? 'text-emerald-200' : 'text-emerald-800'
+                  : darkMode ? 'text-white' : 'text-gray-900'
+              } transition-colors duration-200`}
               style={{ 
                 wordBreak: 'break-word',
                 hyphens: 'auto',
@@ -152,14 +170,12 @@ const StageColumn = React.memo(
 
         {/* Droppable Area */}
         <div className='p-4 min-h-32 flex-1'>
-          <div className='space-y-2'>
+          <div className='space-y-1'>
             {/* Drop zone at the beginning */}
             <DropZone
               position='start'
               onDrop={(candidate) => onDropOnStage(candidate, stage.key, 0)}
               darkMode={darkMode}
-              isOver={false}
-              canDrop={true}
             />
 
             {/* Candidate cards with drop zones between them */}
@@ -179,20 +195,23 @@ const StageColumn = React.memo(
                   position={index + 1}
                   onDrop={(candidate) => onDropOnStage(candidate, stage.key, index + 1)}
                   darkMode={darkMode}
-                  isOver={false}
-                  canDrop={true}
                 />
               </React.Fragment>
             ))}
 
-            {/* Enhanced drop zone for empty stages */}
+            {/* For empty columns, show a message but the first drop zone will handle drops */}
             {safeCandidates.length === 0 && (
+              <div className={`text-center py-4 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                <p className='text-sm opacity-40'>No candidates</p>
+              </div>
+            )}
+
+            {/* Final drop zone for dropping at the very end */}
+            {safeCandidates.length > 0 && (
               <DropZone
-                position='empty'
-                onDrop={(candidate) => onDropOnStage(candidate, stage.key, 0)}
+                position="end"
+                onDrop={(candidate) => onDropOnStage(candidate, stage.key, safeCandidates.length)}
                 darkMode={darkMode}
-                isOver={false}
-                canDrop={true}
               />
             )}
           </div>
