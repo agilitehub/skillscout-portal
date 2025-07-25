@@ -5,7 +5,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom'
 import Logo from '../../Logo'
 import ThemeToggle from '../../../theme/components/ThemeToggle'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSignOut, faUser, faBuilding, faUserTie, faChevronDown } from '@fortawesome/free-solid-svg-icons'
+import { faSignOut, faUser, faBuilding, faUserTie, faChevronDown, faSearch, faTimes } from '@fortawesome/free-solid-svg-icons'
 import { Dropdown, Modal, Form, Input, message } from 'antd'
 import { Button } from '../../index'
 import { useTheme } from '../../../context/ThemeContext'
@@ -24,6 +24,10 @@ const Header = ({ user }) => {
   const [isBusinessSetupOpen, setIsBusinessSetupOpen] = useState(false)
   const [businessInfo, setBusinessInfo] = useState({ name: '', domain: '' })
   const [businessForm] = Form.useForm()
+  const [searchQuery, setSearchQuery] = useState('')
+  const [isSearchFocused, setIsSearchFocused] = useState(false)
+  const [searchResults, setSearchResults] = useState([])
+  const [recentSearches, setRecentSearches] = useState([])
   const { darkMode } = useTheme()
   const { logout } = useAuth()
 
@@ -146,6 +150,179 @@ const Header = ({ user }) => {
       setSelectedDashboard(savedDashboard)
     }
   }, [])
+
+  // Load recent searches from localStorage
+  useEffect(() => {
+    const savedRecentSearches = localStorage.getItem('skillscout_recent_searches')
+    if (savedRecentSearches) {
+      try {
+        const parsed = JSON.parse(savedRecentSearches)
+        setRecentSearches(parsed)
+      } catch (error) {
+        console.error('Error parsing saved recent searches:', error)
+      }
+    }
+  }, [])
+
+  // Save search to recent searches
+  const saveToRecentSearches = useCallback((searchTerm) => {
+    if (!searchTerm.trim()) return
+    
+    setRecentSearches(prev => {
+      const filtered = prev.filter(search => search.query !== searchTerm)
+      const updated = [{ query: searchTerm, timestamp: Date.now() }, ...filtered].slice(0, 5)
+      localStorage.setItem('skillscout_recent_searches', JSON.stringify(updated))
+      return updated
+    })
+  }, [])
+
+  // Get popular/suggested searches
+  const getPopularSearches = useCallback(() => [
+    { id: 'popular-1', query: 'Software Engineer', type: 'popular' },
+    { id: 'popular-2', query: 'Product Manager', type: 'popular' },
+    { id: 'popular-3', query: 'Remote Jobs', type: 'popular' },
+    { id: 'popular-4', query: 'Frontend Developer', type: 'popular' },
+    { id: 'popular-5', query: 'Data Analyst', type: 'popular' },
+  ], [])
+
+  // Handle search functionality
+  const handleSearchChange = useCallback((e) => {
+    const value = e.target.value
+    setSearchQuery(value)
+    
+    if (value.trim()) {
+      // Mock search results - you can replace this with actual search logic
+      const mockResults = [
+        {
+          category: 'Candidates',
+          items: [
+            { id: 1, title: 'John Smith', subtitle: 'Software Engineer', icon: faUser },
+            { id: 2, title: 'Sarah Johnson', subtitle: 'Product Manager', icon: faUser },
+            { id: 3, title: 'Mike Chen', subtitle: 'Frontend Developer', icon: faUser },
+            { id: 4, title: 'Emily Davis', subtitle: 'Data Analyst', icon: faUser },
+          ]
+        },
+        {
+          category: 'Job Listings',
+          items: [
+            { id: 5, title: 'Senior Developer', subtitle: 'Full-time Position', icon: faBuilding },
+            { id: 6, title: 'Marketing Manager', subtitle: 'Remote Available', icon: faBuilding },
+            { id: 7, title: 'Product Manager', subtitle: 'Hybrid Work', icon: faBuilding },
+            { id: 8, title: 'Data Analyst', subtitle: 'Contract Position', icon: faBuilding },
+          ]
+        },
+        {
+          category: 'Assessments',
+          items: [
+            { id: 9, title: 'JavaScript Proficiency', subtitle: 'Technical Assessment', icon: faUserTie },
+            { id: 10, title: 'Leadership Skills', subtitle: 'Behavioral Assessment', icon: faUserTie },
+            { id: 11, title: 'Data Analysis Test', subtitle: 'Skills Assessment', icon: faUserTie },
+            { id: 12, title: 'Communication Skills', subtitle: 'Soft Skills Assessment', icon: faUserTie },
+          ]
+        },
+        {
+          category: 'Companies',
+          items: [
+            { id: 13, title: 'TechCorp Solutions', subtitle: 'Technology Company', icon: faBuilding },
+            { id: 14, title: 'InnovateLab Inc', subtitle: 'Startup Company', icon: faBuilding },
+            { id: 15, title: 'Global Dynamics', subtitle: 'Enterprise Company', icon: faBuilding },
+            { id: 16, title: 'Creative Agency', subtitle: 'Marketing Company', icon: faBuilding },
+          ]
+        }
+      ]
+      
+      // Filter results based on search query
+      const filteredResults = mockResults.map(category => ({
+        ...category,
+        items: category.items.filter(item => 
+          item.title.toLowerCase().includes(value.toLowerCase()) ||
+          item.subtitle.toLowerCase().includes(value.toLowerCase())
+        )
+      })).filter(category => category.items.length > 0)
+      
+      setSearchResults(filteredResults)
+    } else {
+      // Show recent and popular searches when input is empty
+      const suggestions = []
+      
+      if (recentSearches.length > 0) {
+        suggestions.push({
+          category: 'Recent Searches',
+          items: recentSearches.map(search => ({
+            id: `recent-${search.timestamp}`,
+            title: search.query,
+            subtitle: 'Recent search',
+            icon: faSearch,
+            type: 'recent'
+          }))
+        })
+      }
+      
+      suggestions.push({
+        category: 'Popular Searches',
+        items: getPopularSearches().map(search => ({
+          id: search.id,
+          title: search.query,
+          subtitle: 'Popular search',
+          icon: faSearch,
+          type: 'popular'
+        }))
+      })
+      
+      setSearchResults(suggestions)
+    }
+  }, [recentSearches, getPopularSearches])
+
+  const handleSearchClear = useCallback(() => {
+    setSearchQuery('')
+    setSearchResults([])
+    setIsSearchFocused(false)
+  }, [])
+
+  const clearRecentSearches = useCallback(() => {
+    setRecentSearches([])
+    localStorage.removeItem('skillscout_recent_searches')
+    // Refresh suggestions
+    if (isSearchFocused && !searchQuery.trim()) {
+      handleSearchChange({ target: { value: '' } })
+    }
+  }, [isSearchFocused, searchQuery, handleSearchChange])
+
+  const handleSearchFocus = useCallback(() => {
+    setIsSearchFocused(true)
+    // Show suggestions when focusing on empty search
+    if (!searchQuery.trim()) {
+      handleSearchChange({ target: { value: '' } })
+    }
+  }, [searchQuery, handleSearchChange])
+
+  const handleSearchBlur = useCallback(() => {
+    // Delay blur to allow clicking on results
+    setTimeout(() => setIsSearchFocused(false), 200)
+  }, [])
+
+  const handleSearchResultClick = useCallback((item) => {
+    if (item.type === 'recent' || item.type === 'popular') {
+      // Handle suggestion clicks
+      setSearchQuery(item.title)
+      saveToRecentSearches(item.title)
+      // You can navigate or perform search with item.title
+      console.log('Searching for:', item.title)
+    } else {
+      // Handle regular search result clicks
+      console.log('Selected:', item)
+      saveToRecentSearches(searchQuery)
+    }
+    handleSearchClear()
+  }, [searchQuery, saveToRecentSearches, handleSearchClear])
+
+  const handleSearchSubmit = useCallback((e) => {
+    if (e.key === 'Enter' && searchQuery.trim()) {
+      saveToRecentSearches(searchQuery)
+      console.log('Searching for:', searchQuery)
+      setIsSearchFocused(false)
+    }
+  }, [searchQuery, saveToRecentSearches])
 
   // Dashboard dropdown component
   const renderDashboardDropdown = () => (
@@ -270,6 +447,145 @@ const Header = ({ user }) => {
     </div>
   )
 
+  // Search component
+  const renderSearchComponent = () => (
+    <div className="relative flex-1 max-w-lg mx-4 lg:mx-8 hidden sm:block">
+      <div className={`relative transition-all duration-200 ${isSearchFocused ? 'transform scale-105' : ''}`}>
+        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <FontAwesomeIcon 
+            icon={faSearch} 
+            className={`h-4 w-4 transition-colors duration-200 ${
+              isSearchFocused 
+                ? darkMode ? 'text-emerald-400' : 'text-emerald-600'
+                : darkMode ? 'text-gray-400' : 'text-gray-500'
+            }`}
+          />
+        </div>
+        <input
+          type="text"
+          placeholder="Search candidates, jobs, assessments..."
+          value={searchQuery}
+          onChange={handleSearchChange}
+          onFocus={handleSearchFocus}
+          onBlur={handleSearchBlur}
+          onKeyDown={handleSearchSubmit}
+          className={`block w-full pl-10 pr-10 py-2 border rounded-full text-sm transition-all duration-200 ${
+            darkMode
+              ? 'bg-gray-800/60 border-gray-600 text-white placeholder-gray-400 backdrop-blur-sm'
+              : 'bg-white/90 border-gray-300 text-gray-900 placeholder-gray-500 backdrop-blur-sm'
+          } ${
+            isSearchFocused
+              ? darkMode
+                ? 'border-emerald-500 ring-2 ring-emerald-500/20 bg-gray-800/80'
+                : 'border-emerald-500 ring-2 ring-emerald-500/20 bg-white'
+              : 'hover:border-gray-400 dark:hover:border-gray-500'
+          } focus:outline-none`}
+        />
+        {searchQuery && (
+          <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
+            <button
+              onClick={handleSearchClear}
+              className={`h-4 w-4 transition-colors duration-200 ${
+                darkMode ? 'text-gray-400 hover:text-white' : 'text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              <FontAwesomeIcon icon={faTimes} />
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Search Results Dropdown */}
+      {(isSearchFocused && searchResults.length > 0) && (
+        <div className={`absolute top-full left-0 right-0 mt-2 rounded-lg shadow-xl border z-50 max-h-96 overflow-y-auto ${
+          darkMode 
+            ? 'bg-gray-800 border-gray-600' 
+            : 'bg-white border-gray-200'
+        }`}>
+                     {searchResults.map((category, categoryIndex) => (
+             <div key={categoryIndex}>
+               <div className={`px-4 py-2 text-xs font-semibold uppercase tracking-wide ${
+                 darkMode ? 'text-gray-400 bg-gray-700/50' : 'text-gray-500 bg-gray-50'
+               }`}>
+                 {category.category}
+               </div>
+               {category.items.map((item, itemIndex) => (
+                 <button
+                   key={item.id}
+                   className={`w-full px-4 py-3 text-left flex items-center space-x-3 transition-colors duration-150 ${
+                     darkMode 
+                       ? 'hover:bg-gray-700 text-white' 
+                       : 'hover:bg-gray-50 text-gray-900'
+                   }`}
+                    onClick={() => handleSearchResultClick(item)}
+                 >
+                   <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                     darkMode ? 'bg-gray-700' : 'bg-gray-100'
+                   }`}>
+                     <FontAwesomeIcon 
+                       icon={item.icon} 
+                       className={`text-sm ${
+                         darkMode ? 'text-emerald-400' : 'text-emerald-600'
+                       }`}
+                     />
+                   </div>
+                   <div className="flex-1 min-w-0">
+                     <div className={`text-sm font-medium ${
+                       darkMode ? 'text-white' : 'text-gray-900'
+                     }`}>
+                       {item.title}
+                     </div>
+                     <div className={`text-xs ${
+                       darkMode ? 'text-gray-400' : 'text-gray-500'
+                     }`}>
+                       {item.subtitle}
+                     </div>
+                   </div>
+                 </button>
+               ))}
+               {/* Clear recent searches option */}
+               {category.category === 'Recent Searches' && category.items.length > 0 && (
+                 <div className={`px-4 py-2 border-t ${
+                   darkMode ? 'border-gray-600' : 'border-gray-200'
+                 }`}>
+                   <button
+                     onClick={clearRecentSearches}
+                     className={`text-xs font-medium transition-colors duration-150 ${
+                       darkMode 
+                         ? 'text-red-400 hover:text-red-300' 
+                         : 'text-red-600 hover:text-red-700'
+                     }`}
+                   >
+                     Clear recent searches
+                   </button>
+                 </div>
+                              )}
+             </div>
+           ))}
+           {searchQuery.trim() && (
+             <div className={`px-4 py-3 text-center border-t ${
+               darkMode ? 'border-gray-600' : 'border-gray-200'
+             }`}>
+               <button
+                 className={`text-xs font-medium transition-colors duration-150 ${
+                   darkMode 
+                     ? 'text-emerald-400 hover:text-emerald-300' 
+                     : 'text-emerald-600 hover:text-emerald-700'
+                 }`}
+                 onClick={() => {
+                   console.log('Show all results for:', searchQuery)
+                   handleSearchClear()
+                 }}
+               >
+                 Show all results for "{searchQuery}"
+               </button>
+             </div>
+           )}
+        </div>
+      )}
+    </div>
+  )
+
   // Enhanced header gradient with blue-to-green transitions for Skill Scout branding
   const headerGradient = darkMode
     ? `linear-gradient(135deg, ${BRAND_COLORS.darkBlue} 0%, ${BRAND_COLORS.shakespeare} 25%, ${BRAND_COLORS.emeraldAccent} 65%, ${BRAND_COLORS.forestGreen} 100%)`
@@ -287,7 +603,7 @@ const Header = ({ user }) => {
       }}
     >
       <div className='px-2 sm:px-4 md:px-6'>
-        <div className='flex justify-between h-16 md:h-20 items-center'>
+        <div className='flex h-16 md:h-20 items-center justify-between'>
           {/* Logo and Title */}
           <Link to='/' className='flex-shrink-0 flex items-center'>
             <div
@@ -295,16 +611,19 @@ const Header = ({ user }) => {
                 darkMode ? 'bg-white/15 backdrop-blur-sm shadow-lg' : ''
               }`}
             >
-              <Logo size='small' className='w-12 h-12 sm:w-14 sm:h-14 md:w-18 md:h-18' />
+              <Logo size='small' className='w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16' />
             </div>
-            <h1 className='ml-1 sm:ml-2 md:ml-3 text-lg sm:text-xl md:text-4xl font-bold text-white whitespace-nowrap'>
+            <h1 className='ml-1 sm:ml-2 md:ml-3 text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-white whitespace-nowrap'>
               <span className='text-blue-500'>Skill</span>
               <span className='text-emerald-500'>Scout</span>
             </h1>
           </Link>
 
+          {/* Search Component - Only show when user is logged in */}
+          {user && renderSearchComponent()}
+
           {/* Right side - Dashboard selector, theme toggle, and user menu */}
-          <div className='flex items-center ml-auto'>
+          <div className='flex items-center flex-shrink-0'>
             {/* Dashboard Dropdown */}
             {user && (
               <Dropdown
