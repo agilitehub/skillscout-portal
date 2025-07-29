@@ -13,8 +13,12 @@ import {
   faBuilding,
   faTasks,
   faClipboardList,
-  faGift,
-  faEdit
+  faEdit,
+  faGraduationCap,
+  faCode,
+  faUsers,
+  faStar,
+  faUserTie
 } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../../core/context/ThemeContext'
 import BusinessSidebar from '../../components/BusinessSidebar'
@@ -76,11 +80,15 @@ const CreateJobDescription = React.memo(({ user }) => {
             title: result.data.title,
             overview: result.data.overview,
             department: result.data.department,
+            reportsToRole: result.data.reportsToRole,
             experienceLevel: result.data.experienceLevel,
             keywords: result.data.keywords || [],
             responsibilities: result.data.responsibilities,
             requirements: result.data.requirements,
-            benefits: result.data.benefits
+            educationExperience: result.data.educationExperience,
+            technicalSkills: result.data.technicalSkills,
+            softSkills: result.data.softSkills,
+            preferredSkills: result.data.preferredSkills
           })
         } else {
           console.error('Error loading job description for edit:', result.error)
@@ -138,11 +146,15 @@ const CreateJobDescription = React.memo(({ user }) => {
           title: values.title?.trim(),
           overview: values.overview?.trim(),
           department: values.department,
+          reportsToRole: values.reportsToRole?.trim(),
           experienceLevel: values.experienceLevel,
           keywords: typeof values.keywords === 'string' ? parseKeywords(values.keywords) : values.keywords || [],
           responsibilities: values.responsibilities?.trim() || '',
           requirements: values.requirements?.trim() || '',
-          benefits: values.benefits?.trim() || ''
+          educationExperience: values.educationExperience?.trim() || '',
+          technicalSkills: values.technicalSkills?.trim() || '',
+          softSkills: values.softSkills?.trim() || '',
+          preferredSkills: values.preferredSkills?.trim() || ''
         }
 
         let result
@@ -401,6 +413,20 @@ const CreateJobDescription = React.memo(({ user }) => {
                   /* Character count */
                   .ant-input-data-count {
                     color: #9CA3AF !important;
+                    margin-top: 4px !important;
+                    position: relative !important;
+                    z-index: 1 !important;
+                  }
+                  
+                  /* Text area with character count spacing */
+                  .dark-form .ant-input-data-count-suffix {
+                    margin-top: 4px !important;
+                  }
+                  
+                  /* General text area character count for both themes */
+                  .ant-input-show-count .ant-input-data-count {
+                    margin-top: 4px !important;
+                    clear: both !important;
                   }
                   
                   /* Additional comprehensive styling */
@@ -466,6 +492,7 @@ const CreateJobDescription = React.memo(({ user }) => {
                         className={`space-y-4 p-6 rounded-lg border ${
                           darkMode ? 'bg-gray-800 border-gray-600' : 'bg-gray-50 border-gray-200'
                         }`}
+                        style={{ minHeight: '600px', display: 'flex', flexDirection: 'column' }}
                       >
                         <div className={`mb-4 pb-2 border-b ${darkMode ? 'border-gray-600' : 'border-gray-200'}`}>
                           <h3 className={`text-lg font-semibold ${darkMode ? 'text-gray-200' : 'text-gray-800'}`}>
@@ -473,7 +500,8 @@ const CreateJobDescription = React.memo(({ user }) => {
                           </h3>
                         </div>
 
-                        <Form.Item
+                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                          <Form.Item
                           label='Job Title'
                           name='title'
                           rules={[
@@ -488,37 +516,6 @@ const CreateJobDescription = React.memo(({ user }) => {
                           />
                         </Form.Item>
 
-                        <Form.Item
-                          label='Job Overview'
-                          name='overview'
-                          rules={[{ required: true, message: 'Please enter job overview' }]}
-                          extra={
-                            <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
-                              Provide a compelling overview of the role and what makes it attractive to candidates
-                            </span>
-                          }
-                        >
-                          <TextArea
-                            placeholder='Describe the role, its importance to the company, and what the successful candidate will achieve...'
-                            rows={4}
-                            showCount={true}
-                            maxLength={2000}
-                            style={{ fontWeight: '500' }}
-                          />
-                        </Form.Item>
-                      </div>
-                    </Col>
-                    <Col span={12}>
-                      <div
-                        className={`space-y-4 p-6 rounded-lg border ${
-                          darkMode ? 'bg-gray-800 border-gray-600' : 'bg-gray-50 border-gray-200'
-                        }`}
-                      >
-                        <div className={`mb-4 pb-2 border-b ${darkMode ? 'border-gray-600' : 'border-gray-200'}`}>
-                          <h3 className={`text-lg font-semibold ${darkMode ? 'text-gray-200' : 'text-gray-800'}`}>
-                            Job Details
-                          </h3>
-                        </div>
                         <Form.Item
                           label='Department'
                           name='department'
@@ -543,6 +540,26 @@ const CreateJobDescription = React.memo(({ user }) => {
                               </Option>
                             ))}
                           </Select>
+                        </Form.Item>
+
+                        <Form.Item
+                          label='Reports To Role'
+                          name='reportsToRole'
+                          rules={[
+                            { required: true, message: 'Please enter the role this position reports to' },
+                            { max: 255, message: 'Reports To Role must be 255 characters or less' }
+                          ]}
+                          extra={
+                            <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
+                              Specify the job title or role that this position will report to
+                            </span>
+                          }
+                        >
+                          <Input
+                            placeholder='e.g. Engineering Manager, Director of Product, VP of Engineering'
+                            prefix={<FontAwesomeIcon icon={faUserTie} className='text-gray-400' />}
+                            style={{ fontWeight: '500' }}
+                          />
                         </Form.Item>
 
                         <Form.Item
@@ -587,6 +604,39 @@ const CreateJobDescription = React.memo(({ user }) => {
                             placeholder='Add keywords like: javascript, react, senior, remote, frontend, engineer'
                             tokenSeparators={[',', '\n']}
                             style={{ fontWeight: '500' }}
+                          />
+                        </Form.Item>
+                        </div>
+                      </div>
+                    </Col>
+                    <Col span={12}>
+                      <div
+                        className={`space-y-4 p-6 rounded-lg border ${
+                          darkMode ? 'bg-gray-800 border-gray-600' : 'bg-gray-50 border-gray-200'
+                        }`}
+                        style={{ minHeight: '600px', display: 'flex', flexDirection: 'column' }}
+                      >
+                        <div className={`mb-4 pb-2 border-b ${darkMode ? 'border-gray-600' : 'border-gray-200'}`}>
+                          <h3 className={`text-lg font-semibold ${darkMode ? 'text-gray-200' : 'text-gray-800'}`}>
+                            Job Overview
+                          </h3>
+                        </div>
+                        
+                        <Form.Item
+                          name='overview'
+                          rules={[{ required: true, message: 'Please enter job overview' }]}
+                          extra={
+                            <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
+                              Provide a compelling overview of the role and what makes it attractive to candidates
+                            </span>
+                          }
+                          style={{ marginBottom: '24px', flex: 1, display: 'flex', flexDirection: 'column' }}
+                        >
+                          <TextArea
+                            placeholder='Describe the role, its importance to the company, and what the successful candidate will achieve...'
+                            showCount={true}
+                            maxLength={2000}
+                            style={{ fontWeight: '500', marginBottom: '8px', flex: 1, minHeight: '400px', resize: 'vertical' }}
                           />
                         </Form.Item>
                       </div>
@@ -672,24 +722,101 @@ const CreateJobDescription = React.memo(({ user }) => {
                         <Form.Item
                           label={
                             <Space>
-                              <span>Benefits</span>
-                              <FontAwesomeIcon icon={faGift} className='text-gray-400' />
+                              <span>Education and Experience</span>
+                              <FontAwesomeIcon icon={faGraduationCap} className='text-gray-400' />
                             </Space>
                           }
-                          name='benefits'
-                          rules={[{ required: true, message: 'Please enter job benefits' }]}
+                          name='educationExperience'
+                          rules={[{ required: true, message: 'Please enter education and experience requirements' }]}
                           extra={
                             <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
-                              List the benefits and perks offered with this position
+                              Specify educational background and years of experience required
                             </span>
                           }
                         >
                           <TextArea
-                            placeholder={`• Competitive salary and equity package
-• Comprehensive health, dental, and vision insurance
-• Flexible PTO and work-from-home options
-• Professional development budget`}
-                            rows={8}
+                            placeholder={`• Bachelor's degree in Computer Science, Engineering, or related field
+• 5+ years of professional software development experience
+• Master's degree preferred
+• Experience in agile development environments`}
+                            rows={6}
+                            showCount={true}
+                            style={{ fontWeight: '500' }}
+                          />
+                        </Form.Item>
+
+                        <Form.Item
+                          label={
+                            <Space>
+                              <span>Technical Skills</span>
+                              <FontAwesomeIcon icon={faCode} className='text-gray-400' />
+                            </Space>
+                          }
+                          name='technicalSkills'
+                          rules={[{ required: true, message: 'Please enter required technical skills' }]}
+                          extra={
+                            <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
+                              List the specific technical skills and technologies required
+                            </span>
+                          }
+                        >
+                          <TextArea
+                            placeholder={`• Proficiency in JavaScript, TypeScript, React, Node.js
+• Experience with databases (SQL, NoSQL)
+• Knowledge of cloud platforms (AWS, Azure, GCP)
+• Familiarity with CI/CD pipelines and DevOps practices`}
+                            rows={6}
+                            showCount={true}
+                            style={{ fontWeight: '500' }}
+                          />
+                        </Form.Item>
+
+                        <Form.Item
+                          label={
+                            <Space>
+                              <span>Soft Skills</span>
+                              <FontAwesomeIcon icon={faUsers} className='text-gray-400' />
+                            </Space>
+                          }
+                          name='softSkills'
+                          rules={[{ required: true, message: 'Please enter required soft skills' }]}
+                          extra={
+                            <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
+                              Describe the interpersonal and communication skills needed
+                            </span>
+                          }
+                        >
+                          <TextArea
+                            placeholder={`• Excellent written and verbal communication skills
+• Strong problem-solving and analytical thinking
+• Ability to work collaboratively in cross-functional teams
+• Leadership and mentoring capabilities`}
+                            rows={6}
+                            showCount={true}
+                            style={{ fontWeight: '500' }}
+                          />
+                        </Form.Item>
+
+                        <Form.Item
+                          label={
+                            <Space>
+                              <span>Preferred/Bonus Skills</span>
+                              <FontAwesomeIcon icon={faStar} className='text-gray-400' />
+                            </Space>
+                          }
+                          name='preferredSkills'
+                          extra={
+                            <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
+                              List any additional skills that would be beneficial but not required
+                            </span>
+                          }
+                        >
+                          <TextArea
+                            placeholder={`• Experience with machine learning or AI technologies
+• Contributions to open-source projects
+• Public speaking or technical writing experience
+• Additional certifications in relevant technologies`}
+                            rows={6}
                             showCount={true}
                             style={{ fontWeight: '500' }}
                           />

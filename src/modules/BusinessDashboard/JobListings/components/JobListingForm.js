@@ -2,11 +2,11 @@
 // Frontend Instructions Rule Applied!
 
 import React, { useState, useCallback, useEffect } from 'react'
-import { Card, Form, message, Row, Col, Input, Select } from 'antd'
+import { Card, Form, message, Row, Col, Input, Select, Space } from 'antd'
 import { Button } from '../../../../core/components'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSave, faTimes } from '@fortawesome/free-solid-svg-icons'
+import { faSave, faTimes, faGift } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../../core/context/ThemeContext'
 import BusinessSidebar from '../../components/BusinessSidebar'
 import { createJobListing } from '../utils/listing-controller'
@@ -369,6 +369,33 @@ const CreateJobListing = React.memo(({ user }) => {
 • Attention to detail and analytical mindset
 • Bachelor's degree (MBA preferred) with several years of marketing experience`}
                   rows={6}
+                  style={{ fontWeight: '500' }}
+                />
+              </Form.Item>
+
+              {/* Benefits */}
+              <Form.Item
+                label={
+                  <Space>
+                    <span>Benefits</span>
+                    <FontAwesomeIcon icon={faGift} className='text-gray-400' />
+                  </Space>
+                }
+                name='benefits'
+                rules={[{ required: true, message: 'Please enter job benefits' }]}
+                extra={
+                  <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
+                    List the benefits and perks offered with this position
+                  </span>
+                }
+              >
+                <TextArea
+                  placeholder={`• Competitive salary and equity package
+• Comprehensive health, dental, and vision insurance
+• Flexible PTO and work-from-home options
+• Professional development budget`}
+                  rows={8}
+                  showCount={true}
                   style={{ fontWeight: '500' }}
                 />
               </Form.Item>

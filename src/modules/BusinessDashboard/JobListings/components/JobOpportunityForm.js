@@ -2,9 +2,9 @@
 // Frontend Instructions Rule Applied!
 
 import React, { useState, useCallback, useEffect, useMemo } from 'react'
-import { Form, Row, Col, message, Input, Select, Card } from 'antd'
+import { Form, Row, Col, message, Input, Select, Card, Space } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSave, faTimes, faBriefcase } from '@fortawesome/free-solid-svg-icons'
+import { faSave, faTimes, faBriefcase, faGift } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../../core/context/ThemeContext'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { Button } from '../../../../core/components'
@@ -512,6 +512,33 @@ const JobOpportunityForm = React.memo(() => {
                 <TextArea
                   placeholder='Detailed overview of the role, responsibilities, and what makes this opportunity unique...'
                   rows={4}
+                />
+              </Form.Item>
+
+              {/* Benefits */}
+              <Form.Item
+                label={
+                  <Space>
+                    <span>Benefits</span>
+                    <FontAwesomeIcon icon={faGift} className='text-gray-400' />
+                  </Space>
+                }
+                name='benefits'
+                rules={[{ required: true, message: 'Please enter job benefits' }]}
+                extra={
+                  <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
+                    List the benefits and perks offered with this position
+                  </span>
+                }
+              >
+                <TextArea
+                  placeholder={`• Competitive salary and equity package
+• Comprehensive health, dental, and vision insurance
+• Flexible PTO and work-from-home options
+• Professional development budget`}
+                  rows={8}
+                  showCount={true}
+                  style={{ fontWeight: '500' }}
                 />
               </Form.Item>
             </div>
