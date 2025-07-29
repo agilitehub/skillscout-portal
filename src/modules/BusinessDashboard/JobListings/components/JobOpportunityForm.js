@@ -2,7 +2,7 @@
 // Frontend Instructions Rule Applied!
 
 import React, { useState, useCallback, useEffect, useMemo } from 'react'
-import { Form, Row, Col, message, Input, Select, Card, Space } from 'antd'
+import { Form, Row, Col, message, Input, Select, Card, Space, Spin } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSave, faTimes, faBriefcase, faGift } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../../core/context/ThemeContext'
@@ -64,14 +64,14 @@ const JobOpportunityForm = React.memo(() => {
           message.error('Failed to load job descriptions: ' + jobDescriptionsResult.error)
         }
 
-              // Load questionnaires
-      const questionnairesResult = await getQuestionnairesForSelection()
-      if (questionnairesResult.success) {
-        setQuestionnaires(questionnairesResult.data)
-      } else {
-        console.error('Error loading questionnaires:', questionnairesResult.error)
-        message.error('Failed to load questionnaires: ' + questionnairesResult.error)
-      }
+        // Load questionnaires
+        const questionnairesResult = await getQuestionnairesForSelection()
+        if (questionnairesResult.success) {
+          setQuestionnaires(questionnairesResult.data)
+        } else {
+          console.error('Error loading questionnaires:', questionnairesResult.error)
+          message.error('Failed to load questionnaires: ' + questionnairesResult.error)
+        }
       } catch (error) {
         console.error('Unexpected error loading options:', error)
         message.error('An unexpected error occurred while loading form options')
@@ -172,7 +172,7 @@ const JobOpportunityForm = React.memo(() => {
 
         if (result.success) {
           message.success(`Job listing ${isEditMode ? 'updated' : 'created'} successfully`)
-          navigate('/business-dashboard')
+          navigate('/business-dashboard/job-listings')
         } else {
           message.error(`Failed to ${isEditMode ? 'update' : 'create'} job listing: ${result.error}`)
         }
@@ -188,7 +188,7 @@ const JobOpportunityForm = React.memo(() => {
 
   const handleCancel = useCallback(() => {
     form.resetFields()
-    navigate('/business-dashboard')
+    navigate('/business-dashboard/job-listings')
   }, [form, navigate])
 
   return (
@@ -458,45 +458,62 @@ const JobOpportunityForm = React.memo(() => {
 
               <Row gutter={16}>
                 <Col xs={24} lg={12}>
-                  <Form.Item
-                    label='Job Description'
-                    name='jobDescription'
-                    rules={[{ required: true, message: 'Job description is required' }]}
-                  >
-                    <Select
-                      placeholder='Select a job description'
-                      loading={loadingOptions}
-                      showSearch
-                      filterOption={(input, option) => option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-                      onChange={handleJobDescriptionChange}
+                  {loadingOptions ? (
+                    <center>
+                      <Spin spinning={loadingOptions} size='small' tip='Loading job descriptions...'>
+                        <div className='h-10 w-10' />
+                      </Spin>
+                    </center>
+                  ) : (
+                    <Form.Item
+                      label='Job Description'
+                      name='jobDescription'
+                      rules={[{ required: true, message: 'Job description is required' }]}
                     >
-                      {jobDescriptions.map((jobDesc) => (
-                        <Option key={jobDesc.id} value={jobDesc.id}>
-                          {jobDesc.title}
-                        </Option>
-                      ))}
-                    </Select>
-                  </Form.Item>
+                      <Select
+                        placeholder='Select a job description'
+                        loading={loadingOptions}
+                        showSearch
+                        filterOption={(input, option) =>
+                          option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                        }
+                        onChange={handleJobDescriptionChange}
+                      >
+                        {jobDescriptions.map((jobDesc) => (
+                          <Option key={jobDesc.id} value={jobDesc.id}>
+                            {jobDesc.title}
+                          </Option>
+                        ))}
+                      </Select>
+                    </Form.Item>
+                  )}
                 </Col>
                 <Col xs={24} lg={12}>
-                  <Form.Item
-                    label='Questionnaires (Optional)'
-                    name='questionnaires'
-                  >
-                    <Select
-                      mode='multiple'
-                      placeholder='Select questionnaires (optional)'
-                      loading={loadingOptions}
-                      showSearch
-                      filterOption={(input, option) => option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-                    >
-                      {questionnaires.map((questionnaire) => (
-                        <Option key={questionnaire.id} value={questionnaire.id}>
-                          {questionnaire.title}
-                        </Option>
-                      ))}
-                    </Select>
-                  </Form.Item>
+                  {loadingOptions ? (
+                    <center>
+                      <Spin spinning={loadingOptions} size='small' tip='Loading questionnaires...'>
+                        <div className='h-10 w-10' />
+                      </Spin>
+                    </center>
+                  ) : (
+                    <Form.Item label='Questionnaires (Optional)' name='assessments'>
+                      <Select
+                        mode='multiple'
+                        placeholder='Select questionnaires (optional)'
+                        loading={loadingOptions}
+                        showSearch
+                        filterOption={(input, option) =>
+                          option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                        }
+                      >
+                        {questionnaires.map((questionnaire) => (
+                          <Option key={questionnaire.id} value={questionnaire.id}>
+                            {questionnaire.title}
+                          </Option>
+                        ))}
+                      </Select>
+                    </Form.Item>
+                  )}
                 </Col>
               </Row>
 

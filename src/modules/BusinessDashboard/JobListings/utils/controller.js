@@ -60,7 +60,7 @@ export const getAllJobOpportunities = async (filters = {}) => {
     const { data, error } = await query
 
     if (error) {
-              console.error('Job Listings Controller: Error fetching job listings:', error)
+      console.error('Job Listings Controller: Error fetching job listings:', error)
       return {
         success: false,
         error: error.message,
@@ -77,12 +77,12 @@ export const getAllJobOpportunities = async (filters = {}) => {
       error: null
     }
   } catch (error) {
-          console.error('Job Listings Controller: Unexpected error in getAllJobOpportunities:', error)
-      return {
-        success: false,
-        error: 'An unexpected error occurred while fetching job listings',
-        data: []
-      }
+    console.error('Job Listings Controller: Unexpected error in getAllJobOpportunities:', error)
+    return {
+      success: false,
+      error: 'An unexpected error occurred while fetching job listings',
+      data: []
+    }
   }
 }
 
@@ -370,7 +370,7 @@ export const getJobOpportunitiesStats = async (filters = {}) => {
     const { data, error } = await query
 
     if (error) {
-              console.error('Error fetching job listings statistics:', error)
+      console.error('Error fetching job listings statistics:', error)
       return {
         success: false,
         error: error.message,
@@ -451,7 +451,7 @@ export const searchJobOpportunities = async (searchTerm, filters = {}) => {
     const { data, error } = await query
 
     if (error) {
-              console.error('Error searching job listings:', error)
+      console.error('Error searching job listings:', error)
       return {
         success: false,
         error: error.message,
@@ -582,7 +582,7 @@ export const getQuestionnairesForSelection = async () => {
     }
 
     const { data, error } = await supabase
-      .from('questionnaires')
+      .from('assessments')
       .select('id, title, category, status')
       .eq('is_active', true)
       .eq('status', 'Active')

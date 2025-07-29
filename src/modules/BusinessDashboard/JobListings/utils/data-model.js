@@ -21,7 +21,7 @@ export const JobOpportunitySchema = {
 
   // Job Description and Questionnaires
   jobDescription: { type: 'uuid', required: true }, // References job_descriptions.id
-  questionnaires: { type: 'array', required: false, itemType: 'string' }, // Array of questionnaire IDs (optional)
+  assessments: { type: 'array', required: false, itemType: 'string' }, // Array of questionnaire IDs (optional)
 
   // Status and Metadata
   status: { type: 'string', required: false, enum: ['Active', 'Paused', 'Closed'], default: 'Active' },
@@ -43,10 +43,11 @@ export const transformToDatabase = (formData) => {
     salary: formData.salary?.trim(),
     work_arrangement: formData.workArrangement,
     description: formData.description?.trim(),
+    benefits: formData.benefits?.trim(),
 
     // Job Description and Questionnaires
     job_description: formData.jobDescription,
-    questionnaires: Array.isArray(formData.questionnaires) ? formData.questionnaires : [],
+    assessments: Array.isArray(formData.assessments) ? formData.assessments : [],
 
     // Status and Metadata
     status: formData.status || 'Active',
@@ -80,8 +81,9 @@ export const transformFromDatabase = (dbData) => {
     salary: dbData.salary || '',
     workArrangement: dbData.work_arrangement || '',
     description: dbData.description || '',
+    benefits: dbData.benefits || '',
     jobDescription: dbData.job_description || null,
-    questionnaires: Array.isArray(dbData.questionnaires) ? dbData.questionnaires : [],
+    assessments: Array.isArray(dbData.assessments) ? dbData.assessments : [],
     status: dbData.status || 'Active',
     applicants: dbData.applicants || 0,
     datePosted: dbData.date_posted || null,
@@ -165,7 +167,7 @@ export const getDefaultJobOpportunityData = () => ({
   workArrangement: '',
   description: '',
   jobDescription: null,
-  questionnaires: [],
+  assessments: [],
   status: 'Active',
   applicants: 0,
   datePosted: null
