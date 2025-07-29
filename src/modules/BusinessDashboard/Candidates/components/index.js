@@ -2,7 +2,7 @@
 // Frontend Instructions Rule Applied!
 import React, { useState, useCallback, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { message, Tag, Space, Modal, Descriptions, Row, Col } from 'antd'
+import { message, Tag, Space, Modal, Descriptions, Row, Col, Select } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus, faColumns, faTable, faEdit, faEye } from '@fortawesome/free-solid-svg-icons'
 import { DndProvider } from 'react-dnd'
@@ -530,54 +530,47 @@ const Candidates = React.memo(({ user }) => {
             }`}
           >
             <div className='flex items-center justify-between'>
-              <div className='flex items-center space-x-6'>
-                <div className='flex items-center space-x-3'>
-                  <div>
-                    <h1 className='text-2xl font-bold text-white'>Candidates</h1>
-                    <p className='text-sm text-emerald-100'>
-                      Manage your recruitment candidates - {viewMode === 'kanban' ? 'drag candidates between stages' : 'view in table format'}
-                    </p>
-                  </div>
+              <div className='flex flex-col space-y-3'>
+                <div>
+                  <h1 className='text-2xl font-bold text-white'>Candidates</h1>
                 </div>
                 
-                {/* View Toggle Buttons */}
-                <div className='flex items-center space-x-2 bg-white/10 rounded-lg p-1'>
-                  <Button
-                    type={viewMode === 'kanban' ? 'primary' : 'text'}
+                {/* View Toggle Dropdown */}
+                <div className='flex items-center'>
+                  <Select
+                    value={viewMode}
+                    onChange={handleViewToggle}
+                    style={{
+                      width: 140,
+                      height: 32
+                    }}
+                    className='view-toggle-select'
                     size='small'
-                    icon={<FontAwesomeIcon icon={faColumns} />}
-                    onClick={() => handleViewToggle('kanban')}
-                    className={`${
-                      viewMode === 'kanban'
-                        ? 'bg-white text-emerald-600 border-white'
-                        : 'text-white hover:bg-white/20 border-transparent'
-                    } transition-all duration-200`}
-                    style={viewMode === 'kanban' ? {
-                      backgroundColor: 'white',
-                      color: '#059669',
-                      borderColor: 'white'
-                    } : {}}
-                  >
-                    Board
-                  </Button>
-                  <Button
-                    type={viewMode === 'table' ? 'primary' : 'text'}
-                    size='small'
-                    icon={<FontAwesomeIcon icon={faTable} />}
-                    onClick={() => handleViewToggle('table')}
-                    className={`${
-                      viewMode === 'table'
-                        ? 'bg-white text-emerald-600 border-white'
-                        : 'text-white hover:bg-white/20 border-transparent'
-                    } transition-all duration-200`}
-                    style={viewMode === 'table' ? {
-                      backgroundColor: 'white',
-                      color: '#059669',
-                      borderColor: 'white'
-                    } : {}}
-                  >
-                    Table
-                  </Button>
+                    options={[
+                      {
+                        value: 'kanban',
+                        label: (
+                          <div className='flex items-center space-x-2'>
+                            <FontAwesomeIcon icon={faColumns} />
+                            <span>Board</span>
+                          </div>
+                        )
+                      },
+                      {
+                        value: 'table',
+                        label: (
+                          <div className='flex items-center space-x-2'>
+                            <FontAwesomeIcon icon={faTable} />
+                            <span>Table</span>
+                          </div>
+                        )
+                      }
+                    ]}
+                    dropdownStyle={{
+                      backgroundColor: darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white,
+                      border: `1px solid ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.borderGray}`
+                    }}
+                  />
                 </div>
               </div>
               <Button
@@ -673,9 +666,70 @@ const Candidates = React.memo(({ user }) => {
             backgroundColor: darkMode ? 'rgba(0, 0, 0, 0.7)' : 'rgba(0, 0, 0, 0.45)'
           }}
         >
-          {/* Dark Mode Styles for Modal */}
-          {darkMode && (
-            <style jsx global>{`
+          {/* Dark Mode Styles for Modal and Components */}
+          <style jsx global>{`
+            /* View Toggle Dropdown Styles */
+            .view-toggle-select .ant-select-selector {
+              background-color: white !important;
+              border: 1px solid rgba(255, 255, 255, 0.3) !important;
+              border-radius: 6px !important;
+              color: ${BRAND_COLORS.emeraldPrimary} !important;
+              font-weight: 500 !important;
+              box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+            }
+            
+            .view-toggle-select .ant-select-selector:hover {
+              border-color: rgba(255, 255, 255, 0.5) !important;
+              box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
+            }
+            
+            .view-toggle-select.ant-select-focused .ant-select-selector {
+              border-color: white !important;
+              box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2) !important;
+            }
+            
+            .view-toggle-select .ant-select-arrow {
+              color: ${BRAND_COLORS.emeraldPrimary} !important;
+            }
+            
+            .view-toggle-select .ant-select-selection-item {
+              color: ${BRAND_COLORS.emeraldPrimary} !important;
+              font-weight: 500 !important;
+            }
+            
+            /* Dropdown Container Styles */
+            .ant-select-dropdown {
+              background-color: ${darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white} !important;
+              border: 1px solid ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.borderGray} !important;
+              border-radius: 6px !important;
+              box-shadow: 0 4px 12px rgba(0, 0, 0, ${darkMode ? '0.3' : '0.15'}) !important;
+            }
+            
+            /* Dropdown Options Styles */
+            .ant-select-dropdown .ant-select-item-option {
+              color: ${darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray} !important;
+              background-color: transparent !important;
+              padding: 8px 12px !important;
+              border-radius: 4px !important;
+              margin: 2px 4px !important;
+            }
+            
+            .ant-select-dropdown .ant-select-item-option:hover {
+              background-color: ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.lightGray} !important;
+            }
+            
+            .ant-select-dropdown .ant-select-item-option-selected {
+              background-color: ${BRAND_COLORS.emeraldPrimary} !important;
+              color: white !important;
+              font-weight: 500 !important;
+            }
+            
+            .ant-select-dropdown .ant-select-item-option-selected:hover {
+              background-color: ${BRAND_COLORS.emeraldLight} !important;
+            }
+
+            ${darkMode ? `
+              /* Dark Mode Modal Styles */
               .dark-modal .ant-modal-content {
                 background-color: ${BRAND_COLORS.darkSlateAlt} !important;
                 color: ${BRAND_COLORS.white} !important;
@@ -707,8 +761,8 @@ const Candidates = React.memo(({ user }) => {
               .dark-descriptions .ant-descriptions-bordered .ant-descriptions-row {
                 border-bottom: 1px solid ${BRAND_COLORS.darkSlate} !important;
               }
-            `}</style>
-          )}
+            ` : ''}
+          `}</style>
           
           {selectedCandidate && (
             <div className='space-y-6'>
