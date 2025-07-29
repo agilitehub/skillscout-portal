@@ -1,11 +1,13 @@
 import React from 'react'
+import GlobalStyles from './core/theme/GlobalStyles'
+import AppRoutes from './routes'
 import { ThemeProvider } from './core/context/ThemeContext'
 import { AuthProvider } from './core/context/AuthContext'
 import { BrowserRouter as Router } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify'
-import GlobalStyles from './core/theme/GlobalStyles'
 import 'react-toastify/dist/ReactToastify.css'
-import AppRoutes from './routes'
+
+import 'antd/dist/reset.css'
 
 /**
  * Main App component

@@ -633,7 +633,7 @@ const CreateJobDescription = React.memo(({ user }) => {
                             name='overview'
                             rules={[{ required: true, message: 'Please enter job overview' }]}
                             extra={
-                              <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
+                              <span className={darkMode ? 'text-gray-400 mt-2' : 'text-gray-600 mt-2'}>
                                 Provide a compelling overview of the role and what makes it attractive to candidates
                               </span>
                             }
@@ -645,9 +645,9 @@ const CreateJobDescription = React.memo(({ user }) => {
                               maxLength={2000}
                               style={{
                                 fontWeight: '500',
-                                marginBottom: '8px',
+                                marginBottom: '15px',
                                 flex: 1,
-                                minHeight: '400px',
+                                minHeight: '485px',
                                 resize: 'vertical'
                               }}
                             />

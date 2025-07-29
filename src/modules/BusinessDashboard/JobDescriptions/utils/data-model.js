@@ -19,7 +19,6 @@ export const JobDescriptionSchema = {
   keywords: { type: 'array', required: true, itemType: 'string' }, // Array of strings
   responsibilities: { type: 'string', required: true },
   requirements: { type: 'string', required: true },
-  benefits: { type: 'string', required: true },
 
   // Auto-managed audit fields (handled by triggers)
   created_at: { type: 'timestamp', auto: true },
@@ -41,14 +40,18 @@ export const transformToDatabase = (formData, options = {}) => {
     overview: formData.overview?.trim(),
     department: formData.department, // UUID from lookup table
     experience_level: formData.experienceLevel || formData.experience_level, // UUID from lookup table
+    reports_to_role: formData.reportsToRole?.trim(),
+    education_experience: formData.educationExperience?.trim(),
+    technical_skills: formData.technicalSkills?.trim(),
+    soft_skills: formData.softSkills?.trim(),
+    preferred_skills: formData.preferredSkills?.trim(),
 
     // Keywords as array of strings
     keywords: Array.isArray(formData.keywords) ? formData.keywords.filter((keyword) => keyword && keyword.trim()) : [],
 
     // Text content fields
     responsibilities: formData.responsibilities?.trim() || '',
-    requirements: formData.requirements?.trim() || '',
-    benefits: formData.benefits?.trim() || ''
+    requirements: formData.requirements?.trim() || ''
   }
 
   // Remove undefined values
@@ -79,7 +82,11 @@ export const transformFromDatabase = (dbData) => {
     keywords: dbData.keywords || [],
     responsibilities: dbData.responsibilities,
     requirements: dbData.requirements,
-    benefits: dbData.benefits,
+    reportsToRole: dbData.reports_to_role,
+    educationExperience: dbData.education_experience,
+    technicalSkills: dbData.technical_skills,
+    softSkills: dbData.soft_skills,
+    preferredSkills: dbData.preferred_skills,
 
     // Audit fields for display
     createdAt: dbData.created_at,
@@ -108,8 +115,7 @@ export const validateJobDescription = (data) => {
     { field: 'department', message: 'Department is required' },
     { field: 'experienceLevel', message: 'Experience level is required' },
     { field: 'responsibilities', message: 'Responsibilities are required' },
-    { field: 'requirements', message: 'Requirements are required' },
-    { field: 'benefits', message: 'Benefits are required' }
+    { field: 'requirements', message: 'Requirements are required' }
   ]
 
   requiredFields.forEach(({ field, message }) => {
@@ -157,8 +163,7 @@ export const createDefaultJobDescription = () => ({
   experienceLevel: null,
   keywords: [],
   responsibilities: '',
-  requirements: '',
-  benefits: ''
+  requirements: ''
 })
 
 /**
@@ -222,7 +227,6 @@ export const prepareForExport = (data) => {
     keywords: Array.isArray(data.keywords) ? data.keywords.join(', ') : '',
     responsibilities: data.responsibilities,
     requirements: data.requirements,
-    benefits: data.benefits,
     createdDate: data.createdDate,
     lastUpdated: data.lastUpdated
   }
