@@ -11,6 +11,10 @@ import QuestionnaireForm from './modules/BusinessDashboard/Questionnaires/compon
 import JobOpportunityForm from './modules/BusinessDashboard/JobListings/components/JobOpportunityForm'
 import Lookups from './modules/BusinessDashboard/Lookups/components'
 import LookupForm from './modules/BusinessDashboard/Lookups/components/LookupForm'
+import UserManagement from './modules/BusinessDashboard/UserManagement/components'
+import BranchManagement from './modules/BusinessDashboard/BranchManagement/components'
+import OrgSettings from './modules/BusinessDashboard/OrgSettings/components'
+import Billing from './modules/BusinessDashboard/Billing/components'
 import Candidates from './modules/BusinessDashboard/Candidates/components'
 import CandidateForm from './modules/BusinessDashboard/Candidates/components/CandidateForm'
 import Header from './core/components/layout/Header'
@@ -224,6 +228,58 @@ const AppRoutes = () => {
           user ? (
             <DashboardLayout user={user}>
               <JobOpportunityForm user={user} />
+            </DashboardLayout>
+          ) : (
+            <Navigate to='/' replace state={{ from: location }} />
+          )
+        }
+      />
+
+      <Route
+        path='/business-dashboard/user-management'
+        element={
+          user ? (
+            <DashboardLayout user={user}>
+              <UserManagement user={user} />
+            </DashboardLayout>
+          ) : (
+            <Navigate to='/' replace state={{ from: location }} />
+          )
+        }
+      />
+
+      <Route
+        path='/business-dashboard/branch-management'
+        element={
+          user ? (
+            <DashboardLayout user={user}>
+              <BranchManagement user={user} />
+            </DashboardLayout>
+          ) : (
+            <Navigate to='/' replace state={{ from: location }} />
+          )
+        }
+      />
+
+      <Route
+        path='/business-dashboard/org-settings'
+        element={
+          user ? (
+            <DashboardLayout user={user}>
+              <OrgSettings user={user} />
+            </DashboardLayout>
+          ) : (
+            <Navigate to='/' replace state={{ from: location }} />
+          )
+        }
+      />
+
+      <Route
+        path='/business-dashboard/billing'
+        element={
+          user ? (
+            <DashboardLayout user={user}>
+              <Billing user={user} />
             </DashboardLayout>
           ) : (
             <Navigate to='/' replace state={{ from: location }} />

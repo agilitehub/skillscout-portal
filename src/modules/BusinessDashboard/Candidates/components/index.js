@@ -2,7 +2,7 @@
 // Frontend Instructions Rule Applied!
 import React, { useState, useCallback, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { message, Tag, Space, Modal, Descriptions, Row, Col, Select } from 'antd'
+import { message, Tag, Space, Modal, Descriptions, Select } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus, faColumns, faTable, faEdit, faEye } from '@fortawesome/free-solid-svg-icons'
 import { DndProvider } from 'react-dnd'

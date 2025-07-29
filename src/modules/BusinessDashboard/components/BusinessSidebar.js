@@ -11,7 +11,11 @@ import {
   faCog,
   faCogs,
   faList,
-  faColumns
+  faColumns,
+  faUsers,
+  faBuilding,
+  faSliders,
+  faCreditCard
 } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../core/context/ThemeContext'
 
@@ -60,6 +64,30 @@ const BusinessSidebar = React.memo(() => {
       label: 'Settings',
       icon: faCogs,
       items: [
+        {
+          path: '/business-dashboard/user-management',
+          icon: faUsers,
+          label: 'User Management',
+          exact: false
+        },
+        {
+          path: '/business-dashboard/branch-management',
+          icon: faBuilding,
+          label: 'Branch Management',
+          exact: false
+        },
+        {
+          path: '/business-dashboard/org-settings',
+          icon: faSliders,
+          label: 'Organization Settings',
+          exact: false
+        },
+        {
+          path: '/business-dashboard/billing',
+          icon: faCreditCard,
+          label: 'Billing & Subscription',
+          exact: false
+        },
         {
           path: '/business-dashboard/lookups',
           icon: faList,
