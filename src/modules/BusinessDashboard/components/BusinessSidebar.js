@@ -15,7 +15,8 @@ import {
   faUsers,
   faBuilding,
   faSliders,
-  faCreditCard
+  faCreditCard,
+  faHome
 } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../core/context/ThemeContext'
 
@@ -29,15 +30,28 @@ const BusinessSidebar = React.memo(() => {
   // Navigation categories and items
   const navigationCategories = [
     {
+      key: 'main',
+      label: 'Main',
+      icon: faHome,
+      items: [
+        {
+          path: '/business-dashboard',
+          icon: faHome,
+          label: 'Dashboard',
+          exact: true
+        }
+      ]
+    },
+    {
       key: 'operations',
       label: 'Operations',
       icon: faCog,
       items: [
         {
-          path: '/business-dashboard',
+          path: '/business-dashboard/candidates',
           icon: faColumns,
           label: 'Candidates',
-          exact: true
+          exact: false
         },
         {
           path: '/business-dashboard/job-listings',

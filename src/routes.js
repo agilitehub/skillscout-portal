@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Route, Navigate, Routes, useLocation } from 'react-router-dom'
 import Login from './modules/Login'
 import Dashboard from './modules/Dashboard'
+import BusinessDashboard from './modules/BusinessDashboard/Dashboard/components'
 import JobListings from './modules/BusinessDashboard/JobListings/components'
 import JobDescriptions from './modules/BusinessDashboard/JobDescriptions/components'
 import JobDescriptionForm from './modules/BusinessDashboard/JobDescriptions/components/JobDescriptionForm'
@@ -123,7 +124,46 @@ const AppRoutes = () => {
         element={
           user ? (
             <DashboardLayout user={user}>
+              <BusinessDashboard user={user} />
+            </DashboardLayout>
+          ) : (
+            <Navigate to='/' replace state={{ from: location }} />
+          )
+        }
+      />
+
+      <Route
+        path='/business-dashboard/candidates'
+        element={
+          user ? (
+            <DashboardLayout user={user}>
               <Candidates user={user} />
+            </DashboardLayout>
+          ) : (
+            <Navigate to='/' replace state={{ from: location }} />
+          )
+        }
+      />
+
+      <Route
+        path='/business-dashboard/candidates/create'
+        element={
+          user ? (
+            <DashboardLayout user={user}>
+              <CandidateForm user={user} />
+            </DashboardLayout>
+          ) : (
+            <Navigate to='/' replace state={{ from: location }} />
+          )
+        }
+      />
+
+      <Route
+        path='/business-dashboard/candidates/edit'
+        element={
+          user ? (
+            <DashboardLayout user={user}>
+              <CandidateForm user={user} />
             </DashboardLayout>
           ) : (
             <Navigate to='/' replace state={{ from: location }} />
@@ -145,11 +185,37 @@ const AppRoutes = () => {
       />
 
       <Route
+        path='/business-dashboard/job-listings/create'
+        element={
+          user ? (
+            <DashboardLayout user={user}>
+              <JobOpportunityForm user={user} />
+            </DashboardLayout>
+          ) : (
+            <Navigate to='/' replace state={{ from: location }} />
+          )
+        }
+      />
+
+      <Route
         path='/business-dashboard/job-descriptions'
         element={
           user ? (
             <DashboardLayout user={user}>
               <JobDescriptions user={user} />
+            </DashboardLayout>
+          ) : (
+            <Navigate to='/' replace state={{ from: location }} />
+          )
+        }
+      />
+
+      <Route
+        path='/business-dashboard/job-descriptions/create'
+        element={
+          user ? (
+            <DashboardLayout user={user}>
+              <JobDescriptionForm user={user} />
             </DashboardLayout>
           ) : (
             <Navigate to='/' replace state={{ from: location }} />
