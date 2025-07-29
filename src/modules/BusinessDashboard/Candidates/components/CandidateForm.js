@@ -149,7 +149,7 @@ const CandidateForm = React.memo(({ user }) => {
                     {isEditing ? 'Edit Candidate' : 'Add New Candidate'}
                   </h1>
                   <p className='text-sm text-emerald-100'>
-                    {isEditing ? 'Update candidate information' : 'Add a new candidate to the pipeline'}
+                    {isEditing ? 'Update candidate information' : 'Add a new candidate to the candidates'}
                   </p>
                 </div>
               </div>

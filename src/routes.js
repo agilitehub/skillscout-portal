@@ -5,14 +5,14 @@ import Dashboard from './modules/Dashboard'
 import JobListings from './modules/BusinessDashboard/JobListings/components'
 import JobDescriptions from './modules/BusinessDashboard/JobDescriptions/components'
 import JobDescriptionForm from './modules/BusinessDashboard/JobDescriptions/components/JobDescriptionForm'
-import Assessments from './modules/BusinessDashboard/Assessments/components'
-import CreateAssessment from './modules/BusinessDashboard/Assessments/components/CreateAssessment'
-import AssessmentForm from './modules/BusinessDashboard/Assessments/components/AssessmentForm'
+import Questionnaires from './modules/BusinessDashboard/Questionnaires/components'
+import CreateQuestionnaire from './modules/BusinessDashboard/Questionnaires/components/CreateQuestionnaire'
+import QuestionnaireForm from './modules/BusinessDashboard/Questionnaires/components/QuestionnaireForm'
 import JobOpportunityForm from './modules/BusinessDashboard/JobListings/components/JobOpportunityForm'
 import Lookups from './modules/BusinessDashboard/Lookups/components'
 import LookupForm from './modules/BusinessDashboard/Lookups/components/LookupForm'
-import Pipeline from './modules/BusinessDashboard/Pipeline/components'
-import CandidateForm from './modules/BusinessDashboard/Pipeline/components/CandidateForm'
+import Candidates from './modules/BusinessDashboard/Candidates/components'
+import CandidateForm from './modules/BusinessDashboard/Candidates/components/CandidateForm'
 import Header from './core/components/layout/Header'
 import { useAuth } from './core/context/AuthContext'
 import { useTheme } from './core/context/ThemeContext'
@@ -119,7 +119,7 @@ const AppRoutes = () => {
         element={
           user ? (
             <DashboardLayout user={user}>
-              <Pipeline user={user} />
+              <Candidates user={user} />
             </DashboardLayout>
           ) : (
             <Navigate to='/' replace state={{ from: location }} />
@@ -167,11 +167,11 @@ const AppRoutes = () => {
       />
 
       <Route
-        path='/business-dashboard/assessments'
+        path='/business-dashboard/questionnaires'
         element={
           user ? (
             <DashboardLayout user={user}>
-              <Assessments user={user} />
+              <Questionnaires user={user} />
             </DashboardLayout>
           ) : (
             <Navigate to='/' replace state={{ from: location }} />
@@ -180,11 +180,11 @@ const AppRoutes = () => {
       />
 
       <Route
-        path='/business-dashboard/assessments/create'
+        path='/business-dashboard/questionnaires/create'
         element={
           user ? (
             <DashboardLayout user={user}>
-              <CreateAssessment user={user} />
+              <CreateQuestionnaire user={user} />
             </DashboardLayout>
           ) : (
             <Navigate to='/' replace state={{ from: location }} />
@@ -193,11 +193,11 @@ const AppRoutes = () => {
       />
 
       <Route
-        path='/business-dashboard/assessments/edit'
+        path='/business-dashboard/questionnaires/edit'
         element={
           user ? (
             <DashboardLayout user={user}>
-              <AssessmentForm user={user} />
+              <QuestionnaireForm user={user} />
             </DashboardLayout>
           ) : (
             <Navigate to='/' replace state={{ from: location }} />
@@ -271,11 +271,11 @@ const AppRoutes = () => {
       />
 
       <Route
-        path='/business-dashboard/pipeline'
+        path='/business-dashboard/candidates'
         element={
           user ? (
             <DashboardLayout user={user}>
-              <Pipeline user={user} />
+              <Candidates user={user} />
             </DashboardLayout>
           ) : (
             <Navigate to='/' replace state={{ from: location }} />

@@ -12,15 +12,15 @@ import TableView from '../../../../core/components/view-components/table-view/Ta
 import TableActions from '../../../../core/components/view-components/table-view/TableActions'
 
 // Import controller functions
-import { getAllAssessments, deleteAssessment, searchAssessments } from '../utils/controller'
+import { getAllQuestionnaires, deleteQuestionnaire, searchQuestionnaires } from '../utils/controller'
 
 const { Option } = Select
 
 /**
- * Assessments Management Page
- * Manages assessments with multiple questions using TableView component
+ * Questionnaires Management Page
+ * Manages questionnaires with multiple questions using TableView component
  */
-const Assessments = React.memo(({ user }) => {
+const Questionnaires = React.memo(({ user }) => {
   const { darkMode } = useTheme()
   const navigate = useNavigate()
 
@@ -29,38 +29,38 @@ const Assessments = React.memo(({ user }) => {
   const [selectedStatus, setSelectedStatus] = useState('all')
 
   // Data states
-  const [assessmentData, setAssessmentData] = useState([])
+  const [questionnaireData, setQuestionnaireData] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
 
-  // Fetch assessments data
-  const fetchAssessments = useCallback(async (filters = {}) => {
+  // Fetch questionnaires data
+  const fetchQuestionnaires = useCallback(async (filters = {}) => {
     try {
       setLoading(true)
       setError(null)
 
-      const result = await getAllAssessments(filters)
+      const result = await getAllQuestionnaires(filters)
 
       if (result.success) {
-        setAssessmentData(result.data)
+        setQuestionnaireData(result.data)
       } else {
         setError(result.error)
-        message.error(`Failed to fetch assessments: ${result.error}`)
+        message.error(`Failed to fetch questionnaires: ${result.error}`)
       }
     } catch (err) {
       setError(err.message)
-      message.error('An unexpected error occurred while fetching assessments')
-      console.error('Error fetching assessments:', err)
+      message.error('An unexpected error occurred while fetching questionnaires')
+      console.error('Error fetching questionnaires:', err)
     } finally {
       setLoading(false)
     }
   }, [])
 
-  // Search assessments
+  // Search questionnaires
   const handleSearch = useCallback(
     async (searchValue) => {
       if (!searchValue.trim()) {
-        await fetchAssessments()
+        await fetchQuestionnaires()
         return
       }
 
@@ -68,12 +68,12 @@ const Assessments = React.memo(({ user }) => {
         setLoading(true)
         setError(null)
 
-        const result = await searchAssessments(searchValue, {
+        const result = await searchQuestionnaires(searchValue, {
           status: selectedStatus !== 'all' ? selectedStatus : undefined
         })
 
         if (result.success) {
-          setAssessmentData(result.data)
+          setQuestionnaireData(result.data)
         } else {
           setError(result.error)
           message.error(`Search failed: ${result.error}`)
@@ -81,12 +81,12 @@ const Assessments = React.memo(({ user }) => {
       } catch (err) {
         setError(err.message)
         message.error('Search failed')
-        console.error('Error searching assessments:', err)
+        console.error('Error searching questionnaires:', err)
       } finally {
         setLoading(false)
       }
     },
-    [selectedStatus, fetchAssessments]
+    [selectedStatus, fetchQuestionnaires]
   )
 
   // Effect to fetch data on component mount and when filters change
@@ -95,8 +95,8 @@ const Assessments = React.memo(({ user }) => {
     if (selectedStatus !== 'all') {
       filters.status = selectedStatus
     }
-    fetchAssessments(filters)
-  }, [fetchAssessments, selectedStatus])
+    fetchQuestionnaires(filters)
+  }, [fetchQuestionnaires, selectedStatus])
 
   // Effect to handle search
   useEffect(() => {
@@ -108,31 +108,31 @@ const Assessments = React.memo(({ user }) => {
         if (selectedStatus !== 'all') {
           filters.status = selectedStatus
         }
-        fetchAssessments(filters)
+        fetchQuestionnaires(filters)
       }
     }, 300)
 
     return () => clearTimeout(debounceTimer)
-  }, [searchTerm, handleSearch, fetchAssessments, selectedStatus])
+  }, [searchTerm, handleSearch, fetchQuestionnaires, selectedStatus])
 
   // Filter data based on search and status (client-side backup filtering)
-  const filteredData = assessmentData.filter((assessment) => {
+  const filteredData = questionnaireData.filter((questionnaire) => {
     const matchesSearch =
       searchTerm === '' ||
-      assessment.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      assessment.category?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      assessment.tags?.some((tag) => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+      questionnaire.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      questionnaire.category?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      questionnaire.tags?.some((tag) => tag.toLowerCase().includes(searchTerm.toLowerCase()))
 
-    const matchesStatus = selectedStatus === 'all' || assessment.status === selectedStatus
+    const matchesStatus = selectedStatus === 'all' || questionnaire.status === selectedStatus
 
     return matchesSearch && matchesStatus
   })
 
-  // Handle add new assessment - navigate to separate page
+  // Handle add new questionnaire - navigate to separate page
   const handleAdd = useCallback(() => {
-    console.log('Create Assessment button clicked - navigating to create page')
+    console.log('Create Questionnaire button clicked - navigating to create page')
     try {
-      navigate('/business-dashboard/assessments/create')
+      navigate('/business-dashboard/questionnaires/create')
       console.log('Navigation called successfully')
     } catch (error) {
       console.error('Navigation error:', error)
@@ -140,37 +140,37 @@ const Assessments = React.memo(({ user }) => {
     }
   }, [navigate])
 
-  // Handle edit existing assessment
+  // Handle edit existing questionnaire
   const handleEdit = useCallback(
-    (assessment) => {
-      navigate('/business-dashboard/assessments/edit', {
+    (questionnaire) => {
+      navigate('/business-dashboard/questionnaires/edit', {
         state: {
-          editId: assessment.id,
-          initialData: assessment
+          editId: questionnaire.id,
+          initialData: questionnaire
         }
       })
     },
     [navigate]
   )
 
-  // Handle delete assessment
+  // Handle delete questionnaire
   const handleDelete = useCallback(
     async (id) => {
       try {
-        const result = await deleteAssessment(id)
+        const result = await deleteQuestionnaire(id)
 
         if (result.success) {
-          message.success('Assessment deleted successfully')
-          await fetchAssessments()
+          message.success('Questionnaire deleted successfully')
+          await fetchQuestionnaires()
         } else {
-          message.error(`Failed to delete assessment: ${result.error}`)
+          message.error(`Failed to delete questionnaire: ${result.error}`)
         }
       } catch (error) {
-        message.error('Failed to delete assessment')
-        console.error('Error deleting assessment:', error)
+        message.error('Failed to delete questionnaire')
+        console.error('Error deleting questionnaire:', error)
       }
     },
-    [fetchAssessments]
+    [fetchQuestionnaires]
   )
 
   // Truncate text for display
@@ -179,8 +179,8 @@ const Assessments = React.memo(({ user }) => {
     return text.substring(0, maxLength) + '...'
   }
 
-  // Assessment table columns
-  const assessmentColumns = [
+  // Questionnaire table columns
+  const questionnaireColumns = [
     {
       title: 'TITLE',
       dataIndex: 'title',
@@ -258,8 +258,8 @@ const Assessments = React.memo(({ user }) => {
             {
               key: 'delete',
               confirm: {
-                title: 'Delete Assessment',
-                description: 'Are you sure you want to delete this assessment? This will also delete all questions.',
+                title: 'Delete Questionnaire',
+                description: 'Are you sure you want to delete this questionnaire? This will also delete all questions.',
                 okText: 'Yes',
                 cancelText: 'No',
                 onConfirm: (record) => handleDelete(record.id)
@@ -320,7 +320,7 @@ const Assessments = React.memo(({ user }) => {
                     icon={faClipboardCheck}
                     className={`text-lg mr-3 ${darkMode ? 'text-emerald-100' : 'text-white'}`}
                   />
-                  <h1 className='text-xl font-bold text-white'>Assessments</h1>
+                  <h1 className='text-xl font-bold text-white'>Questionnaires</h1>
                 </div>
 
                 <div className='flex items-center space-x-3'>
@@ -339,26 +339,26 @@ const Assessments = React.memo(({ user }) => {
               </div>
             </div>
 
-            {/* Assessment Data Table */}
-            <Spin spinning={loading} tip='Loading assessments...'>
+            {/* Questionnaire Data Table */}
+            <Spin spinning={loading} tip='Loading questionnaires...'>
               <TableView
-                columns={assessmentColumns}
+                columns={questionnaireColumns}
                 dataSource={filteredData}
                 rowKey='id'
                 searchTerm={searchTerm}
                 onSearch={setSearchTerm}
-                searchPlaceholder='Search assessments...'
+                searchPlaceholder='Search questionnaires...'
                 toolbarActions={[
                   <Button key='create' variant='primary' icon={<FontAwesomeIcon icon={faPlus} />} onClick={handleAdd}>
-                    Create Assessment
+                    Create Questionnaire
                   </Button>
                 ]}
                 pagination={{
                   total: filteredData.length,
                   pageSize: 10,
-                  showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} assessments`
+                  showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} questionnaires`
                 }}
-                emptyText={loading ? 'Loading assessments...' : 'No assessments found'}
+                emptyText={loading ? 'Loading questionnaires...' : 'No questionnaires found'}
               />
             </Spin>
           </div>
@@ -368,6 +368,6 @@ const Assessments = React.memo(({ user }) => {
   )
 })
 
-Assessments.displayName = 'Assessments'
+Questionnaires.displayName = 'Questionnaires'
 
-export default Assessments
+export default Questionnaires

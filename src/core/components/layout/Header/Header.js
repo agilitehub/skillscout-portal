@@ -55,7 +55,7 @@ const Header = ({ user }) => {
   // Helper function to get icon from source table
   const getIconFromSourceTable = useCallback((sourceTable) => {
     const iconMap = {
-      assessments: faUserTie,
+      questionnaires: faUserTie,
       assessment_questions: faQuestionCircle,
       job_descriptions: faBuilding,
       job_opportunities: faBriefcase
@@ -313,8 +313,8 @@ const Header = ({ user }) => {
         // Navigate based on source table
         if (item.sourceTable) {
           switch (item.sourceTable) {
-            case 'assessments':
-              navigate(`/business-dashboard/assessments/${item.id}`)
+                    case 'questionnaires':
+          navigate(`/business-dashboard/questionnaires/${item.id}`)
               break
             case 'job_descriptions':
               navigate(`/business-dashboard/job-descriptions/${item.id}`)
@@ -495,7 +495,7 @@ const Header = ({ user }) => {
         </div>
         <input
           type='text'
-          placeholder={isSearchLoading ? 'Searching...' : 'Search candidates, jobs, assessments...'}
+          placeholder={isSearchLoading ? 'Searching...' : 'Search candidates, jobs, questionnaires...'}
           value={searchQuery}
           onChange={handleSearchChange}
           onFocus={handleSearchFocus}
@@ -842,7 +842,7 @@ const Header = ({ user }) => {
             >
               <p className={`text-xs ${darkMode ? 'text-blue-300' : 'text-blue-700'} mb-0`}>
                 <strong>Note:</strong> This information is required to access business features and will be used to
-                organize your job postings and assessments.
+                organize your job postings and questionnaires.
               </p>
             </div>
           </div>

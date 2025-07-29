@@ -11,22 +11,22 @@ import { useTheme } from '../../../../core/context/ThemeContext'
 import BusinessSidebar from '../../components/BusinessSidebar'
 import TableView from '../../../../core/components/view-components/table-view/TableView'
 import TableActions from '../../../../core/components/view-components/table-view/TableActions'
-import { updateAssessment, getAssessmentById } from '../utils/controller'
+import { updateQuestionnaire, getQuestionnaireById } from '../utils/controller'
 import {
-  getQuestionsByAssessmentId,
-  createAssessmentQuestion,
-  updateAssessmentQuestion,
-  deleteAssessmentQuestion
-} from '../utils/assessment-questions-controller'
+  getQuestionsByQuestionnaireId,
+  createQuestionnaireQuestion,
+  updateQuestionnaireQuestion,
+  deleteQuestionnaireQuestion
+} from '../utils/questionnaire-questions-controller'
 
 const { Option } = Select
 const { TextArea } = Input
 
 /**
- * Assessment Form Page Component
- * Supports editing assessment profiles with questions
+ * Questionnaire Form Page Component
+ * Supports editing questionnaire profiles with questions
  */
-const AssessmentForm = React.memo(({ user }) => {
+const QuestionnaireForm = React.memo(({ user }) => {
   const { darkMode } = useTheme()
   const navigate = useNavigate()
   const location = useLocation()
@@ -38,7 +38,7 @@ const AssessmentForm = React.memo(({ user }) => {
   // Question management state
   const [isQuestionModalVisible, setIsQuestionModalVisible] = useState(false)
   const [editingQuestion, setEditingQuestion] = useState(null)
-  const [assessmentQuestions, setAssessmentQuestions] = useState([])
+  const [questionnaireQuestions, setQuestionnaireQuestions] = useState([])
   const [questionLoading, setQuestionLoading] = useState(false)
   const [questionSubmitLoading, setQuestionSubmitLoading] = useState(false)
 
@@ -47,26 +47,26 @@ const AssessmentForm = React.memo(({ user }) => {
   const initialData = location.state?.initialData || null
   const isEditMode = Boolean(editId)
 
-  // Fetch questions for an assessment
-  const fetchQuestionsForAssessment = useCallback(async (assessmentId) => {
-    if (!assessmentId) {
-      setAssessmentQuestions([])
+  // Fetch questions for a questionnaire
+  const fetchQuestionsForQuestionnaire = useCallback(async (questionnaireId) => {
+    if (!questionnaireId) {
+      setQuestionnaireQuestions([])
       return
     }
 
     try {
       setQuestionLoading(true)
-      const result = await getQuestionsByAssessmentId(assessmentId)
+      const result = await getQuestionsByQuestionnaireId(questionnaireId)
 
       if (result.success) {
-        setAssessmentQuestions(result.data)
+        setQuestionnaireQuestions(result.data)
       } else {
         message.error(`Failed to fetch questions: ${result.error}`)
-        setAssessmentQuestions([])
+        setQuestionnaireQuestions([])
       }
     } catch (err) {
       message.error('Failed to fetch questions')
-      setAssessmentQuestions([])
+      setQuestionnaireQuestions([])
       console.error('Error fetching questions:', err)
     } finally {
       setQuestionLoading(false)
@@ -75,7 +75,7 @@ const AssessmentForm = React.memo(({ user }) => {
 
   // Load data for edit mode
   useEffect(() => {
-    const loadAssessmentData = async () => {
+    const loadQuestionnaireData = async () => {
       if (isEditMode) {
         if (initialData) {
           // Use provided initial data
@@ -87,13 +87,13 @@ const AssessmentForm = React.memo(({ user }) => {
             tags: initialData.tags || []
           })
 
-          // Fetch questions for this assessment
-          await fetchQuestionsForAssessment(initialData.id)
+          // Fetch questions for this questionnaire
+          await fetchQuestionsForQuestionnaire(initialData.id)
         } else if (editId) {
           // Fallback: fetch if somehow we don't have the data
           setLoadingData(true)
           try {
-            const result = await getAssessmentById(editId)
+            const result = await getQuestionnaireById(editId)
             if (result.success) {
               form.setFieldsValue({
                 title: result.data.title,
@@ -103,21 +103,21 @@ const AssessmentForm = React.memo(({ user }) => {
                 tags: result.data.tags || []
               })
 
-              await fetchQuestionsForAssessment(result.data.id)
+              await fetchQuestionsForQuestionnaire(result.data.id)
             } else {
-              message.error('Failed to load assessment data: ' + result.error)
-              navigate('/business-dashboard/assessments')
+              message.error('Failed to load questionnaire data: ' + result.error)
+              navigate('/business-dashboard/questionnaires')
             }
           } catch (error) {
-            console.error('Error loading assessment data:', error)
-            message.error('An unexpected error occurred while loading assessment data')
-            navigate('/business-dashboard/assessments')
+            console.error('Error loading questionnaire data:', error)
+            message.error('An unexpected error occurred while loading questionnaire data')
+            navigate('/business-dashboard/questionnaires')
           } finally {
             setLoadingData(false)
           }
         }
       } else {
-        // Set default values for new assessment
+        // Set default values for new questionnaire
         form.setFieldsValue({
           isActive: true,
           status: 'Draft'
@@ -125,8 +125,8 @@ const AssessmentForm = React.memo(({ user }) => {
       }
     }
 
-    loadAssessmentData()
-  }, [editId, isEditMode, form, initialData, navigate, fetchQuestionsForAssessment])
+    loadQuestionnaireData()
+  }, [editId, isEditMode, form, initialData, navigate, fetchQuestionsForQuestionnaire])
 
   // Handle form submission
   const handleFormSubmit = useCallback(
@@ -135,19 +135,19 @@ const AssessmentForm = React.memo(({ user }) => {
         setLoading(true)
 
         if (isEditMode && editId) {
-          const result = await updateAssessment(editId, values)
+          const result = await updateQuestionnaire(editId, values)
           if (result.success) {
-            message.success('Assessment updated successfully')
-            navigate('/business-dashboard/assessments')
+            message.success('Questionnaire updated successfully')
+            navigate('/business-dashboard/questionnaires')
           } else {
-            message.error(`Failed to update assessment: ${result.error}`)
+            message.error(`Failed to update questionnaire: ${result.error}`)
           }
         } else {
           message.error('Only editing is supported on this page')
         }
       } catch (error) {
         console.error('Error submitting form:', error)
-        message.error(`An unexpected error occurred while ${isEditMode ? 'updating' : 'creating'} the assessment`)
+        message.error(`An unexpected error occurred while ${isEditMode ? 'updating' : 'creating'} the questionnaire`)
       } finally {
         setLoading(false)
       }
@@ -179,10 +179,10 @@ const AssessmentForm = React.memo(({ user }) => {
     async (questionId) => {
       if (editId) {
         try {
-          const result = await deleteAssessmentQuestion(questionId)
+          const result = await deleteQuestionnaireQuestion(questionId)
           if (result.success) {
             message.success('Question deleted successfully')
-            await fetchQuestionsForAssessment(editId)
+            await fetchQuestionsForQuestionnaire(editId)
           } else {
             message.error(`Failed to delete question: ${result.error}`)
           }
@@ -192,7 +192,7 @@ const AssessmentForm = React.memo(({ user }) => {
         }
       }
     },
-    [editId, fetchQuestionsForAssessment]
+    [editId, fetchQuestionsForQuestionnaire]
   )
 
   const handleQuestionSubmit = useCallback(
@@ -202,14 +202,14 @@ const AssessmentForm = React.memo(({ user }) => {
         if (editId) {
           let result
           if (editingQuestion) {
-            result = await updateAssessmentQuestion(editingQuestion.id, values)
+            result = await updateQuestionnaireQuestion(editingQuestion.id, values)
           } else {
-            result = await createAssessmentQuestion(editId, values)
+            result = await createQuestionnaireQuestion(editId, values)
           }
 
           if (result.success) {
             message.success(`${editingQuestion ? 'Updated' : 'Added'} question successfully`)
-            await fetchQuestionsForAssessment(editId)
+            await fetchQuestionsForQuestionnaire(editId)
           } else {
             message.error(`Failed to ${editingQuestion ? 'update' : 'add'} question: ${result.error}`)
             return
@@ -226,12 +226,12 @@ const AssessmentForm = React.memo(({ user }) => {
         setQuestionSubmitLoading(false)
       }
     },
-    [editId, editingQuestion, questionForm, fetchQuestionsForAssessment]
+    [editId, editingQuestion, questionForm, fetchQuestionsForQuestionnaire]
   )
 
   const handleCancel = useCallback(() => {
     form.resetFields()
-    navigate('/business-dashboard/assessments')
+    navigate('/business-dashboard/questionnaires')
   }, [form, navigate])
 
   // Truncate text for display
@@ -320,9 +320,9 @@ const AssessmentForm = React.memo(({ user }) => {
                 className={`text-lg mr-3 ${darkMode ? 'text-emerald-100' : 'text-white'}`}
               />
               <div>
-                <h1 className='text-xl font-bold text-white'>Edit Assessment</h1>
+                <h1 className='text-xl font-bold text-white'>Edit Questionnaire</h1>
                 <p className={`text-sm mt-1 ${darkMode ? 'text-gray-300' : 'text-white/90'}`}>
-                  Update your assessment details and questions
+                  Update your questionnaire details and questions
                 </p>
               </div>
             </div>
@@ -452,10 +452,10 @@ const AssessmentForm = React.memo(({ user }) => {
               initialValues={{ isActive: true, status: 'Draft' }}
               loading={loadingData}
             >
-              {/* Assessment Details Section */}
+              {/* Questionnaire Details Section */}
               <div className='mb-6'>
                 <h3 className={`text-lg font-semibold mb-4 ${darkMode ? 'text-emerald-100' : 'text-emerald-800'}`}>
-                  Assessment Details
+                  Questionnaire Details
                 </h3>
 
                 {/* Active Toggle */}
@@ -468,12 +468,12 @@ const AssessmentForm = React.memo(({ user }) => {
                 <Row gutter={16}>
                   <Col span={12}>
                     <Form.Item
-                      label='Assessment Title'
+                      label='Questionnaire Title'
                       name='title'
-                      rules={[{ required: true, message: 'Please enter an assessment title' }]}
+                      rules={[{ required: true, message: 'Please enter an questionnaire title' }]}
                     >
                       <Input
-                        placeholder='Enter assessment title...'
+                        placeholder='Enter questionnaire title...'
                         style={{ fontWeight: '500' }}
                       />
                     </Form.Item>
@@ -515,7 +515,7 @@ const AssessmentForm = React.memo(({ user }) => {
               <div className='mb-6'>
                 <div className='flex items-center justify-between mb-4'>
                   <h3 className={`text-lg font-semibold ${darkMode ? 'text-emerald-100' : 'text-emerald-800'}`}>
-                    Assessment Questions ({assessmentQuestions.length})
+                    Questionnaire Questions ({questionnaireQuestions.length})
                   </h3>
                   <Button
                     type='primary'
@@ -533,7 +533,7 @@ const AssessmentForm = React.memo(({ user }) => {
                 <Spin spinning={questionLoading} tip='Loading questions...'>
                   <TableView
                     columns={questionColumns}
-                    dataSource={assessmentQuestions}
+                    dataSource={questionnaireQuestions}
                     rowKey='id'
                     pagination={false}
                     emptyText='No questions added yet. Click "Add Question" to get started.'
@@ -567,7 +567,7 @@ const AssessmentForm = React.memo(({ user }) => {
                     minWidth: '180px'
                   }}
                 >
-                  Update Assessment
+                  Update Questionnaire
                 </Button>
               </div>
             </Form>
@@ -610,7 +610,7 @@ const AssessmentForm = React.memo(({ user }) => {
                   rules={[{ required: true, message: 'Please enter a question' }]}
                 >
                   <TextArea
-                    placeholder='Enter the assessment question...'
+                    placeholder='Enter the questionnaire question...'
                     rows={3}
                     style={{ fontWeight: '500' }}
                   />
@@ -675,6 +675,6 @@ const AssessmentForm = React.memo(({ user }) => {
   )
 })
 
-AssessmentForm.displayName = 'AssessmentForm'
+QuestionnaireForm.displayName = 'QuestionnaireForm'
 
-export default AssessmentForm 
+export default QuestionnaireForm 

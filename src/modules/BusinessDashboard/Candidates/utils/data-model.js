@@ -2,11 +2,11 @@
 // Frontend Instructions Rule Applied!
 
 /**
- * Pipeline Data Model
- * Defines the structure and validation for pipeline candidates
+ * Candidates Data Model
+ * Defines the structure and validation for candidates
  */
 
-export const PIPELINE_STAGES = {
+export const CANDIDATES_STAGES = {
   APPLICATION_RECEIVED: 'application-received',
   SCREENING: 'screening',
   TECHNICAL_INTERVIEW: 'technical-interview',
@@ -23,13 +23,13 @@ export const PRIORITY_LEVELS = {
 }
 
 export const STAGE_COLORS = {
-  [PIPELINE_STAGES.APPLICATION_RECEIVED]: 'blue',
-  [PIPELINE_STAGES.SCREENING]: 'orange',
-  [PIPELINE_STAGES.TECHNICAL_INTERVIEW]: 'purple',
-  [PIPELINE_STAGES.FINAL_INTERVIEW]: 'cyan',
-  [PIPELINE_STAGES.OFFER_EXTENDED]: 'gold',
-  [PIPELINE_STAGES.HIRED]: 'green',
-  [PIPELINE_STAGES.REJECTED]: 'red'
+  [CANDIDATES_STAGES.APPLICATION_RECEIVED]: 'blue',
+  [CANDIDATES_STAGES.SCREENING]: 'orange',
+  [CANDIDATES_STAGES.TECHNICAL_INTERVIEW]: 'purple',
+  [CANDIDATES_STAGES.FINAL_INTERVIEW]: 'cyan',
+  [CANDIDATES_STAGES.OFFER_EXTENDED]: 'gold',
+  [CANDIDATES_STAGES.HIRED]: 'green',
+  [CANDIDATES_STAGES.REJECTED]: 'red'
 }
 
 export const PRIORITY_COLORS = {
@@ -40,7 +40,7 @@ export const PRIORITY_COLORS = {
 
 /**
  * Candidate Model
- * Defines the structure for a pipeline candidate
+ * Defines the structure for a candidates candidate
  */
 export class CandidateModel {
   constructor(data = {}) {
@@ -53,7 +53,7 @@ export class CandidateModel {
     this.priority = data.priority || PRIORITY_LEVELS.MEDIUM
     this.tags = data.tags || []
     this.notes = data.notes || ''
-    this.stage = data.stage || PIPELINE_STAGES.APPLICATION_RECEIVED
+    this.stage = data.stage || CANDIDATES_STAGES.APPLICATION_RECEIVED
   }
 
   /**
@@ -81,7 +81,7 @@ export class CandidateModel {
       errors.push('Priority must be high, medium, or low')
     }
 
-    if (!Object.values(PIPELINE_STAGES).includes(this.stage)) {
+    if (!Object.values(CANDIDATES_STAGES).includes(this.stage)) {
       errors.push('Stage is invalid')
     }
 
@@ -112,10 +112,10 @@ export class CandidateModel {
 }
 
 /**
- * Pipeline Data Model
- * Manages the overall pipeline structure
+ * Candidates Data Model
+ * Manages the overall candidates structure
  */
-export class PipelineDataModel {
+export class CandidatesDataModel {
   constructor() {
     this.data = {}
     this.initializeStages()
@@ -125,7 +125,7 @@ export class PipelineDataModel {
    * Initialize empty stages
    */
   initializeStages() {
-    Object.values(PIPELINE_STAGES).forEach(stage => {
+    Object.values(CANDIDATES_STAGES).forEach(stage => {
       this.data[stage] = []
     })
   }
@@ -135,7 +135,7 @@ export class PipelineDataModel {
    * @param {CandidateModel} candidate - The candidate to add
    * @param {string} stage - The stage to add to
    */
-  addCandidate(candidate, stage = PIPELINE_STAGES.APPLICATION_RECEIVED) {
+  addCandidate(candidate, stage = CANDIDATES_STAGES.APPLICATION_RECEIVED) {
     if (!this.data[stage]) {
       this.data[stage] = []
     }
@@ -143,7 +143,7 @@ export class PipelineDataModel {
   }
 
   /**
-   * Remove candidate from pipeline
+   * Remove candidate from candidates
    * @param {number} candidateId - The candidate ID
    * @returns {boolean} Success status
    */
@@ -190,7 +190,7 @@ export class PipelineDataModel {
 
   /**
    * Get all candidates
-   * @returns {Object} All pipeline data
+   * @returns {Object} All candidates data
    */
   getAllData() {
     return this.data
@@ -216,8 +216,8 @@ export class PipelineDataModel {
 
 export default {
   CandidateModel,
-  PipelineDataModel,
-  PIPELINE_STAGES,
+  CandidatesDataModel,
+  CANDIDATES_STAGES,
   PRIORITY_LEVELS,
   STAGE_COLORS,
   PRIORITY_COLORS

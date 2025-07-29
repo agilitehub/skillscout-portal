@@ -242,7 +242,7 @@ const StageColumn = React.memo(
  */
 const KanbanBoard = React.memo(
   ({
-    pipelineData,
+    candidatesData,
     stages,
     onEditCandidate,
     onCandidateAction,
@@ -254,14 +254,14 @@ const KanbanBoard = React.memo(
     darkMode
   }) => {
     // Safety checks
-    if (!pipelineData || !Array.isArray(stages)) {
+    if (!candidatesData || !Array.isArray(stages)) {
       return (
         <div
           className={`w-full min-h-[400px] flex items-center justify-center ${
             darkMode ? 'bg-gray-800 text-gray-400' : 'bg-gray-100 text-gray-500'
           } rounded-lg border`}
         >
-          <p>Error loading pipeline data</p>
+          <p>Error loading candidates data</p>
         </div>
       )
     }
@@ -274,7 +274,7 @@ const KanbanBoard = React.memo(
             <StageColumn
               key={stage.key}
               stage={stage}
-              candidates={pipelineData[stage.key] || []}
+              candidates={candidatesData[stage.key] || []}
               onEditCandidate={onEditCandidate}
               onCandidateAction={onCandidateAction}
               onDropOnStage={onDropOnStage}
@@ -292,7 +292,7 @@ const KanbanBoard = React.memo(
             <StageColumn
               key={stage.key}
               stage={stage}
-              candidates={pipelineData[stage.key] || []}
+              candidates={candidatesData[stage.key] || []}
               onEditCandidate={onEditCandidate}
               onCandidateAction={onCandidateAction}
               onDropOnStage={onDropOnStage}
@@ -311,7 +311,7 @@ const KanbanBoard = React.memo(
               <div key={stage.key} className='w-80 flex-shrink-0'>
                 <StageColumn
                   stage={stage}
-                  candidates={pipelineData[stage.key] || []}
+                  candidates={candidatesData[stage.key] || []}
                   onEditCandidate={onEditCandidate}
                   onCandidateAction={onCandidateAction}
                   onDropOnStage={onDropOnStage}

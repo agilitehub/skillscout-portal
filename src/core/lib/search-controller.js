@@ -166,8 +166,8 @@ const categorizeSearchResults = (results) => {
   const sortedResults = [...results].sort((a, b) => (b.similarity || 0) - (a.similarity || 0))
 
   const categories = {
-    assessments: {
-      category: 'Assessments',
+    questionnaires: {
+      category: 'Questionnaires',
       items: []
     },
     assessment_questions: {
@@ -192,7 +192,7 @@ const categorizeSearchResults = (results) => {
       let subtitle = 'No content'
       if (result.metadata) {
         switch (result.source_table) {
-          case 'assessments':
+          case 'questionnaires':
             subtitle = `${result.metadata.category} ${result.metadata.tags?.join(', ')}`
             break
           case 'job_descriptions':
@@ -242,7 +242,7 @@ const categorizeSearchResults = (results) => {
  */
 const getIconForSourceTable = (sourceTable) => {
   const iconMap = {
-    assessments: 'faUserTie',
+    questionnaires: 'faUserTie',
     assessment_questions: 'faQuestionCircle',
     job_descriptions: 'faBuilding',
     job_opportunities: 'faBriefcase'

@@ -2,19 +2,19 @@
 // Frontend Instructions Rule Applied!
 
 /**
- * Pipeline Controller
- * Handles pipeline data operations and business logic
+ * Candidates Controller
+ * Handles candidates data operations and business logic
  */
-class PipelineController {
+class CandidatesController {
   constructor() {
-    this.apiEndpoint = '/api/pipeline'
+    this.apiEndpoint = '/api/candidates'
   }
 
   /**
-   * Get all pipeline data
-   * @returns {Promise} Pipeline data
+   * Get all candidates data
+   * @returns {Promise} Candidates data
    */
-  async getPipelineData() {
+  async getCandidatesData() {
     try {
       // In a real app, this would make an API call
       // For now, returning sample data
@@ -28,7 +28,7 @@ class PipelineController {
         'rejected': []
       }
     } catch (error) {
-      console.error('Error fetching pipeline data:', error)
+      console.error('Error fetching candidates data:', error)
       throw error
     }
   }
@@ -109,4 +109,4 @@ class PipelineController {
   }
 }
 
-export default new PipelineController() 
+export default new CandidatesController() 

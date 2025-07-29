@@ -2,7 +2,7 @@
 
 ## Overview
 
-The search functionality in the Header component has been enhanced to use vector search with OpenAI embeddings and Supabase's vector search capabilities. This provides semantic search across assessments, assessment questions, job descriptions, and job opportunities.
+The search functionality in the Header component has been enhanced to use vector search with OpenAI embeddings and Supabase's vector search capabilities. This provides semantic search across questionnaires, questionnaire questions, job descriptions, and job opportunities.
 
 ## Features
 
@@ -15,8 +15,8 @@ The search functionality in the Header component has been enhanced to use vector
 
 ### Search Categories
 
-- **Assessments**: Technical and behavioral assessments
-- **Assessment Questions**: Individual questions within assessments
+- **Questionnaires**: Technical and behavioral questionnaires
+- **Questionnaire Questions**: Individual questions within questionnaires
 - **Job Descriptions**: Detailed job postings
 - **Job Opportunities**: Job listings and opportunities
 
@@ -108,7 +108,7 @@ The search supports various options:
 const searchResults = await searchWithFallback(searchTerm, {
   matchThreshold: 0.6, // Similarity threshold (0-1)
   matchCount: 20, // Maximum results to return
-  sourceTables: ['assessments', 'job_descriptions'], // Filter by source
+      sourceTables: ['questionnaires', 'job_descriptions'], // Filter by source
   userId: 'user-uuid' // Filter by user (if implemented)
 })
 ```

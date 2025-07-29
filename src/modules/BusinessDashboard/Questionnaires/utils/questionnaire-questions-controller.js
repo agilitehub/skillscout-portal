@@ -1,10 +1,10 @@
 // Global Instructions Rule Applied!
 import { createClient } from '@supabase/supabase-js'
-import { transformQuestionToDatabase, transformQuestionFromDatabase, validateAssessmentQuestion } from './data-model'
+import { transformQuestionToDatabase, transformQuestionFromDatabase, validateQuestionnaireQuestion } from './data-model'
 
 /**
- * Assessment Questions Controller
- * Handles all CRUD operations for assessment questions
+ * Questionnaire Questions Controller
+ * Handles all CRUD operations for questionnaire questions
  */
 
 // Initialize Supabase client
@@ -16,24 +16,24 @@ let supabase = null
 if (SUPABASE_URL && SUPABASE_ANON_KEY) {
   supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 } else {
-  console.error('Assessment Questions Controller: Supabase credentials not configured')
+  console.error('Questionnaire Questions Controller: Supabase credentials not configured')
 }
 
 /**
  * Get all questions for a specific assessment
- * @param {string} assessmentId - Assessment ID
+ * @param {string} questionnaireId - Questionnaire ID
  * @returns {Promise<Object>} Result with questions array
  */
-export const getQuestionsByAssessmentId = async (assessmentId) => {
+export const getQuestionsByQuestionnaireId = async (questionnaireId) => {
   try {
     if (!supabase) {
       throw new Error('Supabase client not initialized')
     }
 
-    if (!assessmentId) {
+    if (!questionnaireId) {
       return {
         success: false,
-        error: 'Assessment ID is required',
+        error: 'Questionnaire ID is required',
         data: []
       }
     }
@@ -41,11 +41,11 @@ export const getQuestionsByAssessmentId = async (assessmentId) => {
     const { data, error } = await supabase
       .from('assessment_questions')
       .select('*')
-      .eq('assessment_id', assessmentId)
+      .eq('assessment_id', questionnaireId)
       .order('question_order', { ascending: true })
 
     if (error) {
-      console.error('Error fetching assessment questions:', error)
+      console.error('Error fetching questionnaire questions:', error)
       return {
         success: false,
         error: error.message,
@@ -61,17 +61,17 @@ export const getQuestionsByAssessmentId = async (assessmentId) => {
       error: null
     }
   } catch (error) {
-    console.error('Unexpected error in getQuestionsByAssessmentId:', error)
+    console.error('Unexpected error in getQuestionsByQuestionnaireId:', error)
     return {
       success: false,
-      error: 'An unexpected error occurred while fetching assessment questions',
+      error: 'An unexpected error occurred while fetching questionnaire questions',
       data: []
     }
   }
 }
 
 /**
- * Get a single assessment question by ID
+ * Get a single questionnaire question by ID
  * @param {string} questionId - Question ID
  * @returns {Promise<Object>} Result with question data
  */
@@ -118,30 +118,30 @@ export const getQuestionById = async (questionId) => {
 }
 
 /**
- * Create a new assessment question
- * @param {string} assessmentId - Assessment ID
+ * Create a new questionnaire question
+ * @param {string} questionnaireId - Questionnaire ID
  * @param {Object} questionData - Question data
  * @returns {Promise<Object>} Result with created question
  */
-export const createAssessmentQuestion = async (assessmentId, questionData) => {
+export const createQuestionnaireQuestion = async (questionnaireId, questionData) => {
   try {
     if (!supabase) {
       throw new Error('Supabase client not initialized')
     }
 
-    if (!assessmentId) {
+    if (!questionnaireId) {
       return {
         success: false,
-        error: 'Assessment ID is required',
+        error: 'Questionnaire ID is required',
         data: null
       }
     }
 
     // Add assessment_id to question data for validation
-    const dataWithAssessmentId = { ...questionData, assessment_id: assessmentId }
+    const dataWithAssessmentId = { ...questionData, assessment_id: questionnaireId }
 
     // Validate the question data
-    const validation = validateAssessmentQuestion(dataWithAssessmentId)
+    const validation = validateQuestionnaireQuestion(dataWithAssessmentId)
     if (!validation.success) {
       return {
         success: false,
@@ -154,20 +154,20 @@ export const createAssessmentQuestion = async (assessmentId, questionData) => {
     const { data: maxOrderData } = await supabase
       .from('assessment_questions')
       .select('question_order')
-      .eq('assessment_id', assessmentId)
+      .eq('assessment_id', questionnaireId)
       .order('question_order', { ascending: false })
       .limit(1)
 
     const nextOrder = maxOrderData && maxOrderData.length > 0 ? maxOrderData[0].question_order + 1 : 1
 
     // Transform form data to database format
-    const dbData = transformQuestionToDatabase(questionData, assessmentId, { isUpdate: false })
+    const dbData = transformQuestionToDatabase(questionData, questionnaireId, { isUpdate: false })
     dbData.question_order = nextOrder
 
     const { data, error } = await supabase.from('assessment_questions').insert([dbData]).select().single()
 
     if (error) {
-      console.error('Error creating assessment question:', error)
+      console.error('Error creating questionnaire question:', error)
       return {
         success: false,
         error: error.message,
@@ -183,7 +183,7 @@ export const createAssessmentQuestion = async (assessmentId, questionData) => {
       error: null
     }
   } catch (error) {
-    console.error('Unexpected error in createAssessmentQuestion:', error)
+    console.error('Unexpected error in createQuestionnaireQuestion:', error)
     return {
       success: false,
       error: 'An unexpected error occurred while creating the question',
@@ -193,12 +193,12 @@ export const createAssessmentQuestion = async (assessmentId, questionData) => {
 }
 
 /**
- * Update an existing assessment question
+ * Update an existing questionnaire question
  * @param {string} questionId - Question ID
  * @param {Object} questionData - Updated question data
  * @returns {Promise<Object>} Result with updated question
  */
-export const updateAssessmentQuestion = async (questionId, questionData) => {
+export const updateQuestionnaireQuestion = async (questionId, questionData) => {
   try {
     if (!supabase) {
       throw new Error('Supabase client not initialized')
@@ -218,13 +218,13 @@ export const updateAssessmentQuestion = async (questionId, questionData) => {
       return existingResult
     }
 
-    const assessmentId = existingResult.data.assessmentId
+    const questionnaireId = existingResult.data.questionnaireId
 
     // Add assessment_id to question data for validation
-    const dataWithAssessmentId = { ...questionData, assessment_id: assessmentId }
+    const dataWithAssessmentId = { ...questionData, assessment_id: questionnaireId }
 
     // Validate the question data
-    const validation = validateAssessmentQuestion(dataWithAssessmentId)
+    const validation = validateQuestionnaireQuestion(dataWithAssessmentId)
     if (!validation.success) {
       return {
         success: false,
@@ -234,7 +234,7 @@ export const updateAssessmentQuestion = async (questionId, questionData) => {
     }
 
     // Transform form data to database format
-    const dbData = transformQuestionToDatabase(questionData, assessmentId, { isUpdate: true })
+    const dbData = transformQuestionToDatabase(questionData, questionnaireId, { isUpdate: true })
 
     const { data, error } = await supabase
       .from('assessment_questions')
@@ -244,7 +244,7 @@ export const updateAssessmentQuestion = async (questionId, questionData) => {
       .single()
 
     if (error) {
-      console.error('Error updating assessment question:', error)
+      console.error('Error updating questionnaire question:', error)
       return {
         success: false,
         error: error.message,
@@ -260,7 +260,7 @@ export const updateAssessmentQuestion = async (questionId, questionData) => {
       error: null
     }
   } catch (error) {
-    console.error('Unexpected error in updateAssessmentQuestion:', error)
+    console.error('Unexpected error in updateQuestionnaireQuestion:', error)
     return {
       success: false,
       error: 'An unexpected error occurred while updating the question',
@@ -270,11 +270,11 @@ export const updateAssessmentQuestion = async (questionId, questionData) => {
 }
 
 /**
- * Delete an assessment question
+ * Delete an questionnaire question
  * @param {string} questionId - Question ID
  * @returns {Promise<Object>} Result of deletion operation
  */
-export const deleteAssessmentQuestion = async (questionId) => {
+export const deleteQuestionnaireQuestion = async (questionId) => {
   try {
     if (!supabase) {
       throw new Error('Supabase client not initialized')
@@ -291,7 +291,7 @@ export const deleteAssessmentQuestion = async (questionId) => {
     const { error } = await supabase.from('assessment_questions').delete().eq('id', questionId)
 
     if (error) {
-      console.error('Error deleting assessment question:', error)
+      console.error('Error deleting questionnaire question:', error)
       return {
         success: false,
         error: error.message,
@@ -305,7 +305,7 @@ export const deleteAssessmentQuestion = async (questionId) => {
       error: null
     }
   } catch (error) {
-    console.error('Unexpected error in deleteAssessmentQuestion:', error)
+    console.error('Unexpected error in deleteQuestionnaireQuestion:', error)
     return {
       success: false,
       error: 'An unexpected error occurred while deleting the question',
@@ -367,9 +367,9 @@ export const reorderQuestions = async (questions) => {
 }
 
 /**
- * Duplicate a question within the same assessment or to another assessment
+ * Duplicate a question within the same questionnaire or to another assessment
  * @param {string} questionId - Question ID to duplicate
- * @param {string} targetAssessmentId - Target assessment ID (optional, defaults to same assessment)
+ * @param {string} targetAssessmentId - Target questionnaire ID (optional, defaults to same assessment)
  * @returns {Promise<Object>} Result with duplicated question
  */
 export const duplicateQuestion = async (questionId, targetAssessmentId = null) => {
@@ -393,7 +393,7 @@ export const duplicateQuestion = async (questionId, targetAssessmentId = null) =
     }
 
     const originalQuestion = originalResult.data
-    const assessmentId = targetAssessmentId || originalQuestion.assessmentId
+    const questionnaireId = targetAssessmentId || originalQuestion.questionnaireId
 
     // Create new question data
     const newQuestionData = {
@@ -403,7 +403,7 @@ export const duplicateQuestion = async (questionId, targetAssessmentId = null) =
       isActive: originalQuestion.isActive
     }
 
-    return await createAssessmentQuestion(assessmentId, newQuestionData)
+    return await createQuestionnaireQuestion(questionnaireId, newQuestionData)
   } catch (error) {
     console.error('Unexpected error in duplicateQuestion:', error)
     return {
@@ -415,12 +415,12 @@ export const duplicateQuestion = async (questionId, targetAssessmentId = null) =
 }
 
 /**
- * Search questions across all assessments or within a specific assessment
+ * Search questions across all questionnaires or within a specific assessment
  * @param {string} searchTerm - Search term
- * @param {string} assessmentId - Optional assessment ID to limit search
+ * @param {string} questionnaireId - Optional questionnaire ID to limit search
  * @returns {Promise<Object>} Result with matching questions
  */
-export const searchQuestions = async (searchTerm, assessmentId = null) => {
+export const searchQuestions = async (searchTerm, questionnaireId = null) => {
   try {
     if (!supabase) {
       throw new Error('Supabase client not initialized')
@@ -440,8 +440,8 @@ export const searchQuestions = async (searchTerm, assessmentId = null) => {
       .or(`question.ilike.%${searchTerm}%,context.ilike.%${searchTerm}%,preferred_feedback.ilike.%${searchTerm}%`)
       .order('question_order', { ascending: true })
 
-    if (assessmentId) {
-      query = query.eq('assessment_id', assessmentId)
+    if (questionnaireId) {
+      query = query.eq('assessment_id', questionnaireId)
     }
 
     const { data, error } = await query

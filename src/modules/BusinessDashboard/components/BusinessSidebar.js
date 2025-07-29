@@ -17,7 +17,7 @@ import { useTheme } from '../../../core/context/ThemeContext'
 
 /**
  * Business Dashboard Sidebar Navigation
- * Provides categorized navigation for job management, descriptions, and assessments
+ * Provides categorized navigation for job management, descriptions, and questionnaires
  */
 const BusinessSidebar = React.memo(() => {
   const { darkMode } = useTheme()
@@ -32,7 +32,7 @@ const BusinessSidebar = React.memo(() => {
         {
           path: '/business-dashboard',
           icon: faColumns,
-          label: 'Pipeline',
+          label: 'Candidates',
           exact: true
         },
         {
@@ -42,9 +42,9 @@ const BusinessSidebar = React.memo(() => {
           exact: false
         },
         {
-          path: '/business-dashboard/assessments',
+          path: '/business-dashboard/questionnaires',
           icon: faClipboardCheck,
-          label: 'Assessments',
+          label: 'Questionnaires',
           exact: false
         },
         {

@@ -572,24 +572,24 @@ export const getJobDescriptionsForSelection = async () => {
 }
 
 /**
- * Get all assessments for dropdown selection
- * @returns {Promise<Object>} Result with assessments data
+ * Get all questionnaires for dropdown selection
+ * @returns {Promise<Object>} Result with questionnaires data
  */
-export const getAssessmentsForSelection = async () => {
+export const getQuestionnairesForSelection = async () => {
   try {
     if (!supabase) {
       throw new Error('Supabase client not initialized')
     }
 
     const { data, error } = await supabase
-      .from('assessments')
+      .from('questionnaires')
       .select('id, title, category, status')
       .eq('is_active', true)
       .eq('status', 'Active')
       .order('title', { ascending: true })
 
     if (error) {
-      console.error('Job Listings Controller: Error fetching assessments:', error)
+      console.error('Job Listings Controller: Error fetching questionnaires:', error)
       return {
         success: false,
         error: error.message,
@@ -603,10 +603,10 @@ export const getAssessmentsForSelection = async () => {
       error: null
     }
   } catch (error) {
-    console.error('Job Listings Controller: Unexpected error in getAssessmentsForSelection:', error)
+    console.error('Job Listings Controller: Unexpected error in getQuestionnairesForSelection:', error)
     return {
       success: false,
-      error: 'An unexpected error occurred while fetching assessments',
+      error: 'An unexpected error occurred while fetching questionnaires',
       data: []
     }
   }

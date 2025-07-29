@@ -1,14 +1,14 @@
 // Global Instructions Rule Applied!
 
 /**
- * Data Model for Enhanced Assessments with Multiple Questions
- * Assessments now have titles and questions are in a separate table
+ * Data Model for Enhanced Questionnaires with Multiple Questions
+ * Questionnaires now have titles and questions are in a separate table
  */
 
 /**
- * Enhanced Assessment Schema - Core Fields Only
+ * Enhanced Questionnaire Schema - Core Fields Only
  */
-export const AssessmentSchema = {
+export const QuestionnaireSchema = {
   // Core Fields (Required)
   title: { type: 'string', required: true, maxLength: 255 },
 
@@ -27,7 +27,7 @@ export const AssessmentSchema = {
 }
 
 /**
- * Assessment Question Schema
+ * Questionnaire Question Schema
  */
 export const AssessmentQuestionSchema = {
   // Core Fields (Required)
@@ -42,11 +42,11 @@ export const AssessmentQuestionSchema = {
 }
 
 /**
- * Validate assessment data against schema
- * @param {Object} assessmentData - Assessment data to validate
+ * Validate questionnaire data against schema
+ * @param {Object} assessmentData - Questionnaire data to validate
  * @returns {Object} Validation result with success status and errors
  */
-export const validateAssessment = (assessmentData) => {
+export const validateQuestionnaire = (assessmentData) => {
   const errors = []
 
   // Required field validation
@@ -63,8 +63,8 @@ export const validateAssessment = (assessmentData) => {
     errors.push('Category must be 255 characters or less')
   }
 
-  if (assessmentData.status && !AssessmentSchema.status.enum.includes(assessmentData.status)) {
-    errors.push(`Status must be one of: ${AssessmentSchema.status.enum.join(', ')}`)
+  if (assessmentData.status && !QuestionnaireSchema.status.enum.includes(assessmentData.status)) {
+    errors.push(`Status must be one of: ${QuestionnaireSchema.status.enum.join(', ')}`)
   }
 
   return {
@@ -74,16 +74,16 @@ export const validateAssessment = (assessmentData) => {
 }
 
 /**
- * Validate assessment question data against schema
- * @param {Object} questionData - Assessment question data to validate
+ * Validate questionnaire question data against schema
+ * @param {Object} questionData - Questionnaire question data to validate
  * @returns {Object} Validation result with success status and errors
  */
-export const validateAssessmentQuestion = (questionData) => {
+export const validateQuestionnaireQuestion = (questionData) => {
   const errors = []
 
   // Required field validation
   if (!questionData.assessment_id || questionData.assessment_id.trim() === '') {
-    errors.push('Assessment ID is required')
+    errors.push('Questionnaire ID is required')
   }
 
   if (!questionData.question || questionData.question.trim() === '') {
@@ -120,7 +120,7 @@ export const validateAssessmentQuestion = (questionData) => {
 }
 
 /**
- * Transform form data to database format (Supabase format) for assessments
+ * Transform form data to database format (Supabase format) for questionnaires
  * @param {Object} formData - Data from the form
  * @returns {Object} Transformed data for database insertion
  */
@@ -159,15 +159,15 @@ export const transformToDatabase = (formData) => {
 }
 
 /**
- * Transform form data to database format for assessment questions
+ * Transform form data to database format for questionnaire questions
  * @param {Object} formData - Data from the form
- * @param {string} assessmentId - ID of the parent assessment
+ * @param {string} questionnaireId - ID of the parent assessment
  * @returns {Object} Transformed data for database insertion
  */
-export const transformQuestionToDatabase = (formData, assessmentId) => {
+export const transformQuestionToDatabase = (formData, questionnaireId) => {
   const transformed = {
     // Core Fields
-    assessment_id: assessmentId,
+    assessment_id: questionnaireId,
     question: formData.question?.trim(),
     context: formData.context?.trim(),
     preferred_feedback: formData.preferredFeedback?.trim() || formData.preferred_feedback?.trim(),
@@ -189,7 +189,7 @@ export const transformQuestionToDatabase = (formData, assessmentId) => {
 }
 
 /**
- * Transform database data to frontend format for assessments
+ * Transform database data to frontend format for questionnaires
  * @param {Object} dbData - Data from database (Supabase format)
  * @returns {Object} Transformed data for frontend use (camelCase)
  */
@@ -231,7 +231,7 @@ export const transformFromDatabase = (dbData) => {
 }
 
 /**
- * Transform database data to frontend format for assessment questions
+ * Transform database data to frontend format for questionnaire questions
  * @param {Object} dbData - Data from database (Supabase format)
  * @returns {Object} Transformed data for frontend use (camelCase)
  */
@@ -241,7 +241,7 @@ export const transformQuestionFromDatabase = (dbData) => {
   return {
     // Core Fields
     id: dbData.id,
-    assessmentId: dbData.assessment_id, // Convert to camelCase
+    questionnaireId: dbData.assessment_id, // Convert to camelCase
     question: dbData.question,
     context: dbData.context,
     preferredFeedback: dbData.preferred_feedback, // Convert to camelCase
@@ -286,27 +286,27 @@ export const parseTags = (tagsString) => {
 }
 
 /**
- * Get assessment status display properties
- * @param {string} status - Assessment status
+ * Get questionnaire status display properties
+ * @param {string} status - Questionnaire status
  * @returns {Object} Display properties for the status
  */
 export const getStatusDisplayProperties = (status) => {
   const statusMap = {
     Draft: {
       color: 'gray',
-      description: 'Assessment is in draft mode'
+      description: 'Questionnaire is in draft mode'
     },
     Active: {
       color: 'green',
-      description: 'Assessment is active and available'
+      description: 'Questionnaire is active and available'
     },
     Inactive: {
       color: 'orange',
-      description: 'Assessment is temporarily inactive'
+      description: 'Questionnaire is temporarily inactive'
     },
     Archived: {
       color: 'red',
-      description: 'Assessment is archived'
+      description: 'Questionnaire is archived'
     }
   }
 
@@ -325,16 +325,16 @@ export const truncateText = (text, maxLength = 100) => {
 }
 
 /**
- * Calculate assessment statistics
- * @param {Array} assessments - Array of assessments
+ * Calculate questionnaire statistics
+ * @param {Array} questionnaires - Array of questionnaires
  * @returns {Object} Statistics summary
  */
-export const calculateAssessmentStats = (assessments) => {
-  if (!Array.isArray(assessments) || assessments.length === 0) {
+export const calculateAssessmentStats = (questionnaires) => {
+  if (!Array.isArray(questionnaires) || questionnaires.length === 0) {
     return {
-      totalAssessments: 0,
-      activeAssessments: 0,
-      draftAssessments: 0,
+      totalQuestionnaires: 0,
+      activeQuestionnaires: 0,
+      draftQuestionnaires: 0,
       totalCompletions: 0,
       averageScore: 0,
       totalQuestions: 0
@@ -342,16 +342,16 @@ export const calculateAssessmentStats = (assessments) => {
   }
 
   const stats = {
-    totalAssessments: assessments.length,
-    activeAssessments: assessments.filter((a) => a.status === 'Active').length,
-    draftAssessments: assessments.filter((a) => a.status === 'Draft').length,
-    totalCompletions: assessments.reduce((sum, a) => sum + (a.completions || 0), 0),
-    totalQuestions: assessments.reduce((sum, a) => sum + (a.questionCount || 0), 0),
+    totalQuestionnaires: questionnaires.length,
+    activeQuestionnaires: questionnaires.filter((a) => a.status === 'Active').length,
+    draftQuestionnaires: questionnaires.filter((a) => a.status === 'Draft').length,
+    totalCompletions: questionnaires.reduce((sum, a) => sum + (a.completions || 0), 0),
+    totalQuestions: questionnaires.reduce((sum, a) => sum + (a.questionCount || 0), 0),
     averageScore: 0
   }
 
-  const totalScore = assessments.reduce((sum, a) => sum + (a.averageScore || 0), 0)
-  stats.averageScore = assessments.length > 0 ? Math.round(totalScore / assessments.length) : 0
+  const totalScore = questionnaires.reduce((sum, a) => sum + (a.averageScore || 0), 0)
+  stats.averageScore = questionnaires.length > 0 ? Math.round(totalScore / questionnaires.length) : 0
 
   return stats
 }

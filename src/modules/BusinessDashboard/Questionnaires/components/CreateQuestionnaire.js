@@ -9,16 +9,16 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faClipboardCheck } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../../core/context/ThemeContext'
 import BusinessSidebar from '../../components/BusinessSidebar'
-import { createAssessment } from '../utils/controller'
+import { createQuestionnaire } from '../utils/controller'
 import { parseTags } from '../utils/data-model'
 
 const { Option } = Select
 
 /**
- * CreateAssessment page for creating new skill assessments
+ * CreateQuestionnaire page for creating new skill questionnaires
  * Features a streamlined form layout optimized for the new data model
  */
-const CreateAssessment = React.memo(({ user }) => {
+const CreateQuestionnaire = React.memo(({ user }) => {
   const { darkMode } = useTheme()
   const navigate = useNavigate()
   const [form] = Form.useForm()
@@ -37,17 +37,17 @@ const CreateAssessment = React.memo(({ user }) => {
           tags: Array.isArray(values.tags) ? values.tags : parseTags(values.tags)
         }
 
-        const result = await createAssessment(processedValues, user)
+        const result = await createQuestionnaire(processedValues, user)
         if (result.success) {
-          message.success('Assessment created successfully!')
-          navigate('/business-dashboard/assessments')
+          message.success('Questionnaire created successfully!')
+          navigate('/business-dashboard/questionnaires')
         } else {
-          console.error('Error creating assessment:', result.error)
-          message.error('Failed to create assessment: ' + result.error)
-        }
-      } catch (error) {
-        console.error('Unexpected error creating assessment:', error)
-        message.error('An unexpected error occurred while creating the assessment')
+                      console.error('Error creating questionnaire:', result.error)
+            message.error('Failed to create questionnaire: ' + result.error)
+          }
+        } catch (error) {
+          console.error('Unexpected error creating questionnaire:', error)
+          message.error('An unexpected error occurred while creating the questionnaire')
       } finally {
         setLoading(false)
       }
@@ -288,9 +288,9 @@ const CreateAssessment = React.memo(({ user }) => {
                   className={`text-lg mr-3 ${darkMode ? 'text-emerald-100' : 'text-white'}`}
                 />
                 <div>
-                  <h1 className='text-xl font-bold text-white'>Create New Assessment</h1>
+                  <h1 className='text-xl font-bold text-white'>Create New Questionnaire</h1>
                   <p className='text-emerald-100 text-sm mt-1'>
-                    Create a new assessment with title, category, and other details
+                    Create a new questionnaire with title, category, and other details
                   </p>
                 </div>
               </div>
@@ -322,13 +322,13 @@ const CreateAssessment = React.memo(({ user }) => {
                       </Form.Item>
                     </div>
 
-                    {/* Assessment Title */}
+                    {/* Questionnaire Title */}
                     <Form.Item
-                      label='Assessment Title'
+                      label='Questionnaire Title'
                       name='title'
-                      rules={[{ required: true, message: 'Please enter an assessment title' }]}
+                      rules={[{ required: true, message: 'Please enter an questionnaire title' }]}
                     >
-                      <Input placeholder='Enter assessment title...' style={{ fontWeight: '500' }} />
+                      <Input placeholder='Enter questionnaire title...' style={{ fontWeight: '500' }} />
                     </Form.Item>
 
                     {/* Status and Category Row */}
@@ -372,14 +372,14 @@ const CreateAssessment = React.memo(({ user }) => {
                         variant='danger'
                         onClick={() => {
                           form.resetFields()
-                          navigate('/business-dashboard/assessments')
+                          navigate('/business-dashboard/questionnaires')
                         }}
                         size='large'
                       >
                         Cancel
                       </Button>
                       <Button variant='success' htmlType='submit' size='large' loading={loading}>
-                        Create Assessment
+                        Create Questionnaire
                       </Button>
                     </div>
                   </div>
@@ -393,4 +393,4 @@ const CreateAssessment = React.memo(({ user }) => {
   )
 })
 
-export default CreateAssessment
+export default CreateQuestionnaire

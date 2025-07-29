@@ -355,7 +355,7 @@ const rowClassName = (record, index) => {
 See `TableView.example.js` for complete working examples including:
 
 - Business Dashboard Job Listings Table
-- Assessments Table with Expandable Rows
+- Questionnaires Table with Expandable Rows
 - Job Descriptions Table
 
 ## Troubleshooting

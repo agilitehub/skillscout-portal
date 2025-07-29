@@ -14,7 +14,7 @@ import {
   updateJobOpportunity,
   getJobOpportunityById,
   getJobDescriptionsForSelection,
-  getAssessmentsForSelection
+  getQuestionnairesForSelection
 } from '../utils/controller'
 import { getDefaultJobOpportunityData, getDropdownOptions } from '../utils/data-model'
 import JobDescriptionPreview from './JobDescriptionPreview'
@@ -34,7 +34,7 @@ const JobOpportunityForm = React.memo(() => {
   const [loading, setLoading] = useState(false)
   const [loadingData, setLoadingData] = useState(false)
   const [jobDescriptions, setJobDescriptions] = useState([])
-  const [assessments, setAssessments] = useState([])
+  const [questionnaires, setQuestionnaires] = useState([])
   const [loadingOptions, setLoadingOptions] = useState(false)
   const [selectedJobDescriptionId, setSelectedJobDescriptionId] = useState(null)
 
@@ -64,14 +64,14 @@ const JobOpportunityForm = React.memo(() => {
           message.error('Failed to load job descriptions: ' + jobDescriptionsResult.error)
         }
 
-        // Load assessments
-        const assessmentsResult = await getAssessmentsForSelection()
-        if (assessmentsResult.success) {
-          setAssessments(assessmentsResult.data)
-        } else {
-          console.error('Error loading assessments:', assessmentsResult.error)
-          message.error('Failed to load assessments: ' + assessmentsResult.error)
-        }
+              // Load questionnaires
+      const questionnairesResult = await getQuestionnairesForSelection()
+      if (questionnairesResult.success) {
+        setQuestionnaires(questionnairesResult.data)
+      } else {
+        console.error('Error loading questionnaires:', questionnairesResult.error)
+        message.error('Failed to load questionnaires: ' + questionnairesResult.error)
+      }
       } catch (error) {
         console.error('Unexpected error loading options:', error)
         message.error('An unexpected error occurred while loading form options')
@@ -480,20 +480,19 @@ const JobOpportunityForm = React.memo(() => {
                 </Col>
                 <Col xs={24} lg={12}>
                   <Form.Item
-                    label='Assessments'
-                    name='assessments'
-                    rules={[{ required: true, message: 'At least one assessment is required' }]}
+                    label='Questionnaires (Optional)'
+                    name='questionnaires'
                   >
                     <Select
                       mode='multiple'
-                      placeholder='Select assessments'
+                      placeholder='Select questionnaires (optional)'
                       loading={loadingOptions}
                       showSearch
                       filterOption={(input, option) => option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                     >
-                      {assessments.map((assessment) => (
-                        <Option key={assessment.id} value={assessment.id}>
-                          {assessment.title}
+                      {questionnaires.map((questionnaire) => (
+                        <Option key={questionnaire.id} value={questionnaire.id}>
+                          {questionnaire.title}
                         </Option>
                       ))}
                     </Select>
