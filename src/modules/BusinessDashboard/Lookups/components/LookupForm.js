@@ -2,7 +2,7 @@
 // Frontend Instructions Rule Applied!
 
 import React, { useState, useCallback, useEffect } from 'react'
-import { Card, Form, message, Row, Col, Input, Switch, Select } from 'antd'
+import { Card, Form, message, Row, Col, Input, Switch } from 'antd'
 import { Button } from '../../../../core/components'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -10,8 +10,6 @@ import { faSave, faTimes, faList, faPlus } from '@fortawesome/free-solid-svg-ico
 import { useTheme } from '../../../../core/context/ThemeContext'
 import BusinessSidebar from '../../components/BusinessSidebar'
 import { createLookup, updateLookup, getLookupById } from '../utils/controller'
-
-const { Option } = Select
 
 /**
  * Lookup Form Page Component
@@ -40,7 +38,6 @@ const LookupForm = React.memo(({ user }) => {
           form.setFieldsValue({
             profileKey: initialData.profileKey,
             groupName: initialData.groupName,
-            solutions: initialData.solutions || [],
             isActive: initialData.isActive
           })
 
@@ -58,7 +55,6 @@ const LookupForm = React.memo(({ user }) => {
               form.setFieldsValue({
                 profileKey: result.data.profileKey,
                 groupName: result.data.groupName,
-                solutions: result.data.solutions || [],
                 isActive: result.data.isActive
               })
 
@@ -345,21 +341,6 @@ const LookupForm = React.memo(({ user }) => {
                     </Form.Item>
                   </Col>
                 </Row>
-
-                <Form.Item
-                  label='Solution(s) (optional)'
-                  name='solutions'
-                >
-                  <Select
-                    mode='multiple'
-                    placeholder='Used to link solutions'
-                    style={{ fontWeight: '500' }}
-                  >
-                    <Option value='solution-a'>Solution A</Option>
-                    <Option value='solution-b'>Solution B</Option>
-                    <Option value='solution-c'>Solution C</Option>
-                  </Select>
-                </Form.Item>
 
                 {/* Label-Value Pairs Section */}
                 <div
