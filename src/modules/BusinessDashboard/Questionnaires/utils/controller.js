@@ -154,7 +154,7 @@ export const createQuestionnaire = async (assessmentData) => {
     // Transform form data to database format
     const dbData = transformToDatabase(assessmentData, { isUpdate: false })
 
-    const { data, error } = await supabase.from('questionnaires').insert([dbData]).select().single()
+    const { data, error } = await supabase.from('assessments').insert([dbData]).select().single()
 
     if (error) {
       console.error('Error creating assessment:', error)
@@ -216,7 +216,7 @@ export const updateQuestionnaire = async (id, assessmentData) => {
     // Transform form data to database format
     const dbData = transformToDatabase(assessmentData, { isUpdate: true })
 
-    const { data, error } = await supabase.from('questionnaires').update(dbData).eq('id', id).select().single()
+    const { data, error } = await supabase.from('assessments').update(dbData).eq('id', id).select().single()
 
     if (error) {
       console.error('Error updating assessment:', error)
@@ -264,7 +264,7 @@ export const deleteQuestionnaire = async (id) => {
       }
     }
 
-    const { error } = await supabase.from('questionnaires').delete().eq('id', id)
+    const { error } = await supabase.from('assessments').delete().eq('id', id)
 
     if (error) {
       console.error('Error deleting assessment:', error)
@@ -327,7 +327,7 @@ export const updateQuestionnaireStatus = async (id, status) => {
       }
     }
 
-    const { data, error } = await supabase.from('questionnaires').update({ status }).eq('id', id).select().single()
+    const { data, error } = await supabase.from('assessments').update({ status }).eq('id', id).select().single()
 
     if (error) {
       console.error('Error updating questionnaire status:', error)
@@ -416,12 +416,17 @@ export const searchQuestionnaires = async (searchTerm, filters = {}) => {
     const { data: questionResults } = await questionSearchQuery
 
     // Get unique questionnaire IDs from question search
-    const questionnaireIdsFromQuestions = questionResults ? [...new Set(questionResults.map((q) => q.assessment_id))] : []
+    const questionnaireIdsFromQuestions = questionResults
+      ? [...new Set(questionResults.map((q) => q.assessment_id))]
+      : []
 
     // Fetch questionnaires that have matching questions
     let additionalQuestionnaires = []
     if (questionnaireIdsFromQuestions.length > 0) {
-      let additionalQuery = supabase.from('assessment_with_questions').select('*').in('id', questionnaireIdsFromQuestions)
+      let additionalQuery = supabase
+        .from('assessment_with_questions')
+        .select('*')
+        .in('id', questionnaireIdsFromQuestions)
 
       // Apply same filters to additional search
       if (filters.status) {
