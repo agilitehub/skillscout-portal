@@ -18,7 +18,6 @@ import { Button } from '../../../../core/components'
 import TableView from '../../../../core/components/view-components/table-view/TableView'
 import BusinessSidebar from '../../components/BusinessSidebar'
 import { BRAND_COLORS, SEMANTIC_COLORS } from '../../../../core/theme/colors'
-import InviteUserModal from './InviteUserModal'
 import EditPermissionsModal from './EditPermissionsModal'
 
 /**
@@ -27,10 +26,10 @@ import EditPermissionsModal from './EditPermissionsModal'
  */
 const UserManagement = React.memo(({ user }) => {
   const { darkMode } = useTheme()
+  const navigate = useNavigate()
 
   // State management
   const [searchTerm, setSearchTerm] = useState('')
-  const [inviteModalVisible, setInviteModalVisible] = useState(false)
   const [permissionsModalVisible, setPermissionsModalVisible] = useState(false)
   const [selectedUser, setSelectedUser] = useState(null)
 
@@ -220,8 +219,8 @@ const UserManagement = React.memo(({ user }) => {
 
   // Handle invite user
   const handleInviteUser = useCallback(() => {
-    setInviteModalVisible(true)
-  }, [])
+    navigate('/business-dashboard/user-management/invite')
+  }, [navigate])
 
   // Handle edit permissions
   const handleEditPermissions = useCallback((user) => {
@@ -305,10 +304,12 @@ const UserManagement = React.memo(({ user }) => {
         return (
           <Tag 
             color={config.color} 
-            icon={<FontAwesomeIcon icon={config.icon} />}
             style={{ fontWeight: '500' }}
           >
-            {config.label}
+            <Space size={4}>
+              <FontAwesomeIcon icon={config.icon} />
+              <span>{config.label}</span>
+            </Space>
           </Tag>
         )
       }
@@ -462,18 +463,6 @@ const UserManagement = React.memo(({ user }) => {
           />
         </div>
       </div>
-
-      {/* Invite User Modal */}
-      <InviteUserModal
-        visible={inviteModalVisible}
-        onCancel={() => setInviteModalVisible(false)}
-        onSuccess={(newUser) => {
-          setUsers(prev => [...prev, { ...newUser, id: Date.now() }])
-          setInviteModalVisible(false)
-          message.success('User invitation sent successfully!')
-        }}
-        darkMode={darkMode}
-      />
 
       {/* Edit Permissions Modal */}
       <EditPermissionsModal

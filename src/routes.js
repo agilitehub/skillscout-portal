@@ -13,6 +13,7 @@ import JobOpportunityForm from './modules/BusinessDashboard/JobListings/componen
 import Lookups from './modules/BusinessDashboard/Lookups/components'
 import LookupForm from './modules/BusinessDashboard/Lookups/components/LookupForm'
 import UserManagement from './modules/BusinessDashboard/UserManagement/components'
+import InviteUserPage from './modules/BusinessDashboard/UserManagement/components/InviteUserPage'
 import BranchManagement from './modules/BusinessDashboard/BranchManagement/components'
 import OrgSettings from './modules/BusinessDashboard/OrgSettings/components'
 import Billing from './modules/BusinessDashboard/Billing/components'
@@ -307,6 +308,19 @@ const AppRoutes = () => {
           user ? (
             <DashboardLayout user={user}>
               <UserManagement user={user} />
+            </DashboardLayout>
+          ) : (
+            <Navigate to='/' replace state={{ from: location }} />
+          )
+        }
+      />
+
+      <Route
+        path='/business-dashboard/user-management/invite'
+        element={
+          user ? (
+            <DashboardLayout user={user}>
+              <InviteUserPage user={user} />
             </DashboardLayout>
           ) : (
             <Navigate to='/' replace state={{ from: location }} />
