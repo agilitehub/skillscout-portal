@@ -48,6 +48,13 @@ const { Title, Text, Paragraph } = Typography
 /**
  * Business Dashboard Main Page - AI-powered recruitment matching system
  * Displays key metrics, quick actions, and AI features
+ * 
+ * Color Scheme:
+ * - Primary: Shakespeare Blue (#4A90A4) - main organization features
+ * - Success: Emerald Green (#10B981) - user/profile actions
+ * - Accent: Picton Blue (#5BA3D4) - job-related features  
+ * - Warning: Orange (#F59E0B) - admin/settings actions
+ * - Teal: Teal Green (#14B8A6) - tracking/progress features
  */
 const Dashboard = React.memo(({ user }) => {
   const { darkMode } = useTheme()
@@ -100,7 +107,7 @@ const Dashboard = React.memo(({ user }) => {
       title: 'Organization Profile',
       description: 'Manage company information, culture, and requirements',
       icon: faBuilding,
-      color: '#1890ff',
+      color: SEMANTIC_COLORS.primary, // Shakespeare blue - primary brand color
       stats: { value: dashboardStats.organizations, label: 'Organizations' },
       action: () => navigate('/business-dashboard/org-settings'),
       buttonText: 'Manage'
@@ -109,7 +116,7 @@ const Dashboard = React.memo(({ user }) => {
       title: 'User Profile',
       description: 'Update your personal information and preferences',
       icon: faUser,
-      color: '#52c41a',
+      color: SEMANTIC_COLORS.success, // Emerald green for success/profile actions
       stats: { value: 1, label: 'Profile' },
       action: () => navigate('/business-dashboard/user-management'),
       buttonText: 'Update'
@@ -118,7 +125,7 @@ const Dashboard = React.memo(({ user }) => {
       title: 'Listings',
       description: 'Job postings, descriptions, and requirements',
       icon: faBriefcase,
-      color: '#722ed1',
+      color: BRAND_COLORS.pictonBlue, // Picton blue for job-related features
       stats: { value: dashboardStats.jobDescriptions, label: 'Active Listings' },
       action: () => navigate('/business-dashboard/job-listings'),
       buttonText: 'View All'
@@ -127,7 +134,7 @@ const Dashboard = React.memo(({ user }) => {
       title: 'Administration',
       description: 'User management, settings, and system configuration',
       icon: faSliders,
-      color: '#fa8c16',
+      color: SEMANTIC_COLORS.warning, // Warning orange for admin/settings
       stats: { value: 4, label: 'Admin Tools' },
       action: () => navigate('/business-dashboard/user-management'),
       buttonText: 'Manage'
@@ -136,7 +143,7 @@ const Dashboard = React.memo(({ user }) => {
       title: 'Journey Tracker',
       description: 'Candidate pipeline and recruitment progress',
       icon: faRoute,
-      color: '#13c2c2',
+      color: BRAND_COLORS.tealGreen, // Teal green for tracking/progress
       stats: { value: dashboardStats.candidates, label: 'Active Candidates' },
       action: () => navigate('/business-dashboard/candidates'),
       buttonText: 'Track'
@@ -277,7 +284,7 @@ const Dashboard = React.memo(({ user }) => {
                   style={{ 
                     backgroundColor: SEMANTIC_COLORS.secondary, 
                     borderColor: SEMANTIC_COLORS.secondary,
-                    boxShadow: 'none',
+                    boxShadow: `0 2px 8px ${SEMANTIC_COLORS.secondary}20`,
                     fontSize: '16px',
                     height: '40px',
                     paddingLeft: '20px',
