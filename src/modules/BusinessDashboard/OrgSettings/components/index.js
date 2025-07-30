@@ -196,11 +196,12 @@ const OrgSettings = React.memo(({ user }) => {
                 <Button
                   icon={<FontAwesomeIcon icon={faUndo} />}
                   onClick={handleReset}
-                  className={`shadow-md hover:shadow-lg transition-all duration-200 ${
-                    darkMode
-                      ? 'bg-gray-600 text-white hover:bg-gray-500 border-gray-600'
-                      : 'bg-gray-500 text-white hover:bg-gray-400 border-gray-500'
-                  }`}
+                  className={`shadow-md hover:shadow-lg transition-all duration-200 org-settings-reset-btn`}
+                  style={{
+                    backgroundColor: darkMode ? '#6B7280' : '#9CA3AF',
+                    borderColor: darkMode ? '#6B7280' : '#9CA3AF',
+                    color: '#FFFFFF'
+                  }}
                 >
                   Reset
                 </Button>
@@ -212,10 +213,23 @@ const OrgSettings = React.memo(({ user }) => {
                 onClick={() => form.submit()}
                 loading={loading}
                 disabled={!hasChanges}
-                className={`shadow-md hover:shadow-lg transition-all duration-200`}
+                className={`shadow-md hover:shadow-lg transition-all duration-200 org-settings-save-btn`}
                 style={{
-                  backgroundColor: hasChanges ? BRAND_COLORS.emeraldPrimary : BRAND_COLORS.mediumGray,
-                  borderColor: hasChanges ? BRAND_COLORS.emeraldPrimary : BRAND_COLORS.mediumGray
+                  backgroundColor: hasChanges 
+                    ? BRAND_COLORS.emeraldPrimary 
+                    : darkMode 
+                      ? '#4B5563' 
+                      : '#E5E7EB',
+                  borderColor: hasChanges 
+                    ? BRAND_COLORS.emeraldPrimary 
+                    : darkMode 
+                      ? '#4B5563' 
+                      : '#E5E7EB',
+                  color: hasChanges 
+                    ? '#FFFFFF' 
+                    : darkMode 
+                      ? '#9CA3AF' 
+                      : '#6B7280'
                 }}
               >
                 Save Changes
@@ -378,17 +392,25 @@ const OrgSettings = React.memo(({ user }) => {
               }}
             >
               <Form.Item
-                label="Default Work Arrangement for New Job Postings"
+                label="Default Work Arrangement"
                 name="defaultWorkArrangement"
+                extra="This will be the default setting for new job postings"
+                style={{ marginBottom: '24px' }}
               >
-                                    <Select placeholder="Select default work arrangement" size="large" dropdownClassName={darkMode ? 'org-settings-dark-dropdown' : ''}>
+                <Select 
+                  placeholder="Select default work arrangement" 
+                  size="large" 
+                  dropdownClassName={darkMode ? 'org-settings-dark-dropdown work-arrangement-dropdown' : 'work-arrangement-dropdown'}
+                >
                   {workArrangementOptions.map(option => (
                     <Option key={option.value} value={option.value}>
-                      <div className="flex items-center space-x-3">
-                        <FontAwesomeIcon icon={option.icon} />
-                        <div>
-                          <div className="font-medium">{option.label}</div>
-                          <div className="text-sm text-gray-500">{option.description}</div>
+                      <div className="flex items-center space-x-3 py-1">
+                        <FontAwesomeIcon icon={option.icon} className="flex-shrink-0" />
+                        <div className="flex-1">
+                          <div className="font-medium text-sm">{option.label}</div>
+                          <div className={`text-xs mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                            {option.description}
+                          </div>
                         </div>
                       </div>
                     </Option>
@@ -605,6 +627,110 @@ const OrgSettings = React.memo(({ user }) => {
         .org-settings-dark-dropdown .ant-select-item-option-selected {
           background-color: #10B981 !important;
           color: #FFFFFF !important;
+        }
+        
+        /* Work arrangement dropdown specific styles */
+        .work-arrangement-dropdown .ant-select-item {
+          min-height: 60px !important;
+          padding: 8px 12px !important;
+          line-height: 1.4 !important;
+        }
+        
+        .work-arrangement-dropdown.org-settings-dark-dropdown .ant-select-item {
+          background-color: #374151 !important;
+          color: #F9FAFB !important;
+        }
+        
+        .work-arrangement-dropdown:not(.org-settings-dark-dropdown) .ant-select-item {
+          background-color: #FFFFFF !important;
+          color: #374151 !important;
+        }
+        
+        .work-arrangement-dropdown .ant-select-item:hover {
+          background-color: ${darkMode ? '#4B5563' : '#F3F4F6'} !important;
+        }
+        
+        .work-arrangement-dropdown .ant-select-item-option-selected {
+          background-color: #10B981 !important;
+          color: #FFFFFF !important;
+        }
+        
+        /* Form item styling for proper spacing */
+        .ant-form-item {
+          margin-bottom: 20px !important;
+        }
+        
+        .ant-form-item-label {
+          padding-bottom: 8px !important;
+        }
+        
+        .ant-form-item-label > label {
+          color: ${darkMode ? '#F9FAFB' : '#374151'} !important;
+          font-weight: 500 !important;
+          line-height: 1.5 !important;
+        }
+        
+        .ant-form-item-extra {
+          color: ${darkMode ? '#9CA3AF' : '#6B7280'} !important;
+          margin-top: 4px !important;
+          font-size: 13px !important;
+        }
+        
+        .ant-select-selector {
+          background-color: ${darkMode ? '#4B5563' : '#FFFFFF'} !important;
+          border-color: ${darkMode ? '#6B7280' : '#D1D5DB'} !important;
+          color: ${darkMode ? '#F9FAFB' : '#374151'} !important;
+        }
+        
+        .ant-select-selector:hover {
+          border-color: #10B981 !important;
+        }
+        
+        .ant-select-focused .ant-select-selector {
+          border-color: #10B981 !important;
+          box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2) !important;
+        }
+        
+        /* Input field styling */
+        .ant-input {
+          background-color: ${darkMode ? '#4B5563' : '#FFFFFF'} !important;
+          border-color: ${darkMode ? '#6B7280' : '#D1D5DB'} !important;
+          color: ${darkMode ? '#F9FAFB' : '#374151'} !important;
+        }
+        
+        .ant-input:hover {
+          border-color: #10B981 !important;
+        }
+        
+        .ant-input:focus,
+        .ant-input-focused {
+          border-color: #10B981 !important;
+          box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2) !important;
+        }
+        
+        .ant-input::placeholder {
+          color: ${darkMode ? '#9CA3AF' : '#6B7280'} !important;
+        }
+        
+        /* Button hover states */
+        .ant-btn:hover {
+          transform: translateY(-1px) !important;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+        }
+        
+        .ant-btn:active {
+          transform: translateY(0) !important;
+        }
+        
+        /* Specific button styling for org settings */
+        .org-settings-save-btn:hover:not(:disabled) {
+          background-color: #059669 !important;
+          border-color: #059669 !important;
+        }
+        
+        .org-settings-reset-btn:hover {
+          background-color: ${darkMode ? '#4B5563' : '#6B7280'} !important;
+          border-color: ${darkMode ? '#4B5563' : '#6B7280'} !important;
         }
       `}</style>
     </div>

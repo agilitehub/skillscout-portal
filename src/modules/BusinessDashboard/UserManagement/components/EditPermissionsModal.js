@@ -269,8 +269,21 @@ const EditPermissionsModal = React.memo(({ visible, user, onCancel, onSuccess, d
             onClick={() => form.submit()}
             disabled={!hasChanges}
             style={{
-              backgroundColor: hasChanges ? BRAND_COLORS.emeraldPrimary : BRAND_COLORS.mediumGray,
-              borderColor: hasChanges ? BRAND_COLORS.emeraldPrimary : BRAND_COLORS.mediumGray
+              backgroundColor: hasChanges 
+                ? BRAND_COLORS.emeraldPrimary 
+                : darkMode 
+                  ? BRAND_COLORS.mediumGray 
+                  : '#D1D5DB',
+              borderColor: hasChanges 
+                ? BRAND_COLORS.emeraldPrimary 
+                : darkMode 
+                  ? BRAND_COLORS.mediumGray 
+                  : '#D1D5DB',
+              color: hasChanges 
+                ? '#FFFFFF' 
+                : darkMode 
+                  ? BRAND_COLORS.lightGray 
+                  : '#9CA3AF'
             }}
           >
             Save Changes
