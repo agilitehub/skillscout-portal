@@ -1,8 +1,8 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
 
-import React, { useState, useCallback, useEffect } from 'react'
-import { Card, Form, Space, message, Row, Col, Tabs, Spin, Input, Select } from 'antd'
+import React, { useState, useCallback, useEffect, useRef } from 'react'
+import { Card, Form, Space, message, Row, Col, Tabs, Spin, Input, Select, Modal } from 'antd'
 import { Button } from '../../../../core/components'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -18,7 +18,9 @@ import {
   faCode,
   faUsers,
   faStar,
-  faUserTie
+  faUserTie,
+  faExclamationTriangle,
+  faCheckCircle
 } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../../core/context/ThemeContext'
 import BusinessSidebar from '../../components/BusinessSidebar'
@@ -50,10 +52,49 @@ const CreateJobDescription = React.memo(({ user }) => {
   const [experienceLevels, setExperienceLevels] = useState([])
   const [lookupsLoading, setLookupsLoading] = useState(true)
   const [initialDataLoading, setInitialDataLoading] = useState(false)
+  const [tabValidationErrors, setTabValidationErrors] = useState({
+    basicInfo: false,
+    detailedInfo: false
+  })
+  const [validationModalVisible, setValidationModalVisible] = useState(false)
+  const [validationErrors, setValidationErrors] = useState([])
+  const [activeTab, setActiveTab] = useState('1')
+  const tabsRef = useRef(null)
+  const [fieldCompletionCounts, setFieldCompletionCounts] = useState({
+    basicInfo: { completed: 0, total: 6 },
+    detailedInfo: { completed: 0, total: 5 }
+  })
 
   // Check if we're in edit mode
   const isEditMode = location.state?.isEdit
   const editId = location.state?.editId
+
+  // Calculate field completion counts
+  const calculateFieldCounts = useCallback(() => {
+    const values = form.getFieldsValue()
+    
+    // Basic Info required fields
+    const basicInfoFields = ['title', 'department', 'reportsToRole', 'experienceLevel', 'keywords', 'overview']
+    const basicInfoCompleted = basicInfoFields.filter(field => {
+      const value = values[field]
+      if (field === 'keywords') {
+        return Array.isArray(value) && value.length > 0
+      }
+      return value && String(value).trim().length > 0
+    }).length
+
+    // Detailed Info required fields  
+    const detailedInfoFields = ['responsibilities', 'requirements', 'educationExperience', 'technicalSkills', 'softSkills']
+    const detailedInfoCompleted = detailedInfoFields.filter(field => {
+      const value = values[field]
+      return value && String(value).trim().length > 0
+    }).length
+
+    setFieldCompletionCounts({
+      basicInfo: { completed: basicInfoCompleted, total: 6 },
+      detailedInfo: { completed: detailedInfoCompleted, total: 5 }
+    })
+  }, [form])
 
   // Load lookup data on component mount
   useEffect(() => {
@@ -66,6 +107,13 @@ const CreateJobDescription = React.memo(({ user }) => {
       loadExistingJobDescription(editId)
     }
   }, [isEditMode, editId]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Calculate initial field counts when component mounts and when lookups are loaded
+  useEffect(() => {
+    if (!lookupsLoading) {
+      calculateFieldCounts()
+    }
+  }, [lookupsLoading])
 
   // Load existing job description data for editing
   const loadExistingJobDescription = useCallback(
@@ -90,6 +138,11 @@ const CreateJobDescription = React.memo(({ user }) => {
             softSkills: result.data.softSkills,
             preferredSkills: result.data.preferredSkills
           })
+          
+          // Calculate field counts after loading data
+          setTimeout(() => {
+            calculateFieldCounts()
+          }, 100)
         } else {
           console.error('Error loading job description for edit:', result.error)
           message.error('Failed to load job description data: ' + result.error)
@@ -155,6 +208,12 @@ const CreateJobDescription = React.memo(({ user }) => {
           preferredSkills: values.preferredSkills?.trim() || ''
         }
 
+        // Clear validation errors on successful validation
+        setTabValidationErrors({
+          basicInfo: false,
+          detailedInfo: false
+        })
+
         let result
         if (isEditMode && editId) {
           // Update existing job description
@@ -186,6 +245,169 @@ const CreateJobDescription = React.memo(({ user }) => {
     },
     [user, navigate, isEditMode, editId]
   )
+
+    // Handle form validation and submission
+  const handleSaveClick = useCallback(async () => {
+    try {
+      // Validate all fields first
+      const values = await form.validateFields()
+      await handleFormSubmit(values)
+    } catch (errorInfo) {
+      console.log('Validation failed:', errorInfo)
+      
+      // Count errors by tab
+      const basicInfoFields = ['title', 'department', 'reportsToRole', 'experienceLevel', 'keywords', 'overview']
+      const detailedInfoFields = ['responsibilities', 'requirements', 'educationExperience', 'technicalSkills', 'softSkills']
+      
+      const basicInfoErrors = errorInfo.errorFields?.filter(field => 
+        basicInfoFields.includes(field.name[0])
+      ) || []
+      
+      const detailedInfoErrors = errorInfo.errorFields?.filter(field => 
+        detailedInfoFields.includes(field.name[0])
+      ) || []
+
+      // Create structured error list for modal
+      const errorList = []
+      const fieldLabels = {
+        'title': 'Job Title',
+        'department': 'Department', 
+        'reportsToRole': 'Reports To Role',
+        'experienceLevel': 'Experience Level',
+        'keywords': 'Keywords',
+        'overview': 'Job Overview',
+        'responsibilities': 'Responsibilities',
+        'requirements': 'Requirements',
+        'educationExperience': 'Education and Experience',
+        'technicalSkills': 'Technical Skills',
+        'softSkills': 'Soft Skills'
+      }
+
+      if (basicInfoErrors.length > 0) {
+        basicInfoErrors.forEach(field => {
+          errorList.push({
+            tab: 'Basic Information',
+            tabKey: '1',
+            field: fieldLabels[field.name[0]] || field.name[0],
+            type: 'basic'
+          })
+        })
+      }
+      
+      if (detailedInfoErrors.length > 0) {
+        detailedInfoErrors.forEach(field => {
+          errorList.push({
+            tab: 'Detailed Information',
+            tabKey: '2',
+            field: fieldLabels[field.name[0]] || field.name[0],
+            type: 'detailed'
+          })
+        })
+      }
+
+      // Update tab validation states
+      setTabValidationErrors({
+        basicInfo: basicInfoErrors.length > 0,
+        detailedInfo: detailedInfoErrors.length > 0
+      })
+
+      // Set validation errors and show modal
+      setValidationErrors(errorList)
+      setValidationModalVisible(true)
+
+      // Switch to the first tab with errors
+      if (basicInfoErrors.length > 0) {
+        setActiveTab('1')
+      } else if (detailedInfoErrors.length > 0) {
+        setActiveTab('2')
+      }
+    }
+  }, [form, handleFormSubmit])
+
+  // Handle validation modal close and navigate to field
+  const handleValidationModalOk = useCallback(() => {
+    setValidationModalVisible(false)
+    
+    // Switch to first tab with errors and scroll to first error
+    const firstError = validationErrors[0]
+    if (firstError) {
+      setActiveTab(firstError.tabKey)
+      
+      // Map field labels back to field names for scrolling
+      const fieldNameMap = {
+        'Job Title': 'title',
+        'Department': 'department',
+        'Reports To Role': 'reportsToRole',
+        'Experience Level': 'experienceLevel',
+        'Keywords': 'keywords',
+        'Job Overview': 'overview',
+        'Responsibilities': 'responsibilities',
+        'Requirements': 'requirements',
+        'Education and Experience': 'educationExperience',
+        'Technical Skills': 'technicalSkills',
+        'Soft Skills': 'softSkills'
+      }
+      
+      const fieldName = fieldNameMap[firstError.field]
+      
+      // Small delay to allow tab switch, then scroll to first error
+      setTimeout(() => {
+        if (fieldName) {
+          form.scrollToField(fieldName)
+        }
+      }, 300)
+    }
+  }, [validationErrors, form])
+
+  // Clear validation errors when form values change
+  const handleFormChange = useCallback(() => {
+    // Update field completion counts with a small delay to ensure form values are updated
+    setTimeout(() => {
+      calculateFieldCounts()
+    }, 50)
+    
+    // Clear validation error indicators when user starts making changes
+    if (tabValidationErrors.basicInfo || tabValidationErrors.detailedInfo || validationModalVisible) {
+      setTabValidationErrors({
+        basicInfo: false,
+        detailedInfo: false
+      })
+      setValidationModalVisible(false)
+      setValidationErrors([])
+    }
+  }, [tabValidationErrors, validationModalVisible])
+
+  // Handle tab change and recalculate counts
+  const handleTabChange = useCallback((newActiveKey) => {
+    setActiveTab(newActiveKey)
+    // Recalculate field counts when switching tabs
+    setTimeout(() => {
+      calculateFieldCounts()
+    }, 50)
+  }, [])
+
+  // Completion Badge Component
+  const CompletionBadge = ({ completed, total, darkMode }) => {
+    const isComplete = completed === total
+    const percentage = total > 0 ? Math.round((completed / total) * 100) : 0
+    
+    return (
+      <span
+        className={`completion-badge inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ml-2 ${
+          isComplete
+            ? darkMode
+              ? 'bg-emerald-900 text-emerald-200 border border-emerald-700'
+              : 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+            : darkMode
+              ? 'bg-orange-900 text-orange-200 border border-orange-700'
+              : 'bg-orange-100 text-orange-800 border border-orange-200'
+        }`}
+        title={`${completed} of ${total} required fields completed (${percentage}%)`}
+      >
+        {completed}/{total}
+      </span>
+    )
+  }
 
   return (
     <div
@@ -358,6 +580,8 @@ const CreateJobDescription = React.memo(({ user }) => {
                 form={form}
                 layout='vertical'
                 onFinish={handleFormSubmit}
+                onValuesChange={handleFormChange}
+                scrollToFirstError={{ behavior: 'smooth', block: 'center' }}
                 className={`${darkMode ? 'dark-form' : ''}`}
               >
                 {/* Dark Mode Tab Styling */}
@@ -469,17 +693,112 @@ const CreateJobDescription = React.memo(({ user }) => {
                   .dark-form .ant-form-item .ant-input-prefix {
                     color: #9CA3AF !important;
                   }
+
+                  /* Tab validation error indicators */
+                  .tab-error-indicator {
+                    display: inline-block;
+                    width: 8px;
+                    height: 8px;
+                    background-color: #ef4444;
+                    border-radius: 50%;
+                    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+                    box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.5);
+                  }
+
+                  /* Tab completion badges */
+                  .ant-tabs-tab .completion-badge {
+                    margin-left: 8px;
+                    font-weight: 600;
+                    letter-spacing: 0.025em;
+                    transition: all 0.2s ease-in-out;
+                  }
+                  
+                  .ant-tabs-tab:hover .completion-badge {
+                    transform: scale(1.05);
+                  }
+                  
+                  .ant-tabs-tab-active .completion-badge {
+                    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+                  }
+
+                  /* Enhanced validation error message styling */
+                  .validation-error-content {
+                    background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+                    border: 1px solid #fecaca;
+                    border-radius: 8px;
+                    padding: 12px;
+                    color: #991b1b;
+                  }
+                  
+                  .validation-error-title {
+                    font-weight: 600;
+                    color: #b91c1c;
+                    margin-bottom: 8px;
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+                  }
+                  
+                  .validation-error-list {
+                    font-size: 13px;
+                    line-height: 1.5;
+                    color: #7f1d1d;
+                  }
+
+                  /* Dark mode modal styling */
+                  .dark-modal .ant-modal-content {
+                    background-color: #374151 !important;
+                    border: 1px solid #4B5563 !important;
+                  }
+                  
+                  .dark-modal .ant-modal-header {
+                    background-color: #374151 !important;
+                    border-bottom: 1px solid #4B5563 !important;
+                  }
+                  
+                  .dark-modal .ant-modal-body {
+                    background-color: #374151 !important;
+                    color: #F9FAFB !important;
+                  }
+                  
+                  .dark-modal .ant-modal-footer {
+                    background-color: #374151 !important;
+                    border-top: 1px solid #4B5563 !important;
+                  }
+                  
+                  .dark-modal .ant-modal-close {
+                    color: #9CA3AF !important;
+                  }
+                  
+                  .dark-modal .ant-modal-close:hover {
+                    color: #F9FAFB !important;
+                  }
                 `}
                   </style>
                 )}
 
-                <Tabs defaultActiveKey='1' size='large' className={`${darkMode ? 'dark-tabs' : ''}`}>
+
+
+                <Tabs 
+                  activeKey={activeTab}
+                  onChange={handleTabChange}
+                  size='large' 
+                  className={`${darkMode ? 'dark-tabs' : ''}`}
+                >
                   {/* Tab 1: Basic Information & Job Details */}
                   <TabPane
                     tab={
-                      <span className='flex items-center space-x-2'>
+                      <span className='flex items-center'>
                         <FontAwesomeIcon icon={faBuilding} />
-                        <span>Basic Information</span>
+                        <span className='ml-2'>Basic Information</span>
+                        <CompletionBadge 
+                          completed={fieldCompletionCounts.basicInfo.completed}
+                          total={fieldCompletionCounts.basicInfo.total}
+                          darkMode={darkMode}
+                        />
+                        {tabValidationErrors.basicInfo && (
+                          <span className='tab-error-indicator ml-2' title='Required fields missing'></span>
+                        )}
                       </span>
                     }
                     key='1'
@@ -663,9 +982,17 @@ const CreateJobDescription = React.memo(({ user }) => {
                   {/* Tab 2: Detailed Information */}
                   <TabPane
                     tab={
-                      <span className='flex items-center space-x-2'>
+                      <span className='flex items-center'>
                         <FontAwesomeIcon icon={faTasks} />
-                        <span>Detailed Information</span>
+                        <span className='ml-2'>Detailed Information</span>
+                        <CompletionBadge 
+                          completed={fieldCompletionCounts.detailedInfo.completed}
+                          total={fieldCompletionCounts.detailedInfo.total}
+                          darkMode={darkMode}
+                        />
+                        {tabValidationErrors.detailedInfo && (
+                          <span className='tab-error-indicator ml-2' title='Required fields missing'></span>
+                        )}
                       </span>
                     }
                     key='2'
@@ -862,7 +1189,7 @@ const CreateJobDescription = React.memo(({ user }) => {
                   <Button
                     type='primary'
                     icon={<FontAwesomeIcon icon={faSave} />}
-                    onClick={() => form.submit()}
+                    onClick={handleSaveClick}
                     loading={loading}
                     disabled={initialDataLoading}
                     size='large'
@@ -877,6 +1204,106 @@ const CreateJobDescription = React.memo(({ user }) => {
                 </div>
               </Form>
             )}
+
+            {/* Validation Error Modal */}
+            <Modal
+              title={
+                <div className='flex items-center space-x-2'>
+                  <FontAwesomeIcon 
+                    icon={faExclamationTriangle} 
+                    className='text-red-500' 
+                  />
+                  <span className={darkMode ? 'text-white' : 'text-gray-900'}>
+                    Incomplete Required Fields
+                  </span>
+                </div>
+              }
+              open={validationModalVisible}
+              onOk={handleValidationModalOk}
+              onCancel={() => setValidationModalVisible(false)}
+              okText="Take Me There"
+              cancelText="Close"
+              width={500}
+              className={darkMode ? 'dark-modal' : ''}
+              okButtonProps={{
+                icon: <FontAwesomeIcon icon={faCheckCircle} />,
+                size: 'large',
+                className: darkMode 
+                  ? 'bg-emerald-600 border-emerald-600 hover:bg-emerald-700' 
+                  : 'bg-emerald-600 border-emerald-600 hover:bg-emerald-700'
+              }}
+              cancelButtonProps={{
+                size: 'large',
+                className: darkMode 
+                  ? 'bg-gray-600 border-gray-600 text-white hover:bg-gray-700' 
+                  : 'bg-gray-500 border-gray-500 text-white hover:bg-gray-600'
+              }}
+            >
+              <div className='py-4'>
+                <p className={`text-base mb-4 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                  Please complete the following required fields before saving:
+                </p>
+                
+                <div className='space-y-3'>
+                  {validationErrors
+                    .reduce((acc, error) => {
+                      const existingTab = acc.find(tab => tab.tabKey === error.tabKey)
+                      if (existingTab) {
+                        existingTab.fields.push(error.field)
+                      } else {
+                        acc.push({
+                          tabKey: error.tabKey,
+                          tab: error.tab,
+                          fields: [error.field]
+                        })
+                      }
+                      return acc
+                    }, [])
+                    .map((tabGroup) => (
+                      <div 
+                        key={tabGroup.tabKey}
+                        className={`p-3 rounded-lg border ${
+                          darkMode ? 'bg-gray-800 border-gray-600' : 'bg-red-50 border-red-200'
+                        }`}
+                      >
+                        <div className='flex items-center space-x-2 mb-2'>
+                          <FontAwesomeIcon 
+                            icon={tabGroup.tabKey === '1' ? faBuilding : faTasks} 
+                            className={`text-sm ${darkMode ? 'text-red-400' : 'text-red-600'}`}
+                          />
+                          <span className={`font-semibold text-sm ${
+                            darkMode ? 'text-red-400' : 'text-red-700'
+                          }`}>
+                            {tabGroup.tab}
+                          </span>
+                        </div>
+                        <ul className='space-y-1 ml-5'>
+                          {tabGroup.fields.map((field, index) => (
+                            <li 
+                              key={index}
+                              className={`text-sm flex items-center space-x-2 ${
+                                darkMode ? 'text-gray-300' : 'text-red-600'
+                              }`}
+                            >
+                              <span className='w-1 h-1 bg-current rounded-full'></span>
+                              <span>{field}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))
+                  }
+                </div>
+
+                <div className={`mt-4 p-3 rounded-lg ${
+                  darkMode ? 'bg-blue-900/30 border border-blue-700' : 'bg-blue-50 border border-blue-200'
+                }`}>
+                  <p className={`text-sm ${darkMode ? 'text-blue-300' : 'text-blue-700'}`}>
+                    💡 <strong>Tip:</strong> Click "Take Me There" to automatically navigate to the first missing field.
+                  </p>
+                </div>
+              </div>
+            </Modal>
           </Card>
         </div>
       </div>
