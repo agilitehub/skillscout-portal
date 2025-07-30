@@ -1,6 +1,6 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
-import React from 'react'
+import React, { useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
@@ -17,7 +17,9 @@ import {
   faSliders,
   faCreditCard,
   faHome,
-  faChartPie
+  faChartPie,
+  faChevronDown,
+  faChevronRight
 } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../core/context/ThemeContext'
 
@@ -27,6 +29,11 @@ import { useTheme } from '../../../core/context/ThemeContext'
  */
 const BusinessSidebar = React.memo(() => {
   const { darkMode } = useTheme()
+  const [isSettingsExpanded, setIsSettingsExpanded] = useState(true)
+
+  const toggleSettings = () => {
+    setIsSettingsExpanded(!isSettingsExpanded)
+  }
 
   // Navigation categories and items
   const navigationCategories = [
@@ -150,9 +157,12 @@ const BusinessSidebar = React.memo(() => {
           <div key={category.key} className='space-y-1'>
             {/* Category Header */}
             <div
-              className={`w-full flex items-center px-3 py-2 rounded-lg text-base font-bold ${
-                darkMode ? 'text-gray-300' : 'text-gray-600'
+              className={`w-full flex items-center px-3 py-2 rounded-lg text-base font-bold transition-all duration-200 ${
+                category.key === 'settings' 
+                  ? `cursor-pointer ${darkMode ? 'text-gray-300 hover:text-white hover:bg-gray-800' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'}`
+                  : darkMode ? 'text-gray-300' : 'text-gray-600'
               }`}
+              onClick={category.key === 'settings' ? toggleSettings : undefined}
             >
               <div
                 className={`w-8 h-8 rounded-md flex items-center justify-center mr-3 transition-all duration-200 ${
@@ -165,10 +175,28 @@ const BusinessSidebar = React.memo(() => {
                 />
               </div>
               <span className='flex-1 text-left'>{category.label}</span>
+              
+              {/* Collapsible chevron for settings */}
+              {category.key === 'settings' && (
+                <div className='ml-2'>
+                  <FontAwesomeIcon
+                    icon={isSettingsExpanded ? faChevronDown : faChevronRight}
+                    className={`text-sm transition-transform duration-200 ${
+                      darkMode ? 'text-gray-400' : 'text-gray-500'
+                    }`}
+                  />
+                </div>
+              )}
             </div>
 
             {/* Category Items */}
-            <div className='ml-4 space-y-1'>
+            <div 
+              className={`ml-4 space-y-1 overflow-hidden transition-all duration-300 ease-in-out ${
+                category.key === 'settings' && !isSettingsExpanded 
+                  ? 'max-h-0 opacity-0' 
+                  : 'max-h-96 opacity-100'
+              }`}
+            >
               {category.items.map((item) => (
                 <NavLink
                   key={item.path}
