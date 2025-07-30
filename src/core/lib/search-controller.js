@@ -170,8 +170,8 @@ const categorizeSearchResults = (results) => {
       category: 'Questionnaires',
       items: []
     },
-    assessment_questions: {
-      category: 'Assessment Questions',
+    questionnaire_questions: {
+      category: 'Questionnaire Questions',
       items: []
     },
     job_descriptions: {
@@ -201,7 +201,7 @@ const categorizeSearchResults = (results) => {
           case 'job_opportunities':
             subtitle = `${result.metadata.description} ${result.metadata.location} ${result.metadata.salary} ${result.metadata.work_arrangement}`
             break
-          case 'assessment_questions':
+          case 'questionnaire_questions':
             subtitle = `${result.metadata.question} ${result.metadata.context} ${result.metadata.preferred_feedback}`
             break
           default:
@@ -243,7 +243,7 @@ const categorizeSearchResults = (results) => {
 const getIconForSourceTable = (sourceTable) => {
   const iconMap = {
     questionnaires: 'faUserTie',
-    assessment_questions: 'faQuestionCircle',
+    questionnaire_questions: 'faQuestionCircle',
     job_descriptions: 'faBuilding',
     job_opportunities: 'faBriefcase'
   }

@@ -31,7 +31,7 @@ export const QuestionnaireSchema = {
  */
 export const AssessmentQuestionSchema = {
   // Core Fields (Required)
-  assessment_id: { type: 'string', required: true },
+  questionnaire_id: { type: 'string', required: true },
   question: { type: 'string', required: true, maxLength: 2000 },
   context: { type: 'string', required: true, maxLength: 2000 },
   preferred_feedback: { type: 'string', required: true, maxLength: 2000 },
@@ -82,7 +82,7 @@ export const validateQuestionnaireQuestion = (questionData) => {
   const errors = []
 
   // Required field validation
-  if (!questionData.assessment_id || questionData.assessment_id.trim() === '') {
+  if (!questionData.questionnaire_id || questionData.questionnaire_id.trim() === '') {
     errors.push('Questionnaire ID is required')
   }
 
@@ -162,20 +162,30 @@ export const transformToDatabase = (formData) => {
  * Transform form data to database format for questionnaire questions
  * @param {Object} formData - Data from the form
  * @param {string} questionnaireId - ID of the parent assessment
+ * @param {Object} options - Options for transformation (isUpdate flag)
  * @returns {Object} Transformed data for database insertion
  */
-export const transformQuestionToDatabase = (formData, questionnaireId) => {
+export const transformQuestionToDatabase = (formData, questionnaireId, options = {}) => {
+  const { isUpdate = false } = options
+
   const transformed = {
     // Core Fields
-    assessment_id: questionnaireId,
+    questionnaire_id: questionnaireId,
     question: formData.question?.trim(),
     context: formData.context?.trim(),
     preferred_feedback: formData.preferredFeedback?.trim() || formData.preferred_feedback?.trim(),
 
-    // Order and Status
-    question_order: formData.questionOrder || formData.question_order || 1,
+    // Status
     is_active:
       formData.isActive !== undefined ? formData.isActive : formData.is_active !== undefined ? formData.is_active : true
+  }
+
+  // Only include question_order if explicitly provided or if it's a new question (not an update)
+  if (formData.questionOrder !== undefined || formData.question_order !== undefined) {
+    transformed.question_order = formData.questionOrder || formData.question_order
+  } else if (!isUpdate) {
+    // Only default to 1 for new questions, not updates
+    transformed.question_order = 1
   }
 
   // Remove undefined values
@@ -241,7 +251,7 @@ export const transformQuestionFromDatabase = (dbData) => {
   return {
     // Core Fields
     id: dbData.id,
-    questionnaireId: dbData.assessment_id, // Convert to camelCase
+    questionnaireId: dbData.questionnaire_id, // Convert to camelCase
     question: dbData.question,
     context: dbData.context,
     preferredFeedback: dbData.preferred_feedback, // Convert to camelCase

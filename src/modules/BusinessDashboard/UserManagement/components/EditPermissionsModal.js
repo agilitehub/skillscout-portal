@@ -3,11 +3,11 @@
 import React, { useState, useCallback, useEffect } from 'react'
 import { Modal, Form, Switch, Alert } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { 
-  faShieldAlt, 
-  faEye, 
-  faUsers, 
-  faClipboardCheck, 
+import {
+  faShieldAlt,
+  faEye,
+  faUsers,
+  faClipboardCheck,
   faFileText,
   faChartBar,
   faBuilding,
@@ -43,7 +43,7 @@ const EditPermissionsModal = React.memo(({ visible, user, onCancel, onSuccess, d
       label: 'Manage Questionnaires',
       description: 'Create, edit, and delete questionnaires',
       icon: faClipboardCheck,
-      category: 'Assessments'
+      category: 'Questionnaires'
     },
     viewCandidates: {
       label: 'View Candidates',
@@ -88,20 +88,23 @@ const EditPermissionsModal = React.memo(({ visible, user, onCancel, onSuccess, d
   }, [])
 
   // Handle form submission
-  const handleSubmit = useCallback(async (values) => {
-    setLoading(true)
-    try {
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 500))
-      
-      onSuccess(values)
-      setHasChanges(false)
-    } catch (error) {
-      console.error('Error updating permissions:', error)
-    } finally {
-      setLoading(false)
-    }
-  }, [onSuccess])
+  const handleSubmit = useCallback(
+    async (values) => {
+      setLoading(true)
+      try {
+        // Simulate API delay
+        await new Promise((resolve) => setTimeout(resolve, 500))
+
+        onSuccess(values)
+        setHasChanges(false)
+      } catch (error) {
+        console.error('Error updating permissions:', error)
+      } finally {
+        setLoading(false)
+      }
+    },
+    [onSuccess]
+  )
 
   // Handle cancel with unsaved changes check
   const handleCancel = useCallback(() => {
@@ -126,10 +129,14 @@ const EditPermissionsModal = React.memo(({ visible, user, onCancel, onSuccess, d
   // Get role color
   const getRoleColor = useCallback((role) => {
     switch (role) {
-      case 'admin': return SEMANTIC_COLORS.error
-      case 'recruiter': return BRAND_COLORS.emeraldPrimary
-      case 'viewer': return BRAND_COLORS.shakespeare
-      default: return BRAND_COLORS.mediumGray
+      case 'admin':
+        return SEMANTIC_COLORS.error
+      case 'recruiter':
+        return BRAND_COLORS.emeraldPrimary
+      case 'viewer':
+        return BRAND_COLORS.shakespeare
+      default:
+        return BRAND_COLORS.mediumGray
     }
   }, [])
 
@@ -144,42 +151,42 @@ const EditPermissionsModal = React.memo(({ visible, user, onCancel, onSuccess, d
           color: ${darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray} !important;
           border: 1px solid ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.borderGray} !important;
         }
-        
+
         .permissions-modal .ant-modal-header {
           background-color: ${darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white} !important;
           border-bottom: 1px solid ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.borderGray} !important;
         }
-        
+
         .permissions-modal .ant-modal-close {
           color: ${darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray} !important;
         }
-        
+
         .permissions-modal .ant-modal-close:hover {
           color: ${BRAND_COLORS.emeraldLight} !important;
         }
-        
+
         .permissions-modal .ant-form-item-label > label {
           color: ${darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray} !important;
           font-weight: 500 !important;
         }
-        
+
         .permissions-modal .ant-switch-checked {
           background-color: ${BRAND_COLORS.emeraldPrimary} !important;
         }
-        
+
         .permissions-modal .ant-alert {
           background-color: ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.lightGray} !important;
           border-color: ${darkMode ? BRAND_COLORS.darkSlate : BRAND_COLORS.borderGray} !important;
         }
-        
+
         .permissions-modal .ant-alert-message {
           color: ${darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray} !important;
         }
-        
+
         .permissions-modal .ant-alert-description {
           color: ${darkMode ? BRAND_COLORS.lightGray : BRAND_COLORS.mediumGray} !important;
         }
-        
+
         .permission-category {
           background-color: ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.offWhite} !important;
           border: 1px solid ${darkMode ? BRAND_COLORS.darkSlate : BRAND_COLORS.lightBorderGray} !important;
@@ -187,14 +194,14 @@ const EditPermissionsModal = React.memo(({ visible, user, onCancel, onSuccess, d
           padding: 16px;
           margin-bottom: 16px;
         }
-        
+
         .permission-category-title {
           color: ${darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray} !important;
           font-weight: 600;
           font-size: 14px;
           margin-bottom: 12px;
         }
-        
+
         .permission-item {
           display: flex;
           align-items: flex-start;
@@ -202,23 +209,23 @@ const EditPermissionsModal = React.memo(({ visible, user, onCancel, onSuccess, d
           padding: 12px 0;
           border-bottom: 1px solid ${darkMode ? BRAND_COLORS.darkSlate : BRAND_COLORS.lightBorderGray};
         }
-        
+
         .permission-item:last-child {
           border-bottom: none;
         }
-        
+
         .permission-info {
           flex: 1;
           margin-right: 16px;
         }
-        
+
         .permission-label {
           color: ${darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray} !important;
           font-weight: 500;
           font-size: 14px;
           margin-bottom: 4px;
         }
-        
+
         .permission-description {
           color: ${darkMode ? BRAND_COLORS.lightGray : BRAND_COLORS.mediumGray} !important;
           font-size: 12px;
@@ -229,17 +236,15 @@ const EditPermissionsModal = React.memo(({ visible, user, onCancel, onSuccess, d
       <Modal
         title={
           <div className='flex items-center space-x-3'>
-            <div 
+            <div
               className='w-8 h-8 rounded-lg flex items-center justify-center'
               style={{ backgroundColor: getRoleColor(user.role) }}
             >
               <FontAwesomeIcon icon={faShieldAlt} className='text-white text-sm' />
             </div>
             <div>
-              <span className={darkMode ? 'text-white' : 'text-gray-900'}>
-                Edit Permissions
-              </span>
-              <div className="text-sm text-gray-400 mt-1">
+              <span className={darkMode ? 'text-white' : 'text-gray-900'}>Edit Permissions</span>
+              <div className='text-sm text-gray-400 mt-1'>
                 {user.name} ({user.email})
               </div>
             </div>
@@ -248,18 +253,18 @@ const EditPermissionsModal = React.memo(({ visible, user, onCancel, onSuccess, d
         open={visible}
         onCancel={handleCancel}
         width={700}
-        className="permissions-modal"
+        className='permissions-modal'
         footer={[
           <Button
-            key="cancel"
+            key='cancel'
             onClick={handleCancel}
             className={darkMode ? 'text-gray-300 border-gray-600' : 'text-gray-600 border-gray-300'}
           >
             Cancel
           </Button>,
           <Button
-            key="submit"
-            type="primary"
+            key='submit'
+            type='primary'
             loading={loading}
             onClick={() => form.submit()}
             disabled={!hasChanges}
@@ -275,51 +280,36 @@ const EditPermissionsModal = React.memo(({ visible, user, onCancel, onSuccess, d
           backgroundColor: darkMode ? 'rgba(0, 0, 0, 0.7)' : 'rgba(0, 0, 0, 0.45)'
         }}
       >
-        <div className="mb-4">
+        <div className='mb-4'>
           <Alert
-            message="Permission Management"
+            message='Permission Management'
             description={`Customize ${user.name}'s access permissions. Changes will take effect immediately after saving.`}
-            type="info"
+            type='info'
             icon={<FontAwesomeIcon icon={faExclamationCircle} />}
             showIcon
           />
         </div>
 
-        <Form
-          form={form}
-          layout="vertical"
-          onFinish={handleSubmit}
-          onValuesChange={handleValuesChange}
-        >
+        <Form form={form} layout='vertical' onFinish={handleSubmit} onValuesChange={handleValuesChange}>
           {Object.entries(permissionsByCategory).map(([category, permissions]) => (
-            <div key={category} className="permission-category">
-              <div className="permission-category-title">
-                {category}
-              </div>
-              
-              {permissions.map(permission => (
-                <div key={permission.key} className="permission-item">
-                  <div className="permission-info">
-                    <div className="flex items-center space-x-2 mb-1">
-                      <FontAwesomeIcon 
-                        icon={permission.icon} 
+            <div key={category} className='permission-category'>
+              <div className='permission-category-title'>{category}</div>
+
+              {permissions.map((permission) => (
+                <div key={permission.key} className='permission-item'>
+                  <div className='permission-info'>
+                    <div className='flex items-center space-x-2 mb-1'>
+                      <FontAwesomeIcon
+                        icon={permission.icon}
                         className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}
                       />
-                      <div className="permission-label">
-                        {permission.label}
-                      </div>
+                      <div className='permission-label'>{permission.label}</div>
                     </div>
-                    <div className="permission-description">
-                      {permission.description}
-                    </div>
+                    <div className='permission-description'>{permission.description}</div>
                   </div>
-                  
-                  <Form.Item
-                    name={permission.key}
-                    valuePropName="checked"
-                    noStyle
-                  >
-                    <Switch size="small" />
+
+                  <Form.Item name={permission.key} valuePropName='checked' noStyle>
+                    <Switch size='small' />
                   </Form.Item>
                 </div>
               ))}
@@ -328,11 +318,11 @@ const EditPermissionsModal = React.memo(({ visible, user, onCancel, onSuccess, d
 
           {hasChanges && (
             <Alert
-              message="You have unsaved changes"
+              message='You have unsaved changes'
               description="Don't forget to save your changes before closing this dialog."
-              type="warning"
+              type='warning'
               showIcon
-              className="mt-4"
+              className='mt-4'
             />
           )}
         </Form>
@@ -343,4 +333,4 @@ const EditPermissionsModal = React.memo(({ visible, user, onCancel, onSuccess, d
 
 EditPermissionsModal.displayName = 'EditPermissionsModal'
 
-export default EditPermissionsModal 
+export default EditPermissionsModal

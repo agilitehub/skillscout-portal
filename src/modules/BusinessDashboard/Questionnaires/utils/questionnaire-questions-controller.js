@@ -39,9 +39,9 @@ export const getQuestionsByQuestionnaireId = async (questionnaireId) => {
     }
 
     const { data, error } = await supabase
-      .from('assessment_questions')
+      .from('questionnaire_questions')
       .select('*')
-      .eq('assessment_id', questionnaireId)
+      .eq('questionnaire_id', questionnaireId)
       .order('question_order', { ascending: true })
 
     if (error) {
@@ -89,7 +89,7 @@ export const getQuestionById = async (questionId) => {
       }
     }
 
-    const { data, error } = await supabase.from('assessment_questions').select('*').eq('id', questionId).single()
+    const { data, error } = await supabase.from('questionnaire_questions').select('*').eq('id', questionId).single()
 
     if (error) {
       console.error('Error fetching question by ID:', error)
@@ -137,11 +137,11 @@ export const createQuestionnaireQuestion = async (questionnaireId, questionData)
       }
     }
 
-    // Add assessment_id to question data for validation
-    const dataWithAssessmentId = { ...questionData, assessment_id: questionnaireId }
+    // Add questionnaire_id to question data for validation
+    const dataWithQuestionnaireId = { ...questionData, questionnaire_id: questionnaireId }
 
     // Validate the question data
-    const validation = validateQuestionnaireQuestion(dataWithAssessmentId)
+    const validation = validateQuestionnaireQuestion(dataWithQuestionnaireId)
     if (!validation.success) {
       return {
         success: false,
@@ -150,11 +150,11 @@ export const createQuestionnaireQuestion = async (questionnaireId, questionData)
       }
     }
 
-    // Get the next order number for this assessment
+    // Get the next order number for this questionnaire
     const { data: maxOrderData } = await supabase
-      .from('assessment_questions')
+      .from('questionnaire_questions')
       .select('question_order')
-      .eq('assessment_id', questionnaireId)
+      .eq('questionnaire_id', questionnaireId)
       .order('question_order', { ascending: false })
       .limit(1)
 
@@ -164,7 +164,7 @@ export const createQuestionnaireQuestion = async (questionnaireId, questionData)
     const dbData = transformQuestionToDatabase(questionData, questionnaireId, { isUpdate: false })
     dbData.question_order = nextOrder
 
-    const { data, error } = await supabase.from('assessment_questions').insert([dbData]).select().single()
+    const { data, error } = await supabase.from('questionnaire_questions').insert([dbData]).select().single()
 
     if (error) {
       console.error('Error creating questionnaire question:', error)
@@ -212,7 +212,7 @@ export const updateQuestionnaireQuestion = async (questionId, questionData) => {
       }
     }
 
-    // Get existing question to get assessment_id for validation
+    // Get existing question to get questionnaire_id for validation
     const existingResult = await getQuestionById(questionId)
     if (!existingResult.success) {
       return existingResult
@@ -220,11 +220,11 @@ export const updateQuestionnaireQuestion = async (questionId, questionData) => {
 
     const questionnaireId = existingResult.data.questionnaireId
 
-    // Add assessment_id to question data for validation
-    const dataWithAssessmentId = { ...questionData, assessment_id: questionnaireId }
+    // Add questionnaire_id to question data for validation
+    const dataWithQuestionnaireId = { ...questionData, questionnaire_id: questionnaireId }
 
     // Validate the question data
-    const validation = validateQuestionnaireQuestion(dataWithAssessmentId)
+    const validation = validateQuestionnaireQuestion(dataWithQuestionnaireId)
     if (!validation.success) {
       return {
         success: false,
@@ -237,7 +237,7 @@ export const updateQuestionnaireQuestion = async (questionId, questionData) => {
     const dbData = transformQuestionToDatabase(questionData, questionnaireId, { isUpdate: true })
 
     const { data, error } = await supabase
-      .from('assessment_questions')
+      .from('questionnaire_questions')
       .update(dbData)
       .eq('id', questionId)
       .select()
@@ -288,7 +288,7 @@ export const deleteQuestionnaireQuestion = async (questionId) => {
       }
     }
 
-    const { error } = await supabase.from('assessment_questions').delete().eq('id', questionId)
+    const { error } = await supabase.from('questionnaire_questions').delete().eq('id', questionId)
 
     if (error) {
       console.error('Error deleting questionnaire question:', error)
@@ -335,7 +335,7 @@ export const reorderQuestions = async (questions) => {
 
     // Update each question's order
     const updatePromises = questions.map((question) =>
-      supabase.from('assessment_questions').update({ question_order: question.questionOrder }).eq('id', question.id)
+      supabase.from('questionnaire_questions').update({ question_order: question.questionOrder }).eq('id', question.id)
     )
 
     const results = await Promise.all(updatePromises)
@@ -435,13 +435,13 @@ export const searchQuestions = async (searchTerm, questionnaireId = null) => {
     }
 
     let query = supabase
-      .from('assessment_questions')
+      .from('questionnaire_questions')
       .select('*')
       .or(`question.ilike.%${searchTerm}%,context.ilike.%${searchTerm}%,preferred_feedback.ilike.%${searchTerm}%`)
       .order('question_order', { ascending: true })
 
     if (questionnaireId) {
-      query = query.eq('assessment_id', questionnaireId)
+      query = query.eq('questionnaire_id', questionnaireId)
     }
 
     const { data, error } = await query

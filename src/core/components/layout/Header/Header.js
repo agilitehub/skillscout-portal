@@ -56,7 +56,7 @@ const Header = ({ user }) => {
   const getIconFromSourceTable = useCallback((sourceTable) => {
     const iconMap = {
       questionnaires: faUserTie,
-      assessment_questions: faQuestionCircle,
+      questionnaire_questions: faQuestionCircle,
       job_descriptions: faBuilding,
       job_opportunities: faBriefcase
     }
@@ -313,8 +313,8 @@ const Header = ({ user }) => {
         // Navigate based on source table
         if (item.sourceTable) {
           switch (item.sourceTable) {
-                    case 'questionnaires':
-          navigate(`/business-dashboard/questionnaires/${item.id}`)
+            case 'questionnaires':
+              navigate(`/business-dashboard/questionnaires/${item.id}`)
               break
             case 'job_descriptions':
               navigate(`/business-dashboard/job-descriptions/${item.id}`)

@@ -66,12 +66,12 @@ const TableActions = React.memo(({ record, actions = [], size = 'small', wrap = 
       color: darkMode ? '!text-purple-400 hover:!text-purple-300' : '!text-purple-800 hover:!text-purple-900',
       onClick: (record) => console.log('Description:', record)
     },
-    assessment: {
-      key: 'assessment',
+    questionnaire: {
+      key: 'questionnaire',
       icon: faClipboardCheck,
-      tooltip: 'View Assessment',
+      tooltip: 'View Questionnaire',
       color: darkMode ? '!text-orange-400 hover:!text-orange-300' : '!text-orange-800 hover:!text-orange-900',
-      onClick: (record) => console.log('Assessment:', record)
+      onClick: (record) => console.log('Questionnaire:', record)
     },
     download: {
       key: 'download',
@@ -179,11 +179,11 @@ export const ACTION_PRESETS = {
   EDIT_DELETE: ['edit', 'delete'],
 
   // Business dashboard job actions
-  JOB_ACTIONS: ['view', 'description', 'assessment', 'edit', 'delete'],
+  JOB_ACTIONS: ['view', 'description', 'questionnaire', 'edit', 'delete'],
 
   // Document actions
   DOCUMENT_ACTIONS: ['view', 'edit', 'download', 'share', 'delete'],
 
-  // Assessment actions
-  ASSESSMENT_ACTIONS: ['view', 'edit', 'copy', 'delete']
+  // Questionnaire actions
+  QUESTIONNAIRE_ACTIONS: ['view', 'edit', 'copy', 'delete']
 }

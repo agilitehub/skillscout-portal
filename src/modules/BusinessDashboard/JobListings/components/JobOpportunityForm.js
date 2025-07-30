@@ -50,7 +50,7 @@ const JobOpportunityForm = React.memo(() => {
     setSelectedJobDescriptionId(value)
   }, [])
 
-  // Load job descriptions and assessments for dropdowns
+  // Load job descriptions and questionnaires for dropdowns
   useEffect(() => {
     const loadOptions = async () => {
       setLoadingOptions(true)
@@ -404,7 +404,10 @@ const JobOpportunityForm = React.memo(() => {
               <Row gutter={16}>
                 <Col xs={24} lg={12}>
                   <Form.Item label='Job Type' name='type' rules={[{ required: true, message: 'Job type is required' }]}>
-                                            <Select placeholder='Select job type' dropdownClassName={darkMode ? 'job-opportunity-dark-dropdown' : ''}>
+                    <Select
+                      placeholder='Select job type'
+                      dropdownClassName={darkMode ? 'job-opportunity-dark-dropdown' : ''}
+                    >
                       {dropdownOptions.type.map((option) => (
                         <Option key={option.value} value={option.value}>
                           {option.label}
@@ -419,7 +422,10 @@ const JobOpportunityForm = React.memo(() => {
                     name='workArrangement'
                     rules={[{ required: true, message: 'Work arrangement is required' }]}
                   >
-                                            <Select placeholder='Select work arrangement' dropdownClassName={darkMode ? 'job-opportunity-dark-dropdown' : ''}>
+                    <Select
+                      placeholder='Select work arrangement'
+                      dropdownClassName={darkMode ? 'job-opportunity-dark-dropdown' : ''}
+                    >
                       {dropdownOptions.workArrangement.map((option) => (
                         <Option key={option.value} value={option.value}>
                           {option.label}
@@ -445,7 +451,10 @@ const JobOpportunityForm = React.memo(() => {
                 </Col>
                 <Col xs={24} lg={12}>
                   <Form.Item label='Status' name='status'>
-                    <Select placeholder='Select status' dropdownClassName={darkMode ? 'job-opportunity-dark-dropdown' : ''}>
+                    <Select
+                      placeholder='Select status'
+                      dropdownClassName={darkMode ? 'job-opportunity-dark-dropdown' : ''}
+                    >
                       {dropdownOptions.status.map((option) => (
                         <Option key={option.value} value={option.value}>
                           {option.label}
@@ -497,7 +506,7 @@ const JobOpportunityForm = React.memo(() => {
                       </Spin>
                     </center>
                   ) : (
-                    <Form.Item label='Questionnaires (Optional)' name='assessments'>
+                    <Form.Item label='Questionnaires (Optional)' name='questionnaires'>
                       <Select
                         mode='multiple'
                         placeholder='Select questionnaires (optional)'

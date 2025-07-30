@@ -31,7 +31,7 @@ export const getAllQuestionnaires = async (filters = {}) => {
     }
 
     // Use the view that includes question count
-    let query = supabase.from('assessment_with_questions').select('*').order('created_at', { ascending: false })
+    let query = supabase.from('questionnaire_with_questions').select('*').order('created_at', { ascending: false })
 
     // Apply filters if provided
     if (filters.status) {
@@ -102,7 +102,7 @@ export const getQuestionnaireById = async (id) => {
     }
 
     // Use the view that includes questions
-    const { data, error } = await supabase.from('assessment_with_questions').select('*').eq('id', id).single()
+    const { data, error } = await supabase.from('questionnaire_with_questions').select('*').eq('id', id).single()
 
     if (error) {
       console.error('Error fetching questionnaire by ID:', error)
@@ -154,7 +154,7 @@ export const createQuestionnaire = async (assessmentData) => {
     // Transform form data to database format
     const dbData = transformToDatabase(assessmentData, { isUpdate: false })
 
-    const { data, error } = await supabase.from('assessments').insert([dbData]).select().single()
+    const { data, error } = await supabase.from('questionnaires').insert([dbData]).select().single()
 
     if (error) {
       console.error('Error creating assessment:', error)
@@ -216,7 +216,7 @@ export const updateQuestionnaire = async (id, assessmentData) => {
     // Transform form data to database format
     const dbData = transformToDatabase(assessmentData, { isUpdate: true })
 
-    const { data, error } = await supabase.from('assessments').update(dbData).eq('id', id).select().single()
+    const { data, error } = await supabase.from('questionnaires').update(dbData).eq('id', id).select().single()
 
     if (error) {
       console.error('Error updating assessment:', error)
@@ -264,7 +264,7 @@ export const deleteQuestionnaire = async (id) => {
       }
     }
 
-    const { error } = await supabase.from('assessments').delete().eq('id', id)
+    const { error } = await supabase.from('questionnaires').delete().eq('id', id)
 
     if (error) {
       console.error('Error deleting assessment:', error)
@@ -327,7 +327,7 @@ export const updateQuestionnaireStatus = async (id, status) => {
       }
     }
 
-    const { data, error } = await supabase.from('assessments').update({ status }).eq('id', id).select().single()
+    const { data, error } = await supabase.from('questionnaires').update({ status }).eq('id', id).select().single()
 
     if (error) {
       console.error('Error updating questionnaire status:', error)
@@ -378,7 +378,7 @@ export const searchQuestionnaires = async (searchTerm, filters = {}) => {
 
     // Search in both questionnaires table and questions via the view
     let query = supabase
-      .from('assessment_with_questions')
+      .from('questionnaire_with_questions')
       .select('*')
       .or(`title.ilike.%${searchTerm}%,category.ilike.%${searchTerm}%`)
       .order('created_at', { ascending: false })
@@ -409,22 +409,22 @@ export const searchQuestionnaires = async (searchTerm, filters = {}) => {
 
     // Also search in questions and get parent questionnaires
     const questionSearchQuery = supabase
-      .from('assessment_questions')
-      .select('assessment_id')
+      .from('questionnaire_questions')
+      .select('questionnaire_id')
       .or(`question.ilike.%${searchTerm}%,context.ilike.%${searchTerm}%,preferred_feedback.ilike.%${searchTerm}%`)
 
     const { data: questionResults } = await questionSearchQuery
 
     // Get unique questionnaire IDs from question search
     const questionnaireIdsFromQuestions = questionResults
-      ? [...new Set(questionResults.map((q) => q.assessment_id))]
+      ? [...new Set(questionResults.map((q) => q.questionnaire_id))]
       : []
 
     // Fetch questionnaires that have matching questions
     let additionalQuestionnaires = []
     if (questionnaireIdsFromQuestions.length > 0) {
       let additionalQuery = supabase
-        .from('assessment_with_questions')
+        .from('questionnaire_with_questions')
         .select('*')
         .in('id', questionnaireIdsFromQuestions)
 
@@ -486,7 +486,7 @@ export const getQuestionnairesByCategory = async (category) => {
     }
 
     const { data, error } = await supabase
-      .from('assessment_with_questions')
+      .from('questionnaire_with_questions')
       .select('*')
       .eq('category', category)
       .order('created_at', { ascending: false })
@@ -615,7 +615,7 @@ export const getQuestionnairesStats = async (filters = {}) => {
     }
 
     let query = supabase
-      .from('assessment_with_questions')
+      .from('questionnaire_with_questions')
       .select('status, category, completions, total_attempts, average_score, is_active, question_count')
 
     // Apply filters if provided

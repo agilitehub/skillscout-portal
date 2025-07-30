@@ -582,10 +582,9 @@ export const getQuestionnairesForSelection = async () => {
     }
 
     const { data, error } = await supabase
-      .from('assessments')
+      .from('questionnaires')
       .select('id, title, category, status')
       .eq('is_active', true)
-      .eq('status', 'Active')
       .order('title', { ascending: true })
 
     if (error) {
