@@ -7,8 +7,6 @@ import {
   faBriefcase,
   faFileText,
   faClipboardCheck,
-  faTachometerAlt,
-  faCog,
   faCogs,
   faList,
   faColumns,
@@ -17,7 +15,6 @@ import {
   faSliders,
   faCreditCard,
   faHome,
-  faChartPie,
   faChevronDown,
   faChevronRight
 } from '@fortawesome/free-solid-svg-icons'
@@ -29,96 +26,84 @@ import { useTheme } from '../../../core/context/ThemeContext'
  */
 const BusinessSidebar = React.memo(() => {
   const { darkMode } = useTheme()
-  const [isSettingsExpanded, setIsSettingsExpanded] = useState(true)
+  const [isSettingsExpanded, setIsSettingsExpanded] = useState(false)
 
   const toggleSettings = () => {
     setIsSettingsExpanded(!isSettingsExpanded)
   }
 
-  // Navigation categories and items
-  const navigationCategories = [
+  // Main navigation items (without operations header)
+  const mainNavigationItems = [
     {
-      key: 'main',
-      label: 'Main',
+      path: '/business-dashboard',
       icon: faHome,
-      items: [
-        {
-          path: '/business-dashboard',
-          icon: faChartPie,
-          label: 'Dashboard',
-          exact: true
-        }
-      ]
+      label: 'Dashboard',
+      exact: true
     },
     {
-      key: 'operations',
-      label: 'Operations',
-      icon: faCog,
-      items: [
-        {
-          path: '/business-dashboard/candidates',
-          icon: faColumns,
-          label: 'Candidates',
-          exact: false
-        },
-        {
-          path: '/business-dashboard/job-listings',
-          icon: faBriefcase,
-          label: 'Job Listings',
-          exact: false
-        },
-        {
-          path: '/business-dashboard/questionnaires',
-          icon: faClipboardCheck,
-          label: 'Questionnaires',
-          exact: false
-        },
-        {
-          path: '/business-dashboard/job-descriptions',
-          icon: faFileText,
-          label: 'Job Descriptions',
-          exact: false
-        }
-      ]
+      path: '/business-dashboard/candidates',
+      icon: faColumns,
+      label: 'Candidates',
+      exact: false
     },
     {
-      key: 'settings',
-      label: 'Settings',
-      icon: faCogs,
-      items: [
-        {
-          path: '/business-dashboard/user-management',
-          icon: faUsers,
-          label: 'User Management',
-          exact: false
-        },
-        {
-          path: '/business-dashboard/branch-management',
-          icon: faBuilding,
-          label: 'Branch Management',
-          exact: false
-        },
-        {
-          path: '/business-dashboard/org-settings',
-          icon: faSliders,
-          label: 'Organization Settings',
-          exact: false
-        },
-        {
-          path: '/business-dashboard/billing',
-          icon: faCreditCard,
-          label: 'Billing & Subscription',
-          exact: false
-        },
-        {
-          path: '/business-dashboard/lookups',
-          icon: faList,
-          label: 'Lookups',
-          exact: false
-        }
-      ]
+      path: '/business-dashboard/job-listings',
+      icon: faBriefcase,
+      label: 'Job Listings',
+      exact: false
+    },
+    {
+      path: '/business-dashboard/questionnaires',
+      icon: faClipboardCheck,
+      label: 'Questionnaires',
+      exact: false
+    },
+    {
+      path: '/business-dashboard/job-descriptions',
+      icon: faFileText,
+      label: 'Job Descriptions',
+      exact: false
     }
   ]
+
+  // Settings category (collapsible)
+  const settingsCategory = {
+    key: 'settings',
+    label: 'Settings',
+    icon: faCogs,
+    items: [
+      {
+        path: '/business-dashboard/user-management',
+        icon: faUsers,
+        label: 'User Management',
+        exact: false
+      },
+      {
+        path: '/business-dashboard/branch-management',
+        icon: faBuilding,
+        label: 'Branch Management',
+        exact: false
+      },
+      {
+        path: '/business-dashboard/org-settings',
+        icon: faSliders,
+        label: 'Organization Settings',
+        exact: false
+      },
+      {
+        path: '/business-dashboard/billing',
+        icon: faCreditCard,
+        label: 'Billing & Subscription',
+        exact: false
+      },
+      {
+        path: '/business-dashboard/lookups',
+        icon: faList,
+        label: 'Lookups',
+        exact: false
+      }
+    ]
+  }
 
   return (
     <div
@@ -153,102 +138,148 @@ const BusinessSidebar = React.memo(() => {
 
       {/* Navigation Menu */}
       <nav className='p-4 space-y-3'>
-        {navigationCategories.map((category) => (
-          <div key={category.key} className='space-y-1'>
-            {/* Category Header */}
-            <div
-              className={`w-full flex items-center px-3 py-2 rounded-lg text-base font-bold transition-all duration-200 ${
-                category.key === 'settings' 
-                  ? `cursor-pointer ${darkMode ? 'text-gray-300 hover:text-white hover:bg-gray-800' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'}`
-                  : darkMode ? 'text-gray-300' : 'text-gray-600'
-              }`}
-              onClick={category.key === 'settings' ? toggleSettings : undefined}
+        {/* Main Navigation Items */}
+        <div className='space-y-1'>
+          {mainNavigationItems.map((item) => (
+            <NavLink
+              key={item.path}
+              to={item.path}
+              end={item.exact}
+              className={({ isActive }) =>
+                `flex items-center px-3 py-3 rounded-lg text-base font-medium transition-all duration-200 ${
+                  isActive
+                    ? darkMode
+                      ? 'bg-emerald-700 text-white shadow-lg'
+                      : 'bg-emerald-50 text-emerald-700 shadow-md border-l-4 border-emerald-500'
+                    : darkMode
+                      ? 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                }`
+              }
             >
-              <div
-                className={`w-8 h-8 rounded-md flex items-center justify-center mr-3 transition-all duration-200 ${
-                  darkMode ? 'bg-gray-800' : 'bg-gray-100'
-                }`}
-              >
-                <FontAwesomeIcon
-                  icon={category.icon}
-                  className={`text-base ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}
-                />
-              </div>
-              <span className='flex-1 text-left'>{category.label}</span>
-              
-              {/* Collapsible chevron for settings */}
-              {category.key === 'settings' && (
-                <div className='ml-2'>
-                  <FontAwesomeIcon
-                    icon={isSettingsExpanded ? faChevronDown : faChevronRight}
-                    className={`text-sm transition-transform duration-200 ${
-                      darkMode ? 'text-gray-400' : 'text-gray-500'
-                    }`}
-                  />
-                </div>
-              )}
-            </div>
-
-            {/* Category Items */}
-            <div 
-              className={`ml-4 space-y-1 overflow-hidden transition-all duration-300 ease-in-out ${
-                category.key === 'settings' && !isSettingsExpanded 
-                  ? 'max-h-0 opacity-0' 
-                  : 'max-h-96 opacity-100'
-              }`}
-            >
-              {category.items.map((item) => (
-                <NavLink
-                  key={item.path}
-                  to={item.path}
-                  end={item.exact}
-                  className={({ isActive }) =>
-                    `flex items-center px-3 py-3 rounded-lg text-base font-medium transition-all duration-200 ${
+              {({ isActive }) => (
+                <>
+                  <div
+                    className={`w-8 h-8 rounded-md flex items-center justify-center mr-3 transition-all duration-200 ${
                       isActive
                         ? darkMode
-                          ? 'bg-emerald-700 text-white shadow-lg'
-                          : 'bg-emerald-50 text-emerald-700 shadow-md border-l-4 border-emerald-500'
+                          ? 'bg-emerald-600'
+                          : 'bg-emerald-100'
                         : darkMode
-                          ? 'text-gray-300 hover:bg-gray-800 hover:text-white'
-                          : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                    }`
-                  }
-                >
-                  {({ isActive }) => (
-                    <>
-                      <div
-                        className={`w-8 h-8 rounded-md flex items-center justify-center mr-3 transition-all duration-200 ${
-                          isActive
-                            ? darkMode
-                              ? 'bg-emerald-600'
-                              : 'bg-emerald-100'
-                            : darkMode
-                              ? 'bg-gray-800'
-                              : 'bg-gray-100'
-                        }`}
-                      >
-                        <FontAwesomeIcon
-                          icon={item.icon}
-                          className={`text-base ${
-                            isActive
-                              ? darkMode
-                                ? 'text-white'
-                                : 'text-emerald-700'
-                              : darkMode
-                                ? 'text-gray-400'
-                                : 'text-gray-500'
-                          }`}
-                        />
-                      </div>
-                      <span>{item.label}</span>
-                      {isActive && <div className='ml-auto w-2 h-2 bg-emerald-500 rounded-full'></div>}
-                    </>
-                  )}
-                </NavLink>
-              ))}
+                          ? 'bg-gray-800'
+                          : 'bg-gray-100'
+                    }`}
+                  >
+                    <FontAwesomeIcon
+                      icon={item.icon}
+                      className={`text-base ${
+                        isActive
+                          ? darkMode
+                            ? 'text-white'
+                            : 'text-emerald-700'
+                          : darkMode
+                            ? 'text-gray-400'
+                            : 'text-gray-500'
+                      }`}
+                    />
+                  </div>
+                  <span>{item.label}</span>
+                  {isActive && <div className='ml-auto w-2 h-2 bg-emerald-500 rounded-full'></div>}
+                </>
+              )}
+            </NavLink>
+          ))}
+        </div>
+
+        {/* Settings Category */}
+        <div className='space-y-1'>
+          {/* Settings Header */}
+          <div
+            className={`w-full flex items-center px-3 py-2 rounded-lg text-base font-bold transition-all duration-200 cursor-pointer ${
+              darkMode ? 'text-gray-300 hover:text-white hover:bg-gray-800' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+            }`}
+            onClick={toggleSettings}
+          >
+            <div
+              className={`w-8 h-8 rounded-md flex items-center justify-center mr-3 transition-all duration-200 ${
+                darkMode ? 'bg-gray-800' : 'bg-gray-100'
+              }`}
+            >
+              <FontAwesomeIcon
+                icon={settingsCategory.icon}
+                className={`text-base ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}
+              />
+            </div>
+            <span className='flex-1 text-left'>{settingsCategory.label}</span>
+            
+            {/* Collapsible chevron */}
+            <div className='ml-2'>
+              <FontAwesomeIcon
+                icon={isSettingsExpanded ? faChevronDown : faChevronRight}
+                className={`text-sm transition-transform duration-200 ${
+                  darkMode ? 'text-gray-400' : 'text-gray-500'
+                }`}
+              />
             </div>
           </div>
-        ))}
+
+          {/* Settings Items */}
+          <div 
+            className={`ml-4 space-y-1 overflow-hidden transition-all duration-300 ease-in-out ${
+              !isSettingsExpanded ? 'max-h-0 opacity-0' : 'max-h-96 opacity-100'
+            }`}
+          >
+            {settingsCategory.items.map((item) => (
+              <NavLink
+                key={item.path}
+                to={item.path}
+                end={item.exact}
+                className={({ isActive }) =>
+                  `flex items-center px-3 py-3 rounded-lg text-base font-medium transition-all duration-200 ${
+                    isActive
+                      ? darkMode
+                        ? 'bg-emerald-700 text-white shadow-lg'
+                        : 'bg-emerald-50 text-emerald-700 shadow-md border-l-4 border-emerald-500'
+                      : darkMode
+                        ? 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                  }`
+                }
+              >
+                {({ isActive }) => (
+                  <>
+                    <div
+                      className={`w-8 h-8 rounded-md flex items-center justify-center mr-3 transition-all duration-200 ${
+                        isActive
+                          ? darkMode
+                            ? 'bg-emerald-600'
+                            : 'bg-emerald-100'
+                          : darkMode
+                            ? 'bg-gray-800'
+                            : 'bg-gray-100'
+                      }`}
+                    >
+                      <FontAwesomeIcon
+                        icon={item.icon}
+                        className={`text-base ${
+                          isActive
+                            ? darkMode
+                              ? 'text-white'
+                              : 'text-emerald-700'
+                            : darkMode
+                              ? 'text-gray-400'
+                              : 'text-gray-500'
+                        }`}
+                      />
+                    </div>
+                    <span>{item.label}</span>
+                    {isActive && <div className='ml-auto w-2 h-2 bg-emerald-500 rounded-full'></div>}
+                  </>
+                )}
+              </NavLink>
+            ))}
+          </div>
+        </div>
       </nav>
 
 
