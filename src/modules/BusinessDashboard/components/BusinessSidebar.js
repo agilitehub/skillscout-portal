@@ -16,7 +16,8 @@ import {
   faBuilding,
   faSliders,
   faCreditCard,
-  faHome
+  faHome,
+  faChartPie
 } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../core/context/ThemeContext'
 
@@ -36,7 +37,7 @@ const BusinessSidebar = React.memo(() => {
       items: [
         {
           path: '/business-dashboard',
-          icon: faHome,
+          icon: faChartPie,
           label: 'Dashboard',
           exact: true
         }
@@ -55,7 +56,7 @@ const BusinessSidebar = React.memo(() => {
         },
         {
           path: '/business-dashboard/job-listings',
-          icon: faTachometerAlt,
+          icon: faBriefcase,
           label: 'Job Listings',
           exact: false
         },
@@ -134,7 +135,7 @@ const BusinessSidebar = React.memo(() => {
                 : 'linear-gradient(135deg, #10b981, #059669)'
             }}
           >
-            <FontAwesomeIcon icon={faBriefcase} className='text-white text-sm' />
+            <FontAwesomeIcon icon={faBriefcase} className='text-white text-base' />
           </div>
           <div>
             <h2 className={`font-bold text-sm ${darkMode ? 'text-white' : 'text-gray-900'}`}>Business Hub</h2>
@@ -160,7 +161,7 @@ const BusinessSidebar = React.memo(() => {
               >
                 <FontAwesomeIcon
                   icon={category.icon}
-                  className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}
+                  className={`text-base ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}
                 />
               </div>
               <span className='flex-1 text-left'>{category.label}</span>
@@ -200,7 +201,7 @@ const BusinessSidebar = React.memo(() => {
                       >
                         <FontAwesomeIcon
                           icon={item.icon}
-                          className={`text-sm ${
+                          className={`text-base ${
                             isActive
                               ? darkMode
                                 ? 'text-white'
