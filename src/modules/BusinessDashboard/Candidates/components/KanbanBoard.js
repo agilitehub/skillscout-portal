@@ -2,7 +2,90 @@
 // Frontend Instructions Rule Applied!
 import React, { useState, useRef } from 'react'
 import { useDrop } from 'react-dnd'
+import { Select, Input, Space } from 'antd'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faSearch, faBriefcase, faFilter } from '@fortawesome/free-solid-svg-icons'
 import CandidateCard from './CandidateCard'
+
+const { Option } = Select
+
+/**
+ * Filter bar component for searching and filtering candidates
+ */
+const FilterBar = React.memo(({ 
+  jobListings, 
+  selectedJobListing, 
+  onJobListingChange, 
+  searchTerm, 
+  onSearchChange,
+  darkMode 
+}) => {
+  return (
+    <div className={`mb-6 p-4 rounded-lg border ${
+      darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
+    }`}>
+      <div className='flex flex-col sm:flex-row gap-4 items-start sm:items-center'>
+        <div className='flex items-center space-x-2'>
+          <FontAwesomeIcon 
+            icon={faFilter} 
+            className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`} 
+          />
+          <span className={`text-sm font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+            Filters:
+          </span>
+        </div>
+        
+        <Space wrap className='flex-1'>
+          {/* Job Listing Filter */}
+          <div className='min-w-48'>
+            <Select
+              placeholder={
+                <div className='flex items-center space-x-2'>
+                  <FontAwesomeIcon icon={faBriefcase} className='text-xs' />
+                  <span>Filter by Job Listing</span>
+                </div>
+              }
+              value={selectedJobListing}
+              onChange={onJobListingChange}
+              allowClear
+              className={`w-full ${darkMode ? 'kanban-select-dark' : ''}`}
+              style={{ minWidth: 200 }}
+              dropdownStyle={{
+                backgroundColor: darkMode ? '#374151' : '#ffffff',
+                border: `1px solid ${darkMode ? '#4B5563' : '#d1d5db'}`
+              }}
+            >
+              {jobListings.map(listing => (
+                <Option key={listing.id} value={listing.id}>
+                  <div className='flex items-center space-x-2'>
+                    <FontAwesomeIcon icon={faBriefcase} className='text-xs' />
+                    <span>{listing.title}</span>
+                  </div>
+                </Option>
+              ))}
+            </Select>
+          </div>
+          
+          {/* General Search */}
+          <div className='min-w-56'>
+            <Input
+              placeholder="Search candidates..."
+              prefix={<FontAwesomeIcon icon={faSearch} className='text-gray-400' />}
+              value={searchTerm}
+              onChange={(e) => onSearchChange(e.target.value)}
+              className={darkMode ? 'kanban-input-dark' : ''}
+              style={{
+                backgroundColor: darkMode ? '#4B5563' : '#ffffff',
+                borderColor: darkMode ? '#6B7280' : '#d1d5db',
+                color: darkMode ? '#F9FAFB' : '#111827'
+              }}
+            />
+          </div>
+        </Space>
+      </div>
+    </div>
+  )
+})
 
 /**
  * Smart drop indicator that shows where card will be inserted
@@ -251,7 +334,14 @@ const KanbanBoard = React.memo(
     onDropOnStage,
     draggedCandidate,
     lastDroppedCard,
-    darkMode
+    darkMode,
+    // New filter props
+    jobListings = [],
+    selectedJobListing,
+    onJobListingChange,
+    searchTerm = '',
+    onSearchChange,
+    showFilters = true
   }) => {
     // Safety checks
     if (!candidatesData || !Array.isArray(stages)) {
@@ -268,6 +358,18 @@ const KanbanBoard = React.memo(
 
     return (
       <div className='w-full'>
+        {/* Filter Bar */}
+        {showFilters && (
+          <FilterBar
+            jobListings={jobListings}
+            selectedJobListing={selectedJobListing}
+            onJobListingChange={onJobListingChange}
+            searchTerm={searchTerm}
+            onSearchChange={onSearchChange}
+            darkMode={darkMode}
+          />
+        )}
+
         {/* Desktop Layout - 6 columns on large screens */}
         <div className='hidden xl:grid xl:grid-cols-6 gap-6 pb-6'>
           {stages.map((stage) => (
@@ -329,4 +431,76 @@ const KanbanBoard = React.memo(
   }
 )
 
+// Add FilterBar to the main component exports
+KanbanBoard.FilterBar = FilterBar
+
 export default KanbanBoard
+
+// Global styles for dark mode components
+if (typeof document !== 'undefined') {
+  const style = document.createElement('style')
+  style.textContent = `
+    /* Dark mode styles for Kanban filters */
+    .kanban-select-dark .ant-select-selector {
+      background-color: #4B5563 !important;
+      border-color: #6B7280 !important;
+      color: #F9FAFB !important;
+    }
+    
+    .kanban-select-dark .ant-select-selection-placeholder {
+      color: #9CA3AF !important;
+    }
+    
+    .kanban-select-dark .ant-select-selection-item {
+      color: #F9FAFB !important;
+    }
+    
+    .kanban-select-dark .ant-select-arrow {
+      color: #9CA3AF !important;
+    }
+    
+    .kanban-select-dark:hover .ant-select-selector {
+      border-color: #10B981 !important;
+    }
+    
+    .kanban-select-dark.ant-select-focused .ant-select-selector {
+      border-color: #10B981 !important;
+      box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2) !important;
+    }
+    
+    .kanban-input-dark::placeholder {
+      color: #9CA3AF !important;
+    }
+    
+    .kanban-input-dark:hover {
+      border-color: #10B981 !important;
+    }
+    
+    .kanban-input-dark:focus {
+      border-color: #10B981 !important;
+      box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2) !important;
+    }
+    
+    /* Dark mode dropdown options */
+    .ant-select-dropdown {
+      background-color: #374151 !important;
+    }
+    
+    .ant-select-item {
+      color: #F9FAFB !important;
+    }
+    
+    .ant-select-item:hover {
+      background-color: #4B5563 !important;
+    }
+    
+    .ant-select-item-option-selected {
+      background-color: #10B981 !important;
+      color: #FFFFFF !important;
+    }
+  `
+  if (!document.head.querySelector('#kanban-filter-styles')) {
+    style.id = 'kanban-filter-styles'
+    document.head.appendChild(style)
+  }
+}

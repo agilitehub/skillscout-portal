@@ -29,6 +29,7 @@ const Candidates = React.memo(({ user }) => {
   const [searchTerm, setSearchTerm] = useState('')
   const [viewModalVisible, setViewModalVisible] = useState(false)
   const [selectedCandidate, setSelectedCandidate] = useState(null)
+  const [selectedJobListing, setSelectedJobListing] = useState(null) // Job listing filter
 
   // Sample candidates data - in real app this would come from API
   const [candidatesData, setCandidatesData] = useState({
@@ -37,6 +38,7 @@ const Candidates = React.memo(({ user }) => {
         id: 1,
         name: 'John Smith',
         position: 'Senior React Developer',
+        jobListingId: 1,
         email: 'john.smith@email.com',
         phone: '+1 (555) 123-4567',
         appliedDate: '2024-01-15',
@@ -48,6 +50,7 @@ const Candidates = React.memo(({ user }) => {
         id: 2,
         name: 'Sarah Johnson',
         position: 'UX Designer',
+        jobListingId: 2,
         email: 'sarah.johnson@email.com',
         phone: '+1 (555) 987-6543',
         appliedDate: '2024-01-14',
@@ -61,6 +64,7 @@ const Candidates = React.memo(({ user }) => {
         id: 3,
         name: 'Mike Chen',
         position: 'Full Stack Developer',
+        jobListingId: 3,
         email: 'mike.chen@email.com',
         phone: '+1 (555) 456-7890',
         appliedDate: '2024-01-10',
@@ -74,6 +78,7 @@ const Candidates = React.memo(({ user }) => {
         id: 7,
         name: 'Alex Rodriguez',
         position: 'Backend Developer',
+        jobListingId: 5,
         email: 'alex.rodriguez@email.com',
         phone: '+1 (555) 678-9012',
         appliedDate: '2024-01-12',
@@ -87,6 +92,7 @@ const Candidates = React.memo(({ user }) => {
         id: 4,
         name: 'Emily Davis',
         position: 'Frontend Developer',
+        jobListingId: 4,
         email: 'emily.davis@email.com',
         phone: '+1 (555) 234-5678',
         appliedDate: '2024-01-08',
@@ -100,6 +106,7 @@ const Candidates = React.memo(({ user }) => {
         id: 5,
         name: 'David Wilson',
         position: 'DevOps Engineer',
+        jobListingId: 6,
         email: 'david.wilson@email.com',
         phone: '+1 (555) 345-6789',
         appliedDate: '2024-01-05',
@@ -113,6 +120,7 @@ const Candidates = React.memo(({ user }) => {
         id: 6,
         name: 'Lisa Brown',
         position: 'Product Manager',
+        jobListingId: 7,
         email: 'lisa.brown@email.com',
         phone: '+1 (555) 567-8901',
         appliedDate: '2024-01-01',
@@ -122,6 +130,20 @@ const Candidates = React.memo(({ user }) => {
       }
     ]
   })
+
+  // Sample job listings - in real app this would come from API
+  const jobListings = useMemo(() => [
+    { id: 1, title: 'Senior React Developer', department: 'Engineering' },
+    { id: 2, title: 'UX Designer', department: 'Design' },
+    { id: 3, title: 'Full Stack Developer', department: 'Engineering' },
+    { id: 4, title: 'Frontend Developer', department: 'Engineering' },
+    { id: 5, title: 'Backend Developer', department: 'Engineering' },
+    { id: 6, title: 'DevOps Engineer', department: 'Engineering' },
+    { id: 7, title: 'Product Manager', department: 'Product' },
+    { id: 8, title: 'Data Scientist', department: 'Data' },
+    { id: 9, title: 'QA Engineer', department: 'Quality Assurance' },
+    { id: 10, title: 'Marketing Manager', department: 'Marketing' }
+  ], [])
 
   // Helper function to get stage title
   const getStageTitle = useCallback((stageKey) => {
@@ -485,6 +507,11 @@ const Candidates = React.memo(({ user }) => {
     setSearchTerm(value)
   }, [])
 
+  // Handle job listing filter change
+  const handleJobListingChange = useCallback((jobListingId) => {
+    setSelectedJobListing(jobListingId)
+  }, [])
+
   // Filter candidates based on search term
   const filteredCandidates = useMemo(() => {
     if (!searchTerm) return flattenedCandidates
@@ -497,6 +524,41 @@ const Candidates = React.memo(({ user }) => {
       candidate.tags.some(tag => tag.toLowerCase().includes(searchLower))
     )
   }, [flattenedCandidates, searchTerm])
+
+  // Filter candidates data for Kanban board (filters by job listing and search)
+  const filteredCandidatesData = useMemo(() => {
+    const filtered = {}
+    
+    // Initialize all stages with empty arrays
+    Object.keys(candidatesData).forEach(stage => {
+      filtered[stage] = []
+    })
+    
+    // Filter each stage's candidates
+    Object.keys(candidatesData).forEach(stage => {
+      const stageCandidates = candidatesData[stage] || []
+      
+      filtered[stage] = stageCandidates.filter(candidate => {
+        // Filter by job listing if selected
+        const jobListingMatch = !selectedJobListing || candidate.jobListingId === selectedJobListing
+        
+        // Filter by search term if provided
+        let searchMatch = true
+        if (searchTerm) {
+          const searchLower = searchTerm.toLowerCase()
+          searchMatch = 
+            candidate.name.toLowerCase().includes(searchLower) ||
+            candidate.position.toLowerCase().includes(searchLower) ||
+            candidate.email.toLowerCase().includes(searchLower) ||
+            candidate.tags.some(tag => tag.toLowerCase().includes(searchLower))
+        }
+        
+        return jobListingMatch && searchMatch
+      })
+    })
+    
+    return filtered
+  }, [candidatesData, selectedJobListing, searchTerm])
 
   return (
     <DndProvider backend={HTML5Backend}>
@@ -598,7 +660,7 @@ const Candidates = React.memo(({ user }) => {
             {viewMode === 'kanban' ? (
               /* Kanban Board with Drag and Drop */
               <KanbanBoard
-                candidatesData={candidatesData}
+                candidatesData={filteredCandidatesData}
                 stages={stages}
                 onEditCandidate={handleEdit}
                 onCandidateAction={handleCandidateAction}
@@ -608,6 +670,12 @@ const Candidates = React.memo(({ user }) => {
                 draggedCandidate={draggedCandidate}
                 lastDroppedCard={lastDroppedCard}
                 darkMode={darkMode}
+                jobListings={jobListings}
+                selectedJobListing={selectedJobListing}
+                onJobListingChange={handleJobListingChange}
+                searchTerm={searchTerm}
+                onSearchChange={handleSearch}
+                showFilters={true}
               />
             ) : (
               /* Table View */
