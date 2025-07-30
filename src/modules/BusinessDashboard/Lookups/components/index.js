@@ -280,74 +280,161 @@ const Lookups = React.memo(({ user }) => {
   return (
     <>
       {/* Dark Mode Styles for Select Component */}
-      {darkMode && (
-        <style jsx global>
-          {`
-            .dark-select .ant-select-selector {
-              background-color: #4b5563 !important;
-              border-color: #6b7280 !important;
-              color: #ffffff !important;
-              font-weight: 500 !important;
-              font-size: 14px !important;
-            }
-            .dark-select .ant-select-selection-item {
-              background-color: transparent !important;
-              color: #ffffff !important;
-              border: none !important;
-            }
-            .dark-select .ant-select-arrow {
-              color: #9ca3af !important;
-            }
-            .dark-select .ant-select:focus .ant-select-selector {
-              border-color: #6b7280 !important;
-              box-shadow: none !important;
-            }
-            .dark-select .ant-select-selection-placeholder {
-              color: #9ca3af !important;
-              opacity: 0.8 !important;
-            }
-            .dark-select .ant-select-dropdown {
-              background-color: #374151 !important;
-              border-color: #4b5563 !important;
-            }
-            .dark-select .ant-select-item {
-              background-color: #374151 !important;
-              color: #ffffff !important;
-            }
-            .dark-select .ant-select-item:hover {
-              background-color: #4b5563 !important;
-              color: #ffffff !important;
-            }
-            .dark-select .ant-select-item-option-selected {
-              background-color: #059669 !important;
-              color: #ffffff !important;
-            }
-            .dark-select .ant-select-item-option-active {
-              background-color: #4b5563 !important;
-              color: #ffffff !important;
-            }
-            .light-select .ant-select-selector {
-              background-color: rgba(255, 255, 255, 0.9) !important;
-              border-color: rgba(255, 255, 255, 0.3) !important;
-              color: #374151 !important;
-              font-weight: 500 !important;
-              font-size: 14px !important;
-            }
-            .light-select .ant-select-selection-item {
-              background-color: transparent !important;
-              color: #374151 !important;
-              border: none !important;
-            }
-            .light-select .ant-select-arrow {
-              color: #6b7280 !important;
-            }
-            .light-select .ant-select-selection-placeholder {
-              color: #6b7280 !important;
-              opacity: 0.8 !important;
-            }
-          `}
-        </style>
-      )}
+      {/* Dark mode styles */}
+      <style jsx global>{`
+        /* Dark Mode Form Styling for Lookups */
+        ${darkMode ? `
+          .lookups-form .ant-form-item-label > label {
+            color: #E5E7EB !important;
+          }
+          .lookups-form .ant-form-item-extra {
+            color: #9CA3AF !important;
+          }
+          .lookups-form .ant-input,
+          .lookups-form input.ant-input,
+          .lookups-form input[type="text"],
+          .lookups-form input {
+            background-color: #4B5563 !important;
+            border-color: #6B7280 !important;
+            color: #F9FAFB !important;
+          }
+          .lookups-form .ant-input:focus,
+          .lookups-form input.ant-input:focus,
+          .lookups-form input[type="text"]:focus,
+          .lookups-form input:focus {
+            border-color: #059669 !important;
+            box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
+            background-color: #4B5563 !important;
+            color: #F9FAFB !important;
+          }
+          .lookups-form .ant-input::placeholder,
+          .lookups-form input::placeholder {
+            color: #D1D5DB !important;
+          }
+          .lookups-form textarea.ant-input,
+          .lookups-form textarea {
+            background-color: #4B5563 !important;
+            border-color: #6B7280 !important;
+            color: #F9FAFB !important;
+          }
+          .lookups-form textarea.ant-input:focus,
+          .lookups-form textarea:focus {
+            border-color: #059669 !important;
+            box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
+            background-color: #4B5563 !important;
+            color: #F9FAFB !important;
+          }
+          .lookups-form textarea.ant-input::placeholder,
+          .lookups-form textarea::placeholder {
+            color: #D1D5DB !important;
+          }
+          .lookups-form .ant-input-show-count-suffix {
+            color: #9CA3AF !important;
+          }
+          .lookups-form .ant-select,
+          .lookups-form .ant-select-selector,
+          .lookups-form .ant-select-single .ant-select-selector {
+            background-color: #4B5563 !important;
+            border-color: #6B7280 !important;
+            color: #F9FAFB !important;
+          }
+          .lookups-form .ant-select-focused .ant-select-selector,
+          .lookups-form .ant-select:focus .ant-select-selector {
+            border-color: #059669 !important;
+            box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
+            background-color: #4B5563 !important;
+          }
+          .lookups-form .ant-select-selection-placeholder {
+            color: #D1D5DB !important;
+          }
+          .lookups-form .ant-select-selection-item {
+            color: #F9FAFB !important;
+            background-color: transparent !important;
+          }
+          .lookups-form .ant-select-arrow {
+            color: #9CA3AF !important;
+          }
+          .lookups-form .ant-select-multiple .ant-select-selection-item {
+            background-color: #374151 !important;
+            border-color: #6B7280 !important;
+            color: #F9FAFB !important;
+          }
+          .lookups-form .ant-select-multiple .ant-select-selection-item-remove {
+            color: #9CA3AF !important;
+          }
+          .lookups-form .ant-select-multiple .ant-select-selection-item-remove:hover {
+            color: #F9FAFB !important;
+          }
+          
+          /* Form validation messages */
+          .lookups-form .ant-form-item-explain-error {
+            color: #F87171 !important;
+          }
+          
+          /* Character count */
+          .lookups-form .ant-input-data-count {
+            color: #9CA3AF !important;
+          }
+          
+          /* Additional comprehensive styling */
+          .lookups-form .ant-form-item-control-input {
+            background-color: transparent !important;
+          }
+          .lookups-form .ant-form-item-control-input-content input {
+            background-color: #4B5563 !important;
+            color: #F9FAFB !important;
+            border-color: #6B7280 !important;
+          }
+          .lookups-form .ant-form-item-control-input-content textarea {
+            background-color: #4B5563 !important;
+            color: #F9FAFB !important;
+            border-color: #6B7280 !important;
+          }
+          .lookups-form .ant-form-item-control-input-content .ant-select-selector {
+            background-color: #4B5563 !important;
+            color: #F9FAFB !important;
+            border-color: #6B7280 !important;
+          }
+          
+          /* Ultimate override for any remaining light elements */
+          .lookups-form .ant-form-item input,
+          .lookups-form .ant-form-item textarea,
+          .lookups-form .ant-form-item .ant-select-selector {
+            background-color: #4B5563 !important;
+            color: #F9FAFB !important;
+            border-color: #6B7280 !important;
+          }
+          .lookups-form .ant-form-item .ant-input-affix-wrapper {
+            background-color: #4B5563 !important;
+            border-color: #6B7280 !important;
+          }
+          .lookups-form .ant-form-item .ant-input-affix-wrapper input {
+            background-color: transparent !important;
+            color: #F9FAFB !important;
+          }
+          .lookups-form .ant-form-item .ant-input-prefix {
+            color: #9CA3AF !important;
+          }
+        ` : ''}
+        
+        /* Dark mode dropdown options */
+        .lookups-dark-dropdown {
+          background-color: #374151 !important;
+        }
+        
+        .lookups-dark-dropdown .ant-select-item {
+          color: #F9FAFB !important;
+        }
+        
+        .lookups-dark-dropdown .ant-select-item:hover {
+          background-color: #4B5563 !important;
+        }
+        
+        .lookups-dark-dropdown .ant-select-item-option-selected {
+          background-color: #059669 !important;
+          color: #FFFFFF !important;
+        }
+      `}</style>
 
       <div
         className={`min-h-screen relative overflow-hidden ${

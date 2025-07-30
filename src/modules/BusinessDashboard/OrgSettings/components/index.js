@@ -245,6 +245,7 @@ const OrgSettings = React.memo(({ user }) => {
             layout="vertical"
             onFinish={handleSubmit}
             onValuesChange={handleValuesChange}
+            className={`${darkMode ? 'org-settings-form' : ''}`}
           >
             {/* Organization Profile Section */}
             <Card
@@ -561,7 +562,7 @@ const OrgSettings = React.memo(({ user }) => {
                   <span className="text-gray-400">Future Features</span>
                 </div>
               }
-              className={`${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} opacity-60`}
+              className={`${darkMode ? 'bg-gray-800 border-gray-700 future-features-section' : 'bg-white border-gray-200'} opacity-60`}
               headStyle={{
                 backgroundColor: darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white,
                 borderBottom: `1px solid ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.borderGray}`,
@@ -574,7 +575,7 @@ const OrgSettings = React.memo(({ user }) => {
             >
               <div 
                 className={`p-4 rounded-lg border-2 border-dashed ${
-                  darkMode ? 'border-gray-600 bg-gray-700/50' : 'border-gray-300 bg-gray-50/50'
+                  darkMode ? 'border-gray-600 bg-gray-700/50 future-features-content' : 'border-gray-300 bg-gray-50/50'
                 }`}
               >
                 <h4 className={`font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
@@ -610,8 +611,172 @@ const OrgSettings = React.memo(({ user }) => {
         currentProfile={orgSettings}
       />
 
-      {/* Dark mode dropdown styles */}
+      {/* Dark mode styles */}
       <style jsx global>{`
+        /* Dark Mode Form Styling */
+        ${darkMode ? `
+          .org-settings-form .ant-form-item-label > label {
+            color: #E5E7EB !important;
+          }
+          .org-settings-form .ant-form-item-extra {
+            color: #9CA3AF !important;
+          }
+          .org-settings-form .ant-input,
+          .org-settings-form input.ant-input,
+          .org-settings-form input[type="text"],
+          .org-settings-form input {
+            background-color: #4B5563 !important;
+            border-color: #6B7280 !important;
+            color: #F9FAFB !important;
+          }
+          .org-settings-form .ant-input:focus,
+          .org-settings-form input.ant-input:focus,
+          .org-settings-form input[type="text"]:focus,
+          .org-settings-form input:focus {
+            border-color: #059669 !important;
+            box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
+            background-color: #4B5563 !important;
+            color: #F9FAFB !important;
+          }
+          .org-settings-form .ant-input::placeholder,
+          .org-settings-form input::placeholder {
+            color: #D1D5DB !important;
+          }
+          .org-settings-form textarea.ant-input,
+          .org-settings-form textarea {
+            background-color: #4B5563 !important;
+            border-color: #6B7280 !important;
+            color: #F9FAFB !important;
+          }
+          .org-settings-form textarea.ant-input:focus,
+          .org-settings-form textarea:focus {
+            border-color: #059669 !important;
+            box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
+            background-color: #4B5563 !important;
+            color: #F9FAFB !important;
+          }
+          .org-settings-form textarea.ant-input::placeholder,
+          .org-settings-form textarea::placeholder {
+            color: #D1D5DB !important;
+          }
+          .org-settings-form .ant-input-show-count-suffix {
+            color: #9CA3AF !important;
+          }
+          .org-settings-form .ant-select,
+          .org-settings-form .ant-select-selector,
+          .org-settings-form .ant-select-single .ant-select-selector {
+            background-color: #4B5563 !important;
+            border-color: #6B7280 !important;
+            color: #F9FAFB !important;
+          }
+          .org-settings-form .ant-select-focused .ant-select-selector,
+          .org-settings-form .ant-select:focus .ant-select-selector {
+            border-color: #059669 !important;
+            box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
+            background-color: #4B5563 !important;
+          }
+          .org-settings-form .ant-select-selection-placeholder {
+            color: #D1D5DB !important;
+          }
+          .org-settings-form .ant-select-selection-item {
+            color: #F9FAFB !important;
+            background-color: transparent !important;
+          }
+          .org-settings-form .ant-select-arrow {
+            color: #9CA3AF !important;
+          }
+          .org-settings-form .ant-select-multiple .ant-select-selection-item {
+            background-color: #374151 !important;
+            border-color: #6B7280 !important;
+            color: #F9FAFB !important;
+          }
+          .org-settings-form .ant-select-multiple .ant-select-selection-item-remove {
+            color: #9CA3AF !important;
+          }
+          .org-settings-form .ant-select-multiple .ant-select-selection-item-remove:hover {
+            color: #F9FAFB !important;
+          }
+          
+          /* Form validation messages */
+          .org-settings-form .ant-form-item-explain-error {
+            color: #F87171 !important;
+          }
+          
+          /* Character count */
+          .org-settings-form .ant-input-data-count {
+            color: #9CA3AF !important;
+          }
+          
+          /* Additional comprehensive styling */
+          .org-settings-form .ant-form-item-control-input {
+            background-color: transparent !important;
+          }
+          .org-settings-form .ant-form-item-control-input-content input {
+            background-color: #4B5563 !important;
+            color: #F9FAFB !important;
+            border-color: #6B7280 !important;
+          }
+          .org-settings-form .ant-form-item-control-input-content textarea {
+            background-color: #4B5563 !important;
+            color: #F9FAFB !important;
+            border-color: #6B7280 !important;
+          }
+          .org-settings-form .ant-form-item-control-input-content .ant-select-selector {
+            background-color: #4B5563 !important;
+            color: #F9FAFB !important;
+            border-color: #6B7280 !important;
+          }
+          
+          /* Ultimate override for any remaining light elements */
+          .org-settings-form .ant-form-item input,
+          .org-settings-form .ant-form-item textarea,
+          .org-settings-form .ant-form-item .ant-select-selector {
+            background-color: #4B5563 !important;
+            color: #F9FAFB !important;
+            border-color: #6B7280 !important;
+          }
+          .org-settings-form .ant-form-item .ant-input-affix-wrapper {
+            background-color: #4B5563 !important;
+            border-color: #6B7280 !important;
+          }
+          .org-settings-form .ant-form-item .ant-input-affix-wrapper input {
+            background-color: transparent !important;
+            color: #F9FAFB !important;
+          }
+                     .org-settings-form .ant-form-item .ant-input-prefix {
+             color: #9CA3AF !important;
+           }
+           
+           /* Alert component styling */
+           .org-settings-form .ant-alert {
+             background-color: #374151 !important;
+             border-color: #4B5563 !important;
+           }
+           
+           .org-settings-form .ant-alert-message {
+             color: #F9FAFB !important;
+           }
+           
+           .org-settings-form .ant-alert-description {
+             color: #D1D5DB !important;
+           }
+           
+           .org-settings-form .ant-alert-icon {
+             color: #10B981 !important;
+           }
+           
+           /* Future features section */
+           .future-features-section {
+             background-color: #374151 !important;
+             border-color: #4B5563 !important;
+           }
+           
+           .future-features-content {
+             background-color: #4B5563 !important;
+             border-color: #6B7280 !important;
+           }
+         ` : ''}
+        /* Dark mode dropdown options */
         .org-settings-dark-dropdown {
           background-color: #374151 !important;
         }
@@ -625,7 +790,7 @@ const OrgSettings = React.memo(({ user }) => {
         }
         
         .org-settings-dark-dropdown .ant-select-item-option-selected {
-          background-color: #10B981 !important;
+          background-color: #059669 !important;
           color: #FFFFFF !important;
         }
         
@@ -662,54 +827,6 @@ const OrgSettings = React.memo(({ user }) => {
         
         .ant-form-item-label {
           padding-bottom: 8px !important;
-        }
-        
-        .ant-form-item-label > label {
-          color: ${darkMode ? '#F9FAFB' : '#374151'} !important;
-          font-weight: 500 !important;
-          line-height: 1.5 !important;
-        }
-        
-        .ant-form-item-extra {
-          color: ${darkMode ? '#9CA3AF' : '#6B7280'} !important;
-          margin-top: 4px !important;
-          font-size: 13px !important;
-        }
-        
-        .ant-select-selector {
-          background-color: ${darkMode ? '#4B5563' : '#FFFFFF'} !important;
-          border-color: ${darkMode ? '#6B7280' : '#D1D5DB'} !important;
-          color: ${darkMode ? '#F9FAFB' : '#374151'} !important;
-        }
-        
-        .ant-select-selector:hover {
-          border-color: #10B981 !important;
-        }
-        
-        .ant-select-focused .ant-select-selector {
-          border-color: #10B981 !important;
-          box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2) !important;
-        }
-        
-        /* Input field styling */
-        .ant-input {
-          background-color: ${darkMode ? '#4B5563' : '#FFFFFF'} !important;
-          border-color: ${darkMode ? '#6B7280' : '#D1D5DB'} !important;
-          color: ${darkMode ? '#F9FAFB' : '#374151'} !important;
-        }
-        
-        .ant-input:hover {
-          border-color: #10B981 !important;
-        }
-        
-        .ant-input:focus,
-        .ant-input-focused {
-          border-color: #10B981 !important;
-          box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2) !important;
-        }
-        
-        .ant-input::placeholder {
-          color: ${darkMode ? '#9CA3AF' : '#6B7280'} !important;
         }
         
         /* Button hover states */

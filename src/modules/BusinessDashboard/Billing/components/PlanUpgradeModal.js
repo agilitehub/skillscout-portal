@@ -111,6 +111,32 @@ const PlanUpgradeModal = React.memo(({
           color: ${BRAND_COLORS.emeraldLight} !important;
         }
         
+        ${darkMode ? `
+          /* Additional dark mode text fixes for plan upgrade modal */
+          .plan-upgrade-modal .ant-alert {
+            background-color: ${BRAND_COLORS.mediumSlate} !important;
+            border-color: ${BRAND_COLORS.darkSlate} !important;
+          }
+          .plan-upgrade-modal .ant-alert-message,
+          .plan-upgrade-modal .ant-alert-description {
+            color: ${BRAND_COLORS.white} !important;
+          }
+          .plan-upgrade-modal .ant-card-body * {
+            color: ${BRAND_COLORS.white} !important;
+          }
+          .plan-upgrade-modal .ant-typography {
+            color: ${BRAND_COLORS.white} !important;
+          }
+          .plan-upgrade-modal ul li {
+            color: ${BRAND_COLORS.lightGray} !important;
+          }
+          .plan-upgrade-modal span,
+          .plan-upgrade-modal div,
+          .plan-upgrade-modal p {
+            color: inherit !important;
+          }
+        ` : ''}
+        
         .plan-card {
           transition: all 0.3s ease;
           cursor: pointer;
@@ -197,6 +223,11 @@ const PlanUpgradeModal = React.memo(({
             type="info" 
             showIcon
             className="mb-6"
+            style={{
+              backgroundColor: darkMode ? BRAND_COLORS.darkSlateAlt : undefined,
+              borderColor: darkMode ? BRAND_COLORS.mediumSlate : undefined,
+              color: darkMode ? BRAND_COLORS.white : undefined
+            }}
           />
 
           {/* Plans Grid */}

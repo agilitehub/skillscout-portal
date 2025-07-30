@@ -226,18 +226,31 @@ const Billing = React.memo(({ user }) => {
       title: 'Date',
       dataIndex: 'date',
       key: 'date',
-      render: (date) => new Date(date).toLocaleDateString()
+      render: (date) => (
+        <Text className={darkMode ? 'text-gray-300' : 'text-gray-700'}>
+          {new Date(date).toLocaleDateString()}
+        </Text>
+      )
     },
     {
       title: 'Plan',
       dataIndex: 'plan',
-      key: 'plan'
+      key: 'plan',
+      render: (plan) => (
+        <Text className={darkMode ? 'text-gray-300' : 'text-gray-700'}>
+          {plan}
+        </Text>
+      )
     },
     {
       title: 'Amount',
       dataIndex: 'amount',
       key: 'amount',
-      render: (amount) => `$${amount.toFixed(2)}`
+      render: (amount) => (
+        <Text strong className={darkMode ? 'text-white' : 'text-gray-900'}>
+          ${amount.toFixed(2)}
+        </Text>
+      )
     },
     {
       title: 'Status',
@@ -552,7 +565,11 @@ const Billing = React.memo(({ user }) => {
                   <Row gutter={16}>
                     <Col span={12}>
                       <Statistic
-                        title="This Month"
+                        title={
+                          <Text className={darkMode ? 'text-gray-300' : 'text-gray-600'}>
+                            This Month
+                          </Text>
+                        }
                         value={49}
                         prefix="$"
                         valueStyle={{ 
@@ -563,7 +580,11 @@ const Billing = React.memo(({ user }) => {
                     </Col>
                     <Col span={12}>
                       <Statistic
-                        title="Total Spent"
+                        title={
+                          <Text className={darkMode ? 'text-gray-300' : 'text-gray-600'}>
+                            Total Spent
+                          </Text>
+                        }
                         value={245}
                         prefix="$"
                         valueStyle={{ 
@@ -646,8 +667,213 @@ const Billing = React.memo(({ user }) => {
         invoice={selectedInvoice}
       />
 
-      {/* Table styles for dark mode */}
+      {/* Dark mode styles */}
       <style jsx global>{`
+        /* Dark Mode Form Styling for Billing */
+        ${darkMode ? `
+          .billing-form .ant-form-item-label > label {
+            color: #E5E7EB !important;
+          }
+          .billing-form .ant-form-item-extra {
+            color: #9CA3AF !important;
+          }
+          .billing-form .ant-input,
+          .billing-form input.ant-input,
+          .billing-form input[type="text"],
+          .billing-form input {
+            background-color: #4B5563 !important;
+            border-color: #6B7280 !important;
+            color: #F9FAFB !important;
+          }
+          .billing-form .ant-input:focus,
+          .billing-form input.ant-input:focus,
+          .billing-form input[type="text"]:focus,
+          .billing-form input:focus {
+            border-color: #059669 !important;
+            box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
+            background-color: #4B5563 !important;
+            color: #F9FAFB !important;
+          }
+          .billing-form .ant-input::placeholder,
+          .billing-form input::placeholder {
+            color: #D1D5DB !important;
+          }
+          .billing-form textarea.ant-input,
+          .billing-form textarea {
+            background-color: #4B5563 !important;
+            border-color: #6B7280 !important;
+            color: #F9FAFB !important;
+          }
+          .billing-form textarea.ant-input:focus,
+          .billing-form textarea:focus {
+            border-color: #059669 !important;
+            box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
+            background-color: #4B5563 !important;
+            color: #F9FAFB !important;
+          }
+          .billing-form textarea.ant-input::placeholder,
+          .billing-form textarea::placeholder {
+            color: #D1D5DB !important;
+          }
+          .billing-form .ant-input-show-count-suffix {
+            color: #9CA3AF !important;
+          }
+          .billing-form .ant-select,
+          .billing-form .ant-select-selector,
+          .billing-form .ant-select-single .ant-select-selector {
+            background-color: #4B5563 !important;
+            border-color: #6B7280 !important;
+            color: #F9FAFB !important;
+          }
+          .billing-form .ant-select-focused .ant-select-selector,
+          .billing-form .ant-select:focus .ant-select-selector {
+            border-color: #059669 !important;
+            box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
+            background-color: #4B5563 !important;
+          }
+          .billing-form .ant-select-selection-placeholder {
+            color: #D1D5DB !important;
+          }
+          .billing-form .ant-select-selection-item {
+            color: #F9FAFB !important;
+            background-color: transparent !important;
+          }
+          .billing-form .ant-select-arrow {
+            color: #9CA3AF !important;
+          }
+          .billing-form .ant-select-multiple .ant-select-selection-item {
+            background-color: #374151 !important;
+            border-color: #6B7280 !important;
+            color: #F9FAFB !important;
+          }
+          .billing-form .ant-select-multiple .ant-select-selection-item-remove {
+            color: #9CA3AF !important;
+          }
+          .billing-form .ant-select-multiple .ant-select-selection-item-remove:hover {
+            color: #F9FAFB !important;
+          }
+          
+          /* Form validation messages */
+          .billing-form .ant-form-item-explain-error {
+            color: #F87171 !important;
+          }
+          
+          /* Character count */
+          .billing-form .ant-input-data-count {
+            color: #9CA3AF !important;
+          }
+          
+          /* Additional comprehensive styling */
+          .billing-form .ant-form-item-control-input {
+            background-color: transparent !important;
+          }
+          .billing-form .ant-form-item-control-input-content input {
+            background-color: #4B5563 !important;
+            color: #F9FAFB !important;
+            border-color: #6B7280 !important;
+          }
+          .billing-form .ant-form-item-control-input-content textarea {
+            background-color: #4B5563 !important;
+            color: #F9FAFB !important;
+            border-color: #6B7280 !important;
+          }
+          .billing-form .ant-form-item-control-input-content .ant-select-selector {
+            background-color: #4B5563 !important;
+            color: #F9FAFB !important;
+            border-color: #6B7280 !important;
+          }
+          
+          /* Ultimate override for any remaining light elements */
+          .billing-form .ant-form-item input,
+          .billing-form .ant-form-item textarea,
+          .billing-form .ant-form-item .ant-select-selector {
+            background-color: #4B5563 !important;
+            color: #F9FAFB !important;
+            border-color: #6B7280 !important;
+          }
+          .billing-form .ant-form-item .ant-input-affix-wrapper {
+            background-color: #4B5563 !important;
+            border-color: #6B7280 !important;
+          }
+          .billing-form .ant-form-item .ant-input-affix-wrapper input {
+            background-color: transparent !important;
+            color: #F9FAFB !important;
+          }
+          .billing-form .ant-form-item .ant-input-prefix {
+            color: #9CA3AF !important;
+          }
+        ` : ''}
+        
+        /* Dark mode dropdown options */
+        .billing-dark-dropdown {
+          background-color: #374151 !important;
+        }
+        
+        .billing-dark-dropdown .ant-select-item {
+          color: #F9FAFB !important;
+        }
+        
+        .billing-dark-dropdown .ant-select-item:hover {
+          background-color: #4B5563 !important;
+        }
+        
+        .billing-dark-dropdown .ant-select-item-option-selected {
+          background-color: #059669 !important;
+          color: #FFFFFF !important;
+        }
+        
+        /* Additional dark mode text fixes for billing page */
+        ${darkMode ? `
+          /* Ensure all descriptions text is properly colored */
+          .ant-descriptions-item-label {
+            color: #9CA3AF !important;
+          }
+          .ant-descriptions-item-content {
+            color: #F9FAFB !important;
+          }
+          
+          /* Ensure all spans and divs within cards have proper text color */
+          .ant-card-body span,
+          .ant-card-body div {
+            color: inherit !important;
+          }
+          
+          /* Fix any remaining black text in tables */
+          .ant-table-tbody > tr > td {
+            color: #F9FAFB !important;
+          }
+          
+          /* Fix any text in modals */
+          .ant-modal-content,
+          .ant-modal-content span,
+          .ant-modal-content div,
+          .ant-modal-content p {
+            color: #F9FAFB !important;
+          }
+          
+          /* Fix any remaining progress text */
+          .ant-progress-text {
+            color: #F9FAFB !important;
+          }
+          
+          /* Fix any typography elements that might be missed */
+          .ant-typography {
+            color: inherit !important;
+          }
+          
+          /* Fix any alert text */
+          .ant-alert-message,
+          .ant-alert-description {
+            color: #F9FAFB !important;
+          }
+          
+          /* Fix card titles */
+          .ant-card-head-title {
+            color: #F9FAFB !important;
+          }
+        ` : ''}
+        
+        /* Table styles for dark mode */
         .dark-table .ant-table {
           background: ${BRAND_COLORS.darkSlateAlt} !important;
           color: ${BRAND_COLORS.white} !important;

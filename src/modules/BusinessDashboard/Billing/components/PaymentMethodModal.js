@@ -139,6 +139,49 @@ const PaymentMethodModal = React.memo(({
 
   return (
     <>
+      {/* Dark mode styles for PaymentMethodModal */}
+      <style jsx global>{`
+        ${darkMode ? `
+          .payment-method-modal .ant-modal-content {
+            background-color: #374151 !important;
+            color: #F9FAFB !important;
+          }
+          .payment-method-modal .ant-modal-header {
+            background-color: #374151 !important;
+            border-bottom-color: #4B5563 !important;
+          }
+          .payment-method-modal .ant-modal-title {
+            color: #F9FAFB !important;
+          }
+          .payment-method-modal .ant-modal-close-x {
+            color: #9CA3AF !important;
+          }
+          .payment-method-modal .ant-modal-close-x:hover {
+            color: #F9FAFB !important;
+          }
+          .payment-method-modal .ant-alert {
+            background-color: #4B5563 !important;
+            border-color: #6B7280 !important;
+          }
+          .payment-method-modal .ant-alert-message,
+          .payment-method-modal .ant-alert-description {
+            color: #F9FAFB !important;
+          }
+          .payment-method-modal .ant-card {
+            background-color: #4B5563 !important;
+            border-color: #6B7280 !important;
+          }
+          .payment-method-modal .ant-card-body * {
+            color: #F9FAFB !important;
+          }
+          .payment-method-modal span,
+          .payment-method-modal div,
+          .payment-method-modal p {
+            color: inherit !important;
+          }
+        ` : ''}
+      `}</style>
+      
       {/* Modal Styles */}
       <style jsx global>{`
         .payment-method-modal .ant-modal-content {
@@ -283,11 +326,12 @@ const PaymentMethodModal = React.memo(({
 
           <Row gutter={24}>
             <Col xs={24} lg={14}>
-              <Form
-                form={form}
-                layout="vertical"
-                onFinish={handleSubmit}
-              >
+                      <Form
+          form={form}
+          layout="vertical"
+          onFinish={handleSubmit}
+          className={`${darkMode ? 'billing-form' : ''}`}
+        >
                 {/* Card Information */}
                 <div className="space-y-4">
                   <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
@@ -330,7 +374,7 @@ const PaymentMethodModal = React.memo(({
                         name="expiryMonth"
                         rules={[{ required: true, message: 'Required' }]}
                       >
-                        <Select placeholder="MM" dropdownClassName={darkMode ? 'payment-dark-dropdown' : ''}>
+                        <Select placeholder="MM" dropdownClassName={darkMode ? 'billing-dark-dropdown' : ''}>
                           {monthOptions.map(month => (
                             <Option key={month.value} value={month.value}>
                               {month.label}
@@ -345,7 +389,7 @@ const PaymentMethodModal = React.memo(({
                         name="expiryYear"
                         rules={[{ required: true, message: 'Required' }]}
                       >
-                        <Select placeholder="YYYY" dropdownClassName={darkMode ? 'payment-dark-dropdown' : ''}>
+                        <Select placeholder="YYYY" dropdownClassName={darkMode ? 'billing-dark-dropdown' : ''}>
                           {yearOptions.map(year => (
                             <Option key={year.value} value={year.value}>
                               {year.label}
@@ -416,7 +460,7 @@ const PaymentMethodModal = React.memo(({
                     name="country"
                     rules={[{ required: true, message: 'Please select country' }]}
                   >
-                    <Select placeholder="Select country" dropdownClassName={darkMode ? 'payment-dark-dropdown' : ''}>
+                    <Select placeholder="Select country" dropdownClassName={darkMode ? 'billing-dark-dropdown' : ''}>
                       <Option value="United States">United States</Option>
                       <Option value="Canada">Canada</Option>
                       <Option value="United Kingdom">United Kingdom</Option>

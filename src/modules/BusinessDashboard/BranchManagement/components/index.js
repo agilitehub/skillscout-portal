@@ -385,6 +385,170 @@ const BranchManagement = React.memo(({ user }) => {
           : 'bg-gradient-to-br from-sky-100 via-gray-50 to-emerald-100'
       }`}
     >
+      {/* Dark mode styles */}
+      <style jsx global>{`
+        /* Dark Mode Form Styling for Branch Management */
+        ${darkMode ? `
+          .branch-form .ant-form-item-label > label {
+            color: #E5E7EB !important;
+          }
+          .branch-form .ant-form-item-extra {
+            color: #9CA3AF !important;
+          }
+          .branch-form .ant-input,
+          .branch-form input.ant-input,
+          .branch-form input[type="text"],
+          .branch-form input {
+            background-color: #4B5563 !important;
+            border-color: #6B7280 !important;
+            color: #F9FAFB !important;
+          }
+          .branch-form .ant-input:focus,
+          .branch-form input.ant-input:focus,
+          .branch-form input[type="text"]:focus,
+          .branch-form input:focus {
+            border-color: #059669 !important;
+            box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
+            background-color: #4B5563 !important;
+            color: #F9FAFB !important;
+          }
+          .branch-form .ant-input::placeholder,
+          .branch-form input::placeholder {
+            color: #D1D5DB !important;
+          }
+          .branch-form textarea.ant-input,
+          .branch-form textarea {
+            background-color: #4B5563 !important;
+            border-color: #6B7280 !important;
+            color: #F9FAFB !important;
+          }
+          .branch-form textarea.ant-input:focus,
+          .branch-form textarea:focus {
+            border-color: #059669 !important;
+            box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
+            background-color: #4B5563 !important;
+            color: #F9FAFB !important;
+          }
+          .branch-form textarea.ant-input::placeholder,
+          .branch-form textarea::placeholder {
+            color: #D1D5DB !important;
+          }
+          .branch-form .ant-input-show-count-suffix {
+            color: #9CA3AF !important;
+          }
+          .branch-form .ant-select,
+          .branch-form .ant-select-selector,
+          .branch-form .ant-select-single .ant-select-selector {
+            background-color: #4B5563 !important;
+            border-color: #6B7280 !important;
+            color: #F9FAFB !important;
+          }
+          .branch-form .ant-select-focused .ant-select-selector,
+          .branch-form .ant-select:focus .ant-select-selector {
+            border-color: #059669 !important;
+            box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
+            background-color: #4B5563 !important;
+          }
+          .branch-form .ant-select-selection-placeholder {
+            color: #D1D5DB !important;
+          }
+          .branch-form .ant-select-selection-item {
+            color: #F9FAFB !important;
+            background-color: transparent !important;
+          }
+          .branch-form .ant-select-arrow {
+            color: #9CA3AF !important;
+          }
+          .branch-form .ant-select-multiple .ant-select-selection-item {
+            background-color: #374151 !important;
+            border-color: #6B7280 !important;
+            color: #F9FAFB !important;
+          }
+          .branch-form .ant-select-multiple .ant-select-selection-item-remove {
+            color: #9CA3AF !important;
+          }
+          .branch-form .ant-select-multiple .ant-select-selection-item-remove:hover {
+            color: #F9FAFB !important;
+          }
+          .branch-form .ant-switch {
+            background-color: #6B7280 !important;
+          }
+          .branch-form .ant-switch-checked {
+            background-color: #059669 !important;
+          }
+          .branch-form .ant-switch-inner {
+            color: #F9FAFB !important;
+          }
+          
+          /* Form validation messages */
+          .branch-form .ant-form-item-explain-error {
+            color: #F87171 !important;
+          }
+          
+          /* Character count */
+          .branch-form .ant-input-data-count {
+            color: #9CA3AF !important;
+          }
+          
+          /* Additional comprehensive styling */
+          .branch-form .ant-form-item-control-input {
+            background-color: transparent !important;
+          }
+          .branch-form .ant-form-item-control-input-content input {
+            background-color: #4B5563 !important;
+            color: #F9FAFB !important;
+            border-color: #6B7280 !important;
+          }
+          .branch-form .ant-form-item-control-input-content textarea {
+            background-color: #4B5563 !important;
+            color: #F9FAFB !important;
+            border-color: #6B7280 !important;
+          }
+          .branch-form .ant-form-item-control-input-content .ant-select-selector {
+            background-color: #4B5563 !important;
+            color: #F9FAFB !important;
+            border-color: #6B7280 !important;
+          }
+          
+          /* Ultimate override for any remaining light elements */
+          .branch-form .ant-form-item input,
+          .branch-form .ant-form-item textarea,
+          .branch-form .ant-form-item .ant-select-selector {
+            background-color: #4B5563 !important;
+            color: #F9FAFB !important;
+            border-color: #6B7280 !important;
+          }
+          .branch-form .ant-form-item .ant-input-affix-wrapper {
+            background-color: #4B5563 !important;
+            border-color: #6B7280 !important;
+          }
+          .branch-form .ant-form-item .ant-input-affix-wrapper input {
+            background-color: transparent !important;
+            color: #F9FAFB !important;
+          }
+          .branch-form .ant-form-item .ant-input-prefix {
+            color: #9CA3AF !important;
+          }
+        ` : ''}
+        
+        /* Dark mode dropdown options */
+        .branch-dark-dropdown {
+          background-color: #374151 !important;
+        }
+        
+        .branch-dark-dropdown .ant-select-item {
+          color: #F9FAFB !important;
+        }
+        
+        .branch-dark-dropdown .ant-select-item:hover {
+          background-color: #4B5563 !important;
+        }
+        
+        .branch-dark-dropdown .ant-select-item-option-selected {
+          background-color: #059669 !important;
+          color: #FFFFFF !important;
+        }
+      `}</style>
       {/* Background overlay */}
       <div
         className={`fixed inset-0 ${

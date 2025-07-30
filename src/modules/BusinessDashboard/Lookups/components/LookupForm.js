@@ -296,7 +296,7 @@ const LookupForm = React.memo(({ user }) => {
               form={form}
               layout='vertical'
               onFinish={handleFormSubmit}
-              className={darkMode ? 'page-dark' : ''}
+              className={darkMode ? 'lookups-form' : ''}
               preserve={false}
               initialValues={{ isActive: true }}
               loading={loadingData}
