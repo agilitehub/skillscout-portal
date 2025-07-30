@@ -226,6 +226,23 @@ const AddEditBranchModal = React.memo(({ visible, mode, branch, onCancel, onSucc
         .branch-modal .ant-switch-checked {
           background-color: ${BRAND_COLORS.emeraldPrimary} !important;
         }
+        
+        .branch-mgmt-dark-dropdown {
+          background-color: ${BRAND_COLORS.darkSlateAlt} !important;
+        }
+        
+        .branch-mgmt-dark-dropdown .ant-select-item {
+          color: ${BRAND_COLORS.white} !important;
+        }
+        
+        .branch-mgmt-dark-dropdown .ant-select-item:hover {
+          background-color: ${BRAND_COLORS.mediumSlate} !important;
+        }
+        
+        .branch-mgmt-dark-dropdown .ant-select-item-option-selected {
+          background-color: ${BRAND_COLORS.emeraldPrimary} !important;
+          color: ${BRAND_COLORS.white} !important;
+        }
       `}</style>
 
       <Modal
@@ -419,7 +436,7 @@ const AddEditBranchModal = React.memo(({ visible, mode, branch, onCancel, onSucc
               name="country"
               rules={[{ required: true, message: 'Please select country' }]}
             >
-              <Select placeholder="Select country" style={{ fontWeight: '500' }}>
+              <Select placeholder="Select country" style={{ fontWeight: '500' }} dropdownClassName={darkMode ? 'branch-mgmt-dark-dropdown' : ''}>
                 {countryOptions.map(country => (
                   <Option key={country} value={country}>
                     {country}
@@ -511,7 +528,7 @@ const AddEditBranchModal = React.memo(({ visible, mode, branch, onCancel, onSucc
               name="timezone"
               rules={[{ required: true, message: 'Please select timezone' }]}
             >
-              <Select placeholder="Select timezone" style={{ fontWeight: '500' }}>
+              <Select placeholder="Select timezone" style={{ fontWeight: '500' }} dropdownClassName={darkMode ? 'branch-mgmt-dark-dropdown' : ''}>
                 {timezoneOptions.map(tz => (
                   <Option key={tz.value} value={tz.value}>
                     {tz.label}
@@ -538,6 +555,7 @@ const AddEditBranchModal = React.memo(({ visible, mode, branch, onCancel, onSucc
                 mode="multiple"
                 placeholder="Select departments"
                 style={{ fontWeight: '500' }}
+                dropdownClassName={darkMode ? 'branch-mgmt-dark-dropdown' : ''}
                 tagRender={({ label, closable, onClose }) => (
                   <Tag
                     color={BRAND_COLORS.emeraldPrimary}
@@ -564,7 +582,7 @@ const AddEditBranchModal = React.memo(({ visible, mode, branch, onCancel, onSucc
                   name="status"
                   rules={[{ required: true, message: 'Please select status' }]}
                 >
-                  <Select style={{ fontWeight: '500' }}>
+                  <Select style={{ fontWeight: '500' }} dropdownClassName={darkMode ? 'branch-mgmt-dark-dropdown' : ''}>
                     <Option value="active">
                       <Space>
                         <FontAwesomeIcon icon={faCheckCircle} style={{ color: SEMANTIC_COLORS.success }} />

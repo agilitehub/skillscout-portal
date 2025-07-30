@@ -4,7 +4,7 @@ import React, { useState, useRef } from 'react'
 import { useDrop } from 'react-dnd'
 import { Select, Input, Space } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSearch, faBriefcase, faFilter } from '@fortawesome/free-solid-svg-icons'
+import { faSearch, faBriefcase, faColumns, faTable } from '@fortawesome/free-solid-svg-icons'
 import CandidateCard from './CandidateCard'
 
 const { Option } = Select
@@ -18,24 +18,65 @@ const FilterBar = React.memo(({
   onJobListingChange, 
   searchTerm, 
   onSearchChange,
-  darkMode 
+  darkMode,
+  // View toggle props
+  viewMode,
+  onViewModeChange,
+  showViewToggle = false
 }) => {
   return (
     <div className={`mb-6 p-4 rounded-lg border ${
       darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
     }`}>
-      <div className='flex flex-col sm:flex-row gap-4 items-start sm:items-center'>
-        <div className='flex items-center space-x-2'>
-          <FontAwesomeIcon 
-            icon={faFilter} 
-            className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`} 
-          />
-          <span className={`text-sm font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-            Filters:
-          </span>
+      <div className='flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between'>
+        {/* Left side - View as controls */}
+        <div className='flex items-center space-x-4'>
+          <div className='flex items-center space-x-2'>
+            <span className={`text-sm font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+              View as:
+            </span>
+          </div>
+          
+          {/* View Toggle (when enabled) */}
+          {showViewToggle && (
+            <div className='min-w-32'>
+              <Select
+                value={viewMode}
+                onChange={onViewModeChange}
+                style={{
+                  width: 140,
+                  height: 32
+                }}
+                className={`${darkMode ? 'kanban-select-dark' : ''}`}
+                size='small'
+                dropdownClassName={darkMode ? 'kanban-dark-dropdown' : ''}
+                options={[
+                  {
+                    value: 'kanban',
+                    label: (
+                      <div className='flex items-center space-x-2'>
+                        <FontAwesomeIcon icon={faColumns} />
+                        <span>Board</span>
+                      </div>
+                    )
+                  },
+                  {
+                    value: 'table',
+                    label: (
+                      <div className='flex items-center space-x-2'>
+                        <FontAwesomeIcon icon={faTable} />
+                        <span>Table</span>
+                      </div>
+                    )
+                  }
+                ]}
+              />
+            </div>
+          )}
         </div>
-        
-        <Space wrap className='flex-1'>
+
+        {/* Right side - Filter and Search */}
+        <div className='flex items-center space-x-4'>
           {/* Job Listing Filter */}
           <div className='min-w-48'>
             <Select
@@ -50,10 +91,7 @@ const FilterBar = React.memo(({
               allowClear
               className={`w-full ${darkMode ? 'kanban-select-dark' : ''}`}
               style={{ minWidth: 200 }}
-              dropdownStyle={{
-                backgroundColor: darkMode ? '#374151' : '#ffffff',
-                border: `1px solid ${darkMode ? '#4B5563' : '#d1d5db'}`
-              }}
+              dropdownClassName={darkMode ? 'kanban-dark-dropdown' : ''}
             >
               {jobListings.map(listing => (
                 <Option key={listing.id} value={listing.id}>
@@ -81,7 +119,7 @@ const FilterBar = React.memo(({
               }}
             />
           </div>
-        </Space>
+        </div>
       </div>
     </div>
   )
@@ -341,7 +379,11 @@ const KanbanBoard = React.memo(
     onJobListingChange,
     searchTerm = '',
     onSearchChange,
-    showFilters = true
+    showFilters = true,
+    // View toggle props
+    viewMode,
+    onViewModeChange,
+    showViewToggle = false
   }) => {
     // Safety checks
     if (!candidatesData || !Array.isArray(stages)) {
@@ -367,6 +409,9 @@ const KanbanBoard = React.memo(
             searchTerm={searchTerm}
             onSearchChange={onSearchChange}
             darkMode={darkMode}
+            viewMode={viewMode}
+            onViewModeChange={onViewModeChange}
+            showViewToggle={showViewToggle}
           />
         )}
 
@@ -482,19 +527,19 @@ if (typeof document !== 'undefined') {
     }
     
     /* Dark mode dropdown options */
-    .ant-select-dropdown {
+    .kanban-dark-dropdown {
       background-color: #374151 !important;
     }
     
-    .ant-select-item {
+    .kanban-dark-dropdown .ant-select-item {
       color: #F9FAFB !important;
     }
     
-    .ant-select-item:hover {
+    .kanban-dark-dropdown .ant-select-item:hover {
       background-color: #4B5563 !important;
     }
     
-    .ant-select-item-option-selected {
+    .kanban-dark-dropdown .ant-select-item-option-selected {
       background-color: #10B981 !important;
       color: #FFFFFF !important;
     }

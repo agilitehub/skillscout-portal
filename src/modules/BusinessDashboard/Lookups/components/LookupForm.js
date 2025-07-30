@@ -269,17 +269,17 @@ const LookupForm = React.memo(({ user }) => {
                     background-color: #10B981 !important;
                   }
                   
-                  /* Dropdown Options */
-                  .ant-select-dropdown {
+                  /* Dark mode dropdown options */
+                  .lookup-dark-dropdown {
                     background-color: #374151 !important;
                   }
-                  .ant-select-item {
+                  .lookup-dark-dropdown .ant-select-item {
                     color: #F9FAFB !important;
                   }
-                  .ant-select-item:hover {
+                  .lookup-dark-dropdown .ant-select-item:hover {
                     background-color: #4B5563 !important;
                   }
-                  .ant-select-item-option-selected {
+                  .lookup-dark-dropdown .ant-select-item-option-selected {
                     background-color: #10B981 !important;
                     color: #FFFFFF !important;
                   }

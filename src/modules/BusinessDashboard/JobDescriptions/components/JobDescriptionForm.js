@@ -382,17 +382,17 @@ const CreateJobDescription = React.memo(({ user }) => {
                     background-color: transparent !important;
                   }
                   
-                  /* Dropdown Options */
-                  .ant-select-dropdown {
+                  /* Dark mode dropdown options */
+                  .dark-select-dropdown {
                     background-color: #374151 !important;
                   }
-                  .ant-select-item {
+                  .dark-select-dropdown .ant-select-item {
                     color: #F9FAFB !important;
                   }
-                  .ant-select-item:hover {
+                  .dark-select-dropdown .ant-select-item:hover {
                     background-color: #4B5563 !important;
                   }
-                  .ant-select-item-option-selected {
+                  .dark-select-dropdown .ant-select-item-option-selected {
                     background-color: #10B981 !important;
                     color: #FFFFFF !important;
                   }
@@ -537,6 +537,7 @@ const CreateJobDescription = React.memo(({ user }) => {
                                 loading={lookupsLoading}
                                 disabled={lookupsLoading}
                                 notFoundContent={lookupsLoading ? <Spin size='small' /> : 'No departments found'}
+                                dropdownClassName={darkMode ? 'dark-select-dropdown' : ''}
                                 style={{ fontWeight: '500' }}
                               >
                                 {departments.map((dept) => (
@@ -585,6 +586,7 @@ const CreateJobDescription = React.memo(({ user }) => {
                                 loading={lookupsLoading}
                                 disabled={lookupsLoading}
                                 notFoundContent={lookupsLoading ? <Spin size='small' /> : 'No experience levels found'}
+                                dropdownClassName={darkMode ? 'dark-select-dropdown' : ''}
                                 style={{ fontWeight: '500' }}
                               >
                                 {experienceLevels.map((level) => (
@@ -610,6 +612,7 @@ const CreateJobDescription = React.memo(({ user }) => {
                                 mode='tags'
                                 placeholder='Add keywords like: javascript, react, senior, remote, frontend, engineer'
                                 tokenSeparators={[',', '\n']}
+                                dropdownClassName={darkMode ? 'dark-select-dropdown' : ''}
                                 style={{ fontWeight: '500' }}
                               />
                             </Form.Item>

@@ -202,6 +202,23 @@ const PaymentMethodModal = React.memo(({
           background: rgba(255, 255, 255, 0.1);
           border-radius: 50%;
         }
+        
+        .payment-dark-dropdown {
+          background-color: #374151 !important;
+        }
+        
+        .payment-dark-dropdown .ant-select-item {
+          color: #F9FAFB !important;
+        }
+        
+        .payment-dark-dropdown .ant-select-item:hover {
+          background-color: #4B5563 !important;
+        }
+        
+        .payment-dark-dropdown .ant-select-item-option-selected {
+          background-color: #10B981 !important;
+          color: #FFFFFF !important;
+        }
       `}</style>
 
       <Modal
@@ -313,7 +330,7 @@ const PaymentMethodModal = React.memo(({
                         name="expiryMonth"
                         rules={[{ required: true, message: 'Required' }]}
                       >
-                        <Select placeholder="MM">
+                        <Select placeholder="MM" dropdownClassName={darkMode ? 'payment-dark-dropdown' : ''}>
                           {monthOptions.map(month => (
                             <Option key={month.value} value={month.value}>
                               {month.label}
@@ -328,7 +345,7 @@ const PaymentMethodModal = React.memo(({
                         name="expiryYear"
                         rules={[{ required: true, message: 'Required' }]}
                       >
-                        <Select placeholder="YYYY">
+                        <Select placeholder="YYYY" dropdownClassName={darkMode ? 'payment-dark-dropdown' : ''}>
                           {yearOptions.map(year => (
                             <Option key={year.value} value={year.value}>
                               {year.label}
@@ -399,7 +416,7 @@ const PaymentMethodModal = React.memo(({
                     name="country"
                     rules={[{ required: true, message: 'Please select country' }]}
                   >
-                    <Select placeholder="Select country">
+                    <Select placeholder="Select country" dropdownClassName={darkMode ? 'payment-dark-dropdown' : ''}>
                       <Option value="United States">United States</Option>
                       <Option value="Canada">Canada</Option>
                       <Option value="United Kingdom">United Kingdom</Option>

@@ -281,7 +281,7 @@ const OrgSettings = React.memo(({ user }) => {
                     name="industry"
                     rules={[{ required: true, message: 'Please select industry' }]}
                   >
-                    <Select placeholder="Select industry">
+                    <Select placeholder="Select industry" dropdownClassName={darkMode ? 'org-settings-dark-dropdown' : ''}>
                       {industryOptions.map(industry => (
                         <Option key={industry} value={industry}>
                           {industry}
@@ -316,7 +316,7 @@ const OrgSettings = React.memo(({ user }) => {
                     label="Employee Range"
                     name="employeeRange"
                   >
-                    <Select placeholder="Select range">
+                    <Select placeholder="Select range" dropdownClassName={darkMode ? 'org-settings-dark-dropdown' : ''}>
                       {employeeRangeOptions.map(range => (
                         <Option key={range} value={range}>
                           {range}
@@ -381,7 +381,7 @@ const OrgSettings = React.memo(({ user }) => {
                 label="Default Work Arrangement for New Job Postings"
                 name="defaultWorkArrangement"
               >
-                <Select placeholder="Select default work arrangement" size="large">
+                                    <Select placeholder="Select default work arrangement" size="large" dropdownClassName={darkMode ? 'org-settings-dark-dropdown' : ''}>
                   {workArrangementOptions.map(option => (
                     <Option key={option.value} value={option.value}>
                       <div className="flex items-center space-x-3">
@@ -428,7 +428,7 @@ const OrgSettings = React.memo(({ user }) => {
                     name="currency"
                     rules={[{ required: true, message: 'Please select currency' }]}
                   >
-                    <Select placeholder="Select currency">
+                    <Select placeholder="Select currency" dropdownClassName={darkMode ? 'org-settings-dark-dropdown' : ''}>
                       {currencyOptions.map(currency => (
                         <Option key={currency} value={currency}>
                           {currency}
@@ -449,7 +449,7 @@ const OrgSettings = React.memo(({ user }) => {
                     name="country"
                     rules={[{ required: true, message: 'Please select country' }]}
                   >
-                    <Select placeholder="Select country">
+                    <Select placeholder="Select country" dropdownClassName={darkMode ? 'org-settings-dark-dropdown' : ''}>
                       {countryOptions.map(country => (
                         <Option key={country} value={country}>
                           {country}
@@ -470,7 +470,7 @@ const OrgSettings = React.memo(({ user }) => {
                     name="language"
                     rules={[{ required: true, message: 'Please select language' }]}
                   >
-                    <Select placeholder="Select language">
+                    <Select placeholder="Select language" dropdownClassName={darkMode ? 'org-settings-dark-dropdown' : ''}>
                       {languageOptions.map(language => (
                         <Option key={language} value={language}>
                           {language}
@@ -511,6 +511,7 @@ const OrgSettings = React.memo(({ user }) => {
                   placeholder="Add industry tags"
                   style={{ width: '100%' }}
                   tokenSeparators={[',']}
+                  dropdownClassName={darkMode ? 'org-settings-dark-dropdown' : ''}
                   options={commonIndustryTags.map(tag => ({ value: tag, label: tag }))}
                 />
               </Form.Item>
@@ -523,6 +524,7 @@ const OrgSettings = React.memo(({ user }) => {
                 <Select
                   mode="tags"
                   placeholder="Add custom classifications"
+                  dropdownClassName={darkMode ? 'org-settings-dark-dropdown' : ''}
                   style={{ width: '100%' }}
                   tokenSeparators={[',']}
                 />
@@ -585,6 +587,26 @@ const OrgSettings = React.memo(({ user }) => {
         darkMode={darkMode}
         currentProfile={orgSettings}
       />
+
+      {/* Dark mode dropdown styles */}
+      <style jsx global>{`
+        .org-settings-dark-dropdown {
+          background-color: #374151 !important;
+        }
+        
+        .org-settings-dark-dropdown .ant-select-item {
+          color: #F9FAFB !important;
+        }
+        
+        .org-settings-dark-dropdown .ant-select-item:hover {
+          background-color: #4B5563 !important;
+        }
+        
+        .org-settings-dark-dropdown .ant-select-item-option-selected {
+          background-color: #10B981 !important;
+          color: #FFFFFF !important;
+        }
+      `}</style>
     </div>
   )
 })

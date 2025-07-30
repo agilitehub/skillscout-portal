@@ -171,6 +171,23 @@ const InviteUserModal = React.memo(({ visible, onCancel, onSuccess, darkMode }) 
           font-size: 12px;
           margin-top: 4px;
         }
+        
+        .invite-user-dark-dropdown {
+          background-color: ${BRAND_COLORS.darkSlateAlt} !important;
+        }
+        
+        .invite-user-dark-dropdown .ant-select-item {
+          color: ${BRAND_COLORS.white} !important;
+        }
+        
+        .invite-user-dark-dropdown .ant-select-item:hover {
+          background-color: ${BRAND_COLORS.mediumSlate} !important;
+        }
+        
+        .invite-user-dark-dropdown .ant-select-item-option-selected {
+          background-color: ${BRAND_COLORS.emeraldPrimary} !important;
+          color: ${BRAND_COLORS.white} !important;
+        }
       `}</style>
 
       <Modal
@@ -269,7 +286,7 @@ const InviteUserModal = React.memo(({ visible, onCancel, onSuccess, darkMode }) 
             name="role"
             rules={[{ required: true, message: 'Please select a role' }]}
           >
-            <Select placeholder="Select role" style={{ fontWeight: '500' }}>
+            <Select placeholder="Select role" style={{ fontWeight: '500' }} dropdownClassName={darkMode ? 'invite-user-dark-dropdown' : ''}>
               {roleOptions.map(option => (
                 <Select.Option key={option.value} value={option.value}>
                   <div>

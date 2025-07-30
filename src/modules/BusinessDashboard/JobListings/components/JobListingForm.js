@@ -203,20 +203,7 @@ const CreateJobListing = React.memo(({ user }) => {
                 background-color: #374151 !important;
               }
               
-              /* Dropdown Options */
-              .ant-select-dropdown {
-                background-color: #374151 !important;
-              }
-              .ant-select-item {
-                color: #F9FAFB !important;
-              }
-              .ant-select-item:hover {
-                background-color: #4B5563 !important;
-              }
-              .ant-select-item-option-selected {
-                background-color: #10B981 !important;
-                color: #FFFFFF !important;
-              }
+
               
               /* Form validation messages */
               .ant-form-item-explain-error {
@@ -270,6 +257,21 @@ const CreateJobListing = React.memo(({ user }) => {
               .dark-form .ant-form-item .ant-input-prefix {
                 color: #9CA3AF !important;
               }
+              
+              /* Dark mode dropdown options */
+              .job-listing-dark-dropdown {
+                background-color: #374151 !important;
+              }
+              .job-listing-dark-dropdown .ant-select-item {
+                color: #F9FAFB !important;
+              }
+              .job-listing-dark-dropdown .ant-select-item:hover {
+                background-color: #4B5563 !important;
+              }
+              .job-listing-dark-dropdown .ant-select-item-option-selected {
+                background-color: #10B981 !important;
+                color: #FFFFFF !important;
+              }
             `}
           </style>
         )}
@@ -295,6 +297,7 @@ const CreateJobListing = React.memo(({ user }) => {
                   showSearch
                   filterOption={(input, option) => option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                   onChange={handleJobDescriptionChange}
+                  dropdownClassName={darkMode ? 'job-listing-dark-dropdown' : ''}
                   style={{ fontWeight: '500' }}
                 >
                   {jobDescriptions.map((jobDesc) => (

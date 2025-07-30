@@ -592,48 +592,8 @@ const Candidates = React.memo(({ user }) => {
             }`}
           >
             <div className='flex items-center justify-between'>
-              <div className='flex flex-col space-y-3'>
-                <div>
-                  <h1 className='text-2xl font-bold text-white'>Candidates</h1>
-                </div>
-                
-                {/* View Toggle Dropdown */}
-                <div className='flex items-center'>
-                  <Select
-                    value={viewMode}
-                    onChange={handleViewToggle}
-                    style={{
-                      width: 140,
-                      height: 32
-                    }}
-                    className='view-toggle-select'
-                    size='small'
-                    options={[
-                      {
-                        value: 'kanban',
-                        label: (
-                          <div className='flex items-center space-x-2'>
-                            <FontAwesomeIcon icon={faColumns} />
-                            <span>Board</span>
-                          </div>
-                        )
-                      },
-                      {
-                        value: 'table',
-                        label: (
-                          <div className='flex items-center space-x-2'>
-                            <FontAwesomeIcon icon={faTable} />
-                            <span>Table</span>
-                          </div>
-                        )
-                      }
-                    ]}
-                    dropdownStyle={{
-                      backgroundColor: darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white,
-                      border: `1px solid ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.borderGray}`
-                    }}
-                  />
-                </div>
+              <div>
+                <h1 className='text-2xl font-bold text-white'>Candidates</h1>
               </div>
               <Button
                 type='primary'
@@ -676,28 +636,78 @@ const Candidates = React.memo(({ user }) => {
                 searchTerm={searchTerm}
                 onSearchChange={handleSearch}
                 showFilters={true}
+                viewMode={viewMode}
+                onViewModeChange={handleViewToggle}
+                showViewToggle={true}
               />
             ) : (
               /* Table View */
-              <TableView
-                columns={tableColumns}
-                dataSource={filteredCandidates}
-                searchTerm={searchTerm}
-                onSearch={handleSearch}
-                searchPlaceholder='Search candidates by name, position, email, or tags...'
-                pagination={{
-                  pageSize: 15,
-                  showSizeChanger: true,
-                  showQuickJumper: true,
-                  showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} candidates`
-                }}
-                scroll={{ x: 1400 }}
-                emptyText='No candidates found'
-                toolbarActions={[]}
-                cardProps={{
-                  className: darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
-                }}
-              />
+              <div>
+                {/* View Toggle for Table Mode */}
+                <div className={`mb-4 p-4 rounded-lg border ${
+                  darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
+                }`}>
+                  <div className='flex items-center justify-between'>
+                    <div className='flex items-center space-x-2'>
+                      <span className={`text-sm font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                        View as:
+                      </span>
+                    </div>
+                    
+                    <Select
+                      value={viewMode}
+                      onChange={handleViewToggle}
+                      style={{
+                        width: 140,
+                        height: 32
+                      }}
+                      className={`${darkMode ? 'table-view-select-dark' : ''}`}
+                      size='small'
+                      dropdownClassName={darkMode ? 'table-view-dark-dropdown' : ''}
+                      options={[
+                        {
+                          value: 'kanban',
+                          label: (
+                            <div className='flex items-center space-x-2'>
+                              <FontAwesomeIcon icon={faColumns} />
+                              <span>Board</span>
+                            </div>
+                          )
+                        },
+                        {
+                          value: 'table',
+                          label: (
+                            <div className='flex items-center space-x-2'>
+                              <FontAwesomeIcon icon={faTable} />
+                              <span>Table</span>
+                            </div>
+                          )
+                        }
+                      ]}
+                    />
+                  </div>
+                </div>
+
+                <TableView
+                  columns={tableColumns}
+                  dataSource={filteredCandidates}
+                  searchTerm={searchTerm}
+                  onSearch={handleSearch}
+                  searchPlaceholder='Search candidates by name, position, email, or tags...'
+                  pagination={{
+                    pageSize: 15,
+                    showSizeChanger: true,
+                    showQuickJumper: true,
+                    showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} candidates`
+                  }}
+                  scroll={{ x: 1400 }}
+                  emptyText='No candidates found'
+                  toolbarActions={[]}
+                  cardProps={{
+                    className: darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
+                  }}
+                />
+              </div>
             )}
           </div>
         </div>
@@ -736,35 +746,6 @@ const Candidates = React.memo(({ user }) => {
         >
           {/* Dark Mode Styles for Modal and Components */}
           <style jsx global>{`
-            /* View Toggle Dropdown Styles */
-            .view-toggle-select .ant-select-selector {
-              background-color: white !important;
-              border: 1px solid rgba(255, 255, 255, 0.3) !important;
-              border-radius: 6px !important;
-              color: ${BRAND_COLORS.emeraldPrimary} !important;
-              font-weight: 500 !important;
-              box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
-            }
-            
-            .view-toggle-select .ant-select-selector:hover {
-              border-color: rgba(255, 255, 255, 0.5) !important;
-              box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
-            }
-            
-            .view-toggle-select.ant-select-focused .ant-select-selector {
-              border-color: white !important;
-              box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2) !important;
-            }
-            
-            .view-toggle-select .ant-select-arrow {
-              color: ${BRAND_COLORS.emeraldPrimary} !important;
-            }
-            
-            .view-toggle-select .ant-select-selection-item {
-              color: ${BRAND_COLORS.emeraldPrimary} !important;
-              font-weight: 500 !important;
-            }
-            
             /* Dropdown Container Styles */
             .ant-select-dropdown {
               background-color: ${darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white} !important;
@@ -828,6 +809,51 @@ const Candidates = React.memo(({ user }) => {
               }
               .dark-descriptions .ant-descriptions-bordered .ant-descriptions-row {
                 border-bottom: 1px solid ${BRAND_COLORS.darkSlate} !important;
+              }
+              
+              /* Table View Select Dark Mode Styles */
+              .table-view-select-dark .ant-select-selector {
+                background-color: ${BRAND_COLORS.mediumSlate} !important;
+                border-color: ${BRAND_COLORS.darkSlate} !important;
+                color: ${BRAND_COLORS.white} !important;
+              }
+              
+              .table-view-select-dark .ant-select-selection-placeholder {
+                color: ${BRAND_COLORS.lightGray} !important;
+              }
+              
+              .table-view-select-dark .ant-select-selection-item {
+                color: ${BRAND_COLORS.white} !important;
+              }
+              
+              .table-view-select-dark .ant-select-arrow {
+                color: ${BRAND_COLORS.lightGray} !important;
+              }
+              
+              .table-view-select-dark:hover .ant-select-selector {
+                border-color: ${BRAND_COLORS.emeraldPrimary} !important;
+              }
+              
+              .table-view-select-dark.ant-select-focused .ant-select-selector {
+                border-color: ${BRAND_COLORS.emeraldPrimary} !important;
+                box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2) !important;
+              }
+              
+              .table-view-dark-dropdown {
+                background-color: ${BRAND_COLORS.darkSlateAlt} !important;
+              }
+              
+              .table-view-dark-dropdown .ant-select-item {
+                color: ${BRAND_COLORS.white} !important;
+              }
+              
+              .table-view-dark-dropdown .ant-select-item:hover {
+                background-color: ${BRAND_COLORS.mediumSlate} !important;
+              }
+              
+              .table-view-dark-dropdown .ant-select-item-option-selected {
+                background-color: ${BRAND_COLORS.emeraldPrimary} !important;
+                color: ${BRAND_COLORS.white} !important;
               }
             ` : ''}
           `}</style>

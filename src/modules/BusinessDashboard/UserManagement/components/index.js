@@ -278,6 +278,7 @@ const UserManagement = React.memo(({ user }) => {
           style={{ width: 120 }}
           size="small"
           className="role-select"
+          dropdownClassName={darkMode ? 'user-mgmt-dark-dropdown' : ''}
         >
           {Object.entries(roles).map(([key, config]) => (
             <Select.Option key={key} value={key}>
@@ -512,6 +513,23 @@ const UserManagement = React.memo(({ user }) => {
         .role-select.ant-select-focused .ant-select-selector {
           border-color: ${BRAND_COLORS.emeraldPrimary} !important;
           box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2) !important;
+        }
+        
+        .user-mgmt-dark-dropdown {
+          background-color: ${BRAND_COLORS.darkSlateAlt} !important;
+        }
+        
+        .user-mgmt-dark-dropdown .ant-select-item {
+          color: ${BRAND_COLORS.white} !important;
+        }
+        
+        .user-mgmt-dark-dropdown .ant-select-item:hover {
+          background-color: ${BRAND_COLORS.mediumSlate} !important;
+        }
+        
+        .user-mgmt-dark-dropdown .ant-select-item-option-selected {
+          background-color: ${BRAND_COLORS.emeraldPrimary} !important;
+          color: ${BRAND_COLORS.white} !important;
         }
       `}</style>
     </div>
