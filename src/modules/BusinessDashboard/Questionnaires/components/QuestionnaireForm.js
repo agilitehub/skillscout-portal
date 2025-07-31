@@ -519,7 +519,7 @@ const QuestionnaireForm = React.memo(({ user }) => {
                   </h3>
                   <Button
                     type='primary'
-                    icon={<FontAwesomeIcon icon={faQuestion} />}
+                    icon={<FontAwesomeIcon icon={faQuestion} className="mr-2" />}
                     onClick={handleAddQuestion}
                     style={{
                       background: darkMode ? '#059669' : '#10b981',
@@ -546,7 +546,7 @@ const QuestionnaireForm = React.memo(({ user }) => {
               <div className='flex justify-end space-x-4 mt-8 pt-6 border-t border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 -mx-6 -mb-6 px-6 pb-6 rounded-b-lg'>
                 <Button
                   variant='secondary'
-                  icon={<FontAwesomeIcon icon={faTimes} />}
+                  icon={<FontAwesomeIcon icon={faTimes} className="mr-2" />}
                   onClick={handleCancel}
                   disabled={loading}
                   size='large'
@@ -556,7 +556,7 @@ const QuestionnaireForm = React.memo(({ user }) => {
                 </Button>
                 <Button
                   type='primary'
-                  icon={<FontAwesomeIcon icon={faSave} />}
+                  icon={<FontAwesomeIcon icon={faSave} className="mr-2" />}
                   onClick={() => form.submit()}
                   loading={loading}
                   size='large'
