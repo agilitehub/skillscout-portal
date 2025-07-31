@@ -5,9 +5,7 @@ import { message, Tag, Space, Modal, Switch } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { 
   faPlus, 
-  faEdit, 
   faTrash, 
-  faEye, 
   faBuilding, 
   faUsers,
   faExclamationTriangle,
@@ -20,22 +18,18 @@ import { Button } from '../../../../core/components'
 import TableView from '../../../../core/components/view-components/table-view/TableView'
 import BusinessSidebar from '../../components/BusinessSidebar'
 import { BRAND_COLORS, SEMANTIC_COLORS } from '../../../../core/theme/colors'
-import AddEditBranchModal from './AddEditBranchModal'
-import ViewBranchModal from './ViewBranchModal'
 
 /**
  * Branch Management Page
  * Manages organization branches, locations, and assignments
+ * Updated to use dedicated edit pages instead of modals
  */
 const BranchManagement = React.memo(({ user }) => {
   const { darkMode } = useTheme()
 
   // State management
   const [searchTerm, setSearchTerm] = useState('')
-  const [addEditModalVisible, setAddEditModalVisible] = useState(false)
-  const [viewModalVisible, setViewModalVisible] = useState(false)
-  const [selectedBranch, setSelectedBranch] = useState(null)
-  const [modalMode, setModalMode] = useState('add') // 'add' or 'edit'
+  const navigate = useNavigate()
 
   // Sample branch data - in real app this would come from API
   const [branches, setBranches] = useState([
@@ -131,23 +125,18 @@ const BranchManagement = React.memo(({ user }) => {
 
   // Handle add branch
   const handleAdd = useCallback(() => {
-    setSelectedBranch(null)
-    setModalMode('add')
-    setAddEditModalVisible(true)
-  }, [])
+    navigate('/business-dashboard/branch-management/create')
+  }, [navigate])
 
   // Handle edit branch
   const handleEdit = useCallback((branch) => {
-    setSelectedBranch(branch)
-    setModalMode('edit')
-    setAddEditModalVisible(true)
-  }, [])
-
-  // Handle view branch
-  const handleView = useCallback((branch) => {
-    setSelectedBranch(branch)
-    setViewModalVisible(true)
-  }, [])
+    navigate('/business-dashboard/branch-management/edit', {
+      state: {
+        branch: branch,
+        isEdit: true
+      }
+    })
+  }, [navigate])
 
   // Handle status toggle
   const handleStatusToggle = useCallback((branchId) => {
@@ -209,30 +198,7 @@ const BranchManagement = React.memo(({ user }) => {
     )
   }, [branches, searchTerm])
 
-  // Handle modal success
-  const handleModalSuccess = useCallback((branchData) => {
-    if (modalMode === 'add') {
-      const newBranch = {
-        ...branchData,
-        id: Date.now(),
-        employeeCount: 0,
-        established: new Date().toISOString().split('T')[0]
-      }
-      setBranches(prev => [...prev, newBranch])
-      message.success('Branch created successfully!')
-    } else {
-      setBranches(prev => 
-        prev.map(branch => 
-          branch.id === selectedBranch?.id 
-            ? { ...branch, ...branchData }
-            : branch
-        )
-      )
-      message.success('Branch updated successfully!')
-    }
-    setAddEditModalVisible(false)
-    setSelectedBranch(null)
-  }, [modalMode, selectedBranch])
+
 
   // Table columns configuration
   const tableColumns = useMemo(() => [
@@ -244,9 +210,14 @@ const BranchManagement = React.memo(({ user }) => {
       sorter: (a, b) => a.name.localeCompare(b.name),
       render: (text, record) => (
         <div>
-          <div className={`font-medium flex items-center space-x-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+          <div className="flex items-center space-x-2">
             <FontAwesomeIcon icon={faBuilding} className="text-sm" />
-            <span>{text}</span>
+            <span 
+              className='font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 cursor-pointer transition-colors duration-200'
+              onClick={() => handleEdit(record)}
+            >
+              {text}
+            </span>
             {record.isHeadquarters && (
               <Tag color={BRAND_COLORS.emeraldPrimary} className="text-xs">
                 HQ
@@ -344,38 +315,20 @@ const BranchManagement = React.memo(({ user }) => {
     {
       title: 'Actions',
       key: 'actions',
-      width: 120,
+      width: 80,
       render: (_, record) => (
-        <Space>
-          <Button
-            type='text'
-            size='small'
-            icon={<FontAwesomeIcon icon={faEye} />}
-            onClick={() => handleView(record)}
-            className={darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-600 hover:text-gray-900'}
-            title="View Details"
-          />
-          <Button
-            type='text'
-            size='small'
-            icon={<FontAwesomeIcon icon={faEdit} />}
-            onClick={() => handleEdit(record)}
-            className={darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-600 hover:text-gray-900'}
-            title="Edit Branch"
-          />
-          <Button
-            type='text'
-            size='small'
-            icon={<FontAwesomeIcon icon={faTrash} />}
-            onClick={() => handleDeleteBranch(record.id)}
-            className="text-red-500 hover:text-red-700"
-            title="Delete Branch"
-            disabled={record.isHeadquarters} // Prevent deleting headquarters
-          />
-        </Space>
+        <Button
+          type='text'
+          size='small'
+          icon={<FontAwesomeIcon icon={faTrash} />}
+          onClick={() => handleDeleteBranch(record.id)}
+          className="text-red-500 hover:text-red-700"
+          title="Delete Branch"
+          disabled={record.isHeadquarters} // Prevent deleting headquarters
+        />
       )
     }
-  ], [darkMode, handleStatusToggle, handleView, handleEdit, handleDeleteBranch])
+  ], [darkMode, handleStatusToggle, handleEdit, handleDeleteBranch])
 
   return (
     <div
@@ -622,29 +575,7 @@ const BranchManagement = React.memo(({ user }) => {
         </div>
       </div>
 
-      {/* Add/Edit Branch Modal */}
-      <AddEditBranchModal
-        visible={addEditModalVisible}
-        mode={modalMode}
-        branch={selectedBranch}
-        onCancel={() => {
-          setAddEditModalVisible(false)
-          setSelectedBranch(null)
-        }}
-        onSuccess={handleModalSuccess}
-        darkMode={darkMode}
-      />
 
-      {/* View Branch Modal */}
-      <ViewBranchModal
-        visible={viewModalVisible}
-        branch={selectedBranch}
-        onCancel={() => {
-          setViewModalVisible(false)
-          setSelectedBranch(null)
-        }}
-        darkMode={darkMode}
-      />
     </div>
   )
 })

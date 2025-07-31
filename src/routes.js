@@ -16,6 +16,7 @@ import UserManagement from './modules/BusinessDashboard/UserManagement/component
 import InviteUserPage from './modules/BusinessDashboard/UserManagement/components/InviteUserPage'
 import UserEditPage from './modules/BusinessDashboard/UserManagement/components/UserEditPage'
 import BranchManagement from './modules/BusinessDashboard/BranchManagement/components'
+import BranchEditPage from './modules/BusinessDashboard/BranchManagement/components/BranchEditPage'
 import OrgSettings from './modules/BusinessDashboard/OrgSettings/components'
 import Billing from './modules/BusinessDashboard/Billing/components'
 import Candidates from './modules/BusinessDashboard/Candidates/components'
@@ -348,6 +349,32 @@ const AppRoutes = () => {
           user ? (
             <DashboardLayout user={user}>
               <BranchManagement user={user} />
+            </DashboardLayout>
+          ) : (
+            <Navigate to='/' replace state={{ from: location }} />
+          )
+        }
+      />
+
+      <Route
+        path='/business-dashboard/branch-management/edit'
+        element={
+          user ? (
+            <DashboardLayout user={user}>
+              <BranchEditPage user={user} />
+            </DashboardLayout>
+          ) : (
+            <Navigate to='/' replace state={{ from: location }} />
+          )
+        }
+      />
+
+      <Route
+        path='/business-dashboard/branch-management/create'
+        element={
+          user ? (
+            <DashboardLayout user={user}>
+              <BranchEditPage user={user} />
             </DashboardLayout>
           ) : (
             <Navigate to='/' replace state={{ from: location }} />
