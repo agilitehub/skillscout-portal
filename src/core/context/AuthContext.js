@@ -101,6 +101,7 @@ export const AuthProvider = ({ children }) => {
         unsubscribe()
       }
     }
+    // eslint-disable-next-line
   }, [dispatch])
 
   // Magic Link login function

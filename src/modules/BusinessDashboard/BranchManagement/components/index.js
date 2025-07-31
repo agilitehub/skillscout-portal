@@ -1,12 +1,12 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
 import React, { useState, useCallback, useMemo } from 'react'
-import { message, Tag, Space, Modal, Switch } from 'antd'
+import { message, Tag, Modal, Switch } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { 
-  faPlus, 
-  faTrash, 
-  faBuilding, 
+import {
+  faPlus,
+  faTrash,
+  faBuilding,
   faUsers,
   faExclamationTriangle,
   faCheckCircle,
@@ -129,55 +129,64 @@ const BranchManagement = React.memo(({ user }) => {
   }, [navigate])
 
   // Handle edit branch
-  const handleEdit = useCallback((branch) => {
-    navigate('/business-dashboard/branch-management/edit', {
-      state: {
-        branch: branch,
-        isEdit: true
-      }
-    })
-  }, [navigate])
+  const handleEdit = useCallback(
+    (branch) => {
+      navigate('/business-dashboard/branch-management/edit', {
+        state: {
+          branch: branch,
+          isEdit: true
+        }
+      })
+    },
+    [navigate]
+  )
 
   // Handle status toggle
-  const handleStatusToggle = useCallback((branchId) => {
-    setBranches(prevBranches => 
-      prevBranches.map(branch => 
-        branch.id === branchId 
-          ? { 
-              ...branch, 
-              status: branch.status === 'active' ? 'inactive' : 'active'
-            }
-          : branch
+  const handleStatusToggle = useCallback(
+    (branchId) => {
+      setBranches((prevBranches) =>
+        prevBranches.map((branch) =>
+          branch.id === branchId
+            ? {
+                ...branch,
+                status: branch.status === 'active' ? 'inactive' : 'active'
+              }
+            : branch
+        )
       )
-    )
-    const branch = branches.find(b => b.id === branchId)
-    const newStatus = branch?.status === 'active' ? 'inactive' : 'active'
-    message.success(`Branch ${newStatus === 'active' ? 'activated' : 'deactivated'} successfully`)
-  }, [branches])
+      const branch = branches.find((b) => b.id === branchId)
+      const newStatus = branch?.status === 'active' ? 'inactive' : 'active'
+      message.success(`Branch ${newStatus === 'active' ? 'activated' : 'deactivated'} successfully`)
+    },
+    [branches]
+  )
 
   // Handle branch deletion
-  const handleDeleteBranch = useCallback((branchId) => {
-    const branch = branches.find(b => b.id === branchId)
-    
-    // Prevent deletion of headquarters
-    if (branch?.isHeadquarters) {
-      message.error('Cannot delete headquarters branch')
-      return
-    }
+  const handleDeleteBranch = useCallback(
+    (branchId) => {
+      const branch = branches.find((b) => b.id === branchId)
 
-    Modal.confirm({
-      title: 'Delete Branch',
-      content: `Are you sure you want to delete "${branch?.name}"? This action cannot be undone and may affect associated job listings and users.`,
-      okText: 'Delete',
-      okType: 'danger',
-      cancelText: 'Cancel',
-      icon: <FontAwesomeIcon icon={faExclamationTriangle} className="text-red-500" />,
-      onOk() {
-        setBranches(prevBranches => prevBranches.filter(b => b.id !== branchId))
-        message.success(`${branch?.name} has been deleted successfully`)
+      // Prevent deletion of headquarters
+      if (branch?.isHeadquarters) {
+        message.error('Cannot delete headquarters branch')
+        return
       }
-    })
-  }, [branches])
+
+      Modal.confirm({
+        title: 'Delete Branch',
+        content: `Are you sure you want to delete "${branch?.name}"? This action cannot be undone and may affect associated job listings and users.`,
+        okText: 'Delete',
+        okType: 'danger',
+        cancelText: 'Cancel',
+        icon: <FontAwesomeIcon icon={faExclamationTriangle} className='text-red-500' />,
+        onOk() {
+          setBranches((prevBranches) => prevBranches.filter((b) => b.id !== branchId))
+          message.success(`${branch?.name} has been deleted successfully`)
+        }
+      })
+    },
+    [branches]
+  )
 
   // Handle search
   const handleSearch = useCallback((value) => {
@@ -187,148 +196,141 @@ const BranchManagement = React.memo(({ user }) => {
   // Filter branches based on search term
   const filteredBranches = useMemo(() => {
     if (!searchTerm) return branches
-    
+
     const searchLower = searchTerm.toLowerCase()
-    return branches.filter(branch => 
-      branch.name.toLowerCase().includes(searchLower) ||
-      branch.code.toLowerCase().includes(searchLower) ||
-      branch.address.city.toLowerCase().includes(searchLower) ||
-      branch.address.state.toLowerCase().includes(searchLower) ||
-      branch.manager.toLowerCase().includes(searchLower)
+    return branches.filter(
+      (branch) =>
+        branch.name.toLowerCase().includes(searchLower) ||
+        branch.code.toLowerCase().includes(searchLower) ||
+        branch.address.city.toLowerCase().includes(searchLower) ||
+        branch.address.state.toLowerCase().includes(searchLower) ||
+        branch.manager.toLowerCase().includes(searchLower)
     )
   }, [branches, searchTerm])
 
-
-
   // Table columns configuration
-  const tableColumns = useMemo(() => [
-    {
-      title: 'Branch',
-      dataIndex: 'name',
-      key: 'name',
-      width: 200,
-      sorter: (a, b) => a.name.localeCompare(b.name),
-      render: (text, record) => (
-        <div>
-          <div className="flex items-center space-x-2">
-            <FontAwesomeIcon icon={faBuilding} className="text-sm" />
-            <span 
-              className='font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 cursor-pointer transition-colors duration-200'
-              onClick={() => handleEdit(record)}
-            >
-              {text}
-            </span>
-            {record.isHeadquarters && (
-              <Tag color={BRAND_COLORS.emeraldPrimary} className="text-xs">
-                HQ
-              </Tag>
-            )}
+  const tableColumns = useMemo(
+    () => [
+      {
+        title: 'Branch',
+        dataIndex: 'name',
+        key: 'name',
+        width: 200,
+        sorter: (a, b) => a.name.localeCompare(b.name),
+        render: (text, record) => (
+          <div>
+            <div className='flex items-center space-x-2'>
+              <FontAwesomeIcon icon={faBuilding} className='text-sm' />
+              <span
+                className='font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 cursor-pointer transition-colors duration-200'
+                onClick={() => handleEdit(record)}
+              >
+                {text}
+              </span>
+              {record.isHeadquarters && (
+                <Tag color={BRAND_COLORS.emeraldPrimary} className='text-xs'>
+                  HQ
+                </Tag>
+              )}
+            </div>
+            <div className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-500'}`}>Code: {record.code}</div>
           </div>
-          <div className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-500'}`}>
-            Code: {record.code}
+        )
+      },
+      {
+        title: 'Location',
+        key: 'location',
+        width: 200,
+        sorter: (a, b) =>
+          `${a.address.city}, ${a.address.state}`.localeCompare(`${b.address.city}, ${b.address.state}`),
+        render: (_, record) => (
+          <div>
+            <div className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+              {record.address.city}, {record.address.state}
+            </div>
+            <div className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-500'}`}>{record.address.country}</div>
           </div>
-        </div>
-      )
-    },
-    {
-      title: 'Location',
-      key: 'location',
-      width: 200,
-      sorter: (a, b) => `${a.address.city}, ${a.address.state}`.localeCompare(`${b.address.city}, ${b.address.state}`),
-      render: (_, record) => (
-        <div>
-          <div className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-            {record.address.city}, {record.address.state}
+        )
+      },
+      {
+        title: 'Manager',
+        dataIndex: 'manager',
+        key: 'manager',
+        width: 150,
+        sorter: (a, b) => a.manager.localeCompare(b.manager),
+        render: (text) => <div className={darkMode ? 'text-white' : 'text-gray-900'}>{text}</div>
+      },
+      {
+        title: 'Status',
+        dataIndex: 'status',
+        key: 'status',
+        width: 120,
+        sorter: (a, b) => a.status.localeCompare(b.status),
+        render: (status) => (
+          <Tag
+            color={status === 'active' ? SEMANTIC_COLORS.success : BRAND_COLORS.mediumGray}
+            icon={<FontAwesomeIcon icon={status === 'active' ? faCheckCircle : faTimesCircle} />}
+            style={{ fontWeight: '500' }}
+          >
+            {status.charAt(0).toUpperCase() + status.slice(1)}
+          </Tag>
+        )
+      },
+      {
+        title: 'Employees',
+        dataIndex: 'employeeCount',
+        key: 'employeeCount',
+        width: 100,
+        sorter: (a, b) => a.employeeCount - b.employeeCount,
+        render: (count) => (
+          <div className={`flex items-center space-x-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+            <FontAwesomeIcon icon={faUsers} className='text-xs' />
+            <span>{count}</span>
           </div>
-          <div className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-500'}`}>
-            {record.address.country}
-          </div>
-        </div>
-      )
-    },
-    {
-      title: 'Manager',
-      dataIndex: 'manager',
-      key: 'manager',
-      width: 150,
-      sorter: (a, b) => a.manager.localeCompare(b.manager),
-      render: (text) => (
-        <div className={darkMode ? 'text-white' : 'text-gray-900'}>
-          {text}
-        </div>
-      )
-    },
-    {
-      title: 'Status',
-      dataIndex: 'status',
-      key: 'status',
-      width: 120,
-      sorter: (a, b) => a.status.localeCompare(b.status),
-      render: (status) => (
-        <Tag 
-          color={status === 'active' ? SEMANTIC_COLORS.success : BRAND_COLORS.mediumGray}
-          icon={<FontAwesomeIcon icon={status === 'active' ? faCheckCircle : faTimesCircle} />}
-          style={{ fontWeight: '500' }}
-        >
-          {status.charAt(0).toUpperCase() + status.slice(1)}
-        </Tag>
-      )
-    },
-    {
-      title: 'Employees',
-      dataIndex: 'employeeCount',
-      key: 'employeeCount',
-      width: 100,
-      sorter: (a, b) => a.employeeCount - b.employeeCount,
-      render: (count) => (
-        <div className={`flex items-center space-x-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-          <FontAwesomeIcon icon={faUsers} className="text-xs" />
-          <span>{count}</span>
-        </div>
-      )
-    },
-    {
-      title: 'Established',
-      dataIndex: 'established',
-      key: 'established',
-      width: 120,
-      sorter: (a, b) => new Date(a.established) - new Date(b.established),
-      render: (date) => (
-        <div className={darkMode ? 'text-gray-300' : 'text-gray-600'}>
-          {new Date(date).toLocaleDateString()}
-        </div>
-      )
-    },
-    {
-      title: 'Active',
-      key: 'active',
-      width: 80,
-      render: (_, record) => (
-        <Switch
-          checked={record.status === 'active'}
-          onChange={() => handleStatusToggle(record.id)}
-          size="small"
-          disabled={record.isHeadquarters} // Prevent deactivating headquarters
-        />
-      )
-    },
-    {
-      title: 'Actions',
-      key: 'actions',
-      width: 80,
-      render: (_, record) => (
-        <Button
-          type='text'
-          size='small'
-          icon={<FontAwesomeIcon icon={faTrash} />}
-          onClick={() => handleDeleteBranch(record.id)}
-          className="text-red-500 hover:text-red-700"
-          title="Delete Branch"
-          disabled={record.isHeadquarters} // Prevent deleting headquarters
-        />
-      )
-    }
-  ], [darkMode, handleStatusToggle, handleEdit, handleDeleteBranch])
+        )
+      },
+      {
+        title: 'Established',
+        dataIndex: 'established',
+        key: 'established',
+        width: 120,
+        sorter: (a, b) => new Date(a.established) - new Date(b.established),
+        render: (date) => (
+          <div className={darkMode ? 'text-gray-300' : 'text-gray-600'}>{new Date(date).toLocaleDateString()}</div>
+        )
+      },
+      {
+        title: 'Active',
+        key: 'active',
+        width: 80,
+        render: (_, record) => (
+          <Switch
+            checked={record.status === 'active'}
+            onChange={() => handleStatusToggle(record.id)}
+            size='small'
+            disabled={record.isHeadquarters} // Prevent deactivating headquarters
+          />
+        )
+      },
+      {
+        title: 'Actions',
+        key: 'actions',
+        width: 80,
+        render: (_, record) => (
+          <Button
+            type='text'
+            size='small'
+            icon={<FontAwesomeIcon icon={faTrash} />}
+            onClick={() => handleDeleteBranch(record.id)}
+            className='text-red-500 hover:text-red-700'
+            title='Delete Branch'
+            disabled={record.isHeadquarters} // Prevent deleting headquarters
+          />
+        )
+      }
+    ],
+    [darkMode, handleStatusToggle, handleEdit, handleDeleteBranch]
+  )
 
   return (
     <div
@@ -341,7 +343,8 @@ const BranchManagement = React.memo(({ user }) => {
       {/* Dark mode styles */}
       <style jsx global>{`
         /* Dark Mode Form Styling for Branch Management */
-        ${darkMode ? `
+        ${darkMode
+          ? `
           .branch-form .ant-form-item-label > label {
             color: #E5E7EB !important;
           }
@@ -482,26 +485,27 @@ const BranchManagement = React.memo(({ user }) => {
           .branch-form .ant-form-item .ant-input-prefix {
             color: #9CA3AF !important;
           }
-        ` : ''}
-        
+        `
+          : ''}
+
         /* Dark mode dropdown options */
         .branch-dark-dropdown {
           background-color: #374151 !important;
         }
-        
+
         .branch-dark-dropdown .ant-select-item {
-          color: #F9FAFB !important;
+          color: #f9fafb !important;
         }
-        
+
         .branch-dark-dropdown .ant-select-item:hover {
-          background-color: #4B5563 !important;
+          background-color: #4b5563 !important;
         }
-        
+
         .branch-dark-dropdown .ant-select-item-option-selected {
           background-color: #059669 !important;
-          color: #FFFFFF !important;
+          color: #ffffff !important;
         }
-        
+
         /* Force Add Branch Button Visibility */
         .add-branch-btn,
         .add-branch-btn.ant-btn,
@@ -513,7 +517,7 @@ const BranchManagement = React.memo(({ user }) => {
           opacity: 1 !important;
           visibility: visible !important;
         }
-        
+
         .add-branch-btn:hover,
         .add-branch-btn.ant-btn:hover,
         button.add-branch-btn:hover {
@@ -551,13 +555,13 @@ const BranchManagement = React.memo(({ user }) => {
                 <h1 className='text-2xl font-bold text-white'>Branch Management</h1>
               </div>
             </div>
-            
+
             <Button
               type='default'
               size='large'
               icon={<FontAwesomeIcon icon={faPlus} />}
               onClick={handleAdd}
-              className="add-branch-btn font-medium"
+              className='add-branch-btn font-medium'
               style={{
                 background: '#ffffff',
                 backgroundColor: '#ffffff',
@@ -596,12 +600,10 @@ const BranchManagement = React.memo(({ user }) => {
           />
         </div>
       </div>
-
-
     </div>
   )
 })
 
 BranchManagement.displayName = 'BranchManagement'
 
-export default BranchManagement 
+export default BranchManagement
