@@ -16,9 +16,10 @@ import {
   faQuestionCircle,
   faBriefcase,
   faFile,
-  faSpinner
+  faSpinner,
+  faUpload
 } from '@fortawesome/free-solid-svg-icons'
-import { Dropdown, Modal, Form, Input, message } from 'antd'
+import { Dropdown, Modal, Form, Input, message, Upload, Avatar } from 'antd'
 import { Button } from '../../index'
 import { useTheme } from '../../../context/ThemeContext'
 import { useAuth } from '../../../context/AuthContext'
@@ -43,6 +44,8 @@ const Header = ({ user }) => {
   const [isBusinessSetupOpen, setIsBusinessSetupOpen] = useState(false)
   const [businessInfo, setBusinessInfo] = useState({ name: '', domain: '' })
   const [businessForm] = Form.useForm()
+  const [isUserProfileOpen, setIsUserProfileOpen] = useState(false)
+  const [userProfileForm] = Form.useForm()
   const [searchQuery, setSearchQuery] = useState('')
   const [isSearchFocused, setIsSearchFocused] = useState(false)
   const [searchResults, setSearchResults] = useState([])
@@ -161,6 +164,35 @@ const Header = ({ user }) => {
     setIsBusinessSetupOpen(false)
     businessForm.resetFields()
   }, [businessForm])
+
+  // Handle user profile modal
+  const handleUserProfileOpen = useCallback(() => {
+    // Pre-populate form with existing user data
+    userProfileForm.setFieldsValue({
+      firstName: user?.ProfileEntryResponse?.FirstName || '',
+      lastName: user?.ProfileEntryResponse?.LastName || '',
+    })
+    setIsUserProfileOpen(true)
+  }, [userProfileForm, user])
+
+  const handleUserProfileClose = useCallback(() => {
+    setIsUserProfileOpen(false)
+    userProfileForm.resetFields()
+  }, [userProfileForm])
+
+  const handleUserProfileSave = useCallback(async (values) => {
+    try {
+      // Here you would typically save to a backend/database
+      // For now, we'll just show a success message
+      console.log('Saving user profile:', values)
+      
+      message.success('Profile updated successfully!')
+      setIsUserProfileOpen(false)
+    } catch (error) {
+      console.error('Error saving user profile:', error)
+      message.error('Failed to update profile. Please try again.')
+    }
+  }, [])
 
   // Load business info from localStorage on mount
   useEffect(() => {
@@ -435,11 +467,40 @@ const Header = ({ user }) => {
   const renderSignOutDropdown = () => (
     <div
       className={`rounded-md overflow-hidden ${darkMode ? 'bg-gray-900' : 'bg-white'} 
-                     shadow-lg border ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}
+                     shadow-lg border ${darkMode ? 'border-gray-700' : 'border-gray-200'} min-w-[160px]`}
     >
       <button
+        onClick={handleUserProfileOpen}
+        className={`w-full py-3 px-4 text-left flex items-center text-sm transition-all duration-200
+                   ${darkMode ? 'text-white bg-gray-800 hover:bg-gray-700' : 'text-gray-700 bg-white hover:bg-blue-50'}`}
+        onMouseEnter={(e) => {
+          if (darkMode) {
+            e.target.style.backgroundColor = BRAND_COLORS.emeraldAccent
+            e.target.style.color = 'white'
+          } else {
+            e.target.style.backgroundColor = BRAND_COLORS.seaGreen
+            e.target.style.color = 'white'
+          }
+        }}
+        onMouseLeave={(e) => {
+          if (darkMode) {
+            e.target.style.backgroundColor = '#374151' // gray-700
+            e.target.style.color = 'white'
+          } else {
+            e.target.style.backgroundColor = 'white'
+            e.target.style.color = '#374151' // gray-700
+          }
+        }}
+      >
+        <FontAwesomeIcon icon={faUser} className='mr-2 w-4' />
+        User Profile
+      </button>
+      
+      <div className={`border-t ${darkMode ? 'border-gray-700' : 'border-gray-200'}`} />
+      
+      <button
         onClick={handleLogoutClick}
-        className={`w-full py-2 px-4 text-left flex items-center text-sm transition-all duration-200
+        className={`w-full py-3 px-4 text-left flex items-center text-sm transition-all duration-200
                    ${darkMode ? 'text-white bg-gray-800 hover:bg-gray-700' : 'text-gray-700 bg-white hover:bg-blue-50'}`}
         onMouseEnter={(e) => {
           if (darkMode) {
@@ -894,6 +955,161 @@ const Header = ({ user }) => {
                 }}
               >
                 Setup Business Dashboard
+              </Button>
+            </div>
+          </Form>
+        </div>
+      </Modal>
+
+      {/* User Profile Modal */}
+      <Modal
+        title={
+          <div className='flex items-center space-x-2'>
+            <FontAwesomeIcon icon={faUser} style={{ color: darkMode ? '#10b981' : '#059669' }} />
+            <span style={{ color: darkMode ? '#ffffff' : '#000000' }}>User Profile</span>
+          </div>
+        }
+        open={isUserProfileOpen}
+        onCancel={handleUserProfileClose}
+        footer={null}
+        width={500}
+        className={darkMode ? 'ant-modal-dark' : ''}
+        styles={{
+          content: {
+            backgroundColor: darkMode ? '#374151' : '#ffffff',
+            color: darkMode ? '#ffffff' : '#000000'
+          },
+          body: {
+            backgroundColor: darkMode ? '#374151' : '#ffffff',
+            color: darkMode ? '#ffffff' : '#000000'
+          },
+          header: {
+            backgroundColor: darkMode ? '#374151' : '#ffffff',
+            borderBottom: darkMode ? '1px solid #4B5563' : '1px solid #e5e7eb'
+          }
+        }}
+      >
+        {/* Dark Mode Form Styling */}
+        {darkMode && (
+          <style>
+            {`
+               .user-profile-form .ant-form-item-label > label {
+                 color: #E5E7EB !important;
+               }
+               .user-profile-form .ant-input {
+                 background-color: #4B5563 !important;
+                 border-color: #6B7280 !important;
+                 color: #F9FAFB !important;
+               }
+               .user-profile-form .ant-input:focus {
+                 border-color: #059669 !important;
+                 box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
+               }
+               .user-profile-form .ant-input::placeholder {
+                 color: #9CA3AF !important;
+               }
+               .user-profile-form .ant-upload.ant-upload-select {
+                 background-color: #4B5563 !important;
+                 border-color: #6B7280 !important;
+               }
+               .user-profile-form .ant-upload.ant-upload-select:hover {
+                 border-color: #059669 !important;
+               }
+               .user-profile-form .ant-upload-text {
+                 color: #E5E7EB !important;
+               }
+               .user-profile-form .ant-upload-hint {
+                 color: #9CA3AF !important;
+               }
+             `}
+          </style>
+        )}
+
+        <div className='space-y-6'>
+          <div className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+            <p className='mb-3'>
+              Update your personal information and profile picture.
+            </p>
+          </div>
+
+          <Form
+            form={userProfileForm}
+            layout='vertical'
+            onFinish={handleUserProfileSave}
+            className={`${darkMode ? 'user-profile-form' : ''}`}
+          >
+            {/* Profile Picture Upload */}
+            <Form.Item
+              label={<span className={darkMode ? 'text-gray-300' : ''}>Profile Picture</span>}
+              name='profilePicture'
+            >
+              <div className='flex items-center space-x-4'>
+                <Avatar
+                  size={80}
+                  src={user?.ProfileEntryResponse?.ProfilePic}
+                  icon={<FontAwesomeIcon icon={faUser} />}
+                  className={`${darkMode ? 'bg-gray-600' : 'bg-gray-200'}`}
+                />
+                <Upload
+                  accept='image/*'
+                  showUploadList={false}
+                  beforeUpload={(file) => {
+                    // Handle file upload logic here
+                    // For now, just prevent default upload
+                    console.log('File selected:', file)
+                    return false
+                  }}
+                >
+                  <Button
+                    icon={<FontAwesomeIcon icon={faUpload} />}
+                    className={darkMode ? 'border-gray-600 text-gray-300 hover:border-gray-500' : ''}
+                  >
+                    Upload Photo
+                  </Button>
+                </Upload>
+              </div>
+            </Form.Item>
+
+            <div className='grid grid-cols-2 gap-4'>
+              <Form.Item
+                label={<span className={darkMode ? 'text-gray-300' : ''}>First Name</span>}
+                name='firstName'
+                rules={[
+                  { required: true, message: 'Please enter your first name' },
+                  { min: 2, message: 'First name must be at least 2 characters' }
+                ]}
+              >
+                <Input placeholder='e.g. John' />
+              </Form.Item>
+
+              <Form.Item
+                label={<span className={darkMode ? 'text-gray-300' : ''}>Last Name</span>}
+                name='lastName'
+                rules={[
+                  { required: true, message: 'Please enter your last name' },
+                  { min: 2, message: 'Last name must be at least 2 characters' }
+                ]}
+              >
+                <Input placeholder='e.g. Doe' />
+              </Form.Item>
+            </div>
+
+            <div className='flex justify-end space-x-3 pt-4 border-t border-gray-200 dark:border-gray-600'>
+              <Button
+                onClick={handleUserProfileClose}
+                className={darkMode ? 'border-gray-600 text-gray-300 hover:border-gray-500' : ''}
+              >
+                Cancel
+              </Button>
+              <Button
+                type='primary'
+                htmlType='submit'
+                style={{
+                  backgroundColor: darkMode ? '#059669' : '#10b981',
+                  borderColor: darkMode ? '#059669' : '#10b981'
+                }}
+              >
+                Save Profile
               </Button>
             </div>
           </Form>

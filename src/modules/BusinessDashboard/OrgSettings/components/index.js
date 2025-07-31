@@ -10,7 +10,8 @@ import {
   Row,
   Col,
   Alert,
-  message
+  message,
+  Tabs
 } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
@@ -26,7 +27,9 @@ import {
   faFileAlt,
   faSave,
   faUndo,
-  faMapMarkerAlt
+  faMapMarkerAlt,
+  faCog,
+  faIndustry
 } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../../core/context/ThemeContext'
 import { Button } from '../../../../core/components'
@@ -36,6 +39,7 @@ import AIProfileModal from './AIProfileModal'
 
 const { TextArea } = Input
 const { Option } = Select
+const { TabPane } = Tabs
 
 /**
  * Organization Settings Page
@@ -47,6 +51,7 @@ const OrgSettings = React.memo(({ user }) => {
   const [loading, setLoading] = useState(false)
   const [hasChanges, setHasChanges] = useState(false)
   const [aiModalVisible, setAiModalVisible] = useState(false)
+  const [activeTab, setActiveTab] = useState('general')
 
   // Mock organization data - in real app this would come from API
   const [orgSettings, setOrgSettings] = useState({
@@ -152,7 +157,10 @@ const OrgSettings = React.memo(({ user }) => {
     setAiModalVisible(true)
   }, [])
 
-
+  // Tab change handler
+  const handleTabChange = useCallback((key) => {
+    setActiveTab(key)
+  }, [])
 
   return (
     <div
@@ -239,7 +247,7 @@ const OrgSettings = React.memo(({ user }) => {
         </div>
 
         {/* Content Area */}
-        <div className='relative p-6 space-y-6'>
+        <div className='relative p-6'>
           <Form
             form={form}
             layout="vertical"
@@ -247,348 +255,410 @@ const OrgSettings = React.memo(({ user }) => {
             onValuesChange={handleValuesChange}
             className={`${darkMode ? 'org-settings-form' : ''}`}
           >
-            {/* Organization Profile Section */}
-            <Card
-              title={
-                <div className='flex items-center space-x-3'>
-                  <FontAwesomeIcon icon={faBuilding} className="text-emerald-600" />
-                  <span>Organization Profile</span>
-                </div>
-              }
-              className={darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}
-              headStyle={{
-                backgroundColor: darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white,
-                borderBottom: `1px solid ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.borderGray}`,
-                color: darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray
-              }}
-              bodyStyle={{
-                backgroundColor: darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white,
-                color: darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray
-              }}
-              extra={
-                <div className='flex space-x-2'>
-                  <Button
-                    type='text'
-                    icon={<FontAwesomeIcon icon={faRobot} />}
-                    onClick={handleAiProfileUpdate}
-                    className={`${darkMode ? 'text-emerald-400 hover:text-emerald-300' : 'text-emerald-600 hover:text-emerald-700'}`}
-                    title="Re-interact with AI"
-                  >
-                    AI Update
-                  </Button>
-                </div>
-              }
+            <Tabs
+              activeKey={activeTab}
+              onChange={handleTabChange}
+              type="card"
+              size="large"
+              className={`org-settings-tabs ${darkMode ? 'org-settings-tabs-dark' : ''}`}
             >
-              <Row gutter={16}>
-                <Col xs={24} sm={12}>
-                  <Form.Item
-                    label="Organization Name"
-                    name="organizationName"
-                    rules={[{ required: true, message: 'Please enter organization name' }]}
-                  >
-                    <Input placeholder="Enter organization name" />
-                  </Form.Item>
-                </Col>
-                
-                <Col xs={24} sm={12}>
-                  <Form.Item
-                    label="Industry"
-                    name="industry"
-                    rules={[{ required: true, message: 'Please select industry' }]}
-                  >
-                    <Select placeholder="Select industry" dropdownClassName={darkMode ? 'org-settings-dark-dropdown' : ''}>
-                      {industryOptions.map(industry => (
-                        <Option key={industry} value={industry}>
-                          {industry}
-                        </Option>
-                      ))}
-                    </Select>
-                  </Form.Item>
-                </Col>
-              </Row>
-
-              <Row gutter={16}>
-                <Col xs={24} sm={12}>
-                  <Form.Item
-                    label="Website"
-                    name="website"
-                  >
-                    <Input placeholder="https://company.com" />
-                  </Form.Item>
-                </Col>
-                
-                <Col xs={24} sm={6}>
-                  <Form.Item
-                    label="Founded Year"
-                    name="foundedYear"
-                  >
-                    <Input placeholder="2020" />
-                  </Form.Item>
-                </Col>
-                
-                <Col xs={24} sm={6}>
-                  <Form.Item
-                    label="Employee Range"
-                    name="employeeRange"
-                  >
-                    <Select placeholder="Select range" dropdownClassName={darkMode ? 'org-settings-dark-dropdown' : ''}>
-                      {employeeRangeOptions.map(range => (
-                        <Option key={range} value={range}>
-                          {range}
-                        </Option>
-                      ))}
-                    </Select>
-                  </Form.Item>
-                </Col>
-              </Row>
-
-              <Form.Item
-                label="Description"
-                name="description"
-                extra="Brief description of your organization's mission and services"
+              {/* General Tab */}
+              <TabPane
+                tab={
+                  <span className="flex items-center space-x-2">
+                    <FontAwesomeIcon icon={faCog} />
+                    <span>General</span>
+                  </span>
+                }
+                key="general"
               >
-                <TextArea
-                  rows={4}
-                  placeholder="Describe your organization..."
-                  showCount
-                  maxLength={1000}
-                />
-              </Form.Item>
+                <div className="space-y-6">
+                  {/* Organization Profile Section */}
+                  <Card
+                    title={
+                      <div className='flex items-center space-x-3'>
+                        <FontAwesomeIcon icon={faBuilding} className="text-emerald-600" />
+                        <span>Organization Profile</span>
+                      </div>
+                    }
+                    className={darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}
+                    headStyle={{
+                      backgroundColor: darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white,
+                      borderBottom: `1px solid ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.borderGray}`,
+                      color: darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray
+                    }}
+                    bodyStyle={{
+                      backgroundColor: darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white,
+                      color: darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray
+                    }}
+                    extra={
+                      <div className='flex space-x-2'>
+                        <Button
+                          type='text'
+                          icon={<FontAwesomeIcon icon={faRobot} />}
+                          onClick={handleAiProfileUpdate}
+                          className={`${darkMode ? 'text-emerald-400 hover:text-emerald-300' : 'text-emerald-600 hover:text-emerald-700'}`}
+                          title="Re-interact with AI"
+                        >
+                          AI Update
+                        </Button>
+                      </div>
+                    }
+                  >
+                    <Row gutter={16}>
+                      <Col xs={24} sm={12}>
+                        <Form.Item
+                          label="Organization Name"
+                          name="organizationName"
+                          rules={[{ required: true, message: 'Please enter organization name' }]}
+                        >
+                          <Input placeholder="Enter organization name" />
+                        </Form.Item>
+                      </Col>
+                      
+                      <Col xs={24} sm={12}>
+                        <Form.Item
+                          label="Website"
+                          name="website"
+                        >
+                          <Input placeholder="https://company.com" />
+                        </Form.Item>
+                      </Col>
+                    </Row>
 
-              {orgSettings.aiProfileEnabled && (
-                <Alert
-                  message="AI Profile Assistance Available"
-                  description={
-                    <div>
-                      Your organization profile was last updated with AI assistance on{' '}
-                      {new Date(orgSettings.lastAiUpdate).toLocaleDateString()}. 
-                      Click "AI Update" to refresh your profile with the latest information.
+                    <Row gutter={16}>
+                      <Col xs={24} sm={6}>
+                        <Form.Item
+                          label="Founded Year"
+                          name="foundedYear"
+                        >
+                          <Input placeholder="2020" />
+                        </Form.Item>
+                      </Col>
+                      
+                      <Col xs={24} sm={6}>
+                        <Form.Item
+                          label="Employee Range"
+                          name="employeeRange"
+                        >
+                          <Select placeholder="Select range" dropdownClassName={darkMode ? 'org-settings-dark-dropdown' : ''}>
+                            {employeeRangeOptions.map(range => (
+                              <Option key={range} value={range}>
+                                {range}
+                              </Option>
+                            ))}
+                          </Select>
+                        </Form.Item>
+                      </Col>
+                    </Row>
+
+                    <Form.Item
+                      label="Description"
+                      name="description"
+                      extra="Brief description of your organization's mission and services"
+                    >
+                      <TextArea
+                        rows={4}
+                        placeholder="Describe your organization..."
+                        showCount
+                        maxLength={1000}
+                      />
+                    </Form.Item>
+
+                    {orgSettings.aiProfileEnabled && (
+                      <Alert
+                        message="AI Profile Assistance Available"
+                        description={
+                          <div>
+                            Your organization profile was last updated with AI assistance on{' '}
+                            {new Date(orgSettings.lastAiUpdate).toLocaleDateString()}. 
+                            Click "AI Update" to refresh your profile with the latest information.
+                          </div>
+                        }
+                        type="info"
+                        icon={<FontAwesomeIcon icon={faRobot} />}
+                        showIcon
+                        className="mt-4"
+                      />
+                    )}
+                  </Card>
+
+                  {/* Work Arrangement Settings */}
+                  <Card
+                    title={
+                      <div className='flex items-center space-x-3'>
+                        <FontAwesomeIcon icon={faBriefcase} className="text-emerald-600" />
+                        <span>Default Work Arrangement</span>
+                      </div>
+                    }
+                    className={darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}
+                    headStyle={{
+                      backgroundColor: darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white,
+                      borderBottom: `1px solid ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.borderGray}`,
+                      color: darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray
+                    }}
+                    bodyStyle={{
+                      backgroundColor: darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white,
+                      color: darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray
+                    }}
+                  >
+                    <Form.Item
+                      label="Default Work Arrangement"
+                      name="defaultWorkArrangement"
+                      extra="This will be the default setting for new job postings"
+                      style={{ marginBottom: '24px' }}
+                    >
+                      <Select 
+                        placeholder="Select default work arrangement" 
+                        size="large" 
+                        dropdownClassName={darkMode ? 'org-settings-dark-dropdown work-arrangement-dropdown' : 'work-arrangement-dropdown'}
+                      >
+                        {workArrangementOptions.map(option => (
+                          <Option key={option.value} value={option.value}>
+                            <div className="flex items-center space-x-3 py-1">
+                              <FontAwesomeIcon icon={option.icon} className="flex-shrink-0" />
+                              <div className="flex-1">
+                                <div className="font-medium text-sm">{option.label}</div>
+                                <div className={`text-xs mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                                  {option.description}
+                                </div>
+                              </div>
+                            </div>
+                          </Option>
+                        ))}
+                      </Select>
+                                         </Form.Item>
+                   </Card>
+
+                   {/* Future Features Preview */}
+                   <Card
+                     title={
+                       <div className='flex items-center space-x-3'>
+                         <FontAwesomeIcon icon={faFileAlt} className="text-gray-400" />
+                         <span className="text-gray-400">Future Features</span>
+                       </div>
+                     }
+                     className={`${darkMode ? 'bg-gray-800 border-gray-700 future-features-section' : 'bg-white border-gray-200'} opacity-60`}
+                     headStyle={{
+                       backgroundColor: darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white,
+                       borderBottom: `1px solid ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.borderGray}`,
+                       color: darkMode ? BRAND_COLORS.lightGray : BRAND_COLORS.mediumGray
+                     }}
+                     bodyStyle={{
+                       backgroundColor: darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white,
+                       color: darkMode ? BRAND_COLORS.lightGray : BRAND_COLORS.mediumGray
+                     }}
+                   >
+                     <div 
+                       className={`p-4 rounded-lg border-2 border-dashed ${
+                         darkMode ? 'border-gray-600 bg-gray-700/50 future-features-content' : 'border-gray-300 bg-gray-50/50'
+                       }`}
+                     >
+                       <h4 className={`font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                         🚀 Coming Soon
+                       </h4>
+                       <div className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                         • <strong>Default Job Description Templates:</strong> Create and manage template settings for consistent job postings<br/>
+                         • <strong>Email Templates:</strong> Customize notification and communication templates<br/>
+                         • <strong>Integration Settings:</strong> Connect with external HR tools and platforms<br/>
+                         • <strong>Compliance Settings:</strong> Configure GDPR, EEOC, and other regulatory requirements
+                       </div>
+                     </div>
+                   </Card>
+                 </div>
+               </TabPane>
+
+              {/* Regional Preferences Tab */}
+              <TabPane
+                tab={
+                  <span className="flex items-center space-x-2">
+                    <FontAwesomeIcon icon={faGlobe} />
+                    <span>Regional Preferences</span>
+                  </span>
+                }
+                key="regional"
+              >
+                <Card
+                  title={
+                    <div className='flex items-center space-x-3'>
+                      <FontAwesomeIcon icon={faGlobe} className="text-emerald-600" />
+                      <span>Regional Preferences</span>
                     </div>
                   }
-                  type="info"
-                  icon={<FontAwesomeIcon icon={faRobot} />}
-                  showIcon
-                  className="mt-4"
-                />
-              )}
-            </Card>
-
-            {/* Work Arrangement Settings */}
-            <Card
-              title={
-                <div className='flex items-center space-x-3'>
-                  <FontAwesomeIcon icon={faBriefcase} className="text-emerald-600" />
-                  <span>Default Work Arrangement</span>
-                </div>
-              }
-              className={darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}
-              headStyle={{
-                backgroundColor: darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white,
-                borderBottom: `1px solid ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.borderGray}`,
-                color: darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray
-              }}
-              bodyStyle={{
-                backgroundColor: darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white,
-                color: darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray
-              }}
-            >
-              <Form.Item
-                label="Default Work Arrangement"
-                name="defaultWorkArrangement"
-                extra="This will be the default setting for new job postings"
-                style={{ marginBottom: '24px' }}
-              >
-                <Select 
-                  placeholder="Select default work arrangement" 
-                  size="large" 
-                  dropdownClassName={darkMode ? 'org-settings-dark-dropdown work-arrangement-dropdown' : 'work-arrangement-dropdown'}
+                  className={darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}
+                  headStyle={{
+                    backgroundColor: darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white,
+                    borderBottom: `1px solid ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.borderGray}`,
+                    color: darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray
+                  }}
+                  bodyStyle={{
+                    backgroundColor: darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white,
+                    color: darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray
+                  }}
                 >
-                  {workArrangementOptions.map(option => (
-                    <Option key={option.value} value={option.value}>
-                      <div className="flex items-center space-x-3 py-1">
-                        <FontAwesomeIcon icon={option.icon} className="flex-shrink-0" />
-                        <div className="flex-1">
-                          <div className="font-medium text-sm">{option.label}</div>
-                          <div className={`text-xs mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                            {option.description}
-                          </div>
-                        </div>
+                  <Row gutter={16}>
+                    <Col xs={24} sm={8}>
+                      <Form.Item
+                        label={
+                          <Space>
+                            <FontAwesomeIcon icon={faDollarSign} />
+                            <span>Preferred Currency</span>
+                          </Space>
+                        }
+                        name="currency"
+                        rules={[{ required: true, message: 'Please select currency' }]}
+                      >
+                        <Select placeholder="Select currency" dropdownClassName={darkMode ? 'org-settings-dark-dropdown' : ''}>
+                          {currencyOptions.map(currency => (
+                            <Option key={currency} value={currency}>
+                              {currency}
+                            </Option>
+                          ))}
+                        </Select>
+                      </Form.Item>
+                    </Col>
+                    
+                    <Col xs={24} sm={8}>
+                      <Form.Item
+                        label={
+                          <Space>
+                            <FontAwesomeIcon icon={faMapMarkerAlt} />
+                            <span>Primary Country</span>
+                          </Space>
+                        }
+                        name="country"
+                        rules={[{ required: true, message: 'Please select country' }]}
+                      >
+                        <Select placeholder="Select country" dropdownClassName={darkMode ? 'org-settings-dark-dropdown' : ''}>
+                          {countryOptions.map(country => (
+                            <Option key={country} value={country}>
+                              {country}
+                            </Option>
+                          ))}
+                        </Select>
+                      </Form.Item>
+                    </Col>
+                    
+                    <Col xs={24} sm={8}>
+                      <Form.Item
+                        label={
+                          <Space>
+                            <FontAwesomeIcon icon={faLanguage} />
+                            <span>Primary Language</span>
+                          </Space>
+                        }
+                        name="language"
+                        rules={[{ required: true, message: 'Please select language' }]}
+                      >
+                        <Select placeholder="Select language" dropdownClassName={darkMode ? 'org-settings-dark-dropdown' : ''}>
+                          {languageOptions.map(language => (
+                            <Option key={language} value={language}>
+                              {language}
+                            </Option>
+                          ))}
+                        </Select>
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                </Card>
+              </TabPane>
+
+              {/* Industry & Classifications Tab */}
+              <TabPane
+                tab={
+                  <span className="flex items-center space-x-2">
+                    <FontAwesomeIcon icon={faIndustry} />
+                    <span>Industry & Classifications</span>
+                  </span>
+                }
+                key="industry"
+              >
+                <div className="space-y-6">
+                  {/* Industry Selection */}
+                  <Card
+                    title={
+                      <div className='flex items-center space-x-3'>
+                        <FontAwesomeIcon icon={faIndustry} className="text-emerald-600" />
+                        <span>Industry</span>
                       </div>
-                    </Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </Card>
-
-            {/* Preferences Settings */}
-            <Card
-              title={
-                <div className='flex items-center space-x-3'>
-                  <FontAwesomeIcon icon={faGlobe} className="text-emerald-600" />
-                  <span>Regional Preferences</span>
-                </div>
-              }
-              className={darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}
-              headStyle={{
-                backgroundColor: darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white,
-                borderBottom: `1px solid ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.borderGray}`,
-                color: darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray
-              }}
-              bodyStyle={{
-                backgroundColor: darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white,
-                color: darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray
-              }}
-            >
-              <Row gutter={16}>
-                <Col xs={24} sm={8}>
-                  <Form.Item
-                    label={
-                      <Space>
-                        <FontAwesomeIcon icon={faDollarSign} />
-                        <span>Preferred Currency</span>
-                      </Space>
                     }
-                    name="currency"
-                    rules={[{ required: true, message: 'Please select currency' }]}
+                    className={darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}
+                    headStyle={{
+                      backgroundColor: darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white,
+                      borderBottom: `1px solid ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.borderGray}`,
+                      color: darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray
+                    }}
+                    bodyStyle={{
+                      backgroundColor: darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white,
+                      color: darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray
+                    }}
                   >
-                    <Select placeholder="Select currency" dropdownClassName={darkMode ? 'org-settings-dark-dropdown' : ''}>
-                      {currencyOptions.map(currency => (
-                        <Option key={currency} value={currency}>
-                          {currency}
-                        </Option>
-                      ))}
-                    </Select>
-                  </Form.Item>
-                </Col>
-                
-                <Col xs={24} sm={8}>
-                  <Form.Item
-                    label={
-                      <Space>
-                        <FontAwesomeIcon icon={faMapMarkerAlt} />
-                        <span>Primary Country</span>
-                      </Space>
+                    <Form.Item
+                      label="Primary Industry"
+                      name="industry"
+                      rules={[{ required: true, message: 'Please select industry' }]}
+                    >
+                      <Select placeholder="Select industry" dropdownClassName={darkMode ? 'org-settings-dark-dropdown' : ''}>
+                        {industryOptions.map(industry => (
+                          <Option key={industry} value={industry}>
+                            {industry}
+                          </Option>
+                        ))}
+                      </Select>
+                    </Form.Item>
+                  </Card>
+
+                  {/* Industry Tags & Classifications */}
+                  <Card
+                    title={
+                      <div className='flex items-center space-x-3'>
+                        <FontAwesomeIcon icon={faTags} className="text-emerald-600" />
+                        <span>Industry Tags & Classifications</span>
+                      </div>
                     }
-                    name="country"
-                    rules={[{ required: true, message: 'Please select country' }]}
+                    className={darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}
+                    headStyle={{
+                      backgroundColor: darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white,
+                      borderBottom: `1px solid ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.borderGray}`,
+                      color: darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray
+                    }}
+                    bodyStyle={{
+                      backgroundColor: darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white,
+                      color: darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray
+                    }}
                   >
-                    <Select placeholder="Select country" dropdownClassName={darkMode ? 'org-settings-dark-dropdown' : ''}>
-                      {countryOptions.map(country => (
-                        <Option key={country} value={country}>
-                          {country}
-                        </Option>
-                      ))}
-                    </Select>
-                  </Form.Item>
-                </Col>
-                
-                <Col xs={24} sm={8}>
-                  <Form.Item
-                    label={
-                      <Space>
-                        <FontAwesomeIcon icon={faLanguage} />
-                        <span>Primary Language</span>
-                      </Space>
-                    }
-                    name="language"
-                    rules={[{ required: true, message: 'Please select language' }]}
-                  >
-                    <Select placeholder="Select language" dropdownClassName={darkMode ? 'org-settings-dark-dropdown' : ''}>
-                      {languageOptions.map(language => (
-                        <Option key={language} value={language}>
-                          {language}
-                        </Option>
-                      ))}
-                    </Select>
-                  </Form.Item>
-                </Col>
-              </Row>
-            </Card>
+                    <Form.Item
+                      label="Industry Tags"
+                      name="industryTags"
+                      extra="Select or add tags that describe your industry focus areas"
+                    >
+                      <Select
+                        mode="tags"
+                        placeholder="Add industry tags"
+                        style={{ width: '100%' }}
+                        tokenSeparators={[',']}
+                        dropdownClassName={darkMode ? 'org-settings-dark-dropdown' : ''}
+                        options={commonIndustryTags.map(tag => ({ value: tag, label: tag }))}
+                      />
+                    </Form.Item>
 
-            {/* Industry Tags & Classifications */}
-            <Card
-              title={
-                <div className='flex items-center space-x-3'>
-                  <FontAwesomeIcon icon={faTags} className="text-emerald-600" />
-                  <span>Industry Tags & Classifications</span>
+                    <Form.Item
+                      label="Custom Classifications"
+                      name="customClassifications"
+                      extra="Add custom tags that uniquely describe your organization"
+                    >
+                      <Select
+                        mode="tags"
+                        placeholder="Add custom classifications"
+                        dropdownClassName={darkMode ? 'org-settings-dark-dropdown' : ''}
+                        style={{ width: '100%' }}
+                        tokenSeparators={[',']}
+                      />
+                    </Form.Item>
+                  </Card>
                 </div>
-              }
-              className={darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}
-              headStyle={{
-                backgroundColor: darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white,
-                borderBottom: `1px solid ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.borderGray}`,
-                color: darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray
-              }}
-              bodyStyle={{
-                backgroundColor: darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white,
-                color: darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray
-              }}
-            >
-              <Form.Item
-                label="Industry Tags"
-                name="industryTags"
-                extra="Select or add tags that describe your industry focus areas"
-              >
-                <Select
-                  mode="tags"
-                  placeholder="Add industry tags"
-                  style={{ width: '100%' }}
-                  tokenSeparators={[',']}
-                  dropdownClassName={darkMode ? 'org-settings-dark-dropdown' : ''}
-                  options={commonIndustryTags.map(tag => ({ value: tag, label: tag }))}
-                />
-              </Form.Item>
-
-              <Form.Item
-                label="Custom Classifications"
-                name="customClassifications"
-                extra="Add custom tags that uniquely describe your organization"
-              >
-                <Select
-                  mode="tags"
-                  placeholder="Add custom classifications"
-                  dropdownClassName={darkMode ? 'org-settings-dark-dropdown' : ''}
-                  style={{ width: '100%' }}
-                  tokenSeparators={[',']}
-                />
-              </Form.Item>
-            </Card>
-
-            {/* Future Features Preview */}
-            <Card
-              title={
-                <div className='flex items-center space-x-3'>
-                  <FontAwesomeIcon icon={faFileAlt} className="text-gray-400" />
-                  <span className="text-gray-400">Future Features</span>
-                </div>
-              }
-              className={`${darkMode ? 'bg-gray-800 border-gray-700 future-features-section' : 'bg-white border-gray-200'} opacity-60`}
-              headStyle={{
-                backgroundColor: darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white,
-                borderBottom: `1px solid ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.borderGray}`,
-                color: darkMode ? BRAND_COLORS.lightGray : BRAND_COLORS.mediumGray
-              }}
-              bodyStyle={{
-                backgroundColor: darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white,
-                color: darkMode ? BRAND_COLORS.lightGray : BRAND_COLORS.mediumGray
-              }}
-            >
-              <div 
-                className={`p-4 rounded-lg border-2 border-dashed ${
-                  darkMode ? 'border-gray-600 bg-gray-700/50 future-features-content' : 'border-gray-300 bg-gray-50/50'
-                }`}
-              >
-                <h4 className={`font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                  🚀 Coming Soon
-                </h4>
-                <div className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                  • <strong>Default Job Description Templates:</strong> Create and manage template settings for consistent job postings<br/>
-                  • <strong>Email Templates:</strong> Customize notification and communication templates<br/>
-                  • <strong>Integration Settings:</strong> Connect with external HR tools and platforms<br/>
-                  • <strong>Compliance Settings:</strong> Configure GDPR, EEOC, and other regulatory requirements
-                </div>
-              </div>
-            </Card>
+              </TabPane>
+                         </Tabs>
           </Form>
         </div>
       </div>
@@ -743,39 +813,85 @@ const OrgSettings = React.memo(({ user }) => {
             background-color: transparent !important;
             color: #F9FAFB !important;
           }
-                     .org-settings-form .ant-form-item .ant-input-prefix {
-             color: #9CA3AF !important;
-           }
-           
-           /* Alert component styling */
-           .org-settings-form .ant-alert {
-             background-color: #374151 !important;
-             border-color: #4B5563 !important;
-           }
-           
-           .org-settings-form .ant-alert-message {
-             color: #F9FAFB !important;
-           }
-           
-           .org-settings-form .ant-alert-description {
-             color: #D1D5DB !important;
-           }
-           
-           .org-settings-form .ant-alert-icon {
-             color: #10B981 !important;
-           }
-           
-           /* Future features section */
-           .future-features-section {
-             background-color: #374151 !important;
-             border-color: #4B5563 !important;
-           }
-           
-           .future-features-content {
-             background-color: #4B5563 !important;
-             border-color: #6B7280 !important;
-           }
-         ` : ''}
+          .org-settings-form .ant-form-item .ant-input-prefix {
+            color: #9CA3AF !important;
+          }
+          
+          /* Alert component styling */
+          .org-settings-form .ant-alert {
+            background-color: #374151 !important;
+            border-color: #4B5563 !important;
+          }
+          
+          .org-settings-form .ant-alert-message {
+            color: #F9FAFB !important;
+          }
+          
+          .org-settings-form .ant-alert-description {
+            color: #D1D5DB !important;
+          }
+          
+          .org-settings-form .ant-alert-icon {
+            color: #10B981 !important;
+          }
+          
+          /* Future features section */
+          .future-features-section {
+            background-color: #374151 !important;
+            border-color: #4B5563 !important;
+          }
+          
+          .future-features-content {
+            background-color: #4B5563 !important;
+            border-color: #6B7280 !important;
+          }
+
+          /* Tabs styling */
+          .org-settings-tabs-dark .ant-tabs-nav {
+            background-color: #374151 !important;
+          }
+          
+          .org-settings-tabs-dark .ant-tabs-tab {
+            background-color: #4B5563 !important;
+            border-color: #6B7280 !important;
+            color: #D1D5DB !important;
+          }
+          
+          .org-settings-tabs-dark .ant-tabs-tab:hover {
+            color: #10B981 !important;
+          }
+          
+          .org-settings-tabs-dark .ant-tabs-tab-active {
+            background-color: #059669 !important;
+            border-color: #059669 !important;
+            color: #FFFFFF !important;
+          }
+          
+          .org-settings-tabs-dark .ant-tabs-content-holder {
+            background-color: transparent !important;
+          }
+          
+          .org-settings-tabs-dark .ant-tabs-tabpane {
+            color: #F9FAFB !important;
+          }
+        ` : ''}
+
+        ${!darkMode ? `
+          /* Light mode tabs styling */
+          .org-settings-tabs .ant-tabs-tab-active {
+            background-color: #059669 !important;
+            border-color: #059669 !important;
+          }
+          
+          .org-settings-tabs .ant-tabs-tab-active .ant-tabs-tab-btn {
+            color: #FFFFFF !important;
+          }
+          
+          .org-settings-tabs .ant-tabs-tab:hover {
+            color: #059669 !important;
+          }
+        ` : ''}
+        
         /* Dark mode dropdown options */
         .org-settings-dark-dropdown {
           background-color: #374151 !important;
@@ -848,6 +964,11 @@ const OrgSettings = React.memo(({ user }) => {
         .org-settings-reset-btn:hover {
           background-color: ${darkMode ? '#4B5563' : '#6B7280'} !important;
           border-color: ${darkMode ? '#4B5563' : '#6B7280'} !important;
+        }
+
+        /* Tab content spacing */
+        .ant-tabs-tabpane {
+          padding-top: 16px !important;
         }
       `}</style>
     </div>
