@@ -16,10 +16,9 @@ import {
   faQuestionCircle,
   faBriefcase,
   faFile,
-  faSpinner,
-  faUpload
+  faSpinner
 } from '@fortawesome/free-solid-svg-icons'
-import { Dropdown, Modal, Form, message, Upload, Avatar, Input, Button } from 'antd'
+import { Dropdown, Modal, Form, message } from 'antd'
 import { useTheme } from '../../../context/ThemeContext'
 import { useAuth } from '../../../context/AuthContext'
 import { BRAND_COLORS } from '../../../theme/colors'
@@ -32,6 +31,7 @@ import {
   highlightText
 } from '../../../lib/search-controller'
 import { getUserOrganization, createOrganizationAndAssignToUser } from '../../../lib/supabase-controller'
+import { ProfileModal, ProfileAvatar, ProfileDisplay } from '../../profile'
 
 /**
  * Simplified Header component for the application
@@ -49,7 +49,6 @@ const Header = ({ user }) => {
   const [isCheckingOrganization, setIsCheckingOrganization] = useState(false)
   const [businessForm] = Form.useForm()
   const [isUserProfileOpen, setIsUserProfileOpen] = useState(false)
-  const [userProfileForm] = Form.useForm()
   const [searchQuery, setSearchQuery] = useState('')
   const [isSearchFocused, setIsSearchFocused] = useState(false)
   const [searchResults, setSearchResults] = useState([])
@@ -236,31 +235,11 @@ const Header = ({ user }) => {
 
   // Handle user profile modal
   const handleUserProfileOpen = useCallback(() => {
-    // Pre-populate form with existing user data
-    userProfileForm.setFieldsValue({
-      firstName: user?.ProfileEntryResponse?.FirstName || '',
-      lastName: user?.ProfileEntryResponse?.LastName || ''
-    })
     setIsUserProfileOpen(true)
-  }, [userProfileForm, user])
+  }, [])
 
   const handleUserProfileClose = useCallback(() => {
     setIsUserProfileOpen(false)
-    userProfileForm.resetFields()
-  }, [userProfileForm])
-
-  const handleUserProfileSave = useCallback(async (values) => {
-    try {
-      // Here you would typically save to a backend/database
-      // For now, we'll just show a success message
-      console.log('Saving user profile:', values)
-
-      message.success('Profile updated successfully!')
-      setIsUserProfileOpen(false)
-    } catch (error) {
-      console.error('Error saving user profile:', error)
-      message.error('Failed to update profile. Please try again.')
-    }
   }, [])
 
   // Check user's organization status when user changes
@@ -883,19 +862,14 @@ const Header = ({ user }) => {
                         : `linear-gradient(135deg, ${BRAND_COLORS.tealGreen}, ${BRAND_COLORS.emeraldBright}40)`
                     }}
                   >
-                    {user.ProfileEntryResponse?.ProfilePic ? (
-                      <img
-                        src={user.ProfileEntryResponse.ProfilePic}
-                        alt={user.ProfileEntryResponse.Username}
-                        className='w-full h-full object-cover rounded-full'
-                      />
-                    ) : (
-                      <FontAwesomeIcon icon={faUser} className='text-sm md:text-base' />
-                    )}
+                    <ProfileAvatar user={user} size='100%' className='w-full h-full object-cover rounded-full' />
                   </div>
-                  <span className='hidden md:block text-sm font-medium text-white truncate max-w-[100px] lg:max-w-[200px]'>
-                    {user.ProfileEntryResponse?.Username || user.name || 'User'}
-                  </span>
+                  <ProfileDisplay
+                    user={user}
+                    format='full'
+                    className='hidden md:block text-sm font-medium text-white truncate max-w-[100px] lg:max-w-[200px]'
+                    fallback={user?.ProfileEntryResponse?.Username || user?.name || 'User'}
+                  />
                 </div>
               </Dropdown>
             ) : null}
@@ -958,157 +932,7 @@ const Header = ({ user }) => {
       />
 
       {/* User Profile Modal */}
-      <Modal
-        title={
-          <div className='flex items-center space-x-2'>
-            <FontAwesomeIcon icon={faUser} style={{ color: darkMode ? '#10b981' : '#059669' }} />
-            <span style={{ color: darkMode ? '#ffffff' : '#000000' }}>User Profile</span>
-          </div>
-        }
-        open={isUserProfileOpen}
-        onCancel={handleUserProfileClose}
-        footer={null}
-        width={500}
-        className={darkMode ? 'ant-modal-dark' : ''}
-        styles={{
-          content: {
-            backgroundColor: darkMode ? '#374151' : '#ffffff',
-            color: darkMode ? '#ffffff' : '#000000'
-          },
-          body: {
-            backgroundColor: darkMode ? '#374151' : '#ffffff',
-            color: darkMode ? '#ffffff' : '#000000'
-          },
-          header: {
-            backgroundColor: darkMode ? '#374151' : '#ffffff',
-            borderBottom: darkMode ? '1px solid #4B5563' : '1px solid #e5e7eb'
-          }
-        }}
-      >
-        {/* Dark Mode Form Styling */}
-        {darkMode && (
-          <style>
-            {`
-               .user-profile-form .ant-form-item-label > label {
-                 color: #E5E7EB !important;
-               }
-               .user-profile-form .ant-input {
-                 background-color: #4B5563 !important;
-                 border-color: #6B7280 !important;
-                 color: #F9FAFB !important;
-               }
-               .user-profile-form .ant-input:focus {
-                 border-color: #059669 !important;
-                 box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
-               }
-               .user-profile-form .ant-input::placeholder {
-                 color: #9CA3AF !important;
-               }
-               .user-profile-form .ant-upload.ant-upload-select {
-                 background-color: #4B5563 !important;
-                 border-color: #6B7280 !important;
-               }
-               .user-profile-form .ant-upload.ant-upload-select:hover {
-                 border-color: #059669 !important;
-               }
-               .user-profile-form .ant-upload-text {
-                 color: #E5E7EB !important;
-               }
-               .user-profile-form .ant-upload-hint {
-                 color: #9CA3AF !important;
-               }
-             `}
-          </style>
-        )}
-
-        <div className='space-y-6'>
-          <div className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-            <p className='mb-3'>Update your personal information and profile picture.</p>
-          </div>
-
-          <Form
-            form={userProfileForm}
-            layout='vertical'
-            onFinish={handleUserProfileSave}
-            className={`${darkMode ? 'user-profile-form' : ''}`}
-          >
-            {/* Profile Picture Upload */}
-            <Form.Item
-              label={<span className={darkMode ? 'text-gray-300' : ''}>Profile Picture</span>}
-              name='profilePicture'
-            >
-              <div className='flex items-center space-x-4'>
-                <Avatar
-                  size={80}
-                  src={user?.ProfileEntryResponse?.ProfilePic}
-                  icon={<FontAwesomeIcon icon={faUser} />}
-                  className={`${darkMode ? 'bg-gray-600' : 'bg-gray-200'}`}
-                />
-                <Upload
-                  accept='image/*'
-                  showUploadList={false}
-                  beforeUpload={(file) => {
-                    // Handle file upload logic here
-                    // For now, just prevent default upload
-                    console.log('File selected:', file)
-                    return false
-                  }}
-                >
-                  <Button
-                    icon={<FontAwesomeIcon icon={faUpload} />}
-                    className={darkMode ? 'border-gray-600 text-gray-300 hover:border-gray-500' : ''}
-                  >
-                    Upload Photo
-                  </Button>
-                </Upload>
-              </div>
-            </Form.Item>
-
-            <div className='grid grid-cols-2 gap-4'>
-              <Form.Item
-                label={<span className={darkMode ? 'text-gray-300' : ''}>First Name</span>}
-                name='firstName'
-                rules={[
-                  { required: true, message: 'Please enter your first name' },
-                  { min: 2, message: 'First name must be at least 2 characters' }
-                ]}
-              >
-                <Input placeholder='e.g. John' />
-              </Form.Item>
-
-              <Form.Item
-                label={<span className={darkMode ? 'text-gray-300' : ''}>Last Name</span>}
-                name='lastName'
-                rules={[
-                  { required: true, message: 'Please enter your last name' },
-                  { min: 2, message: 'Last name must be at least 2 characters' }
-                ]}
-              >
-                <Input placeholder='e.g. Doe' />
-              </Form.Item>
-            </div>
-
-            <div className='flex justify-end space-x-3 pt-4 border-t border-gray-200 dark:border-gray-600'>
-              <Button
-                onClick={handleUserProfileClose}
-                className={darkMode ? 'border-gray-600 text-gray-300 hover:border-gray-500' : ''}
-              >
-                Cancel
-              </Button>
-              <Button
-                type='primary'
-                htmlType='submit'
-                style={{
-                  backgroundColor: darkMode ? '#059669' : '#10b981',
-                  borderColor: darkMode ? '#059669' : '#10b981'
-                }}
-              >
-                Save Profile
-              </Button>
-            </div>
-          </Form>
-        </div>
-      </Modal>
+      <ProfileModal isOpen={isUserProfileOpen} onClose={handleUserProfileClose} user={user} />
     </header>
   )
 }

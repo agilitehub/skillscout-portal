@@ -1005,5 +1005,306 @@ export const createOrganizationAndAssignToUser = async (organizationData, userId
   }
 }
 
+/**
+ * Upload avatar image to Supabase Storage in avatars bucket
+ * @param {File} file - Avatar image file to upload
+ * @param {string} userId - User's UUID for folder organization
+ * @returns {Promise<Object>} Result object with success status and avatar URL
+ */
+export const uploadAvatarToStorage = async (file, userId) => {
+  try {
+    if (!supabase) {
+      return {
+        success: false,
+        error: 'Supabase client not initialized'
+      }
+    }
+
+    if (!file || !(file instanceof File)) {
+      return {
+        success: false,
+        error: 'Valid file object is required'
+      }
+    }
+
+    if (!userId || typeof userId !== 'string') {
+      return {
+        success: false,
+        error: 'Valid user ID is required'
+      }
+    }
+
+    // Validate file size (max 5MB for avatars)
+    const maxSize = 5 * 1024 * 1024 // 5MB
+    if (file.size > maxSize) {
+      return {
+        success: false,
+        error: `File size exceeds limit. Maximum size is ${maxSize / (1024 * 1024)}MB`
+      }
+    }
+
+    // Validate file type (only images for avatars)
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp']
+
+    if (!allowedTypes.includes(file.type)) {
+      return {
+        success: false,
+        error: 'Only image files (JPEG, PNG, GIF, WebP) are allowed for avatars'
+      }
+    }
+
+    // Generate unique filename with timestamp
+    const timestamp = Date.now()
+    const fileExtension = file.name.split('.').pop()
+    const fileName = `avatar_${timestamp}.${fileExtension}`
+    const filePath = `${userId}/${fileName}`
+
+    // Delete existing avatar if it exists
+    try {
+      const { data: existingFiles } = await supabase.storage.from('avatars').list(userId)
+
+      if (existingFiles && existingFiles.length > 0) {
+        const filesToDelete = existingFiles.map((f) => `${userId}/${f.name}`)
+        await supabase.storage.from('avatars').remove(filesToDelete)
+      }
+    } catch (deleteError) {
+      console.warn('Supabase Controller: Could not delete existing avatar:', deleteError)
+      // Don't fail the upload if deletion fails
+    }
+
+    // Upload new avatar to Supabase Storage
+    const { data, error } = await supabase.storage.from('avatars').upload(filePath, file, {
+      cacheControl: '3600',
+      upsert: true
+    })
+
+    if (error) {
+      console.error('Supabase Controller: Avatar upload error:', error)
+      return {
+        success: false,
+        error: error.message || 'Failed to upload avatar'
+      }
+    }
+
+    // Get public URL for the uploaded avatar
+    const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(filePath)
+
+    return {
+      success: true,
+      message: 'Avatar uploaded successfully',
+      data: {
+        id: data.id,
+        path: data.path,
+        name: fileName,
+        size: file.size,
+        type: file.type,
+        url: urlData.publicUrl,
+        uploadedAt: new Date().toISOString(),
+        userId: userId
+      }
+    }
+  } catch (error) {
+    console.error('Supabase Controller: Unexpected error in uploadAvatarToStorage:', error)
+    return {
+      success: false,
+      error: 'An unexpected error occurred during avatar upload'
+    }
+  }
+}
+
+/**
+ * Update user profile information in the users table
+ * @param {string} userId - User's UUID
+ * @param {Object} profileData - Profile data to update
+ * @param {string} profileData.first_name - User's first name
+ * @param {string} profileData.last_name - User's last name
+ * @param {string} profileData.avatar_url - Optional avatar URL
+ * @returns {Promise<Object>} Result object with success status and updated user data
+ */
+export const updateUserProfile = async (userId, profileData) => {
+  try {
+    if (!supabase) {
+      return {
+        success: false,
+        error: 'Supabase client not initialized'
+      }
+    }
+
+    if (!userId || typeof userId !== 'string') {
+      return {
+        success: false,
+        error: 'Valid user ID is required'
+      }
+    }
+
+    if (!profileData || typeof profileData !== 'object') {
+      return {
+        success: false,
+        error: 'Valid profile data is required'
+      }
+    }
+
+    // Validate required fields
+    if (!profileData.first_name || !profileData.first_name.trim()) {
+      return {
+        success: false,
+        error: 'First name is required'
+      }
+    }
+
+    if (!profileData.last_name || !profileData.last_name.trim()) {
+      return {
+        success: false,
+        error: 'Last name is required'
+      }
+    }
+
+    // Validate name lengths
+    if (profileData.first_name.length < 2) {
+      return {
+        success: false,
+        error: 'First name must be at least 2 characters long'
+      }
+    }
+
+    if (profileData.last_name.length < 2) {
+      return {
+        success: false,
+        error: 'Last name must be at least 2 characters long'
+      }
+    }
+
+    // Ensure user record exists first
+    await ensureUserRecord(userId)
+
+    // Prepare update data
+    const updateData = {
+      first_name: profileData.first_name.trim(),
+      last_name: profileData.last_name.trim()
+    }
+
+    // Add avatar URL if provided
+    if (profileData.avatar_url) {
+      updateData.avatar_url = profileData.avatar_url
+    }
+
+    // Update user profile in the database
+    const { data: userData, error: updateError } = await supabase
+      .from('users')
+      .update(updateData)
+      .eq('id', userId)
+      .select('id, first_name, last_name, avatar_url, created_at')
+      .single()
+
+    if (updateError) {
+      console.error('Supabase Controller: Error updating user profile:', updateError)
+      return {
+        success: false,
+        error: updateError.message || 'Failed to update user profile'
+      }
+    }
+
+    return {
+      success: true,
+      message: 'User profile updated successfully',
+      data: userData
+    }
+  } catch (error) {
+    console.error('Supabase Controller: Unexpected error in updateUserProfile:', error)
+    return {
+      success: false,
+      error: 'An unexpected error occurred while updating user profile'
+    }
+  }
+}
+
+/**
+ * Get user profile information from the users table
+ * @param {string} userId - User's UUID
+ * @returns {Promise<Object>} Result object with user profile data
+ */
+export const getUserProfile = async (userId) => {
+  try {
+    if (!supabase) {
+      return {
+        success: false,
+        error: 'Supabase client not initialized'
+      }
+    }
+
+    if (!userId || typeof userId !== 'string') {
+      return {
+        success: false,
+        error: 'Valid user ID is required'
+      }
+    }
+
+    // Ensure user record exists
+    await ensureUserRecord(userId)
+
+    // Get user profile data
+    const { data: userData, error: fetchError } = await supabase
+      .from('users')
+      .select('id, first_name, last_name, avatar_url, created_at')
+      .eq('id', userId)
+      .single()
+
+    if (fetchError) {
+      console.error('Supabase Controller: Error fetching user profile:', fetchError)
+      return {
+        success: false,
+        error: fetchError.message || 'Failed to fetch user profile'
+      }
+    }
+
+    return {
+      success: true,
+      data: userData
+    }
+  } catch (error) {
+    console.error('Supabase Controller: Unexpected error in getUserProfile:', error)
+    return {
+      success: false,
+      error: 'An unexpected error occurred while fetching user profile'
+    }
+  }
+}
+
+/**
+ * Get the full public URL for an avatar from its storage path
+ * @param {string} avatarPath - The avatar path stored in the database (e.g., "userId/avatar_123.jpg")
+ * @returns {string|null} The full public URL or null if no path provided
+ */
+export const getAvatarPublicUrl = (avatarPath) => {
+  try {
+    if (!avatarPath || typeof avatarPath !== 'string') {
+      return null
+    }
+
+    if (!supabase) {
+      console.error('Supabase Controller: Client not initialized')
+      return null
+    }
+
+    // If the path is already a full URL, return it as-is
+    if (avatarPath.startsWith('http://') || avatarPath.startsWith('https://')) {
+      return avatarPath
+    }
+
+    // Get the public URL from the avatars bucket
+    const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(avatarPath)
+
+    if (urlData?.publicUrl) {
+      return urlData.publicUrl
+    } else {
+      console.warn('Supabase Controller: Failed to generate public URL for avatar path:', avatarPath)
+      return null
+    }
+  } catch (error) {
+    console.error('Supabase Controller: Error getting avatar public URL for path:', avatarPath, error)
+    return null
+  }
+}
+
 // Export the Supabase client for direct access if needed
 export { supabase }

@@ -1,6 +1,7 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react'
+import { useDispatch } from 'react-redux'
 import {
   sendMagicLink,
   getCurrentUser,
@@ -9,6 +10,7 @@ import {
   getSession,
   isAuthenticated
 } from '../../core/lib/supabase-controller'
+import { fetchUserProfile, clearProfile } from '../components/profile'
 
 /**
  * Authentication context for Supabase Magic Link authentication
@@ -34,6 +36,7 @@ export const useAuth = () => {
  * Manages user authentication state for Supabase Magic Link login
  */
 export const AuthProvider = ({ children }) => {
+  const dispatch = useDispatch()
   const [currentUser, setCurrentUser] = useState(null)
   const [loading, setLoading] = useState(true)
   const [authError, setAuthError] = useState(null)
@@ -49,6 +52,10 @@ export const AuthProvider = ({ children }) => {
         const sessionResult = await getSession()
         if (sessionResult.success && sessionResult.session) {
           setCurrentUser(sessionResult.session.user)
+          // Load user profile when session is restored
+          if (sessionResult.session.user?.id) {
+            dispatch(fetchUserProfile(sessionResult.session.user.id))
+          }
         } else if (sessionResult.error) {
           console.warn('AuthContext: Session check error:', sessionResult.error)
         }
@@ -61,9 +68,15 @@ export const AuthProvider = ({ children }) => {
             if (event === 'SIGNED_IN' && session) {
               setCurrentUser(session.user)
               setAuthError(null)
+              // Load user profile when user signs in
+              if (session.user?.id) {
+                dispatch(fetchUserProfile(session.user.id))
+              }
             } else if (event === 'SIGNED_OUT') {
               setCurrentUser(null)
               setAuthError(null)
+              // Clear profile data when user signs out
+              dispatch(clearProfile())
             } else if (event === 'TOKEN_REFRESHED' && session) {
               setCurrentUser(session.user)
             }
@@ -88,7 +101,7 @@ export const AuthProvider = ({ children }) => {
         unsubscribe()
       }
     }
-  }, [])
+  }, [dispatch])
 
   // Magic Link login function
   const login = useCallback(async (email) => {
@@ -140,6 +153,8 @@ export const AuthProvider = ({ children }) => {
 
       if (result.success) {
         setCurrentUser(null)
+        // Clear profile data on logout
+        dispatch(clearProfile())
         return {
           success: true,
           message: result.message
@@ -162,7 +177,7 @@ export const AuthProvider = ({ children }) => {
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [dispatch])
 
   // Check if user is authenticated
   const checkAuthStatus = useCallback(async () => {
