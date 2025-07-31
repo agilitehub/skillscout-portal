@@ -227,7 +227,7 @@ const AppRoutes = () => {
       />
 
       <Route
-        path='/business-dashboard/job-descriptions/create'
+        path='/business-dashboard/job-descriptions/edit'
         element={
           user ? (
             <DashboardLayout user={user}>
@@ -440,45 +440,6 @@ const AppRoutes = () => {
           user ? (
             <DashboardLayout user={user}>
               <LookupForm user={user} />
-            </DashboardLayout>
-          ) : (
-            <Navigate to='/' replace state={{ from: location }} />
-          )
-        }
-      />
-
-      <Route
-        path='/business-dashboard/candidates'
-        element={
-          user ? (
-            <DashboardLayout user={user}>
-              <Candidates user={user} />
-            </DashboardLayout>
-          ) : (
-            <Navigate to='/' replace state={{ from: location }} />
-          )
-        }
-      />
-
-      <Route
-        path='/business-dashboard/candidates/create'
-        element={
-          user ? (
-            <DashboardLayout user={user}>
-              <CandidateForm user={user} />
-            </DashboardLayout>
-          ) : (
-            <Navigate to='/' replace state={{ from: location }} />
-          )
-        }
-      />
-
-      <Route
-        path='/business-dashboard/candidates/edit'
-        element={
-          user ? (
-            <DashboardLayout user={user}>
-              <CandidateForm user={user} />
             </DashboardLayout>
           ) : (
             <Navigate to='/' replace state={{ from: location }} />

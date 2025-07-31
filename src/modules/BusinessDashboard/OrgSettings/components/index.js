@@ -854,10 +854,18 @@ const OrgSettings = React.memo(({ user }) => {
           .org-settings-tabs-dark .ant-tabs-tab {
             background-color: #4B5563 !important;
             border-color: #6B7280 !important;
-            color: #D1D5DB !important;
+            color: #FFFFFF !important;
+          }
+          
+          .org-settings-tabs-dark .ant-tabs-tab .ant-tabs-tab-btn {
+            color: #FFFFFF !important;
           }
           
           .org-settings-tabs-dark .ant-tabs-tab:hover {
+            color: #10B981 !important;
+          }
+          
+          .org-settings-tabs-dark .ant-tabs-tab:hover .ant-tabs-tab-btn {
             color: #10B981 !important;
           }
           

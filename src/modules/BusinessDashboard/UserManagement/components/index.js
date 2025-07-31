@@ -416,19 +416,11 @@ const UserManagement = React.memo(({ user }) => {
             </div>
             
             <Button
-              type='primary'
+              type='default'
+              size='large'
               icon={<FontAwesomeIcon icon={faUserPlus} />}
               onClick={handleInviteUser}
-              className={`shadow-md hover:shadow-lg transition-all duration-200 ${
-                darkMode
-                  ? 'bg-white text-emerald-600 hover:bg-emerald-50 border-white'
-                  : 'bg-white text-emerald-600 hover:bg-emerald-50 border-white'
-              }`}
-              style={{
-                backgroundColor: 'white',
-                color: '#059669',
-                borderColor: 'white'
-              }}
+              className="invite-user-btn font-medium"
             >
               Invite User
             </Button>
@@ -463,6 +455,40 @@ const UserManagement = React.memo(({ user }) => {
 
       {/* Custom Styles */}
       <style jsx global>{`
+        /* Force white button background for invite button only */
+        .invite-user-btn {
+          background-color: #ffffff !important;
+          color: #059669 !important;
+          border: none !important;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24) !important;
+          padding: 8px 16px !important;
+          height: auto !important;
+          font-size: 14px !important;
+          font-weight: 500 !important;
+          outline: none !important;
+        }
+        
+        .invite-user-btn:hover {
+          background-color: #f8f9fa !important;
+          color: #047857 !important;
+          box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23) !important;
+          outline: none !important;
+        }
+        
+        .invite-user-btn:focus {
+          background-color: #ffffff !important;
+          color: #059669 !important;
+          outline: none !important;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24) !important;
+        }
+        
+        .invite-user-btn span,
+        .invite-user-btn .anticon {
+          text-shadow: none !important;
+          outline: none !important;
+          border: none !important;
+        }
+        
         .role-select .ant-select-selector {
           border: 1px solid ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.borderGray} !important;
           background-color: ${darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white} !important;

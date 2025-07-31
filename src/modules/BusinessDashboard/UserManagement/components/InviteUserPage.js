@@ -156,31 +156,33 @@ const InviteUserPage = React.memo(({ user }) => {
       <div className='flex-1 ml-64 relative'>
         {/* Header */}
         <div
-          className={`relative px-8 py-4 border-b flex-shrink-0 shadow-lg ${
+          className={`relative border-b flex-shrink-0 shadow-lg ${
             darkMode
               ? 'bg-gradient-to-r from-emerald-700 to-emerald-600 border border-emerald-600'
               : 'bg-gradient-to-r from-emerald-500 to-emerald-600'
           }`}
         >
-          <div className='flex items-center justify-between'>
-            <div className='flex items-center space-x-4'>
-              <Button
-                type='text'
-                icon={<FontAwesomeIcon icon={faArrowLeft} />}
-                onClick={handleCancel}
-                className='text-white hover:text-emerald-100 hover:bg-emerald-600/50'
-                size='large'
-              />
-              <div className='flex items-center space-x-3'>
-                <div 
-                  className='w-10 h-10 rounded-lg flex items-center justify-center'
-                  style={{ backgroundColor: 'rgba(255, 255, 255, 0.2)' }}
-                >
-                  <FontAwesomeIcon icon={faUserPlus} className='text-white text-lg' />
-                </div>
-                <div>
-                  <h1 className='text-2xl font-bold text-white'>Invite New User</h1>
-                  <p className='text-emerald-100 text-sm'>Send an invitation to join your organization</p>
+          <div className='max-w-6xl mx-auto px-8 py-6'>
+            <div className='flex items-center justify-between'>
+              <div className='flex items-center space-x-4'>
+                <Button
+                  type='text'
+                  icon={<FontAwesomeIcon icon={faArrowLeft} />}
+                  onClick={handleCancel}
+                  className='text-white hover:text-emerald-100 hover:bg-emerald-600/50'
+                  size='large'
+                />
+                <div className='flex items-center space-x-3'>
+                  <div 
+                    className='w-10 h-10 rounded-lg flex items-center justify-center'
+                    style={{ backgroundColor: 'rgba(255, 255, 255, 0.2)' }}
+                  >
+                    <FontAwesomeIcon icon={faUserPlus} className='text-white text-lg' />
+                  </div>
+                  <div>
+                    <h1 className='text-2xl font-bold text-white'>Invite New User</h1>
+                    <p className='text-emerald-100 text-sm'>Send an invitation to join your organization</p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -188,8 +190,8 @@ const InviteUserPage = React.memo(({ user }) => {
         </div>
 
         {/* Content Area */}
-        <div className='relative p-8'>
-          <div className='max-w-4xl mx-auto'>
+        <div className='relative'>
+          <div className='max-w-6xl mx-auto px-8 py-8'>
             <Card
               className={`shadow-xl ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}
               style={{

@@ -202,7 +202,7 @@ const LookupForm = React.memo(({ user }) => {
           </div>
 
           {/* Form Card */}
-          <Card className={`${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white'} shadow-lg`}>
+          <Card className={`${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white'} shadow-lg lookups-card`}>
             {/* Dark Mode Form Styling */}
             {darkMode && (
               <style>
@@ -288,6 +288,34 @@ const LookupForm = React.memo(({ user }) => {
                   .ant-form-item-explain-error {
                     color: #F87171 !important;
                   }
+                  
+                  /* Card and container fixes */
+                  .lookups-card .ant-card-body {
+                    background-color: #374151 !important;
+                    color: #F9FAFB !important;
+                  }
+                  
+                  .lookups-card .ant-card {
+                    background-color: #374151 !important;
+                    border-color: #4B5563 !important;
+                  }
+                  
+                  /* Text color fixes */
+                  .page-dark h4,
+                  .page-dark .ant-typography,
+                  .page-dark div {
+                    color: #F9FAFB !important;
+                  }
+                  
+                  /* Override any remaining light backgrounds */
+                  .page-dark .ant-form-item {
+                    color: #F9FAFB !important;
+                  }
+                  
+                  /* Button hover states in dark mode */
+                  .page-dark .ant-btn-text:hover {
+                    background-color: #4B5563 !important;
+                  }
                 `}
               </style>
             )}
@@ -296,7 +324,7 @@ const LookupForm = React.memo(({ user }) => {
               form={form}
               layout='vertical'
               onFinish={handleFormSubmit}
-              className={darkMode ? 'lookups-form' : ''}
+              className={darkMode ? 'page-dark lookups-form' : 'lookups-form'}
               preserve={false}
               initialValues={{ isActive: true }}
               loading={loadingData}
@@ -433,7 +461,11 @@ const LookupForm = React.memo(({ user }) => {
               </div>
 
               {/* Form Actions */}
-              <div className='flex justify-end space-x-4 mt-8 pt-6 border-t border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 -mx-6 -mb-6 px-6 pb-6 rounded-b-lg'>
+              <div className={`flex justify-end space-x-4 mt-8 pt-6 border-t -mx-6 -mb-6 px-6 pb-6 rounded-b-lg ${
+                darkMode 
+                  ? 'border-gray-600 bg-gray-700' 
+                  : 'border-gray-200 bg-gray-50'
+              }`}>
                 <Button
                   variant='secondary'
                   icon={<FontAwesomeIcon icon={faTimes} />}

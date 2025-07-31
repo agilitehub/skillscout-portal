@@ -255,35 +255,30 @@ const BranchEditPage = React.memo(({ user: currentUser }) => {
           }`}
         >
           <div className='flex items-center justify-between'>
-            <div className='flex items-center space-x-4'>
-              <Button
-                type='text'
-                icon={<FontAwesomeIcon icon={faArrowLeft} />}
-                onClick={handleBack}
-                className='text-white hover:text-emerald-100'
-              >
-                Back
-              </Button>
-              <div>
-                <h1 className='text-2xl font-bold text-white'>
-                  {mode === 'add' ? 'Add New Branch' : `Edit Branch - ${branchToEdit?.name}`}
-                </h1>
-                <p className='text-emerald-100 text-sm'>
-                  {mode === 'add' ? 'Create a new branch location' : 'Update branch details and settings'}
-                </p>
-              </div>
+            <div>
+              <h1 className='text-2xl font-bold text-white'>
+                {mode === 'add' ? 'Add New Branch' : `Edit Branch - ${branchToEdit?.name}`}
+              </h1>
+              <p className='text-emerald-100 text-sm'>
+                {mode === 'add' ? 'Create a new branch location' : 'Update branch details and settings'}
+              </p>
             </div>
             
             <div className='flex space-x-3'>
               {hasChanges && (
                 <Button
+                  size='large'
                   icon={<FontAwesomeIcon icon={faUndo} />}
                   onClick={handleReset}
-                  className={`shadow-md hover:shadow-lg transition-all duration-200`}
+                  className="reset-branch-btn font-medium"
                   style={{
-                    backgroundColor: darkMode ? '#6B7280' : '#9CA3AF',
-                    borderColor: darkMode ? '#6B7280' : '#9CA3AF',
-                    color: '#FFFFFF'
+                    background: '#ffffff',
+                    backgroundColor: '#ffffff',
+                    color: '#6B7280',
+                    border: '1px solid #ffffff',
+                    fontWeight: '500',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                    opacity: '1'
                   }}
                 >
                   Reset
@@ -291,28 +286,21 @@ const BranchEditPage = React.memo(({ user: currentUser }) => {
               )}
               
               <Button
-                type='primary'
+                type='default'
+                size='large'
                 icon={<FontAwesomeIcon icon={faSave} />}
                 onClick={() => form.submit()}
                 loading={loading}
                 disabled={!hasChanges && mode === 'edit'}
-                className={`shadow-md hover:shadow-lg transition-all duration-200`}
+                className="create-branch-page-btn font-medium"
                 style={{
-                  backgroundColor: (hasChanges || mode === 'add')
-                    ? BRAND_COLORS.emeraldPrimary 
-                    : darkMode 
-                      ? '#4B5563' 
-                      : '#E5E7EB',
-                  borderColor: (hasChanges || mode === 'add')
-                    ? BRAND_COLORS.emeraldPrimary 
-                    : darkMode 
-                      ? '#4B5563' 
-                      : '#E5E7EB',
-                  color: (hasChanges || mode === 'add')
-                    ? '#FFFFFF' 
-                    : darkMode 
-                      ? '#9CA3AF' 
-                      : '#6B7280'
+                  background: '#ffffff',
+                  backgroundColor: '#ffffff',
+                  color: '#059669',
+                  border: '1px solid #ffffff',
+                  fontWeight: '500',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                  opacity: '1'
                 }}
               >
                 {mode === 'add' ? 'Create Branch' : 'Save Changes'}
@@ -756,6 +744,152 @@ const BranchEditPage = React.memo(({ user: currentUser }) => {
           background-color: #059669 !important;
           color: #FFFFFF !important;
         }
+        
+        /* Create Branch Page Button Styling */
+        .create-branch-page-btn,
+        .create-branch-page-btn.ant-btn,
+        button.create-branch-page-btn {
+          background: #ffffff !important;
+          background-color: #ffffff !important;
+          color: #059669 !important;
+          border: 1px solid #ffffff !important;
+          opacity: 1 !important;
+          visibility: visible !important;
+          transition: all 0.2s ease !important;
+        }
+        
+        .create-branch-page-btn:hover,
+        .create-branch-page-btn.ant-btn:hover,
+        button.create-branch-page-btn:hover {
+          background: #f8f9fa !important;
+          background-color: #f8f9fa !important;
+          color: #047857 !important;
+          border: 1px solid #f8f9fa !important;
+          transform: translateY(-1px) !important;
+          box-shadow: 0 4px 8px rgba(0,0,0,0.15) !important;
+        }
+        
+        .create-branch-page-btn:disabled,
+        .create-branch-page-btn.ant-btn:disabled,
+        button.create-branch-page-btn:disabled {
+          transform: none !important;
+          cursor: not-allowed !important;
+        }
+        
+        /* Reset Branch Button Styling */
+        .reset-branch-btn,
+        .reset-branch-btn.ant-btn,
+        button.reset-branch-btn {
+          background: #ffffff !important;
+          background-color: #ffffff !important;
+          color: #6B7280 !important;
+          border: 1px solid #ffffff !important;
+          opacity: 1 !important;
+          visibility: visible !important;
+          transition: all 0.2s ease !important;
+        }
+        
+        .reset-branch-btn:hover,
+        .reset-branch-btn.ant-btn:hover,
+        button.reset-branch-btn:hover {
+          background: #f8f9fa !important;
+          background-color: #f8f9fa !important;
+          color: #4B5563 !important;
+          border: 1px solid #f8f9fa !important;
+          transform: translateY(-1px) !important;
+          box-shadow: 0 4px 8px rgba(0,0,0,0.15) !important;
+        }
+        
+        ${darkMode ? `
+          /* Enhanced Dark Mode Styling */
+          .branch-edit-form .ant-switch {
+            background-color: #4B5563 !important;
+          }
+          
+          .branch-edit-form .ant-switch-checked {
+            background-color: #059669 !important;
+          }
+          
+          .branch-edit-form .ant-switch-handle {
+            background-color: #ffffff !important;
+          }
+          
+          /* Form item with border styling (headquarters section) */
+          .branch-edit-form .border-gray-200,
+          .branch-edit-form .dark\\:border-gray-600 {
+            border-color: #4B5563 !important;
+            background-color: #374151 !important;
+          }
+          
+          .branch-edit-form .text-gray-900,
+          .branch-edit-form .dark\\:text-white {
+            color: #F9FAFB !important;
+          }
+          
+          .branch-edit-form .text-gray-500,
+          .branch-edit-form .dark\\:text-gray-400 {
+            color: #9CA3AF !important;
+          }
+          
+          /* Card title icons */
+          .branch-edit-form .text-emerald-600 {
+            color: #10B981 !important;
+          }
+          
+          /* Input prefix icons in dark mode */
+          .branch-edit-form .ant-input-prefix .svg-inline--fa {
+            color: #9CA3AF !important;
+          }
+          
+          /* Force all Card backgrounds and borders */
+          .branch-edit-form .ant-card {
+            background-color: #374151 !important;
+            border-color: #4B5563 !important;
+          }
+          
+          .branch-edit-form .ant-card-head {
+            background-color: #374151 !important;
+            border-bottom-color: #4B5563 !important;
+          }
+          
+          .branch-edit-form .ant-card-body {
+            background-color: #374151 !important;
+          }
+          
+          .branch-edit-form .ant-card-head-title {
+            color: #F9FAFB !important;
+          }
+          
+          /* Additional dark mode fixes */
+          .branch-edit-form .ant-input-affix-wrapper,
+          .branch-edit-form .ant-input-affix-wrapper-focused {
+            background-color: #4B5563 !important;
+            border-color: #6B7280 !important;
+          }
+          
+          .branch-edit-form .ant-input-affix-wrapper:hover {
+            border-color: #059669 !important;
+          }
+          
+          /* Fix any remaining white backgrounds */
+          .branch-edit-form .bg-white {
+            background-color: #374151 !important;
+          }
+          
+          /* Fix card content that might be white */
+          .branch-edit-form .ant-card-body > div {
+            background-color: transparent !important;
+          }
+          
+          /* Select option icons */
+          .branch-edit-dark-dropdown .svg-inline--fa {
+            color: #9CA3AF !important;
+          }
+          
+          .branch-edit-dark-dropdown .ant-select-item-option-selected .svg-inline--fa {
+            color: #FFFFFF !important;
+          }
+        ` : ''}
       `}</style>
     </div>
   )

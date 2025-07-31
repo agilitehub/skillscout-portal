@@ -201,34 +201,92 @@ const TableView = React.memo(
 
     return (
       <>
-        {/* Dark Mode Styles */}
-        {darkMode && (
-          <style jsx global>{`
+        {/* Enhanced Dark Mode & Light Mode Styles */}
+        <style jsx global>{`
+          /* Enhanced Table Styling */
+          .enhanced-table .ant-table-thead > tr > th {
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+            padding: 16px 12px;
+            ${darkMode ? `
+              background: linear-gradient(135deg, #374151 0%, #4B5563 100%);
+              color: #E5E7EB;
+              border-bottom: 2px solid #6B7280;
+            ` : `
+              background: linear-gradient(135deg, #F9FAFB 0%, #F3F4F6 100%);
+              color: #374151;
+              border-bottom: 2px solid #E5E7EB;
+            `}
+          }
+          
+          .enhanced-table .ant-table-tbody > tr > td {
+            padding: 16px 12px;
+            border-bottom: 1px solid ${darkMode ? '#4B5563' : '#F3F4F6'};
+            transition: all 0.2s ease;
+            ${darkMode ? `
+              background-color: transparent;
+              color: #F9FAFB;
+            ` : `
+              background-color: transparent;
+              color: #111827;
+            `}
+          }
+          
+          .enhanced-table .ant-table-tbody > tr:hover > td {
+            ${darkMode ? `
+              background: linear-gradient(90deg, #374151 0%, #4B5563 100%);
+              box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            ` : `
+              background: linear-gradient(90deg, #F0F9FF 0%, #ECFDF5 100%);
+              box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            `}
+            transform: translateY(-1px);
+          }
+          
+          .enhanced-table .ant-table-tbody > tr.ant-table-row-selected > td {
+            ${darkMode ? `
+              background: linear-gradient(90deg, #065F46 0%, #047857 100%);
+              color: #FFFFFF;
+            ` : `
+              background: linear-gradient(90deg, #ECFDF5 0%, #D1FAE5 100%);
+              color: #065F46;
+            `}
+          }
+
+          ${darkMode ? `
             .dark-search .ant-input {
               background-color: #4b5563 !important;
               border-color: #6b7280 !important;
               color: #ffffff !important;
+              border-radius: 8px !important;
+            }
+            .dark-search .ant-input:focus {
+              border-color: #059669 !important;
+              box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
             }
             .dark-search .ant-input::placeholder {
-              color: #9ca3af !important;
+              color: #ffffff !important;
             }
             .dark-search .ant-input-search-button {
               background-color: #6b7280 !important;
               border-color: #6b7280 !important;
+              border-radius: 0 8px 8px 0 !important;
             }
-            .dark-table .ant-table-thead > tr > th {
-              background-color: #4b5563 !important;
-              color: #ffffff !important;
-              border-bottom: 1px solid #6b7280 !important;
+            .dark-search .ant-input-search-button:hover {
+              background-color: #059669 !important;
+              border-color: #059669 !important;
             }
-            .dark-table .ant-table-tbody > tr > td {
-              background-color: transparent !important;
-              color: #ffffff !important;
-              border-bottom: 1px solid #4b5563 !important;
+          ` : `
+            .enhanced-table .ant-input-search:hover {
+              border-color: #059669 !important;
             }
-            .dark-table .ant-table-tbody > tr:hover > td {
-              background-color: #4b5563 !important;
+            .enhanced-table .ant-input-search:focus-within {
+              border-color: #059669 !important;
+              box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
             }
+          `}
             .dark-table .ant-table-placeholder {
               color: #9ca3af !important;
             }
@@ -306,52 +364,91 @@ const TableView = React.memo(
             .dark-table .ant-table-column-sorter-down:hover {
               color: #ffffff !important;
             }
-          `}</style>
-        )}
+        `}</style>
 
-        <Card className={`${darkMode ? 'bg-gray-700 border-gray-600' : ''} shadow-lg`} {...cardProps}>
-          {/* Toolbar */}
+        <Card 
+          className={`${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} shadow-xl rounded-lg overflow-hidden`} 
+          {...cardProps}
+          bodyStyle={{ padding: 0 }}
+        >
+          {/* Enhanced Toolbar */}
           {(showSearch || toolbarActions.length > 0) && (
-            <div className='flex items-center justify-between mb-4'>
-              {/* Custom toolbar actions */}
-              {toolbarActions.length > 0 && <div className='flex items-center space-x-3'>{toolbarActions}</div>}
+            <div className={`px-6 py-4 border-b ${
+              darkMode ? 'border-gray-700 bg-gradient-to-r from-gray-800 to-gray-700' : 'border-gray-200 bg-gradient-to-r from-gray-50 to-white'
+            }`}>
+              <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0'>
+                {/* Search */}
+                {showSearch && onSearch && (
+                  <div className="flex-1 max-w-md">
+                    <Search
+                      placeholder={searchPlaceholder}
+                      value={searchTerm}
+                      onChange={handleSearch}
+                      onSearch={handleSearchClick}
+                      className={`transition-all duration-200 ${darkMode ? 'dark-search' : ''}`}
+                      style={{
+                        backgroundColor: darkMode ? '#4b5563' : '#ffffff',
+                        borderRadius: '8px',
+                        boxShadow: darkMode 
+                          ? '0 2px 4px rgba(0, 0, 0, 0.3)' 
+                          : '0 2px 4px rgba(0, 0, 0, 0.1)'
+                      }}
+                      size="large"
+                    />
+                  </div>
+                )}
 
-              {/* Search */}
-              {showSearch && onSearch && (
-                <Search
-                  placeholder={searchPlaceholder}
-                  value={searchTerm}
-                  onChange={handleSearch}
-                  onSearch={handleSearchClick}
-                  className={`w-64 ${darkMode ? 'dark-search' : ''}`}
-                  style={{
-                    backgroundColor: darkMode ? '#4b5563' : '#ffffff'
-                  }}
-                />
-              )}
+                {/* Enhanced Toolbar Actions */}
+                {toolbarActions.length > 0 && (
+                  <div className='flex items-center space-x-3'>
+                    {toolbarActions.map((action, index) => (
+                      <div key={index} className="transform hover:scale-105 transition-transform duration-200">
+                        {action}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           )}
 
-          {/* Table */}
-          <Table
-            columns={columns}
-            dataSource={dataSource}
-            loading={loading}
-            rowKey={rowKey}
-            pagination={finalPagination}
-            className={darkMode ? 'dark-table' : ''}
-            scroll={scroll}
-            style={{
-              backgroundColor: darkMode ? '#374151' : '#ffffff'
-            }}
-            components={tableComponents}
-            expandable={expandable}
-            onRow={onRow}
-            locale={{
-              emptyText: <div className={`py-8 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{emptyText}</div>
-            }}
-            {...tableProps}
-          />
+          {/* Enhanced Table */}
+          <div className="p-6">
+            <Table
+              columns={columns}
+              dataSource={dataSource}
+              loading={loading}
+              rowKey={rowKey}
+              pagination={finalPagination}
+              className={`${darkMode ? 'dark-table' : ''} enhanced-table`}
+              scroll={scroll}
+              style={{
+                backgroundColor: 'transparent'
+              }}
+              components={tableComponents}
+              expandable={expandable}
+              onRow={onRow}
+              locale={{
+                emptyText: (
+                  <div className={`py-16 text-center ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                    <div className="mb-6">
+                      <div className={`w-20 h-20 mx-auto rounded-full ${
+                        darkMode ? 'bg-gray-700' : 'bg-gray-100'
+                      } flex items-center justify-center`}>
+                        <FontAwesomeIcon 
+                          icon={faPlus} 
+                          className={`text-3xl ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} 
+                        />
+                      </div>
+                    </div>
+                    <h3 className="text-lg font-semibold mb-2">{emptyText}</h3>
+                    <p className="text-sm opacity-75">Get started by adding your first item.</p>
+                  </div>
+                )
+              }}
+              {...tableProps}
+            />
+          </div>
         </Card>
       </>
     )

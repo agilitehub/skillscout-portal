@@ -223,8 +223,48 @@ const AddEditBranchModal = React.memo(({ visible, mode, branch, onCancel, onSucc
           box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2) !important;
         }
         
+        .branch-modal .ant-select-selection-item {
+          background-color: ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.white} !important;
+          color: ${darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray} !important;
+        }
+        
+        .branch-modal .ant-select-selection-placeholder {
+          color: ${darkMode ? BRAND_COLORS.lightGray : BRAND_COLORS.mediumGray} !important;
+        }
+        
+        .branch-modal textarea.ant-input {
+          background-color: ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.white} !important;
+          border-color: ${darkMode ? BRAND_COLORS.darkSlate : BRAND_COLORS.borderGray} !important;
+          color: ${darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray} !important;
+        }
+        
+        .branch-modal textarea.ant-input:focus {
+          border-color: ${BRAND_COLORS.emeraldPrimary} !important;
+          box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2) !important;
+        }
+        
+        .branch-modal textarea.ant-input::placeholder {
+          color: ${darkMode ? BRAND_COLORS.lightGray : BRAND_COLORS.mediumGray} !important;
+        }
+        
+        .branch-modal .ant-input-data-count {
+          color: ${darkMode ? BRAND_COLORS.lightGray : BRAND_COLORS.mediumGray} !important;
+        }
+        
+        .branch-modal .ant-switch {
+          background-color: ${darkMode ? BRAND_COLORS.darkSlate : BRAND_COLORS.lightGray} !important;
+        }
+        
         .branch-modal .ant-switch-checked {
           background-color: ${BRAND_COLORS.emeraldPrimary} !important;
+        }
+        
+        .branch-modal .ant-form-item-extra {
+          color: ${darkMode ? BRAND_COLORS.lightGray : BRAND_COLORS.mediumGray} !important;
+        }
+        
+        .branch-modal .ant-input::placeholder {
+          color: ${darkMode ? BRAND_COLORS.lightGray : BRAND_COLORS.mediumGray} !important;
         }
         
         .branch-mgmt-dark-dropdown {
@@ -437,7 +477,7 @@ const AddEditBranchModal = React.memo(({ visible, mode, branch, onCancel, onSucc
               name="country"
               rules={[{ required: true, message: 'Please select country' }]}
             >
-                              <Select placeholder="Select country" style={{ fontWeight: '500' }} dropdownClassName={darkMode ? 'branch-dark-dropdown' : ''}>
+                              <Select placeholder="Select country" style={{ fontWeight: '500' }} dropdownClassName={darkMode ? 'branch-mgmt-dark-dropdown' : ''}>
                 {countryOptions.map(country => (
                   <Option key={country} value={country}>
                     {country}
@@ -529,7 +569,7 @@ const AddEditBranchModal = React.memo(({ visible, mode, branch, onCancel, onSucc
               name="timezone"
               rules={[{ required: true, message: 'Please select timezone' }]}
             >
-                              <Select placeholder="Select timezone" style={{ fontWeight: '500' }} dropdownClassName={darkMode ? 'branch-dark-dropdown' : ''}>
+                              <Select placeholder="Select timezone" style={{ fontWeight: '500' }} dropdownClassName={darkMode ? 'branch-mgmt-dark-dropdown' : ''}>
                 {timezoneOptions.map(tz => (
                   <Option key={tz.value} value={tz.value}>
                     {tz.label}
@@ -556,7 +596,7 @@ const AddEditBranchModal = React.memo(({ visible, mode, branch, onCancel, onSucc
                 mode="multiple"
                 placeholder="Select departments"
                 style={{ fontWeight: '500' }}
-                dropdownClassName={darkMode ? 'branch-dark-dropdown' : ''}
+                dropdownClassName={darkMode ? 'branch-mgmt-dark-dropdown' : ''}
                 tagRender={({ label, closable, onClose }) => (
                   <Tag
                     color={BRAND_COLORS.emeraldPrimary}
@@ -583,7 +623,7 @@ const AddEditBranchModal = React.memo(({ visible, mode, branch, onCancel, onSucc
                   name="status"
                   rules={[{ required: true, message: 'Please select status' }]}
                 >
-                  <Select style={{ fontWeight: '500' }} dropdownClassName={darkMode ? 'branch-dark-dropdown' : ''}>
+                  <Select style={{ fontWeight: '500' }} dropdownClassName={darkMode ? 'branch-mgmt-dark-dropdown' : ''}>
                     <Option value="active">
                       <Space>
                         <FontAwesomeIcon icon={faCheckCircle} style={{ color: SEMANTIC_COLORS.success }} />

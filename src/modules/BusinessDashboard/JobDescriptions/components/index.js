@@ -262,17 +262,37 @@ const JobDescriptions = React.memo(({ user }) => {
                 : `linear-gradient(135deg, ${BRAND_COLORS.emeraldLight} 0%, ${BRAND_COLORS.emeraldPrimary} 100%)`
             }}
           >
-            <div className='flex items-center'>
-              <FontAwesomeIcon
-                icon={faFileText}
-                className={`text-lg mr-3 ${darkMode ? 'text-emerald-400' : 'text-white'}`}
-              />
-              <div>
-                <h1 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-white'}`}>Job Descriptions</h1>
-                <p className={`text-sm mt-1 ${darkMode ? 'text-gray-300' : 'text-white/90'}`}>
-                  Create and manage detailed job descriptions
-                </p>
+            <div className='flex items-center justify-between'>
+              <div className='flex items-center'>
+                <FontAwesomeIcon
+                  icon={faFileText}
+                  className={`text-lg mr-3 ${darkMode ? 'text-emerald-400' : 'text-white'}`}
+                />
+                <div>
+                  <h1 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-white'}`}>Job Descriptions</h1>
+                  <p className={`text-sm mt-1 ${darkMode ? 'text-gray-300' : 'text-white/90'}`}>
+                    Create and manage detailed job descriptions
+                  </p>
+                </div>
               </div>
+              <Button
+                type='default'
+                size='large'
+                icon={<FontAwesomeIcon icon={faPlus} />}
+                onClick={handleCreateDescription}
+                className="create-job-description-btn font-medium"
+                style={{
+                  background: '#ffffff',
+                  backgroundColor: '#ffffff',
+                  color: '#059669',
+                  border: '1px solid #ffffff',
+                  fontWeight: '500',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                  opacity: '1'
+                }}
+              >
+                Create Description
+              </Button>
             </div>
           </div>
 
@@ -305,16 +325,7 @@ const JobDescriptions = React.memo(({ user }) => {
             searchTerm={searchTerm}
             onSearch={setSearchTerm}
             searchPlaceholder='Search job descriptions...'
-            toolbarActions={[
-              <Button
-                key='create'
-                type='primary'
-                icon={<FontAwesomeIcon icon={faPlus} />}
-                onClick={handleCreateDescription}
-              >
-                Create Description
-              </Button>
-            ]}
+            toolbarActions={[]}
             pagination={{
               pageSize: 10,
               showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} job descriptions`
@@ -333,6 +344,30 @@ const JobDescriptions = React.memo(({ user }) => {
           />
         </div>
       </div>
+      
+      {/* Custom Styles */}
+      <style jsx global>{`
+        /* Force Create Job Description Button Visibility */
+        .create-job-description-btn,
+        .create-job-description-btn.ant-btn,
+        button.create-job-description-btn {
+          background: #ffffff !important;
+          background-color: #ffffff !important;
+          color: #059669 !important;
+          border: 1px solid #ffffff !important;
+          opacity: 1 !important;
+          visibility: visible !important;
+        }
+        
+        .create-job-description-btn:hover,
+        .create-job-description-btn.ant-btn:hover,
+        button.create-job-description-btn:hover {
+          background: #f8f9fa !important;
+          background-color: #f8f9fa !important;
+          color: #047857 !important;
+          border: 1px solid #f8f9fa !important;
+        }
+      `}</style>
     </>
   )
 })

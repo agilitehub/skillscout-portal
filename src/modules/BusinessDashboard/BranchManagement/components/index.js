@@ -501,6 +501,27 @@ const BranchManagement = React.memo(({ user }) => {
           background-color: #059669 !important;
           color: #FFFFFF !important;
         }
+        
+        /* Force Add Branch Button Visibility */
+        .add-branch-btn,
+        .add-branch-btn.ant-btn,
+        button.add-branch-btn {
+          background: #ffffff !important;
+          background-color: #ffffff !important;
+          color: #059669 !important;
+          border: 1px solid #ffffff !important;
+          opacity: 1 !important;
+          visibility: visible !important;
+        }
+        
+        .add-branch-btn:hover,
+        .add-branch-btn.ant-btn:hover,
+        button.add-branch-btn:hover {
+          background: #f8f9fa !important;
+          background-color: #f8f9fa !important;
+          color: #047857 !important;
+          border: 1px solid #f8f9fa !important;
+        }
       `}</style>
       {/* Background overlay */}
       <div
@@ -532,18 +553,19 @@ const BranchManagement = React.memo(({ user }) => {
             </div>
             
             <Button
-              type='primary'
+              type='default'
+              size='large'
               icon={<FontAwesomeIcon icon={faPlus} />}
               onClick={handleAdd}
-              className={`shadow-md hover:shadow-lg transition-all duration-200 ${
-                darkMode
-                  ? 'bg-white text-emerald-600 hover:bg-emerald-50 border-white'
-                  : 'bg-white text-emerald-600 hover:bg-emerald-50 border-white'
-              }`}
+              className="add-branch-btn font-medium"
               style={{
-                backgroundColor: 'white',
+                background: '#ffffff',
+                backgroundColor: '#ffffff',
                 color: '#059669',
-                borderColor: 'white'
+                border: '1px solid #ffffff',
+                fontWeight: '500',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                opacity: '1'
               }}
             >
               Add Branch

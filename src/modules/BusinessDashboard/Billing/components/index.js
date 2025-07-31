@@ -871,6 +871,29 @@ const Billing = React.memo(({ user }) => {
           .ant-card-head-title {
             color: #F9FAFB !important;
           }
+          
+          /* Enhanced Status Tag Visibility in Dark Mode */
+          .ant-tag {
+            font-weight: 500 !important;
+          }
+          
+          .ant-tag-success {
+            background-color: #10B981 !important;
+            color: #FFFFFF !important;
+            border-color: #10B981 !important;
+          }
+          
+          .ant-tag-warning {
+            background-color: #F59E0B !important;
+            color: #FFFFFF !important;
+            border-color: #F59E0B !important;
+          }
+          
+          .ant-tag-error {
+            background-color: #EF4444 !important;
+            color: #FFFFFF !important;
+            border-color: #EF4444 !important;
+          }
         ` : ''}
         
         /* Table styles for dark mode */
@@ -908,6 +931,25 @@ const Billing = React.memo(({ user }) => {
           background: ${BRAND_COLORS.emeraldPrimary} !important;
           border-color: ${BRAND_COLORS.emeraldPrimary} !important;
         }
+        
+        /* Enhanced Status Tag Visibility in Dark Mode */
+        .ant-tag {
+          font-weight: 500 !important;
+        }
+        
+        .ant-tag-success {
+          background-color: #10B981 !important;
+          color: #FFFFFF !important;
+          border-color: #10B981 !important;
+        }
+        
+        .ant-tag-warning {
+          background-color: #F59E0B !important;
+          color: #FFFFFF !important;
+          border-color: #F59E0B !important;
+        }
+        
+
       `}</style>
     </div>
   )

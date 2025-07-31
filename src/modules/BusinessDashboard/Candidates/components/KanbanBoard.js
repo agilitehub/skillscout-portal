@@ -107,6 +107,7 @@ const FilterBar = React.memo(({
           {/* General Search */}
           <div className='min-w-56'>
             <Input
+              id="candidates-search-input"
               placeholder="Search candidates..."
               prefix={<FontAwesomeIcon icon={faSearch} className='text-gray-400' />}
               value={searchTerm}
@@ -115,7 +116,8 @@ const FilterBar = React.memo(({
               style={{
                 backgroundColor: darkMode ? '#4B5563' : '#ffffff',
                 borderColor: darkMode ? '#6B7280' : '#d1d5db',
-                color: darkMode ? '#F9FAFB' : '#111827'
+                color: darkMode ? '#F9FAFB' : '#111827',
+                '--placeholder-color': darkMode ? '#ffffff' : '#9ca3af'
               }}
             />
           </div>
@@ -124,6 +126,33 @@ const FilterBar = React.memo(({
     </div>
   )
 })
+
+// Force placeholder styling for dark mode
+const applyPlaceholderStyles = () => {
+  if (typeof window !== 'undefined') {
+    const style = document.createElement('style')
+    style.textContent = `
+      #candidates-search-input::placeholder {
+        color: #ffffff !important;
+        opacity: 1 !important;
+      }
+      .kanban-input-dark::placeholder {
+        color: #ffffff !important;
+        opacity: 1 !important;
+      }
+      .ant-input.kanban-input-dark::placeholder {
+        color: #ffffff !important;
+        opacity: 1 !important;
+      }
+    `
+    document.head.appendChild(style)
+  }
+}
+
+// Apply styles when component mounts
+if (typeof window !== 'undefined') {
+  setTimeout(applyPlaceholderStyles, 100)
+}
 
 /**
  * Smart drop indicator that shows where card will be inserted
@@ -514,7 +543,55 @@ if (typeof document !== 'undefined') {
     }
     
     .kanban-input-dark::placeholder {
-      color: #9CA3AF !important;
+      color: #FFFFFF !important;
+    }
+    
+    .kanban-input-dark.ant-input::placeholder {
+      color: #FFFFFF !important;
+    }
+    
+    .kanban-input-dark input::placeholder {
+      color: #FFFFFF !important;
+    }
+    
+    .ant-input.kanban-input-dark::placeholder {
+      color: #FFFFFF !important;
+    }
+    
+    /* More specific Ant Design placeholder selectors */
+    .ant-input-affix-wrapper.kanban-input-dark input::placeholder {
+      color: #FFFFFF !important;
+    }
+    
+    .ant-input-affix-wrapper.kanban-input-dark .ant-input::placeholder {
+      color: #FFFFFF !important;
+    }
+    
+    .kanban-input-dark .ant-input::placeholder {
+      color: #FFFFFF !important;
+    }
+    
+    /* Ultra-specific placeholder selectors to override everything */
+    div .kanban-input-dark.ant-input::placeholder,
+    div .kanban-input-dark input::placeholder,
+    .ant-input-affix-wrapper div .kanban-input-dark::placeholder,
+    .kanban-input-dark[placeholder] {
+      color: #FFFFFF !important;
+      opacity: 1 !important;
+    }
+    
+    /* Force placeholder with CSS variable */
+    .kanban-input-dark::placeholder {
+      color: var(--placeholder-color, #FFFFFF) !important;
+    }
+    
+    /* Target specific input by ID - highest specificity */
+    #candidates-search-input::placeholder,
+    #candidates-search-input.ant-input::placeholder,
+    .ant-input-affix-wrapper #candidates-search-input::placeholder,
+    input#candidates-search-input::placeholder {
+      color: #FFFFFF !important;
+      opacity: 1 !important;
     }
     
     .kanban-input-dark:hover {
