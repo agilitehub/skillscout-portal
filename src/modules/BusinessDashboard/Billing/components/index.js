@@ -359,7 +359,7 @@ const Billing = React.memo(({ user }) => {
                 extra={
                   <Button
                     type="primary"
-                    icon={<FontAwesomeIcon icon={faRocket} />}
+                    icon={<FontAwesomeIcon icon={faRocket} className="mr-2" />}
                     onClick={handlePlanUpgrade}
                     style={{
                       backgroundColor: BRAND_COLORS.emeraldPrimary,
