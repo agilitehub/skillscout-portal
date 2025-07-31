@@ -758,5 +758,252 @@ export const updateFileMetadata = async (filePath, metadata, bucketName = 'file-
   }
 }
 
+/**
+ * Organization Management Functions
+ */
+
+/**
+ * Check if user has an organization assigned
+ * @param {string} userId - User's UUID
+ * @returns {Promise<Object>} Result object with organization data or null
+ */
+export const getUserOrganization = async (userId) => {
+  try {
+    if (!supabase) {
+      return {
+        success: false,
+        error: 'Supabase client not initialized'
+      }
+    }
+
+    if (!userId) {
+      return {
+        success: false,
+        error: 'User ID is required'
+      }
+    }
+
+    // Get user with organization data
+    const { data: userData, error: userError } = await supabase
+      .from('users')
+      .select(
+        `
+        id,
+        org_id,
+        organizations (
+          id,
+          organization_name,
+          industry,
+          description,
+          website,
+          founded_year,
+          employee_range,
+          default_work_arrangement,
+          currency,
+          country,
+          language,
+          timezone,
+          industry_tags,
+          custom_classifications,
+          created_at,
+          modified_at
+        )
+      `
+      )
+      .eq('id', userId)
+      .single()
+
+    if (userError) {
+      console.error('Supabase Controller: Error fetching user organization:', userError)
+      return {
+        success: false,
+        error: userError.message || 'Failed to fetch user organization'
+      }
+    }
+
+    return {
+      success: true,
+      data: {
+        user: userData,
+        organization: userData.organizations,
+        hasOrganization: Boolean(userData.org_id && userData.organizations)
+      }
+    }
+  } catch (error) {
+    console.error('Supabase Controller: Unexpected error in getUserOrganization:', error)
+    return {
+      success: false,
+      error: 'An unexpected error occurred while fetching organization data'
+    }
+  }
+}
+
+/**
+ * Create a new organization
+ * @param {Object} organizationData - Organization data object
+ * @param {string} createdBy - User UUID who created the organization
+ * @returns {Promise<Object>} Result object with created organization data
+ */
+export const createOrganization = async (organizationData, createdBy) => {
+  try {
+    if (!supabase) {
+      return {
+        success: false,
+        error: 'Supabase client not initialized'
+      }
+    }
+
+    if (!organizationData || !createdBy) {
+      return {
+        success: false,
+        error: 'Organization data and creator ID are required'
+      }
+    }
+
+    // Validate required fields
+    if (!organizationData.organization_name) {
+      return {
+        success: false,
+        error: 'Organization name is required'
+      }
+    }
+
+    // Prepare organization data with audit fields
+    const orgData = {
+      ...organizationData,
+      created_by: createdBy,
+      modified_by: createdBy,
+      // Ensure arrays are properly formatted
+      industry_tags: organizationData.industry_tags || [],
+      custom_classifications: organizationData.custom_classifications || []
+    }
+
+    // Create the organization
+    const { data: organization, error: createError } = await supabase
+      .from('organizations')
+      .insert(orgData)
+      .select()
+      .single()
+
+    if (createError) {
+      console.error('Supabase Controller: Error creating organization:', createError)
+      return {
+        success: false,
+        error: createError.message || 'Failed to create organization'
+      }
+    }
+
+    return {
+      success: true,
+      data: organization
+    }
+  } catch (error) {
+    console.error('Supabase Controller: Unexpected error in createOrganization:', error)
+    return {
+      success: false,
+      error: 'An unexpected error occurred while creating organization'
+    }
+  }
+}
+
+/**
+ * Update user's organization ID
+ * @param {string} userId - User's UUID
+ * @param {string} organizationId - Organization UUID
+ * @returns {Promise<Object>} Result object with updated user data
+ */
+export const updateUserOrganization = async (userId, organizationId) => {
+  try {
+    if (!supabase) {
+      return {
+        success: false,
+        error: 'Supabase client not initialized'
+      }
+    }
+
+    if (!userId || !organizationId) {
+      return {
+        success: false,
+        error: 'User ID and organization ID are required'
+      }
+    }
+
+    // Update the user's org_id
+    const { data: userData, error: updateError } = await supabase
+      .from('users')
+      .update({ org_id: organizationId })
+      .eq('id', userId)
+      .select()
+      .single()
+
+    if (updateError) {
+      console.error('Supabase Controller: Error updating user organization:', updateError)
+      return {
+        success: false,
+        error: updateError.message || 'Failed to update user organization'
+      }
+    }
+
+    return {
+      success: true,
+      data: userData
+    }
+  } catch (error) {
+    console.error('Supabase Controller: Unexpected error in updateUserOrganization:', error)
+    return {
+      success: false,
+      error: 'An unexpected error occurred while updating user organization'
+    }
+  }
+}
+
+/**
+ * Create organization and assign to user (atomic operation)
+ * @param {Object} organizationData - Organization data object
+ * @param {string} userId - User's UUID
+ * @returns {Promise<Object>} Result object with created organization and updated user
+ */
+export const createOrganizationAndAssignToUser = async (organizationData, userId) => {
+  try {
+    if (!supabase) {
+      return {
+        success: false,
+        error: 'Supabase client not initialized'
+      }
+    }
+
+    // Create the organization
+    const createResult = await createOrganization(organizationData, userId)
+    if (!createResult.success) {
+      return createResult
+    }
+
+    // Update the user's org_id
+    const updateResult = await updateUserOrganization(userId, createResult.data.id)
+    if (!updateResult.success) {
+      // TODO: Consider implementing rollback of organization creation
+      console.error('Supabase Controller: Failed to assign organization to user after creation')
+      return {
+        success: false,
+        error: 'Organization created but failed to assign to user. Please contact support.'
+      }
+    }
+
+    return {
+      success: true,
+      data: {
+        organization: createResult.data,
+        user: updateResult.data
+      }
+    }
+  } catch (error) {
+    console.error('Supabase Controller: Unexpected error in createOrganizationAndAssignToUser:', error)
+    return {
+      success: false,
+      error: 'An unexpected error occurred while creating organization and assigning to user'
+    }
+  }
+}
+
 // Export the Supabase client for direct access if needed
 export { supabase }
