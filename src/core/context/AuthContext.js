@@ -68,8 +68,8 @@ export const AuthProvider = ({ children }) => {
             if (event === 'SIGNED_IN' && session) {
               setCurrentUser(session.user)
               setAuthError(null)
-              // Load user profile when user signs in
-              if (session.user?.id) {
+              // Load user profile when user signs in (only if not already loaded from session restore)
+              if (session.user?.id && !currentUser) {
                 dispatch(fetchUserProfile(session.user.id))
               }
             } else if (event === 'SIGNED_OUT') {

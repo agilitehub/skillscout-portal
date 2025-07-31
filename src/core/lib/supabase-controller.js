@@ -1218,6 +1218,9 @@ export const updateUserProfile = async (userId, profileData) => {
   }
 }
 
+// Request deduplication cache for getUserProfile
+const profileRequestCache = new Map()
+
 /**
  * Get user profile information from the users table
  * @param {string} userId - User's UUID
@@ -1239,30 +1242,51 @@ export const getUserProfile = async (userId) => {
       }
     }
 
-    // Ensure user record exists
-    await ensureUserRecord(userId)
+    // Check if there's already a pending request for this user
+    if (profileRequestCache.has(userId)) {
+      console.log('Supabase Controller: Returning cached profile request for user:', userId)
+      return await profileRequestCache.get(userId)
+    }
 
-    // Get user profile data
-    const { data: userData, error: fetchError } = await supabase
-      .from('users')
-      .select('id, first_name, last_name, avatar_url, created_at')
-      .eq('id', userId)
-      .single()
+    // Create the request promise and cache it
+    const requestPromise = (async () => {
+      try {
+        // Ensure user record exists
+        await ensureUserRecord(userId)
 
-    if (fetchError) {
-      console.error('Supabase Controller: Error fetching user profile:', fetchError)
-      return {
-        success: false,
-        error: fetchError.message || 'Failed to fetch user profile'
+        // Get user profile data
+        const { data: userData, error: fetchError } = await supabase
+          .from('users')
+          .select('id, first_name, last_name, avatar_url, created_at')
+          .eq('id', userId)
+          .single()
+
+        if (fetchError) {
+          console.error('Supabase Controller: Error fetching user profile:', fetchError)
+          return {
+            success: false,
+            error: fetchError.message || 'Failed to fetch user profile'
+          }
+        }
+
+        return {
+          success: true,
+          data: userData
+        }
+      } finally {
+        // Clean up cache after request completes
+        profileRequestCache.delete(userId)
       }
-    }
+    })()
 
-    return {
-      success: true,
-      data: userData
-    }
+    // Cache the promise
+    profileRequestCache.set(userId, requestPromise)
+
+    return await requestPromise
   } catch (error) {
     console.error('Supabase Controller: Unexpected error in getUserProfile:', error)
+    // Clean up cache on error
+    profileRequestCache.delete(userId)
     return {
       success: false,
       error: 'An unexpected error occurred while fetching user profile'

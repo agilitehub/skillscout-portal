@@ -83,13 +83,13 @@ export const useProfile = (userId = null) => {
   }, [dispatch])
 
   /**
-   * Auto-load profile when userId changes (only if not already available)
+   * Auto-load profile when userId changes (only if not already available and not stale)
    */
   useEffect(() => {
-    if (userId && !profileData && !isLoading) {
+    if (userId && !profileData && !isLoading && !lastUpdated) {
       loadProfile(userId)
     }
-  }, [userId, profileData, isLoading, loadProfile])
+  }, [userId, profileData, isLoading, lastUpdated, loadProfile])
 
   /**
    * Check if profile data is stale (older than 5 minutes)

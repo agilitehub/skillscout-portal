@@ -26,15 +26,15 @@ const ProfileModal = ({ isOpen, onClose, user }) => {
 
   // Load profile data when modal opens (only if not already available)
   useEffect(() => {
-    if (isOpen && user?.id && !profileData) {
-      // Only fetch if profile data is not already available in Redux
+    if (isOpen && user?.id && !profileData && !isLoading) {
+      // Only fetch if profile data is not already available in Redux and not currently loading
       dispatch(fetchUserProfile(user.id)).catch((error) => {
         console.error('Error loading user profile:', error)
         dispatch(setError('Failed to load profile data. Please try again.'))
         message.error('Failed to load profile data. Please try again.')
       })
     }
-  }, [isOpen, user?.id, profileData, dispatch])
+  }, [isOpen, user?.id, profileData, isLoading, dispatch])
 
   // Pre-populate form when modal opens or profile data changes
   useEffect(() => {
