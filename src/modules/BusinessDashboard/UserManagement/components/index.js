@@ -7,7 +7,6 @@ import {
   faTrash, 
   faUserPlus, 
   faEnvelope,
-  faShieldAlt,
   faUserCheck,
   faUserTimes,
   faExclamationTriangle
@@ -18,7 +17,6 @@ import { Button } from '../../../../core/components'
 import TableView from '../../../../core/components/view-components/table-view/TableView'
 import BusinessSidebar from '../../components/BusinessSidebar'
 import { BRAND_COLORS, SEMANTIC_COLORS } from '../../../../core/theme/colors'
-import EditPermissionsModal from './EditPermissionsModal'
 
 /**
  * User Management Page
@@ -30,8 +28,6 @@ const UserManagement = React.memo(({ user }) => {
 
   // State management
   const [searchTerm, setSearchTerm] = useState('')
-  const [permissionsModalVisible, setPermissionsModalVisible] = useState(false)
-  const [selectedUser, setSelectedUser] = useState(null)
 
   // Sample user data - in real app this would come from API
   const [users, setUsers] = useState([
@@ -222,11 +218,17 @@ const UserManagement = React.memo(({ user }) => {
     navigate('/business-dashboard/user-management/invite')
   }, [navigate])
 
-  // Handle edit permissions
-  const handleEditPermissions = useCallback((user) => {
-    setSelectedUser(user)
-    setPermissionsModalVisible(true)
-  }, [])
+
+
+  // Handle edit user (click on name)
+  const handleEditUser = useCallback((userToEdit) => {
+    navigate('/business-dashboard/user-management/edit', {
+      state: {
+        user: userToEdit,
+        isEdit: true
+      }
+    })
+  }, [navigate])
 
   // Handle search
   const handleSearch = useCallback((value) => {
@@ -255,7 +257,10 @@ const UserManagement = React.memo(({ user }) => {
       sorter: (a, b) => a.name.localeCompare(b.name),
       render: (text, record) => (
         <div>
-          <div className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+          <div 
+            className='font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 cursor-pointer transition-colors duration-200'
+            onClick={() => handleEditUser(record)}
+          >
             {text}
           </div>
           <div className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-500'}`}>
@@ -358,30 +363,20 @@ const UserManagement = React.memo(({ user }) => {
     {
       title: 'Actions',
       key: 'actions',
-      width: 120,
+      width: 80,
       render: (_, record) => (
-        <Space>
-          <Button
-            type='text'
-            size='small'
-            icon={<FontAwesomeIcon icon={faShieldAlt} />}
-            onClick={() => handleEditPermissions(record)}
-            className={darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-600 hover:text-gray-900'}
-            title="Edit Permissions"
-          />
-          <Button
-            type='text'
-            size='small'
-            icon={<FontAwesomeIcon icon={faTrash} />}
-            onClick={() => handleDeleteUser(record.id)}
-            className="text-red-500 hover:text-red-700"
-            title="Remove User"
-            disabled={record.id === user?.id} // Prevent self-deletion
-          />
-        </Space>
+        <Button
+          type='text'
+          size='small'
+          icon={<FontAwesomeIcon icon={faTrash} />}
+          onClick={() => handleDeleteUser(record.id)}
+          className="text-red-500 hover:text-red-700"
+          title="Remove User"
+          disabled={record.id === user?.id} // Prevent self-deletion
+        />
       )
     }
-  ], [darkMode, roles, statusConfig, handleRoleChange, handleStatusToggle, handleDeleteUser, handleEditPermissions, user])
+  ], [darkMode, roles, statusConfig, handleRoleChange, handleStatusToggle, handleDeleteUser, handleEditUser, user])
 
   return (
     <div
@@ -464,28 +459,7 @@ const UserManagement = React.memo(({ user }) => {
         </div>
       </div>
 
-      {/* Edit Permissions Modal */}
-      <EditPermissionsModal
-        visible={permissionsModalVisible}
-        user={selectedUser}
-        onCancel={() => {
-          setPermissionsModalVisible(false)
-          setSelectedUser(null)
-        }}
-        onSuccess={(updatedPermissions) => {
-          setUsers(prev => 
-            prev.map(user => 
-              user.id === selectedUser?.id 
-                ? { ...user, permissions: updatedPermissions }
-                : user
-            )
-          )
-          setPermissionsModalVisible(false)
-          setSelectedUser(null)
-          message.success('Permissions updated successfully!')
-        }}
-        darkMode={darkMode}
-      />
+
 
       {/* Custom Styles */}
       <style jsx global>{`

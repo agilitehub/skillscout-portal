@@ -14,6 +14,7 @@ import Lookups from './modules/BusinessDashboard/Lookups/components'
 import LookupForm from './modules/BusinessDashboard/Lookups/components/LookupForm'
 import UserManagement from './modules/BusinessDashboard/UserManagement/components'
 import InviteUserPage from './modules/BusinessDashboard/UserManagement/components/InviteUserPage'
+import UserEditPage from './modules/BusinessDashboard/UserManagement/components/UserEditPage'
 import BranchManagement from './modules/BusinessDashboard/BranchManagement/components'
 import OrgSettings from './modules/BusinessDashboard/OrgSettings/components'
 import Billing from './modules/BusinessDashboard/Billing/components'
@@ -321,6 +322,19 @@ const AppRoutes = () => {
           user ? (
             <DashboardLayout user={user}>
               <InviteUserPage user={user} />
+            </DashboardLayout>
+          ) : (
+            <Navigate to='/' replace state={{ from: location }} />
+          )
+        }
+      />
+
+      <Route
+        path='/business-dashboard/user-management/edit'
+        element={
+          user ? (
+            <DashboardLayout user={user}>
+              <UserEditPage user={user} />
             </DashboardLayout>
           ) : (
             <Navigate to='/' replace state={{ from: location }} />

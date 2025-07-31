@@ -108,7 +108,7 @@ const Dashboard = React.memo(({ user }) => {
       description: 'Manage company information, culture, and requirements',
       icon: faBuilding,
       color: SEMANTIC_COLORS.primary, // Shakespeare blue - primary brand color
-      stats: { value: dashboardStats.organizations, label: 'Organizations' },
+      stats: null, // No stats needed - user has one organization
       action: () => navigate('/business-dashboard/org-settings'),
       buttonText: 'Manage'
     },
@@ -117,7 +117,7 @@ const Dashboard = React.memo(({ user }) => {
       description: 'Update your personal information and preferences',
       icon: faUser,
       color: SEMANTIC_COLORS.success, // Emerald green for success/profile actions
-      stats: { value: 1, label: 'Profile' },
+      stats: null, // No stats needed - user has one profile
       action: () => navigate('/business-dashboard/user-management'),
       buttonText: 'Update'
     },
@@ -234,16 +234,26 @@ const Dashboard = React.memo(({ user }) => {
 
   return (
     <div
-      className="min-h-screen"
-      style={{
-        backgroundColor: darkMode ? DARK_THEME.background.primary : LIGHT_THEME.background.secondary
-      }}
+      className={`min-h-screen ${
+        darkMode
+          ? 'bg-gradient-to-br from-slate-700 via-slate-600 to-emerald-800'
+          : 'bg-gradient-to-br from-sky-100 via-gray-50 to-emerald-100'
+      }`}
     >
+      {/* Background overlay */}
+      <div
+        className={`fixed inset-0 ${
+          darkMode
+            ? 'bg-gradient-to-b from-transparent via-slate-700/30 to-emerald-800/40'
+            : 'bg-gradient-to-b from-transparent via-sky-100/40 to-emerald-100/50'
+        } pointer-events-none`}
+      />
+
       {/* Sidebar */}
       <BusinessSidebar />
 
       {/* Main Content */}
-      <div className='flex-1 ml-64 relative'>
+      <div className='flex-1 ml-64 relative z-10'>
         {/* Main Header */}
         <div className='px-8 py-8'>
           <div className='flex items-center justify-between mb-8'>
@@ -424,26 +434,28 @@ const Dashboard = React.memo(({ user }) => {
                           {card.description}
                         </Text>
                         
-                        <div className='flex items-center justify-between'>
-                          <div>
-                            <Text 
-                              className="block text-sm"
-                              style={{
-                                color: darkMode ? DARK_THEME.text.tertiary : LIGHT_THEME.text.secondary
-                              }}
-                            >
-                              {card.stats.label}
-                            </Text>
-                            <Text 
-                              className="block text-2xl font-bold"
-                              style={{ 
-                                lineHeight: '1.2',
-                                color: darkMode ? DARK_THEME.text.primary : LIGHT_THEME.text.primary
-                              }}
-                            >
-                              {card.stats.value}
-                            </Text>
-                          </div>
+                        <div className={`flex items-center ${card.stats ? 'justify-between' : 'justify-end'}`}>
+                          {card.stats && (
+                            <div>
+                              <Text 
+                                className="block text-sm"
+                                style={{
+                                  color: darkMode ? DARK_THEME.text.tertiary : LIGHT_THEME.text.secondary
+                                }}
+                              >
+                                {card.stats.label}
+                              </Text>
+                              <Text 
+                                className="block text-2xl font-bold"
+                                style={{ 
+                                  lineHeight: '1.2',
+                                  color: darkMode ? DARK_THEME.text.primary : LIGHT_THEME.text.primary
+                                }}
+                              >
+                                {card.stats.value}
+                              </Text>
+                            </div>
+                          )}
                           
                           <Button 
                             type="primary"
