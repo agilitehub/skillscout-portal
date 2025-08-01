@@ -1,7 +1,7 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
-import React, { useState, useCallback, useMemo } from 'react'
-import { Card, Row, Col, Statistic, Badge, Typography, Dropdown, Menu, Modal, List, Avatar } from 'antd'
+import React, { useState, useCallback, useMemo, useEffect } from 'react'
+import { Card, Row, Col, Statistic, Badge, Typography, Dropdown, Menu, Modal, List, Avatar, Space } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faBuilding,
@@ -17,13 +17,19 @@ import {
   faEdit,
   faBell,
   faUserPlus,
-  faChevronDown
+  faChevronDown,
+  faRefresh,
+  faQuestion,
+  faFileAlt
 } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from 'react-router-dom'
 import { useTheme } from '../../../../core/context/ThemeContext'
 import { Button } from '../../../../core/components'
 import BusinessSidebar from '../../components/BusinessSidebar'
 import { BRAND_COLORS, SEMANTIC_COLORS, LIGHT_THEME, DARK_THEME } from '../../../../core/theme/colors'
+import { setUserProfileOpen } from '../../../../core/components/profile/store/profileSlice'
+import { useDispatch } from 'react-redux'
+import { getDashboardStats } from '../utils/controller'
 
 const { Title, Text } = Typography
 
@@ -38,22 +44,43 @@ const { Title, Text } = Typography
  * - Warning: Orange (#F59E0B) - admin/settings actions
  * - Teal: Teal Green (#14B8A6) - tracking/progress features
  */
-const Dashboard = React.memo(({ user }) => {
+const Dashboard = React.memo(() => {
   const { darkMode } = useTheme()
   const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const [dashboardStats, setDashboardStats] = useState({
+    listingCount: 0,
+    descriptionCount: 0,
+    questionnaireCount: 0
+  })
 
   // State management
   const [alertsVisible, setAlertsVisible] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   // Mock data - in real app this would come from API
-  const dashboardStats = useMemo(
-    () => ({
-      organizations: 1,
-      jobDescriptions: 1,
-      candidates: 0
-    }),
-    []
-  )
+  useEffect(() => {
+    handleGetDashboardStats()
+    // eslint-disable-next-line
+  }, [])
+
+  const handleGetDashboardStats = async () => {
+    try {
+      setLoading(true)
+      const data = await getDashboardStats()
+      setDashboardStats(data)
+    } catch (e) {
+      console.error('Dashboard: Error fetching dashboard stats:', e)
+      // Set default stats on error
+      setDashboardStats({
+        listingCount: 0,
+        descriptionCount: 0,
+        questionnaireCount: 0
+      })
+    } finally {
+      setLoading(false)
+    }
+  }
 
   // Mock alerts data
   const alertsData = useMemo(
@@ -107,16 +134,34 @@ const Dashboard = React.memo(({ user }) => {
         icon: faUser,
         color: SEMANTIC_COLORS.success, // Emerald green for success/profile actions
         stats: null, // No stats needed - user has one profile
-        action: () => navigate('/business-dashboard/user-management'),
+        action: () => dispatch(setUserProfileOpen(true)),
         buttonText: 'Update'
       },
       {
-        title: 'Listings',
-        description: 'Job postings, descriptions, and requirements',
+        title: 'JobListings',
+        description: 'Job postings and requirements',
         icon: faBriefcase,
         color: BRAND_COLORS.pictonBlue, // Picton blue for job-related features
-        stats: { value: dashboardStats.jobDescriptions, label: 'Active Listings' },
+        stats: { value: dashboardStats.listingCount, label: 'Active Listings' },
         action: () => navigate('/business-dashboard/job-listings'),
+        buttonText: 'View All'
+      },
+      {
+        title: 'Job Descriptions',
+        description: 'Job descriptions and requirements',
+        icon: faFileAlt,
+        color: BRAND_COLORS.pictonBlue, // Picton blue for job-related features
+        stats: { value: dashboardStats.descriptionCount, label: 'Active Listings' },
+        action: () => navigate('/business-dashboard/job-descriptions'),
+        buttonText: 'View All'
+      },
+      {
+        title: 'Questionnaires',
+        description: 'Questionnaires for job postings',
+        icon: faQuestion,
+        color: BRAND_COLORS.pictonBlue, // Picton blue for job-related features
+        stats: { value: dashboardStats.questionnaireCount, label: 'Active Listings' },
+        action: () => navigate('/business-dashboard/questionnaires'),
         buttonText: 'View All'
       },
       {
@@ -133,7 +178,7 @@ const Dashboard = React.memo(({ user }) => {
         description: 'Candidate pipeline and recruitment progress',
         icon: faRoute,
         color: BRAND_COLORS.tealGreen, // Teal green for tracking/progress
-        stats: { value: dashboardStats.candidates, label: 'Active Candidates' },
+        stats: { value: dashboardStats.listingCount, label: 'Active Candidates' },
         action: () => navigate('/business-dashboard/candidates'),
         buttonText: 'Track'
       }
@@ -291,9 +336,9 @@ const Dashboard = React.memo(({ user }) => {
                     paddingRight: '20px'
                   }}
                 >
-                  <FontAwesomeIcon icon={faPlus} className="mr-2" />
+                  <FontAwesomeIcon icon={faPlus} className='mr-2' />
                   <span>Quick Actions</span>
-                  <FontAwesomeIcon icon={faChevronDown} className="ml-2" />
+                  <FontAwesomeIcon icon={faChevronDown} className='ml-2' />
                 </Button>
               </Dropdown>
 
@@ -344,19 +389,28 @@ const Dashboard = React.memo(({ user }) => {
                 </Button>
               </Badge>
 
-              {/* AI Powered Badge */}
-              <Badge
-                count={
-                  <div
-                    className='flex items-center space-x-2 text-white px-4 py-2 rounded-full text-base font-medium'
-                    style={{ backgroundColor: SEMANTIC_COLORS.primary }}
-                  >
-                    <FontAwesomeIcon icon={faRobot} style={{ fontSize: '16px' }} />
-                    <span>AI Powered</span>
-                  </div>
-                }
-                style={{ backgroundColor: 'transparent' }}
-              />
+              {/* Refresh Button */}
+              <Button
+                type='secondary'
+                size='large'
+                className='flex items-center space-x-2'
+                style={{
+                  backgroundColor: SEMANTIC_COLORS.info,
+                  borderColor: SEMANTIC_COLORS.info,
+                  boxShadow: `0 2px 8px ${SEMANTIC_COLORS.info}20`,
+                  fontSize: '16px',
+                  height: '40px',
+                  paddingLeft: '20px',
+                  paddingRight: '20px'
+                }}
+                onClick={() => handleGetDashboardStats()}
+                loading={loading}
+              >
+                <Space>
+                  <FontAwesomeIcon icon={faRefresh} />
+                  <span>Refresh</span>
+                </Space>
+              </Button>
             </div>
           </div>
 

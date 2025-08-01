@@ -1,12 +1,11 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
 import React, { useState, useCallback, useEffect } from 'react'
-import { Modal, Form, message, Upload, Avatar, Input } from 'antd'
+import { Modal, Form, message, Upload, Avatar, Input, Button, Space } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faUser, faUpload } from '@fortawesome/free-solid-svg-icons'
+import { faUpload, faUser } from '@fortawesome/free-solid-svg-icons'
 import { useSelector, useDispatch } from 'react-redux'
 import { useTheme } from '../../../context/ThemeContext'
-import Button from '../../Button'
 import { getAvatarPublicUrl } from '../../../lib/supabase-controller'
 import { fetchUserProfile, updateProfile, setError, clearError } from '../store/profileSlice'
 
@@ -278,11 +277,18 @@ const ProfileModal = ({ isOpen, onClose, user }) => {
               />
               <Upload accept='image/*' showUploadList={false} beforeUpload={handleAvatarChange}>
                 <Button
-                  icon={<FontAwesomeIcon icon={faUpload} />}
-                  className={darkMode ? 'border-gray-600 text-gray-300 hover:border-gray-500' : ''}
+                  type='ghost'
+                  className={
+                    darkMode
+                      ? 'border-gray-600 text-gray-300 hover:border-gray-500'
+                      : 'border-gray-600 text-gray-900 hover:border-gray-500'
+                  }
                   loading={isLoading}
                 >
-                  Upload Photo
+                  <Space>
+                    <FontAwesomeIcon icon={faUpload} />
+                    <span>Upload Photo</span>
+                  </Space>
                 </Button>
               </Upload>
             </div>
@@ -316,7 +322,11 @@ const ProfileModal = ({ isOpen, onClose, user }) => {
             <Button
               onClick={handleClose}
               disabled={isSaving}
-              className={darkMode ? 'border-gray-600 text-gray-300 hover:border-gray-500' : ''}
+              className={
+                darkMode
+                  ? 'border-gray-600 text-gray-600 hover:border-gray-500'
+                  : 'border-gray-600 text-gray-900 hover:border-gray-500'
+              }
             >
               Cancel
             </Button>

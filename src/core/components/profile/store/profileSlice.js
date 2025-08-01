@@ -71,7 +71,8 @@ const profileSlice = createSlice({
     isLoading: false,
     isUpdating: false,
     error: null,
-    lastUpdated: null
+    lastUpdated: null,
+    isUserProfileOpen: false
   },
   reducers: {
     // Synchronous actions
@@ -95,6 +96,9 @@ const profileSlice = createSlice({
       state.isUpdating = false
       state.error = null
       state.lastUpdated = null
+    },
+    setUserProfileOpen: (state, action) => {
+      state.isUserProfileOpen = action.payload
     }
   },
   extraReducers: (builder) => {
@@ -133,7 +137,8 @@ const profileSlice = createSlice({
 })
 
 // Export actions
-export const { setProfileData, setLoading, setError, clearError, clearProfile } = profileSlice.actions
+export const { setProfileData, setLoading, setError, clearError, clearProfile, setUserProfileOpen } =
+  profileSlice.actions
 
 // Selectors
 export const selectProfile = (state) => state.profile.profileData
@@ -141,6 +146,7 @@ export const selectProfileLoading = (state) => state.profile.isLoading
 export const selectProfileUpdating = (state) => state.profile.isUpdating
 export const selectProfileError = (state) => state.profile.error
 export const selectLastUpdated = (state) => state.profile.lastUpdated
+export const selectUserProfileOpen = (state) => state.profile.isUserProfileOpen
 
 // Export default reducer
 export default profileSlice.reducer

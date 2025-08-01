@@ -31,11 +31,14 @@ import {
 } from '../../../lib/search-controller'
 import { getUserOrganization, createOrganizationAndAssignToUser } from '../../../lib/supabase-controller'
 import { ProfileModal, ProfileAvatar, ProfileDisplay } from '../../profile'
+import { useDispatch, useSelector } from 'react-redux'
+import { setUserProfileOpen, selectUserProfileOpen } from '../../profile/store/profileSlice'
 
 /**
  * Simplified Header component for the application
  */
 const Header = ({ user }) => {
+  const dispatch = useDispatch()
   const navigate = useNavigate()
   const location = useLocation()
   const [isLogoutConfirmOpen, setIsLogoutConfirmOpen] = useState(false)
@@ -47,7 +50,6 @@ const Header = ({ user }) => {
   const [organizationData, setOrganizationData] = useState(null)
   const [isCheckingOrganization, setIsCheckingOrganization] = useState(false)
   const [businessForm] = Form.useForm()
-  const [isUserProfileOpen, setIsUserProfileOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [isSearchFocused, setIsSearchFocused] = useState(false)
   const [searchResults, setSearchResults] = useState([])
@@ -56,6 +58,7 @@ const Header = ({ user }) => {
   const { darkMode } = useTheme()
   const { logout } = useAuth()
   const searchTimeoutRef = useRef(null)
+  const isUserProfileOpen = useSelector(selectUserProfileOpen)
 
   // Helper function to get icon from source table
   const getIconFromSourceTable = useCallback((sourceTable) => {
@@ -232,12 +235,12 @@ const Header = ({ user }) => {
 
   // Handle user profile modal
   const handleUserProfileOpen = useCallback(() => {
-    setIsUserProfileOpen(true)
-  }, [])
+    dispatch(setUserProfileOpen(true))
+  }, [dispatch])
 
   const handleUserProfileClose = useCallback(() => {
-    setIsUserProfileOpen(false)
-  }, [])
+    dispatch(setUserProfileOpen(false))
+  }, [dispatch])
 
   // Check user's organization status when user changes
   useEffect(() => {
