@@ -291,9 +291,9 @@ const Dashboard = React.memo(({ user }) => {
                     paddingRight: '20px'
                   }}
                 >
-                  <FontAwesomeIcon icon={faPlus} />
+                  <FontAwesomeIcon icon={faPlus} className="mr-2" />
                   <span>Quick Actions</span>
-                  <FontAwesomeIcon icon={faChevronDown} />
+                  <FontAwesomeIcon icon={faChevronDown} className="ml-2" />
                 </Button>
               </Dropdown>
 

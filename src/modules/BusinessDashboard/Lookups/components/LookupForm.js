@@ -468,7 +468,7 @@ const LookupForm = React.memo(({ user }) => {
               }`}>
                 <Button
                   variant='secondary'
-                  icon={<FontAwesomeIcon icon={faTimes} />}
+                  icon={<FontAwesomeIcon icon={faTimes} className="mr-2" />}
                   onClick={handleCancel}
                   disabled={loading}
                   size='large'
@@ -478,7 +478,7 @@ const LookupForm = React.memo(({ user }) => {
                 </Button>
                 <Button
                   type='primary'
-                  icon={<FontAwesomeIcon icon={faSave} />}
+                  icon={<FontAwesomeIcon icon={faSave} className="mr-2" />}
                   onClick={() => form.submit()}
                   loading={loading}
                   size='large'

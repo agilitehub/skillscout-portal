@@ -418,7 +418,7 @@ const UserManagement = React.memo(({ user }) => {
             <Button
               type='default'
               size='large'
-              icon={<FontAwesomeIcon icon={faUserPlus} />}
+              icon={<FontAwesomeIcon icon={faUserPlus} className="mr-2" />}
               onClick={handleInviteUser}
               className="invite-user-btn font-medium"
             >

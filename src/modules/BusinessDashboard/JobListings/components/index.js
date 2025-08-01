@@ -346,7 +346,7 @@ const JobListings = React.memo(({ user }) => {
               <Button
                 type='default'
                 size='large'
-                icon={<FontAwesomeIcon icon={faPlus} />}
+                icon={<FontAwesomeIcon icon={faPlus} className="mr-2" />}
                 onClick={handleCreateJobOpportunity}
                 className="create-job-listing-btn font-medium"
                 style={{

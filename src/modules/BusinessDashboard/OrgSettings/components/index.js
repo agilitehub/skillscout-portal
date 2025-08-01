@@ -227,7 +227,7 @@ const OrgSettings = React.memo(({ user }) => {
             <div className='flex space-x-3'>
               {hasChanges && (
                 <Button
-                  icon={<FontAwesomeIcon icon={faUndo} />}
+                  icon={<FontAwesomeIcon icon={faUndo} className="mr-2" />}
                   onClick={handleReset}
                   className={`shadow-md hover:shadow-lg transition-all duration-200 org-settings-reset-btn`}
                   style={{
@@ -242,7 +242,7 @@ const OrgSettings = React.memo(({ user }) => {
 
               <Button
                 type='primary'
-                icon={<FontAwesomeIcon icon={faSave} />}
+                icon={<FontAwesomeIcon icon={faSave} className="mr-2" />}
                 onClick={() => form.submit()}
                 loading={loading}
                 disabled={!hasChanges}

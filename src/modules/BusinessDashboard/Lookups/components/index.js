@@ -434,6 +434,27 @@ const Lookups = React.memo(({ user }) => {
           background-color: #059669 !important;
           color: #FFFFFF !important;
         }
+        
+        /* Force Create New Button Visibility */
+        .create-new-btn,
+        .create-new-btn.ant-btn,
+        button.create-new-btn {
+          background: #ffffff !important;
+          background-color: #ffffff !important;
+          color: #059669 !important;
+          border: 1px solid #ffffff !important;
+          opacity: 1 !important;
+          visibility: visible !important;
+        }
+        
+        .create-new-btn:hover,
+        .create-new-btn.ant-btn:hover,
+        button.create-new-btn:hover {
+          background: #f0fdf4 !important;
+          background-color: #f0fdf4 !important;
+          color: #047857 !important;
+          border-color: #f0fdf4 !important;
+        }
       `}</style>
 
       <div
@@ -520,7 +541,23 @@ const Lookups = React.memo(({ user }) => {
                 onSearch={setSearchTerm}
                 searchPlaceholder='Search lookups...'
                 toolbarActions={[
-                  <Button key='create' type='primary' icon={<FontAwesomeIcon icon={faPlus} />} onClick={handleAdd}>
+                  <Button 
+                    key='create' 
+                    type='default' 
+                    size='large'
+                    icon={<FontAwesomeIcon icon={faPlus} className="mr-2" />} 
+                    onClick={handleAdd}
+                    className="create-new-btn font-medium"
+                    style={{
+                      background: '#ffffff',
+                      backgroundColor: '#ffffff',
+                      color: '#059669',
+                      border: '1px solid #ffffff',
+                      fontWeight: '500',
+                      boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                      opacity: '1'
+                    }}
+                  >
                     Create New
                   </Button>
                 ]}
