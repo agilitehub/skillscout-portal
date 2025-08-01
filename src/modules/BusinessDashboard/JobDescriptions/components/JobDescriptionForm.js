@@ -59,6 +59,7 @@ const CreateJobDescription = React.memo(({ user }) => {
   const [validationModalVisible, setValidationModalVisible] = useState(false)
   const [validationErrors, setValidationErrors] = useState([])
   const [activeTab, setActiveTab] = useState('1')
+  const [isFormReady, setIsFormReady] = useState(false)
 
   const [fieldCompletionCounts, setFieldCompletionCounts] = useState({
     basicInfo: { completed: 0, total: 6 },
@@ -71,41 +72,60 @@ const CreateJobDescription = React.memo(({ user }) => {
 
   // Calculate field completion counts
   const calculateFieldCounts = useCallback(() => {
-    const values = form.getFieldsValue()
+    try {
+      const values = form.getFieldsValue()
+      
+      // Debug log to see what values we're getting
+      console.log('Calculating field counts with values:', values)
 
-    // Basic Info required fields
-    const basicInfoFields = ['title', 'department', 'reportsToRole', 'experienceLevel', 'keywords', 'overview']
-    const basicInfoCompleted = basicInfoFields.filter((field) => {
-      const value = values[field]
-      if (field === 'keywords') {
-        return Array.isArray(value) && value.length > 0
-      }
-      return value && String(value).trim().length > 0
-    }).length
+      // Basic Info required fields
+      const basicInfoFields = ['title', 'department', 'reportsToRole', 'experienceLevel', 'keywords', 'overview']
+      const basicInfoCompleted = basicInfoFields.filter((field) => {
+        const value = values[field]
+        if (field === 'keywords') {
+          return Array.isArray(value) && value.length > 0
+        }
+        return value && String(value).trim().length > 0
+      }).length
 
-    // Detailed Info required fields
-    const detailedInfoFields = [
-      'responsibilities',
-      'requirements',
-      'educationExperience',
-      'technicalSkills',
-      'softSkills'
-    ]
-    const detailedInfoCompleted = detailedInfoFields.filter((field) => {
-      const value = values[field]
-      return value && String(value).trim().length > 0
-    }).length
+      // Detailed Info required fields
+      const detailedInfoFields = [
+        'responsibilities',
+        'requirements',
+        'educationExperience',
+        'technicalSkills',
+        'softSkills'
+      ]
+      const detailedInfoCompleted = detailedInfoFields.filter((field) => {
+        const value = values[field]
+        return value && String(value).trim().length > 0
+      }).length
 
-    setFieldCompletionCounts({
-      basicInfo: { completed: basicInfoCompleted, total: 6 },
-      detailedInfo: { completed: detailedInfoCompleted, total: 5 }
-    })
+      console.log('Field counts calculated:', { 
+        basicInfo: { completed: basicInfoCompleted, total: 6 },
+        detailedInfo: { completed: detailedInfoCompleted, total: 5 }
+      })
+
+      setFieldCompletionCounts({
+        basicInfo: { completed: basicInfoCompleted, total: 6 },
+        detailedInfo: { completed: detailedInfoCompleted, total: 5 }
+      })
+    } catch (error) {
+      console.error('Error calculating field counts:', error)
+    }
   }, [form])
 
   // Load lookup data on component mount
   useEffect(() => {
     loadLookupData()
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+    // For new forms (not edit mode), mark as ready after lookups load
+    if (!isEditMode) {
+      setTimeout(() => {
+        console.log('New form ready after lookups loaded')
+        setIsFormReady(true)
+      }, 1000)
+    }
+  }, [isEditMode]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Load existing data when in edit mode
   useEffect(() => {
@@ -116,11 +136,54 @@ const CreateJobDescription = React.memo(({ user }) => {
 
   // Calculate initial field counts when component mounts and when lookups are loaded
   useEffect(() => {
-    if (!lookupsLoading) {
-      calculateFieldCounts()
+    if (!lookupsLoading && !initialDataLoading) {
+      // Add a delay to ensure form values are properly set
+      setTimeout(() => {
+        calculateFieldCounts()
+      }, 200)
     }
     // eslint-disable-next-line
-  }, [lookupsLoading])
+  }, [lookupsLoading, initialDataLoading])
+
+  // Additional effect to recalculate when form gets populated (especially useful for edit mode)
+  useEffect(() => {
+    if (!lookupsLoading && !initialDataLoading) {
+      const formValues = form.getFieldsValue()
+      // Check if form has been populated with meaningful data
+      if (formValues.title || formValues.overview || formValues.responsibilities) {
+        setTimeout(() => {
+          calculateFieldCounts()
+        }, 100)
+      }
+    }
+  }, [form, lookupsLoading, initialDataLoading, calculateFieldCounts])
+
+  // Force recalculation when the component is fully mounted and form is ready
+  useEffect(() => {
+    if (!lookupsLoading && !initialDataLoading) {
+      // Use multiple attempts to ensure we catch the form when it's fully populated
+      const timeouts = [500, 1000, 1500] // Try at 500ms, 1s, and 1.5s
+      
+      timeouts.forEach(delay => {
+        setTimeout(() => {
+          const values = form.getFieldsValue()
+          if (Object.keys(values).length > 0) {
+            console.log('Force recalculating at', delay, 'ms with values:', values)
+            calculateFieldCounts()
+            setIsFormReady(true)
+          }
+        }, delay)
+      })
+    }
+  }, [lookupsLoading, initialDataLoading, form, calculateFieldCounts])
+
+  // Recalculate whenever the form becomes ready
+  useEffect(() => {
+    if (isFormReady) {
+      console.log('Form is ready, calculating field counts...')
+      calculateFieldCounts()
+    }
+  }, [isFormReady, calculateFieldCounts])
 
   // Load existing job description data for editing
   const loadExistingJobDescription = useCallback(
@@ -146,10 +209,11 @@ const CreateJobDescription = React.memo(({ user }) => {
             preferredSkills: result.data.preferredSkills
           })
 
-          // Calculate field counts after loading data
+          // Calculate field counts after loading data and mark form as ready
           setTimeout(() => {
             calculateFieldCounts()
-          }, 100)
+            setIsFormReady(true)
+          }, 300)
         } else {
           console.error('Error loading job description for edit:', result.error)
           message.error('Failed to load job description data: ' + result.error)
@@ -372,10 +436,14 @@ const CreateJobDescription = React.memo(({ user }) => {
 
   // Clear validation errors when form values change
   const handleFormChange = useCallback(() => {
-    // Update field completion counts with a small delay to ensure form values are updated
+    // Update field completion counts with multiple attempts to ensure accuracy
     setTimeout(() => {
       calculateFieldCounts()
     }, 50)
+    
+    setTimeout(() => {
+      calculateFieldCounts()
+    }, 200)
 
     // Clear validation error indicators when user starts making changes
     if (tabValidationErrors.basicInfo || tabValidationErrors.detailedInfo || validationModalVisible) {
@@ -387,7 +455,7 @@ const CreateJobDescription = React.memo(({ user }) => {
       setValidationErrors([])
     }
     // eslint-disable-next-line
-  }, [tabValidationErrors, validationModalVisible])
+  }, [tabValidationErrors, validationModalVisible, calculateFieldCounts])
 
   // Handle tab change and recalculate counts
   const handleTabChange = useCallback((newActiveKey) => {
@@ -1186,29 +1254,37 @@ const CreateJobDescription = React.memo(({ user }) => {
                   className={`flex justify-end space-x-3 pt-6 mt-6 border-t ${darkMode ? 'border-gray-600' : 'border-gray-200'}`}
                 >
                   <Button
-                    icon={<FontAwesomeIcon icon={faTimes} />}
+                    icon={<FontAwesomeIcon icon={faTimes} className="mr-2" />}
                     onClick={() => navigate('/business-dashboard/job-descriptions')}
                     size='large'
+                    style={{
+                      backgroundColor: darkMode ? '#dc2626' : '#6b7280',
+                      borderColor: darkMode ? '#dc2626' : '#6b7280',
+                      color: '#ffffff',
+                      fontWeight: '500'
+                    }}
                     className={
                       darkMode
-                        ? 'bg-red-600 text-white border-red-600 hover:bg-red-700 hover:border-red-700 font-medium'
-                        : 'bg-gray-500 text-white border-gray-500 hover:bg-gray-600 hover:border-gray-600 font-medium'
+                        ? 'hover:bg-red-700 hover:border-red-700'
+                        : 'hover:bg-gray-600 hover:border-gray-600'
                     }
                   >
                     Cancel
                   </Button>
                   <Button
                     type='primary'
-                    icon={<FontAwesomeIcon icon={faSave} />}
+                    icon={<FontAwesomeIcon icon={faSave} className="mr-2" />}
                     onClick={handleSaveClick}
                     loading={loading}
                     disabled={initialDataLoading}
                     size='large'
-                    className={
-                      darkMode
-                        ? 'bg-emerald-600 text-white border-emerald-600 hover:bg-emerald-700 hover:border-emerald-700 font-medium'
-                        : 'bg-emerald-600 text-white border-emerald-600 hover:bg-emerald-700 hover:border-emerald-700 font-medium'
-                    }
+                    style={{
+                      backgroundColor: '#10b981',
+                      borderColor: '#10b981',
+                      color: '#ffffff',
+                      fontWeight: '500'
+                    }}
+                    className='hover:bg-emerald-700 hover:border-emerald-700'
                   >
                     {isEditMode ? 'Update Job Description' : 'Save Job Description'}
                   </Button>
@@ -1232,17 +1308,25 @@ const CreateJobDescription = React.memo(({ user }) => {
               width={500}
               className={darkMode ? 'dark-modal' : ''}
               okButtonProps={{
-                icon: <FontAwesomeIcon icon={faCheckCircle} />,
+                icon: <FontAwesomeIcon icon={faCheckCircle} className="mr-2" />,
                 size: 'large',
-                className: darkMode
-                  ? 'bg-emerald-600 border-emerald-600 hover:bg-emerald-700'
-                  : 'bg-emerald-600 border-emerald-600 hover:bg-emerald-700'
+                style: {
+                  backgroundColor: '#10b981',
+                  borderColor: '#10b981',
+                  color: '#ffffff'
+                },
+                className: 'hover:bg-emerald-700 hover:border-emerald-700'
               }}
               cancelButtonProps={{
                 size: 'large',
+                style: {
+                  backgroundColor: darkMode ? '#4b5563' : '#6b7280',
+                  borderColor: darkMode ? '#4b5563' : '#6b7280',
+                  color: '#ffffff'
+                },
                 className: darkMode
-                  ? 'bg-gray-600 border-gray-600 text-white hover:bg-gray-700'
-                  : 'bg-gray-500 border-gray-500 text-white hover:bg-gray-600'
+                  ? 'hover:bg-gray-700 hover:border-gray-700'
+                  : 'hover:bg-gray-600 hover:border-gray-600'
               }}
             >
               <div className='py-4'>

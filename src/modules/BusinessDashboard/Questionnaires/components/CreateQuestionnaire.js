@@ -271,6 +271,75 @@ const CreateQuestionnaire = React.memo(({ user }) => {
           </style>
         )}
 
+        {/* Button Styling for both Light and Dark Mode */}
+        <style jsx global>{`
+          /* Cancel Button Styling */
+          .create-questionnaire-cancel-btn,
+          .create-questionnaire-cancel-btn.ant-btn {
+            background-color: #6B7280 !important;
+            border-color: #6B7280 !important;
+            color: white !important;
+            font-weight: 500 !important;
+            padding: 8px 24px !important;
+            height: auto !important;
+            min-height: 40px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-size: 14px !important;
+            border-radius: 6px !important;
+          }
+          
+          .create-questionnaire-cancel-btn:hover,
+          .create-questionnaire-cancel-btn.ant-btn:hover {
+            background-color: #4B5563 !important;
+            border-color: #4B5563 !important;
+            color: white !important;
+            transform: none !important;
+          }
+          
+          .create-questionnaire-cancel-btn:focus,
+          .create-questionnaire-cancel-btn.ant-btn:focus {
+            background-color: #6B7280 !important;
+            border-color: #6B7280 !important;
+            color: white !important;
+            box-shadow: 0 0 0 2px rgba(107, 114, 128, 0.2) !important;
+          }
+
+          /* Create Questionnaire Button Styling */
+          .create-questionnaire-submit-btn,
+          .create-questionnaire-submit-btn.ant-btn {
+            background-color: #059669 !important;
+            border-color: #059669 !important;
+            color: white !important;
+            font-weight: 500 !important;
+            padding: 8px 24px !important;
+            height: auto !important;
+            min-height: 40px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-size: 14px !important;
+            border-radius: 6px !important;
+          }
+          
+          .create-questionnaire-submit-btn:hover,
+          .create-questionnaire-submit-btn.ant-btn:hover {
+            background-color: #047857 !important;
+            border-color: #047857 !important;
+            color: white !important;
+            transform: none !important;
+          }
+          
+          .create-questionnaire-submit-btn:focus,
+          .create-questionnaire-submit-btn.ant-btn:focus {
+            background-color: #059669 !important;
+            border-color: #059669 !important;
+            color: white !important;
+            box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
+          }
+        `}</style>
+
         <div className='ml-64 relative z-10'>
           <div className='px-6 pb-6'>
             <div className='max-w-5xl mx-auto'>
@@ -369,16 +438,23 @@ const CreateQuestionnaire = React.memo(({ user }) => {
                     {/* Action Buttons */}
                     <div className='flex justify-end space-x-3 pt-6 border-t border-gray-200 dark:border-gray-600'>
                       <Button
-                        variant='danger'
+                        type='default'
                         onClick={() => {
                           form.resetFields()
                           navigate('/business-dashboard/questionnaires')
                         }}
                         size='large'
+                        className='create-questionnaire-cancel-btn'
                       >
                         Cancel
                       </Button>
-                      <Button variant='success' htmlType='submit' size='large' loading={loading}>
+                      <Button 
+                        type='primary' 
+                        htmlType='submit' 
+                        size='large' 
+                        loading={loading}
+                        className='create-questionnaire-submit-btn'
+                      >
                         Create Questionnaire
                       </Button>
                     </div>

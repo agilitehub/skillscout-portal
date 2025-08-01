@@ -90,12 +90,72 @@ const CandidateForm = React.memo(({ user }) => {
       try {
         setLoading(true)
 
-        // In a real app, this would make API calls
-        // For now, we'll simulate success and navigate back
+        // Simulate a brief loading delay
         await new Promise(resolve => setTimeout(resolve, 500))
 
-        message.success(`${isEditing ? 'Updated' : 'Added'} candidate successfully`)
-        navigate('/business-dashboard')
+        if (isEditing) {
+          // Update existing candidate
+          const savedData = localStorage.getItem('candidatesData')
+          if (savedData) {
+            const candidatesData = JSON.parse(savedData)
+            
+            // Find and update the candidate across all stages
+            let updated = false
+            for (const stageKey in candidatesData) {
+              const candidateIndex = candidatesData[stageKey].findIndex(c => c.id === editId)
+              if (candidateIndex !== -1) {
+                candidatesData[stageKey][candidateIndex] = {
+                  ...candidatesData[stageKey][candidateIndex],
+                  ...values,
+                  id: editId // Keep the original ID
+                }
+                updated = true
+                break
+              }
+            }
+            
+            if (updated) {
+              localStorage.setItem('candidatesData', JSON.stringify(candidatesData))
+              message.success('Updated candidate successfully')
+            } else {
+              message.error('Candidate not found')
+            }
+          }
+        } else {
+          // Add new candidate
+          const newCandidate = {
+            id: Date.now(), // Simple ID generation
+            ...values,
+            appliedDate: new Date().toISOString().split('T')[0], // Today's date
+            jobListingId: 1 // Default job listing - could be improved
+          }
+
+          // Get existing data or create new structure
+          let candidatesData = {}
+          try {
+            const saved = localStorage.getItem('candidatesData')
+            if (saved) {
+              candidatesData = JSON.parse(saved)
+            }
+          } catch (error) {
+            console.warn('Error loading existing candidates data:', error)
+          }
+
+          // Ensure the 'application-received' stage exists
+          if (!candidatesData['application-received']) {
+            candidatesData['application-received'] = []
+          }
+
+          // Add the new candidate to the 'application-received' stage
+          candidatesData['application-received'].push(newCandidate)
+
+          // Save back to localStorage
+          localStorage.setItem('candidatesData', JSON.stringify(candidatesData))
+          
+          message.success('Added candidate successfully')
+        }
+
+        navigate('/business-dashboard/candidates')
       } catch (error) {
         console.error('Error saving candidate:', error)
         message.error('Failed to save candidate')
@@ -103,12 +163,12 @@ const CandidateForm = React.memo(({ user }) => {
         setLoading(false)
       }
     },
-    [isEditing, navigate]
+    [isEditing, editId, navigate]
   )
 
   // Handle cancel
   const handleCancel = useCallback(() => {
-    navigate('/business-dashboard')
+    navigate('/business-dashboard/candidates')
   }, [navigate])
 
   return (
@@ -337,16 +397,34 @@ const CandidateForm = React.memo(({ user }) => {
                 <Button 
                   onClick={handleCancel} 
                   disabled={loading}
-                  variant='secondary'
-                  className='min-w-24'
+                  type='default'
+                  size='large'
+                  className='min-w-24 candidate-form-cancel-btn'
+                  style={{
+                    backgroundColor: '#059669',
+                    borderColor: '#059669',
+                    color: '#ffffff',
+                    fontWeight: '500',
+                    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+                    opacity: loading ? '0.6' : '1'
+                  }}
                 >
                   Cancel
                 </Button>
                 <Button 
-                  type='primary' 
+                  type='default'
                   htmlType='submit' 
                   loading={loading}
-                  className='bg-emerald-600 hover:bg-emerald-700 border-emerald-600 min-w-24'
+                  size='large'
+                  className='min-w-24 candidate-form-submit-btn'
+                  style={{
+                    backgroundColor: '#059669',
+                    borderColor: '#059669',
+                    color: '#ffffff',
+                    fontWeight: '500',
+                    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+                    opacity: loading ? '0.6' : '1'
+                  }}
                 >
                   {isEditing ? 'Update Candidate' : 'Add Candidate'}
                 </Button>
@@ -355,9 +433,59 @@ const CandidateForm = React.memo(({ user }) => {
           </Card>
         </div>
 
-        {/* Dark mode specific styles for form elements */}
-        {darkMode && (
-          <style jsx global>{`
+        {/* Form element styles */}
+        <style jsx global>{`
+          /* Button Styles */
+          .candidate-form-cancel-btn,
+          .candidate-form-submit-btn,
+          .candidate-form-cancel-btn.ant-btn,
+          .candidate-form-submit-btn.ant-btn,
+          button.candidate-form-cancel-btn,
+          button.candidate-form-submit-btn {
+            background-color: #059669 !important;
+            border-color: #059669 !important;
+            color: #ffffff !important;
+            font-weight: 500 !important;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+            transition: all 0.2s ease !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+          }
+
+          .candidate-form-cancel-btn:hover,
+          .candidate-form-submit-btn:hover,
+          .candidate-form-cancel-btn.ant-btn:hover,
+          .candidate-form-submit-btn.ant-btn:hover,
+          button.candidate-form-cancel-btn:hover,
+          button.candidate-form-submit-btn:hover {
+            background-color: #047857 !important;
+            border-color: #047857 !important;
+            color: #ffffff !important;
+            transform: translateY(-1px) !important;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
+          }
+
+          .candidate-form-cancel-btn:focus,
+          .candidate-form-submit-btn:focus,
+          .candidate-form-cancel-btn.ant-btn:focus,
+          .candidate-form-submit-btn.ant-btn:focus {
+            background-color: #059669 !important;
+            border-color: #059669 !important;
+            color: #ffffff !important;
+            box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
+          }
+
+          .candidate-form-cancel-btn span,
+          .candidate-form-submit-btn span,
+          .candidate-form-cancel-btn .anticon,
+          .candidate-form-submit-btn .anticon {
+            color: #ffffff !important;
+            border: none !important;
+            outline: none !important;
+            text-shadow: none !important;
+          }
+
+          ${darkMode ? `
             .ant-form-item-label > label,
             .ant-form-item-extra {
               color: #d1d5db !important;
@@ -403,8 +531,8 @@ const CandidateForm = React.memo(({ user }) => {
               color: #F9FAFB !important;
               background-color: #EF4444 !important;
             }
-          `}</style>
-        )}
+          ` : ''}
+        `}</style>
       </div>
     </div>
   )
