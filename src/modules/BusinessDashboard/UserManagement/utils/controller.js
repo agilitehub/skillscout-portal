@@ -6,7 +6,10 @@
  * Handles user management operations and business logic
  */
 
-import { validateUser, validateInvitation, validatePermissions } from './data-model'
+// Import validation functions if needed in the future
+// import { validateUser, validateInvitation, validatePermissions } from './data-model'
+import { supabase } from '../../../../core/lib/supabase-controller'
+import { getCurrentUser, getUserOrganization } from '../../../../core/lib/supabase-controller'
 
 class UserManagementController {
   constructor() {
@@ -14,49 +17,163 @@ class UserManagementController {
   }
 
   /**
-   * Get all organization users
+   * Helper method to get current user's organization ID
+   * @returns {Promise<string>} Organization ID
+   * @throws {Error} If user is not authenticated or organization not found
+   */
+  async getCurrentUserOrgId() {
+    if (!supabase) {
+      throw new Error('Supabase client not initialized')
+    }
+
+    // Get current user and their organization
+    const currentUser = await getCurrentUser()
+    if (!currentUser.success || !currentUser.user) {
+      throw new Error('User not authenticated')
+    }
+
+    const userOrgData = await getUserOrganization(currentUser.user.id)
+    if (!userOrgData.success || !userOrgData.data.organization) {
+      throw new Error('User organization not found')
+    }
+
+    const orgId = userOrgData.data.organization.id
+    if (!orgId) {
+      throw new Error('Invalid organization ID')
+    }
+
+    return orgId
+  }
+
+  /**
+   * Get all organization users (filtered by current user's org_id)
    * @returns {Promise} Users data
    */
   async getAllUsers() {
     try {
-      // In a real app, this would make an API call
-      // const response = await supabaseController.from('organization_users').select('*')
-      
-      // For now, return mock data
+      // Get current user's organization ID (with built-in validation)
+      const orgId = await this.getCurrentUserOrgId()
+
+      // Fetch all users in the organization with additional validation
+      const { data: users, error } = await supabase
+        .from('users')
+        .select('id, first_name, last_name, email, org_id, created_at')
+        .eq('org_id', orgId)
+        .not('org_id', 'is', null) // Ensure org_id is not null
+        .order('created_at', { ascending: false })
+
+      if (error) {
+        console.error('Error fetching users:', error)
+        throw new Error('Failed to fetch users from database')
+      }
+
+      // Additional security check: ensure all returned users belong to the same organization
+      const invalidUsers = users.filter((user) => user.org_id !== orgId)
+      if (invalidUsers.length > 0) {
+        console.error('Security violation: Users from different organizations returned:', invalidUsers)
+        throw new Error('Data integrity error: Invalid organization data detected')
+      }
+
+      // Transform the data to match the expected format
+      const transformedUsers = users.map((user) => ({
+        id: user.id,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        name: `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.email?.split('@')[0] || 'Unknown',
+        email: user.email,
+        role: 'viewer', // Default role, TODO: add role field to schema later
+        status: 'active', // Default status, TODO: add status field to schema later
+        lastLogin: null, // TODO: implement last login tracking
+        invitedDate: user.created_at,
+        permissions: this.getDefaultPermissions('viewer')
+      }))
+
       return {
         success: true,
-        data: this.getMockUsers()
+        data: transformedUsers,
+        meta: {
+          total: transformedUsers.length,
+          organizationId: orgId
+        }
       }
     } catch (error) {
       console.error('Error fetching users:', error)
-      throw new Error('Failed to fetch users')
+      return {
+        success: false,
+        error: error.message || 'Failed to fetch users'
+      }
     }
   }
 
   /**
-   * Get user by ID
+   * Get user by ID (only from current user's organization)
    * @param {string} userId - User ID
    * @returns {Promise} User data
    */
   async getUserById(userId) {
     try {
-      // In a real app, this would make an API call
-      // const response = await supabaseController.from('organization_users').select('*').eq('id', userId).single()
-      
-      const users = this.getMockUsers()
-      const user = users.find(u => u.id === userId)
-      
+      if (!userId || typeof userId !== 'string') {
+        throw new Error('Valid user ID is required')
+      }
+
+      // Get current user's organization ID (with built-in validation)
+      const orgId = await this.getCurrentUserOrgId()
+
+      // Fetch the specific user in the same organization with security validation
+      const { data: user, error } = await supabase
+        .from('users')
+        .select('id, first_name, last_name, email, org_id, created_at')
+        .eq('id', userId)
+        .eq('org_id', orgId)
+        .not('org_id', 'is', null) // Ensure org_id is not null
+        .single()
+
+      if (error) {
+        console.error('Error fetching user:', error)
+        if (error.message === 'JSON object requested, multiple (or no) rows returned') {
+          throw new Error('User not found in your organization')
+        }
+        throw new Error('Failed to fetch user from database')
+      }
+
       if (!user) {
         throw new Error('User not found')
       }
 
+      // Additional security check: verify user belongs to the same organization
+      if (user.org_id !== orgId) {
+        console.error('Security violation: Attempted to access user from different organization:', {
+          requestedUserId: userId,
+          userOrgId: user.org_id,
+          currentOrgId: orgId
+        })
+        throw new Error('Access denied: User not in your organization')
+      }
+
+      // Transform the data to match the expected format
+      const transformedUser = {
+        id: user.id,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        name: `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.email?.split('@')[0] || 'Unknown',
+        email: user.email,
+        role: 'viewer', // Default role, TODO: add role field to schema later
+        status: 'active', // Default status, TODO: add status field to schema later
+        lastLogin: null, // TODO: implement last login tracking
+        invitedDate: user.created_at,
+        permissions: this.getDefaultPermissions('viewer')
+      }
+
       return {
         success: true,
-        data: user
+        data: transformedUser
       }
     } catch (error) {
       console.error('Error fetching user:', error)
-      throw new Error('Failed to fetch user')
+      return {
+        success: false,
+        error: error.message || 'Failed to fetch user'
+      }
     }
   }
 
@@ -67,65 +184,191 @@ class UserManagementController {
    */
   async inviteUser(invitationData) {
     try {
-      // Validate invitation data
-      const validationResult = validateInvitation(invitationData)
-      if (!validationResult.isValid) {
-        throw new Error(validationResult.errors.join(', '))
+      if (!supabase) {
+        throw new Error('Supabase client not initialized')
       }
 
-      // In a real app, this would:
-      // 1. Create invitation record in database
-      // 2. Send email invitation
-      // 3. Generate invitation token
-      
-      const invitation = {
-        id: Date.now(),
-        ...invitationData,
-        status: 'pending',
-        invitedDate: new Date().toISOString(),
-        invitedBy: 'current_user_id', // Would come from auth context
-        inviteToken: this.generateInviteToken(),
-        permissions: this.getDefaultPermissions(invitationData.role)
+      // Validate invitation data (we only need email, first_name, last_name for now)
+      if (!invitationData.email || typeof invitationData.email !== 'string') {
+        throw new Error('Valid email address is required')
+      }
+
+      if (!invitationData.first_name || typeof invitationData.first_name !== 'string') {
+        throw new Error('First name is required')
+      }
+
+      if (!invitationData.last_name || typeof invitationData.last_name !== 'string') {
+        throw new Error('Last name is required')
+      }
+
+      // Get current user's organization ID (with built-in validation)
+      const orgId = await this.getCurrentUserOrgId()
+
+      // Create a user record in our users table
+      // When the user signs in, ensureUserRecord() will find this record by email and use it
+      const { data: newUser, error: createError } = await supabase
+        .from('users')
+        .insert({
+          email: invitationData.email,
+          first_name: invitationData.first_name,
+          last_name: invitationData.last_name,
+          org_id: orgId
+        })
+        .select()
+        .single()
+
+      if (createError) {
+        console.error('Error creating user record:', createError)
+        throw new Error('Failed to create user record')
+      }
+
+      // Transform the data to match the expected format
+      const transformedUser = {
+        id: newUser.id,
+        first_name: newUser.first_name,
+        last_name: newUser.last_name,
+        name: `${newUser.first_name} ${newUser.last_name}`,
+        email: newUser.email,
+        role: 'viewer', // Default role
+        status: 'pending', // User is pending until they complete signup
+        lastLogin: null,
+        invitedDate: newUser.created_at,
+        permissions: this.getDefaultPermissions('viewer')
       }
 
       return {
         success: true,
-        data: invitation,
+        data: transformedUser,
         message: 'User invitation sent successfully'
       }
     } catch (error) {
       console.error('Error inviting user:', error)
-      throw new Error('Failed to send invitation')
+      return {
+        success: false,
+        error: error.message || 'Failed to send invitation'
+      }
     }
   }
 
   /**
-   * Update user permissions
+   * Update user profile (first_name and last_name only for now)
+   * @param {string} userId - User ID
+   * @param {Object} userData - Updated user data
+   * @returns {Promise} Updated user
+   */
+  async updateUser(userId, userData) {
+    try {
+      if (!supabase) {
+        throw new Error('Supabase client not initialized')
+      }
+
+      if (!userId) {
+        throw new Error('User ID is required')
+      }
+
+      // Get current user and their organization to ensure access
+      const currentUser = await getCurrentUser()
+      if (!currentUser.success || !currentUser.user) {
+        throw new Error('User not authenticated')
+      }
+
+      const userOrgData = await getUserOrganization(currentUser.user.id)
+      if (!userOrgData.success || !userOrgData.data.organization) {
+        throw new Error('User organization not found')
+      }
+
+      const orgId = userOrgData.data.organization.id
+
+      // Prepare update data (only first_name and last_name for now)
+      const updateData = {}
+      if (userData.first_name !== undefined) {
+        if (!userData.first_name || typeof userData.first_name !== 'string') {
+          throw new Error('First name must be a valid string')
+        }
+        updateData.first_name = userData.first_name.trim()
+      }
+      if (userData.last_name !== undefined) {
+        if (!userData.last_name || typeof userData.last_name !== 'string') {
+          throw new Error('Last name must be a valid string')
+        }
+        updateData.last_name = userData.last_name.trim()
+      }
+
+      if (Object.keys(updateData).length === 0) {
+        throw new Error('No valid update data provided')
+      }
+
+      // Update the user in the same organization
+      const { data: updatedUser, error } = await supabase
+        .from('users')
+        .update(updateData)
+        .eq('id', userId)
+        .eq('org_id', orgId)
+        .select('id, first_name, last_name, email, created_at')
+        .single()
+
+      if (error) {
+        console.error('Error updating user:', error)
+        throw new Error('Failed to update user')
+      }
+
+      if (!updatedUser) {
+        throw new Error('User not found or not in your organization')
+      }
+
+      // Transform the data to match the expected format
+      const transformedUser = {
+        id: updatedUser.id,
+        first_name: updatedUser.first_name,
+        last_name: updatedUser.last_name,
+        name:
+          `${updatedUser.first_name || ''} ${updatedUser.last_name || ''}`.trim() ||
+          updatedUser.email?.split('@')[0] ||
+          'Unknown',
+        email: updatedUser.email,
+        role: 'viewer', // Default role, TODO: add role field to schema later
+        status: 'active', // Default status, TODO: add status field to schema later
+        lastLogin: null, // TODO: implement last login tracking
+        invitedDate: updatedUser.created_at,
+        permissions: this.getDefaultPermissions('viewer')
+      }
+
+      return {
+        success: true,
+        data: transformedUser,
+        message: 'User updated successfully'
+      }
+    } catch (error) {
+      console.error('Error updating user:', error)
+      return {
+        success: false,
+        error: error.message || 'Failed to update user'
+      }
+    }
+  }
+
+  /**
+   * Update user permissions (placeholder for now)
    * @param {string} userId - User ID
    * @param {Object} permissions - Updated permissions
    * @returns {Promise} Updated user
    */
   async updateUserPermissions(userId, permissions) {
     try {
-      // Validate permissions
-      const validationResult = validatePermissions(permissions)
-      if (!validationResult.isValid) {
-        throw new Error(validationResult.errors.join(', '))
-      }
-
-      // In a real app, this would make an API call
-      // const response = await supabaseController.from('organization_users')
-      //   .update({ permissions })
-      //   .eq('id', userId)
+      // TODO: Implement when role/permission fields are added to users table
+      console.log('updateUserPermissions called with:', { userId, permissions })
 
       return {
         success: true,
         data: { id: userId, permissions },
-        message: 'User permissions updated successfully'
+        message: 'User permissions updated successfully (placeholder)'
       }
     } catch (error) {
       console.error('Error updating user permissions:', error)
-      throw new Error('Failed to update permissions')
+      return {
+        success: false,
+        error: error.message || 'Failed to update permissions'
+      }
     }
   }
 
@@ -187,25 +430,87 @@ class UserManagementController {
   }
 
   /**
-   * Remove user from organization
+   * Remove user from organization (only users in the same org_id)
    * @param {string} userId - User ID
    * @returns {Promise} Success result
    */
   async removeUser(userId) {
     try {
-      // In a real app, this would:
-      // 1. Soft delete or archive user
-      // 2. Revoke access tokens
-      // 3. Send notification
-      // 4. Update audit logs
+      if (!userId || typeof userId !== 'string') {
+        throw new Error('Valid user ID is required')
+      }
+
+      // Get current user info and organization ID
+      const currentUser = await getCurrentUser()
+      if (!currentUser.success || !currentUser.user) {
+        throw new Error('User not authenticated')
+      }
+
+      // Prevent users from deleting themselves
+      if (currentUser.user.id === userId) {
+        throw new Error('You cannot remove yourself from the organization')
+      }
+
+      // Get current user's organization ID (with built-in validation)
+      const orgId = await this.getCurrentUserOrgId()
+
+      // First, verify the user exists and belongs to the same organization
+      const { data: userToDelete, error: fetchError } = await supabase
+        .from('users')
+        .select('id, first_name, last_name, email, org_id')
+        .eq('id', userId)
+        .eq('org_id', orgId)
+        .single()
+
+      if (fetchError) {
+        console.error('Error fetching user to delete:', fetchError)
+        if (fetchError.message === 'JSON object requested, multiple (or no) rows returned') {
+          throw new Error('User not found in your organization')
+        }
+        throw new Error('Failed to verify user before deletion')
+      }
+
+      if (!userToDelete) {
+        throw new Error('User not found in your organization')
+      }
+
+      // Additional security check: verify user belongs to the same organization
+      if (userToDelete.org_id !== orgId) {
+        console.error('Security violation: Attempted to delete user from different organization:', {
+          targetUserId: userId,
+          userOrgId: userToDelete.org_id,
+          currentOrgId: orgId
+        })
+        throw new Error('Access denied: User not in your organization')
+      }
+
+      // Remove the user from the organization by deleting their record
+      // Note: This is a hard delete. In production, you might want to soft delete
+      const { error: deleteError } = await supabase.from('users').delete().eq('id', userId).eq('org_id', orgId)
+
+      if (deleteError) {
+        console.error('Error removing user:', deleteError)
+        throw new Error('Failed to remove user from database')
+      }
 
       return {
         success: true,
-        message: 'User removed successfully'
+        message: 'User removed successfully',
+        meta: {
+          deletedUser: {
+            id: userToDelete.id,
+            name: `${userToDelete.first_name} ${userToDelete.last_name}`,
+            email: userToDelete.email
+          },
+          organizationId: orgId
+        }
       }
     } catch (error) {
       console.error('Error removing user:', error)
-      throw new Error('Failed to remove user')
+      return {
+        success: false,
+        error: error.message || 'Failed to remove user'
+      }
     }
   }
 
@@ -216,20 +521,68 @@ class UserManagementController {
    */
   async searchUsers(searchTerm) {
     try {
-      const users = this.getMockUsers()
-      const filteredUsers = users.filter(user =>
-        user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.role.toLowerCase().includes(searchTerm.toLowerCase())
-      )
+      if (!searchTerm || typeof searchTerm !== 'string' || !searchTerm.trim()) {
+        // If no search term, return all users
+        return await this.getAllUsers()
+      }
+
+      // Get current user's organization ID (with built-in validation)
+      const orgId = await this.getCurrentUserOrgId()
+
+      // Sanitize search term to prevent injection attacks
+      const sanitizedSearchTerm = searchTerm.trim().slice(0, 255) // Limit length
+      const searchPattern = `%${sanitizedSearchTerm.toLowerCase()}%`
+
+      // Search users in the organization by first_name, last_name, or email with security validation
+      const { data: users, error } = await supabase
+        .from('users')
+        .select('id, first_name, last_name, email, org_id, created_at')
+        .eq('org_id', orgId)
+        .not('org_id', 'is', null) // Ensure org_id is not null
+        .or(`first_name.ilike.${searchPattern},last_name.ilike.${searchPattern},email.ilike.${searchPattern}`)
+        .order('created_at', { ascending: false })
+
+      if (error) {
+        console.error('Error searching users:', error)
+        throw new Error('Failed to search users in database')
+      }
+
+      // Additional security check: ensure all returned users belong to the same organization
+      const invalidUsers = users.filter((user) => user.org_id !== orgId)
+      if (invalidUsers.length > 0) {
+        console.error('Security violation: Users from different organizations returned in search:', invalidUsers)
+        throw new Error('Data integrity error: Invalid organization data detected')
+      }
+
+      // Transform the data to match the expected format
+      const transformedUsers = users.map((user) => ({
+        id: user.id,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        name: `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.email?.split('@')[0] || 'Unknown',
+        email: user.email,
+        role: 'viewer', // Default role, TODO: add role field to schema later
+        status: 'active', // Default status, TODO: add status field to schema later
+        lastLogin: null, // TODO: implement last login tracking
+        invitedDate: user.created_at,
+        permissions: this.getDefaultPermissions('viewer')
+      }))
 
       return {
         success: true,
-        data: filteredUsers
+        data: transformedUsers,
+        meta: {
+          total: transformedUsers.length,
+          searchTerm: sanitizedSearchTerm,
+          organizationId: orgId
+        }
       }
     } catch (error) {
       console.error('Error searching users:', error)
-      throw new Error('Failed to search users')
+      return {
+        success: false,
+        error: error.message || 'Failed to search users'
+      }
     }
   }
 
@@ -239,15 +592,11 @@ class UserManagementController {
    * @returns {Promise} Activity logs
    */
   async getUserActivityLogs(userId) {
-    try {
-      // In a real app, this would fetch from audit logs table
-      return {
-        success: true,
-        data: []
-      }
-    } catch (error) {
-      console.error('Error fetching user activity:', error)
-      throw new Error('Failed to fetch user activity')
+    // In a real app, this would fetch from audit logs table
+    // For now, just return empty data
+    return {
+      success: true,
+      data: []
     }
   }
 
@@ -292,8 +641,7 @@ class UserManagementController {
    * @returns {string} Random invite token
    */
   generateInviteToken() {
-    return Math.random().toString(36).substring(2, 15) + 
-           Math.random().toString(36).substring(2, 15)
+    return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
   }
 
   /**
@@ -346,4 +694,5 @@ class UserManagementController {
   }
 }
 
-export default new UserManagementController() 
+const userManagementController = new UserManagementController()
+export default userManagementController

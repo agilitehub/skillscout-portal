@@ -75,6 +75,8 @@ const Header = ({ user }) => {
   const checkUserOrganization = useCallback(async () => {
     if (!user?.id) return { hasOrganization: false }
 
+    console.log('user', user)
+
     setIsCheckingOrganization(true)
     try {
       const result = await getUserOrganization(user.id)

@@ -32,17 +32,22 @@ export const PERMISSIONS = {
 
 /**
  * User Schema
- * Defines the structure and validation rules for user data
+ * Defines the structure and validation rules for user data based on users table
  */
 export const UserSchema = {
-  id: { type: 'number', required: true },
-  name: { type: 'string', required: true, minLength: 2, maxLength: 100 },
+  id: { type: 'string', required: true }, // UUID
+  first_name: { type: 'string', required: true, minLength: 1, maxLength: 100 },
+  last_name: { type: 'string', required: true, minLength: 1, maxLength: 100 },
   email: { type: 'string', required: true, format: 'email', maxLength: 255 },
-  role: { type: 'string', required: true, enum: Object.values(USER_ROLES) },
-  status: { type: 'string', required: true, enum: Object.values(USER_STATUS) },
+  org_id: { type: 'string', required: false }, // UUID, will be inherited
+  avatar_url: { type: 'string', required: false, maxLength: 500 },
+  // Legacy fields for backwards compatibility
+  name: { type: 'string', required: false, minLength: 2, maxLength: 100 }, // Computed from first_name + last_name
+  role: { type: 'string', required: false, enum: Object.values(USER_ROLES) }, // TODO: add to schema
+  status: { type: 'string', required: false, enum: Object.values(USER_STATUS) }, // TODO: add to schema
   lastLogin: { type: 'string', required: false, format: 'iso-date' },
-  invitedDate: { type: 'string', required: true, format: 'iso-date' },
-  permissions: { type: 'object', required: true },
+  invitedDate: { type: 'string', required: false, format: 'iso-date' },
+  permissions: { type: 'object', required: false },
   invitedBy: { type: 'string', required: false }
 }
 
@@ -52,8 +57,11 @@ export const UserSchema = {
  */
 export const InvitationSchema = {
   email: { type: 'string', required: true, format: 'email', maxLength: 255 },
-  name: { type: 'string', required: false, maxLength: 100 },
-  role: { type: 'string', required: true, enum: Object.values(USER_ROLES) },
+  first_name: { type: 'string', required: true, minLength: 1, maxLength: 100 },
+  last_name: { type: 'string', required: true, minLength: 1, maxLength: 100 },
+  // Legacy fields for backwards compatibility
+  name: { type: 'string', required: false, maxLength: 100 }, // Can be computed from first_name + last_name
+  role: { type: 'string', required: false, enum: Object.values(USER_ROLES) }, // Optional for now
   message: { type: 'string', required: false, maxLength: 500 }
 }
 
@@ -78,11 +86,17 @@ export const PermissionsSchema = {
 export const validateUser = (userData) => {
   const errors = []
 
-  // Required fields validation
-  if (!userData.name || typeof userData.name !== 'string') {
-    errors.push('Name is required and must be a string')
-  } else if (userData.name.length < 2 || userData.name.length > 100) {
-    errors.push('Name must be between 2 and 100 characters')
+  // Required fields validation for first_name and last_name
+  if (!userData.first_name || typeof userData.first_name !== 'string') {
+    errors.push('First name is required and must be a string')
+  } else if (userData.first_name.length < 1 || userData.first_name.length > 100) {
+    errors.push('First name must be between 1 and 100 characters')
+  }
+
+  if (!userData.last_name || typeof userData.last_name !== 'string') {
+    errors.push('Last name is required and must be a string')
+  } else if (userData.last_name.length < 1 || userData.last_name.length > 100) {
+    errors.push('Last name must be between 1 and 100 characters')
   }
 
   if (!userData.email || typeof userData.email !== 'string') {
@@ -93,30 +107,38 @@ export const validateUser = (userData) => {
     errors.push('Email must be 255 characters or less')
   }
 
-  if (!userData.role || !Object.values(USER_ROLES).includes(userData.role)) {
-    errors.push('Role is required and must be one of: admin, recruiter, viewer')
+  // Optional field validation (for backwards compatibility)
+  if (userData.name && (typeof userData.name !== 'string' || userData.name.length < 2 || userData.name.length > 100)) {
+    errors.push('Name must be a string between 2 and 100 characters')
   }
 
-  if (!userData.status || !Object.values(USER_STATUS).includes(userData.status)) {
-    errors.push('Status is required and must be one of: active, inactive, pending')
+  if (userData.role && !Object.values(USER_ROLES).includes(userData.role)) {
+    errors.push('Role must be one of: admin, recruiter, viewer')
   }
 
-  if (!userData.invitedDate || !isValidISODate(userData.invitedDate)) {
-    errors.push('Invited date is required and must be a valid ISO date')
+  if (userData.status && !Object.values(USER_STATUS).includes(userData.status)) {
+    errors.push('Status must be one of: active, inactive, pending')
   }
 
-  if (!userData.permissions || typeof userData.permissions !== 'object') {
-    errors.push('Permissions are required and must be an object')
-  } else {
+  if (userData.invitedDate && !isValidISODate(userData.invitedDate)) {
+    errors.push('Invited date must be a valid ISO date')
+  }
+
+  if (userData.permissions && typeof userData.permissions !== 'object') {
+    errors.push('Permissions must be an object')
+  } else if (userData.permissions) {
     const permissionsValidation = validatePermissions(userData.permissions)
     if (!permissionsValidation.isValid) {
       errors.push(...permissionsValidation.errors)
     }
   }
 
-  // Optional field validation
   if (userData.lastLogin && !isValidISODate(userData.lastLogin)) {
     errors.push('Last login must be a valid ISO date')
+  }
+
+  if (userData.avatar_url && (typeof userData.avatar_url !== 'string' || userData.avatar_url.length > 500)) {
+    errors.push('Avatar URL must be a string with 500 characters or less')
   }
 
   return {
@@ -142,12 +164,25 @@ export const validateInvitation = (invitationData) => {
     errors.push('Email must be 255 characters or less')
   }
 
-  // Role validation
-  if (!invitationData.role || !Object.values(USER_ROLES).includes(invitationData.role)) {
-    errors.push('Role is required and must be one of: admin, recruiter, viewer')
+  // First name validation
+  if (!invitationData.first_name || typeof invitationData.first_name !== 'string') {
+    errors.push('First name is required and must be a string')
+  } else if (invitationData.first_name.length < 1 || invitationData.first_name.length > 100) {
+    errors.push('First name must be between 1 and 100 characters')
+  }
+
+  // Last name validation
+  if (!invitationData.last_name || typeof invitationData.last_name !== 'string') {
+    errors.push('Last name is required and must be a string')
+  } else if (invitationData.last_name.length < 1 || invitationData.last_name.length > 100) {
+    errors.push('Last name must be between 1 and 100 characters')
   }
 
   // Optional field validation
+  if (invitationData.role && !Object.values(USER_ROLES).includes(invitationData.role)) {
+    errors.push('Role must be one of: admin, recruiter, viewer')
+  }
+
   if (invitationData.name && (typeof invitationData.name !== 'string' || invitationData.name.length > 100)) {
     errors.push('Name must be a string with 100 characters or less')
   }
@@ -205,16 +240,19 @@ export const validatePermissions = (permissions) => {
  */
 export const transformToDatabase = (userData) => {
   return {
-    name: userData.name?.trim(),
+    first_name: userData.first_name?.trim(),
+    last_name: userData.last_name?.trim(),
     email: userData.email?.toLowerCase().trim(),
-    role: userData.role,
-    status: userData.status || USER_STATUS.PENDING,
-    permissions: userData.permissions,
-    invited_date: userData.invitedDate || new Date().toISOString(),
-    last_login: userData.lastLogin || null,
-    invited_by: userData.invitedBy || null,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
+    avatar_url: userData.avatar_url || null,
+    org_id: userData.org_id || null,
+    // Legacy fields (not stored in users table currently)
+    // role: userData.role,
+    // status: userData.status || USER_STATUS.PENDING,
+    // permissions: userData.permissions,
+    // invited_date: userData.invitedDate || new Date().toISOString(),
+    // last_login: userData.lastLogin || null,
+    // invited_by: userData.invitedBy || null,
+    created_at: new Date().toISOString()
   }
 }
 
@@ -226,16 +264,21 @@ export const transformToDatabase = (userData) => {
 export const transformFromDatabase = (dbData) => {
   return {
     id: dbData.id,
-    name: dbData.name,
+    first_name: dbData.first_name,
+    last_name: dbData.last_name,
+    name: `${dbData.first_name || ''} ${dbData.last_name || ''}`.trim() || dbData.email?.split('@')[0] || 'Unknown',
     email: dbData.email,
-    role: dbData.role,
-    status: dbData.status,
-    permissions: dbData.permissions || {},
-    invitedDate: dbData.invited_date,
-    lastLogin: dbData.last_login,
-    invitedBy: dbData.invited_by,
+    avatar_url: dbData.avatar_url,
+    org_id: dbData.org_id,
+    // Default values for legacy fields
+    role: 'viewer', // TODO: Add to schema
+    status: 'active', // TODO: Add to schema
+    permissions: getDefaultPermissionsForRole('viewer'),
+    invitedDate: dbData.created_at,
+    lastLogin: null, // TODO: Add to schema
+    invitedBy: null, // TODO: Add to schema
     createdAt: dbData.created_at,
-    updatedAt: dbData.updated_at
+    updatedAt: dbData.updated_at || dbData.created_at
   }
 }
 
@@ -368,4 +411,4 @@ const userManagementConfig = {
   getRoleDisplayName
 }
 
-export default userManagementConfig 
+export default userManagementConfig

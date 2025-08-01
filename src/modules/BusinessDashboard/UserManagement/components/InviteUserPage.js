@@ -9,6 +9,7 @@ import { Button } from '../../../../core/components'
 import { useTheme } from '../../../../core/context/ThemeContext'
 import BusinessSidebar from '../../components/BusinessSidebar'
 import { BRAND_COLORS, SEMANTIC_COLORS } from '../../../../core/theme/colors'
+import userManagementController from '../utils/controller'
 
 const { TextArea } = Input
 
@@ -94,23 +95,41 @@ const InviteUserPage = React.memo(({ user }) => {
     async (values) => {
       setLoading(true)
       try {
-        // Simulate API delay
-        await new Promise((resolve) => setTimeout(resolve, 1000))
+        // Validate required fields
+        if (!values.email || !values.first_name || !values.last_name) {
+          message.error('Please fill in all required fields')
+          return
+        }
 
-        message.success('User invitation sent successfully!')
-        form.resetFields()
+        // Prepare invitation data
+        const invitationData = {
+          email: values.email,
+          first_name: values.first_name,
+          last_name: values.last_name,
+          // Note: role and message are not submitted to database currently
+          role: values.role || 'viewer',
+          message: values.message
+        }
 
-        // Navigate back to user management
-        navigate('/business-dashboard/user-management')
+        // Call the backend to invite the user
+        const result = await userManagementController.inviteUser(invitationData)
+
+        if (result.success) {
+          message.success('User invitation sent successfully!')
+          form.resetFields()
+          // Navigate back to user management
+          navigate('/business-dashboard/user-management')
+        } else {
+          message.error(result.error || 'Failed to send invitation. Please try again.')
+        }
       } catch (error) {
         console.error('Error inviting user:', error)
-        message.error('Failed to send invitation. Please try again.')
+        message.error('An unexpected error occurred while sending invitation.')
       } finally {
         setLoading(false)
       }
     },
-    // eslint-disable-next-line
-    [form, navigate, getDefaultPermissions]
+    [form, navigate]
   )
 
   // Handle cancel
@@ -194,22 +213,38 @@ const InviteUserPage = React.memo(({ user }) => {
                 }}
                 className={darkMode ? 'invite-form-dark' : 'invite-form'}
               >
+                <Form.Item
+                  label={
+                    <Space size={8}>
+                      <FontAwesomeIcon icon={faEnvelope} className='text-gray-400' />
+                      <span>Email Address</span>
+                    </Space>
+                  }
+                  name='email'
+                  rules={[
+                    { required: true, message: 'Please enter email address' },
+                    { type: 'email', message: 'Please enter a valid email address' }
+                  ]}
+                >
+                  <Input placeholder='user@company.com' style={{ fontWeight: '500' }} size='large' />
+                </Form.Item>
+
                 <Row gutter={24}>
                   <Col xs={24} lg={12}>
                     <Form.Item
                       label={
                         <Space size={8}>
-                          <FontAwesomeIcon icon={faEnvelope} className='text-gray-400' />
-                          <span>Email Address</span>
+                          <FontAwesomeIcon icon={faUser} className='text-gray-400' />
+                          <span>First Name</span>
                         </Space>
                       }
-                      name='email'
+                      name='first_name'
                       rules={[
-                        { required: true, message: 'Please enter email address' },
-                        { type: 'email', message: 'Please enter a valid email address' }
+                        { required: true, message: 'Please enter first name' },
+                        { min: 1, message: 'First name must be at least 1 character' }
                       ]}
                     >
-                      <Input placeholder='user@company.com' style={{ fontWeight: '500' }} size='large' />
+                      <Input placeholder='John' style={{ fontWeight: '500' }} size='large' />
                     </Form.Item>
                   </Col>
 
@@ -218,12 +253,47 @@ const InviteUserPage = React.memo(({ user }) => {
                       label={
                         <Space size={8}>
                           <FontAwesomeIcon icon={faUser} className='text-gray-400' />
-                          <span>Full Name (Optional)</span>
+                          <span>Last Name</span>
                         </Space>
                       }
-                      name='name'
+                      name='last_name'
+                      rules={[
+                        { required: true, message: 'Please enter last name' },
+                        { min: 1, message: 'Last name must be at least 1 character' }
+                      ]}
                     >
-                      <Input placeholder='John Smith' style={{ fontWeight: '500' }} size='large' />
+                      <Input placeholder='Smith' style={{ fontWeight: '500' }} size='large' />
+                    </Form.Item>
+                  </Col>
+                </Row>
+
+                {/* Dummy fields - these will be shown in UI but not submitted to database */}
+                <Row gutter={24}>
+                  <Col xs={24} lg={12}>
+                    <Form.Item
+                      label='Department (Coming Soon)'
+                      name='department'
+                      extra={
+                        <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
+                          This field will be available in a future update
+                        </span>
+                      }
+                    >
+                      <Input placeholder='Engineering' style={{ fontWeight: '500' }} size='large' disabled />
+                    </Form.Item>
+                  </Col>
+
+                  <Col xs={24} lg={12}>
+                    <Form.Item
+                      label='Job Title (Coming Soon)'
+                      name='job_title'
+                      extra={
+                        <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
+                          This field will be available in a future update
+                        </span>
+                      }
+                    >
+                      <Input placeholder='Software Engineer' style={{ fontWeight: '500' }} size='large' disabled />
                     </Form.Item>
                   </Col>
                 </Row>

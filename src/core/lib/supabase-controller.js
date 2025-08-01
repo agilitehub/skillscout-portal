@@ -327,6 +327,7 @@ export const refreshSession = async () => {
 
 /**
  * Ensure the user record exists in the users table.
+ * Checks for existing record by email, uses it if found, creates new one otherwise.
  * @param {string} userId - The user's unique id (uuid)
  * @returns {Promise<boolean>} True if exists or created, false otherwise
  */
@@ -334,10 +335,55 @@ export const ensureUserRecord = async (userId) => {
   try {
     if (!supabase) throw new Error('Supabase client not initialized')
     if (!userId) throw new Error('User ID is required')
-    // Upsert: insert if not exists, else do nothing
-    const { error } = await supabase.from('users').upsert([{ id: userId }], { onConflict: ['id'] })
-    if (error) throw error
-    return true
+
+    // Get the auth user's email
+    const {
+      data: { user: authUser }
+    } = await supabase.auth.getUser()
+
+    const userEmail = authUser.email
+
+    // Check if a user record already exists with this email
+    const { data: existingUser, error: emailCheckError } = await supabase
+      .from('users')
+      .select('*')
+      .eq('email', userEmail)
+      .maybeSingle()
+
+    if (emailCheckError && emailCheckError.code !== 'PGRST116') {
+      console.error('Supabase Controller: Error checking for existing user by email:', emailCheckError)
+    }
+
+    if (existingUser) {
+      // User record exists with this email
+      if (existingUser.id !== userId) {
+        // Different ID - delete old record and create new one with auth user ID
+        console.log('Supabase Controller: Found existing user by email, transferring to auth user ID')
+
+        await supabase.from('users').delete().eq('id', existingUser.id)
+
+        const { error: insertError } = await supabase.from('users').insert([
+          {
+            id: userId,
+            email: existingUser.email,
+            first_name: existingUser.first_name,
+            last_name: existingUser.last_name,
+            org_id: existingUser.org_id,
+            avatar_url: existingUser.avatar_url
+          }
+        ])
+
+        if (insertError && insertError.code !== '23505') {
+          throw insertError
+        }
+      }
+      return true
+    } else {
+      // No existing record - create new one
+      const { error } = await supabase.from('users').upsert([{ id: userId, email: userEmail }], { onConflict: ['id'] })
+      if (error) throw error
+      return true
+    }
   } catch (error) {
     console.error('Supabase Controller: ensureUserRecord error:', error)
     return false

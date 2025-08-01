@@ -65,7 +65,7 @@ export const AuthProvider = ({ children }) => {
           try {
             console.log('AuthContext: Auth state changed:', event, session?.user?.email)
 
-            if (event === 'SIGNED_IN' && session) {
+            if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session) {
               setCurrentUser(session.user)
               setAuthError(null)
               // Load user profile when user signs in (only if not already loaded from session restore)
