@@ -1186,29 +1186,37 @@ const CreateJobDescription = React.memo(({ user }) => {
                   className={`flex justify-end space-x-3 pt-6 mt-6 border-t ${darkMode ? 'border-gray-600' : 'border-gray-200'}`}
                 >
                   <Button
-                    icon={<FontAwesomeIcon icon={faTimes} />}
+                    icon={<FontAwesomeIcon icon={faTimes} className="mr-2" />}
                     onClick={() => navigate('/business-dashboard/job-descriptions')}
                     size='large'
+                    style={{
+                      backgroundColor: darkMode ? '#dc2626' : '#6b7280',
+                      borderColor: darkMode ? '#dc2626' : '#6b7280',
+                      color: '#ffffff',
+                      fontWeight: '500'
+                    }}
                     className={
                       darkMode
-                        ? 'bg-red-600 text-white border-red-600 hover:bg-red-700 hover:border-red-700 font-medium'
-                        : 'bg-gray-500 text-white border-gray-500 hover:bg-gray-600 hover:border-gray-600 font-medium'
+                        ? 'hover:bg-red-700 hover:border-red-700'
+                        : 'hover:bg-gray-600 hover:border-gray-600'
                     }
                   >
                     Cancel
                   </Button>
                   <Button
                     type='primary'
-                    icon={<FontAwesomeIcon icon={faSave} />}
+                    icon={<FontAwesomeIcon icon={faSave} className="mr-2" />}
                     onClick={handleSaveClick}
                     loading={loading}
                     disabled={initialDataLoading}
                     size='large'
-                    className={
-                      darkMode
-                        ? 'bg-emerald-600 text-white border-emerald-600 hover:bg-emerald-700 hover:border-emerald-700 font-medium'
-                        : 'bg-emerald-600 text-white border-emerald-600 hover:bg-emerald-700 hover:border-emerald-700 font-medium'
-                    }
+                    style={{
+                      backgroundColor: '#10b981',
+                      borderColor: '#10b981',
+                      color: '#ffffff',
+                      fontWeight: '500'
+                    }}
+                    className='hover:bg-emerald-700 hover:border-emerald-700'
                   >
                     {isEditMode ? 'Update Job Description' : 'Save Job Description'}
                   </Button>
@@ -1232,17 +1240,25 @@ const CreateJobDescription = React.memo(({ user }) => {
               width={500}
               className={darkMode ? 'dark-modal' : ''}
               okButtonProps={{
-                icon: <FontAwesomeIcon icon={faCheckCircle} />,
+                icon: <FontAwesomeIcon icon={faCheckCircle} className="mr-2" />,
                 size: 'large',
-                className: darkMode
-                  ? 'bg-emerald-600 border-emerald-600 hover:bg-emerald-700'
-                  : 'bg-emerald-600 border-emerald-600 hover:bg-emerald-700'
+                style: {
+                  backgroundColor: '#10b981',
+                  borderColor: '#10b981',
+                  color: '#ffffff'
+                },
+                className: 'hover:bg-emerald-700 hover:border-emerald-700'
               }}
               cancelButtonProps={{
                 size: 'large',
+                style: {
+                  backgroundColor: darkMode ? '#4b5563' : '#6b7280',
+                  borderColor: darkMode ? '#4b5563' : '#6b7280',
+                  color: '#ffffff'
+                },
                 className: darkMode
-                  ? 'bg-gray-600 border-gray-600 text-white hover:bg-gray-700'
-                  : 'bg-gray-500 border-gray-500 text-white hover:bg-gray-600'
+                  ? 'hover:bg-gray-700 hover:border-gray-700'
+                  : 'hover:bg-gray-600 hover:border-gray-600'
               }}
             >
               <div className='py-4'>
