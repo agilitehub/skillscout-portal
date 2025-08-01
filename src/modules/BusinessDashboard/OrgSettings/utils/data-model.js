@@ -187,7 +187,6 @@ export const transformToDatabase = (settingsData) => {
     industry_tags: settingsData.industryTags || [],
     custom_classifications: settingsData.customClassifications || []
     // Note: created_by, modified_by, created_at, modified_at are handled by database triggers
-    // ai_profile_enabled and last_ai_update are not in the schema, so we'll remove them
   }
 }
 
