@@ -1,18 +1,7 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
 import React, { useState, useCallback, useEffect } from 'react'
-import {
-  Card,
-  Form,
-  Input,
-  Select,
-  Space,
-  Row,
-  Col,
-  Alert,
-  message,
-  Tabs
-} from 'antd'
+import { Card, Form, Input, Select, Space, Row, Col, Alert, message, Tabs } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faBuilding,
@@ -36,6 +25,7 @@ import { Button } from '../../../../core/components'
 import BusinessSidebar from '../../components/BusinessSidebar'
 import { BRAND_COLORS } from '../../../../core/theme/colors'
 import AIProfileModal from './AIProfileModal'
+import BusinessSetupModal from './BusinessSetupModal'
 
 const { TextArea } = Input
 const { Option } = Select
@@ -58,24 +48,25 @@ const OrgSettings = React.memo(({ user }) => {
     // Organization Profile
     organizationName: 'TechCorp Solutions',
     industry: 'Technology',
-    description: 'We are a leading technology company focused on innovative software solutions that help businesses transform digitally.',
+    description:
+      'We are a leading technology company focused on innovative software solutions that help businesses transform digitally.',
     website: 'https://techcorp.com',
     foundedYear: '2020',
     employeeRange: '50-200',
-    
+
     // Work Arrangements
     defaultWorkArrangement: 'hybrid',
-    
+
     // Preferences
     currency: 'USD',
     country: 'United States',
     language: 'English',
     timezone: 'America/New_York',
-    
+
     // Industry Tags
     industryTags: ['Software Development', 'Cloud Computing', 'AI/Machine Learning', 'SaaS'],
     customClassifications: ['Startup', 'B2B', 'Enterprise Solutions'],
-    
+
     // AI Profile settings
     aiProfileEnabled: true,
     lastAiUpdate: '2024-01-15T10:30:00Z'
@@ -88,33 +79,67 @@ const OrgSettings = React.memo(({ user }) => {
     { value: 'office', label: 'Office-bound', icon: faBuilding, description: 'Primarily office-based work' }
   ]
 
-  const currencyOptions = [
-    'USD', 'EUR', 'GBP', 'CAD', 'AUD', 'JPY', 'CHF', 'SEK', 'NOK', 'DKK'
-  ]
+  const currencyOptions = ['USD', 'EUR', 'GBP', 'CAD', 'AUD', 'JPY', 'CHF', 'SEK', 'NOK', 'DKK']
 
   const countryOptions = [
-    'United States', 'United Kingdom', 'Canada', 'Germany', 'France', 
-    'Australia', 'Netherlands', 'Sweden', 'Norway', 'Denmark', 'Switzerland'
+    'United States',
+    'United Kingdom',
+    'Canada',
+    'Germany',
+    'France',
+    'Australia',
+    'Netherlands',
+    'Sweden',
+    'Norway',
+    'Denmark',
+    'Switzerland'
   ]
 
   const languageOptions = [
-    'English', 'Spanish', 'French', 'German', 'Italian', 'Portuguese', 
-    'Dutch', 'Swedish', 'Norwegian', 'Danish'
+    'English',
+    'Spanish',
+    'French',
+    'German',
+    'Italian',
+    'Portuguese',
+    'Dutch',
+    'Swedish',
+    'Norwegian',
+    'Danish'
   ]
 
-  const employeeRangeOptions = [
-    '1-10', '11-50', '51-200', '201-500', '501-1000', '1001-5000', '5000+'
-  ]
+  const employeeRangeOptions = ['1-10', '11-50', '51-200', '201-500', '501-1000', '1001-5000', '5000+']
 
   const industryOptions = [
-    'Technology', 'Healthcare', 'Finance', 'Education', 'Retail', 'Manufacturing',
-    'Consulting', 'Media', 'Government', 'Non-profit', 'Real Estate', 'Other'
+    'Technology',
+    'Healthcare',
+    'Finance',
+    'Education',
+    'Retail',
+    'Manufacturing',
+    'Consulting',
+    'Media',
+    'Government',
+    'Non-profit',
+    'Real Estate',
+    'Other'
   ]
 
   const commonIndustryTags = [
-    'Software Development', 'Cloud Computing', 'AI/Machine Learning', 'Data Analytics',
-    'Cybersecurity', 'Mobile Development', 'Web Development', 'DevOps', 'SaaS',
-    'E-commerce', 'Fintech', 'Healthcare Tech', 'EdTech', 'PropTech'
+    'Software Development',
+    'Cloud Computing',
+    'AI/Machine Learning',
+    'Data Analytics',
+    'Cybersecurity',
+    'Mobile Development',
+    'Web Development',
+    'DevOps',
+    'SaaS',
+    'E-commerce',
+    'Fintech',
+    'Healthcare Tech',
+    'EdTech',
+    'PropTech'
   ]
 
   // Set initial form values
@@ -132,9 +157,9 @@ const OrgSettings = React.memo(({ user }) => {
     setLoading(true)
     try {
       // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      setOrgSettings(prev => ({ ...prev, ...values }))
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+
+      setOrgSettings((prev) => ({ ...prev, ...values }))
       setHasChanges(false)
       message.success('Organization settings updated successfully!')
     } catch (error) {
@@ -198,7 +223,7 @@ const OrgSettings = React.memo(({ user }) => {
                 <h1 className='text-2xl font-bold text-white'>Organization Settings</h1>
               </div>
             </div>
-            
+
             <div className='flex space-x-3'>
               {hasChanges && (
                 <Button
@@ -214,7 +239,7 @@ const OrgSettings = React.memo(({ user }) => {
                   Reset
                 </Button>
               )}
-              
+
               <Button
                 type='primary'
                 icon={<FontAwesomeIcon icon={faSave} />}
@@ -223,21 +248,9 @@ const OrgSettings = React.memo(({ user }) => {
                 disabled={!hasChanges}
                 className={`shadow-md hover:shadow-lg transition-all duration-200 org-settings-save-btn`}
                 style={{
-                  backgroundColor: hasChanges 
-                    ? BRAND_COLORS.emeraldPrimary 
-                    : darkMode 
-                      ? '#4B5563' 
-                      : '#E5E7EB',
-                  borderColor: hasChanges 
-                    ? BRAND_COLORS.emeraldPrimary 
-                    : darkMode 
-                      ? '#4B5563' 
-                      : '#E5E7EB',
-                  color: hasChanges 
-                    ? '#FFFFFF' 
-                    : darkMode 
-                      ? '#9CA3AF' 
-                      : '#6B7280'
+                  backgroundColor: hasChanges ? BRAND_COLORS.emeraldPrimary : darkMode ? '#4B5563' : '#E5E7EB',
+                  borderColor: hasChanges ? BRAND_COLORS.emeraldPrimary : darkMode ? '#4B5563' : '#E5E7EB',
+                  color: hasChanges ? '#FFFFFF' : darkMode ? '#9CA3AF' : '#6B7280'
                 }}
               >
                 Save Changes
@@ -250,7 +263,7 @@ const OrgSettings = React.memo(({ user }) => {
         <div className='relative p-6'>
           <Form
             form={form}
-            layout="vertical"
+            layout='vertical'
             onFinish={handleSubmit}
             onValuesChange={handleValuesChange}
             className={`${darkMode ? 'org-settings-form' : ''}`}
@@ -258,26 +271,26 @@ const OrgSettings = React.memo(({ user }) => {
             <Tabs
               activeKey={activeTab}
               onChange={handleTabChange}
-              type="card"
-              size="large"
+              type='card'
+              size='large'
               className={`org-settings-tabs ${darkMode ? 'org-settings-tabs-dark' : ''}`}
             >
               {/* General Tab */}
               <TabPane
                 tab={
-                  <span className="flex items-center space-x-2">
+                  <span className='flex items-center space-x-2'>
                     <FontAwesomeIcon icon={faCog} />
                     <span>General</span>
                   </span>
                 }
-                key="general"
+                key='general'
               >
-                <div className="space-y-6">
+                <div className='space-y-6'>
                   {/* Organization Profile Section */}
                   <Card
                     title={
                       <div className='flex items-center space-x-3'>
-                        <FontAwesomeIcon icon={faBuilding} className="text-emerald-600" />
+                        <FontAwesomeIcon icon={faBuilding} className='text-emerald-600' />
                         <span>Organization Profile</span>
                       </div>
                     }
@@ -298,7 +311,7 @@ const OrgSettings = React.memo(({ user }) => {
                           icon={<FontAwesomeIcon icon={faRobot} />}
                           onClick={handleAiProfileUpdate}
                           className={`${darkMode ? 'text-emerald-400 hover:text-emerald-300' : 'text-emerald-600 hover:text-emerald-700'}`}
-                          title="Re-interact with AI"
+                          title='Re-interact with AI'
                         >
                           AI Update
                         </Button>
@@ -308,41 +321,35 @@ const OrgSettings = React.memo(({ user }) => {
                     <Row gutter={16}>
                       <Col xs={24} sm={12}>
                         <Form.Item
-                          label="Organization Name"
-                          name="organizationName"
+                          label='Organization Name'
+                          name='organizationName'
                           rules={[{ required: true, message: 'Please enter organization name' }]}
                         >
-                          <Input placeholder="Enter organization name" />
+                          <Input placeholder='Enter organization name' />
                         </Form.Item>
                       </Col>
-                      
+
                       <Col xs={24} sm={12}>
-                        <Form.Item
-                          label="Website"
-                          name="website"
-                        >
-                          <Input placeholder="https://company.com" />
+                        <Form.Item label='Website' name='website'>
+                          <Input placeholder='https://company.com' />
                         </Form.Item>
                       </Col>
                     </Row>
 
                     <Row gutter={16}>
                       <Col xs={24} sm={6}>
-                        <Form.Item
-                          label="Founded Year"
-                          name="foundedYear"
-                        >
-                          <Input placeholder="2020" />
+                        <Form.Item label='Founded Year' name='foundedYear'>
+                          <Input placeholder='2020' />
                         </Form.Item>
                       </Col>
-                      
+
                       <Col xs={24} sm={6}>
-                        <Form.Item
-                          label="Employee Range"
-                          name="employeeRange"
-                        >
-                          <Select placeholder="Select range" dropdownClassName={darkMode ? 'org-settings-dark-dropdown' : ''}>
-                            {employeeRangeOptions.map(range => (
+                        <Form.Item label='Employee Range' name='employeeRange'>
+                          <Select
+                            placeholder='Select range'
+                            dropdownClassName={darkMode ? 'org-settings-dark-dropdown' : ''}
+                          >
+                            {employeeRangeOptions.map((range) => (
                               <Option key={range} value={range}>
                                 {range}
                               </Option>
@@ -353,32 +360,27 @@ const OrgSettings = React.memo(({ user }) => {
                     </Row>
 
                     <Form.Item
-                      label="Description"
-                      name="description"
+                      label='Description'
+                      name='description'
                       extra="Brief description of your organization's mission and services"
                     >
-                      <TextArea
-                        rows={4}
-                        placeholder="Describe your organization..."
-                        showCount
-                        maxLength={1000}
-                      />
+                      <TextArea rows={4} placeholder='Describe your organization...' showCount maxLength={1000} />
                     </Form.Item>
 
                     {orgSettings.aiProfileEnabled && (
                       <Alert
-                        message="AI Profile Assistance Available"
+                        message='AI Profile Assistance Available'
                         description={
                           <div>
                             Your organization profile was last updated with AI assistance on{' '}
-                            {new Date(orgSettings.lastAiUpdate).toLocaleDateString()}. 
-                            Click "AI Update" to refresh your profile with the latest information.
+                            {new Date(orgSettings.lastAiUpdate).toLocaleDateString()}. Click "AI Update" to refresh your
+                            profile with the latest information.
                           </div>
                         }
-                        type="info"
+                        type='info'
                         icon={<FontAwesomeIcon icon={faRobot} />}
                         showIcon
-                        className="mt-4"
+                        className='mt-4'
                       />
                     )}
                   </Card>
@@ -387,7 +389,7 @@ const OrgSettings = React.memo(({ user }) => {
                   <Card
                     title={
                       <div className='flex items-center space-x-3'>
-                        <FontAwesomeIcon icon={faBriefcase} className="text-emerald-600" />
+                        <FontAwesomeIcon icon={faBriefcase} className='text-emerald-600' />
                         <span>Default Work Arrangement</span>
                       </div>
                     }
@@ -403,22 +405,26 @@ const OrgSettings = React.memo(({ user }) => {
                     }}
                   >
                     <Form.Item
-                      label="Default Work Arrangement"
-                      name="defaultWorkArrangement"
-                      extra="This will be the default setting for new job postings"
+                      label='Default Work Arrangement'
+                      name='defaultWorkArrangement'
+                      extra='This will be the default setting for new job postings'
                       style={{ marginBottom: '24px' }}
                     >
-                      <Select 
-                        placeholder="Select default work arrangement" 
-                        size="large" 
-                        dropdownClassName={darkMode ? 'org-settings-dark-dropdown work-arrangement-dropdown' : 'work-arrangement-dropdown'}
+                      <Select
+                        placeholder='Select default work arrangement'
+                        size='large'
+                        dropdownClassName={
+                          darkMode
+                            ? 'org-settings-dark-dropdown work-arrangement-dropdown'
+                            : 'work-arrangement-dropdown'
+                        }
                       >
-                        {workArrangementOptions.map(option => (
+                        {workArrangementOptions.map((option) => (
                           <Option key={option.value} value={option.value}>
-                            <div className="flex items-center space-x-3 py-1">
-                              <FontAwesomeIcon icon={option.icon} className="flex-shrink-0" />
-                              <div className="flex-1">
-                                <div className="font-medium text-sm">{option.label}</div>
+                            <div className='flex items-center space-x-3 py-1'>
+                              <FontAwesomeIcon icon={option.icon} className='flex-shrink-0' />
+                              <div className='flex-1'>
+                                <div className='font-medium text-sm'>{option.label}</div>
                                 <div className={`text-xs mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                                   {option.description}
                                 </div>
@@ -427,61 +433,65 @@ const OrgSettings = React.memo(({ user }) => {
                           </Option>
                         ))}
                       </Select>
-                                         </Form.Item>
-                   </Card>
+                    </Form.Item>
+                  </Card>
 
-                   {/* Future Features Preview */}
-                   <Card
-                     title={
-                       <div className='flex items-center space-x-3'>
-                         <FontAwesomeIcon icon={faFileAlt} className="text-gray-400" />
-                         <span className="text-gray-400">Future Features</span>
-                       </div>
-                     }
-                     className={`${darkMode ? 'bg-gray-800 border-gray-700 future-features-section' : 'bg-white border-gray-200'} opacity-60`}
-                     headStyle={{
-                       backgroundColor: darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white,
-                       borderBottom: `1px solid ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.borderGray}`,
-                       color: darkMode ? BRAND_COLORS.lightGray : BRAND_COLORS.mediumGray
-                     }}
-                     bodyStyle={{
-                       backgroundColor: darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white,
-                       color: darkMode ? BRAND_COLORS.lightGray : BRAND_COLORS.mediumGray
-                     }}
-                   >
-                     <div 
-                       className={`p-4 rounded-lg border-2 border-dashed ${
-                         darkMode ? 'border-gray-600 bg-gray-700/50 future-features-content' : 'border-gray-300 bg-gray-50/50'
-                       }`}
-                     >
-                       <h4 className={`font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                         🚀 Coming Soon
-                       </h4>
-                       <div className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                         • <strong>Default Job Description Templates:</strong> Create and manage template settings for consistent job postings<br/>
-                         • <strong>Email Templates:</strong> Customize notification and communication templates<br/>
-                         • <strong>Integration Settings:</strong> Connect with external HR tools and platforms<br/>
-                         • <strong>Compliance Settings:</strong> Configure GDPR, EEOC, and other regulatory requirements
-                       </div>
-                     </div>
-                   </Card>
-                 </div>
-               </TabPane>
+                  {/* Future Features Preview */}
+                  <Card
+                    title={
+                      <div className='flex items-center space-x-3'>
+                        <FontAwesomeIcon icon={faFileAlt} className='text-gray-400' />
+                        <span className='text-gray-400'>Future Features</span>
+                      </div>
+                    }
+                    className={`${darkMode ? 'bg-gray-800 border-gray-700 future-features-section' : 'bg-white border-gray-200'} opacity-60`}
+                    headStyle={{
+                      backgroundColor: darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white,
+                      borderBottom: `1px solid ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.borderGray}`,
+                      color: darkMode ? BRAND_COLORS.lightGray : BRAND_COLORS.mediumGray
+                    }}
+                    bodyStyle={{
+                      backgroundColor: darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white,
+                      color: darkMode ? BRAND_COLORS.lightGray : BRAND_COLORS.mediumGray
+                    }}
+                  >
+                    <div
+                      className={`p-4 rounded-lg border-2 border-dashed ${
+                        darkMode
+                          ? 'border-gray-600 bg-gray-700/50 future-features-content'
+                          : 'border-gray-300 bg-gray-50/50'
+                      }`}
+                    >
+                      <h4 className={`font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                        🚀 Coming Soon
+                      </h4>
+                      <div className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                        • <strong>Default Job Description Templates:</strong> Create and manage template settings for
+                        consistent job postings
+                        <br />• <strong>Email Templates:</strong> Customize notification and communication templates
+                        <br />• <strong>Integration Settings:</strong> Connect with external HR tools and platforms
+                        <br />• <strong>Compliance Settings:</strong> Configure GDPR, EEOC, and other regulatory
+                        requirements
+                      </div>
+                    </div>
+                  </Card>
+                </div>
+              </TabPane>
 
               {/* Regional Preferences Tab */}
               <TabPane
                 tab={
-                  <span className="flex items-center space-x-2">
+                  <span className='flex items-center space-x-2'>
                     <FontAwesomeIcon icon={faGlobe} />
                     <span>Regional Preferences</span>
                   </span>
                 }
-                key="regional"
+                key='regional'
               >
                 <Card
                   title={
                     <div className='flex items-center space-x-3'>
-                      <FontAwesomeIcon icon={faGlobe} className="text-emerald-600" />
+                      <FontAwesomeIcon icon={faGlobe} className='text-emerald-600' />
                       <span>Regional Preferences</span>
                     </div>
                   }
@@ -505,11 +515,14 @@ const OrgSettings = React.memo(({ user }) => {
                             <span>Preferred Currency</span>
                           </Space>
                         }
-                        name="currency"
+                        name='currency'
                         rules={[{ required: true, message: 'Please select currency' }]}
                       >
-                        <Select placeholder="Select currency" dropdownClassName={darkMode ? 'org-settings-dark-dropdown' : ''}>
-                          {currencyOptions.map(currency => (
+                        <Select
+                          placeholder='Select currency'
+                          dropdownClassName={darkMode ? 'org-settings-dark-dropdown' : ''}
+                        >
+                          {currencyOptions.map((currency) => (
                             <Option key={currency} value={currency}>
                               {currency}
                             </Option>
@@ -517,7 +530,7 @@ const OrgSettings = React.memo(({ user }) => {
                         </Select>
                       </Form.Item>
                     </Col>
-                    
+
                     <Col xs={24} sm={8}>
                       <Form.Item
                         label={
@@ -526,11 +539,14 @@ const OrgSettings = React.memo(({ user }) => {
                             <span>Primary Country</span>
                           </Space>
                         }
-                        name="country"
+                        name='country'
                         rules={[{ required: true, message: 'Please select country' }]}
                       >
-                        <Select placeholder="Select country" dropdownClassName={darkMode ? 'org-settings-dark-dropdown' : ''}>
-                          {countryOptions.map(country => (
+                        <Select
+                          placeholder='Select country'
+                          dropdownClassName={darkMode ? 'org-settings-dark-dropdown' : ''}
+                        >
+                          {countryOptions.map((country) => (
                             <Option key={country} value={country}>
                               {country}
                             </Option>
@@ -538,7 +554,7 @@ const OrgSettings = React.memo(({ user }) => {
                         </Select>
                       </Form.Item>
                     </Col>
-                    
+
                     <Col xs={24} sm={8}>
                       <Form.Item
                         label={
@@ -547,11 +563,14 @@ const OrgSettings = React.memo(({ user }) => {
                             <span>Primary Language</span>
                           </Space>
                         }
-                        name="language"
+                        name='language'
                         rules={[{ required: true, message: 'Please select language' }]}
                       >
-                        <Select placeholder="Select language" dropdownClassName={darkMode ? 'org-settings-dark-dropdown' : ''}>
-                          {languageOptions.map(language => (
+                        <Select
+                          placeholder='Select language'
+                          dropdownClassName={darkMode ? 'org-settings-dark-dropdown' : ''}
+                        >
+                          {languageOptions.map((language) => (
                             <Option key={language} value={language}>
                               {language}
                             </Option>
@@ -566,19 +585,19 @@ const OrgSettings = React.memo(({ user }) => {
               {/* Industry & Classifications Tab */}
               <TabPane
                 tab={
-                  <span className="flex items-center space-x-2">
+                  <span className='flex items-center space-x-2'>
                     <FontAwesomeIcon icon={faIndustry} />
                     <span>Industry & Classifications</span>
                   </span>
                 }
-                key="industry"
+                key='industry'
               >
-                <div className="space-y-6">
+                <div className='space-y-6'>
                   {/* Industry Selection */}
                   <Card
                     title={
                       <div className='flex items-center space-x-3'>
-                        <FontAwesomeIcon icon={faIndustry} className="text-emerald-600" />
+                        <FontAwesomeIcon icon={faIndustry} className='text-emerald-600' />
                         <span>Industry</span>
                       </div>
                     }
@@ -594,12 +613,15 @@ const OrgSettings = React.memo(({ user }) => {
                     }}
                   >
                     <Form.Item
-                      label="Primary Industry"
-                      name="industry"
+                      label='Primary Industry'
+                      name='industry'
                       rules={[{ required: true, message: 'Please select industry' }]}
                     >
-                      <Select placeholder="Select industry" dropdownClassName={darkMode ? 'org-settings-dark-dropdown' : ''}>
-                        {industryOptions.map(industry => (
+                      <Select
+                        placeholder='Select industry'
+                        dropdownClassName={darkMode ? 'org-settings-dark-dropdown' : ''}
+                      >
+                        {industryOptions.map((industry) => (
                           <Option key={industry} value={industry}>
                             {industry}
                           </Option>
@@ -612,7 +634,7 @@ const OrgSettings = React.memo(({ user }) => {
                   <Card
                     title={
                       <div className='flex items-center space-x-3'>
-                        <FontAwesomeIcon icon={faTags} className="text-emerald-600" />
+                        <FontAwesomeIcon icon={faTags} className='text-emerald-600' />
                         <span>Industry Tags & Classifications</span>
                       </div>
                     }
@@ -628,28 +650,28 @@ const OrgSettings = React.memo(({ user }) => {
                     }}
                   >
                     <Form.Item
-                      label="Industry Tags"
-                      name="industryTags"
-                      extra="Select or add tags that describe your industry focus areas"
+                      label='Industry Tags'
+                      name='industryTags'
+                      extra='Select or add tags that describe your industry focus areas'
                     >
                       <Select
-                        mode="tags"
-                        placeholder="Add industry tags"
+                        mode='tags'
+                        placeholder='Add industry tags'
                         style={{ width: '100%' }}
                         tokenSeparators={[',']}
                         dropdownClassName={darkMode ? 'org-settings-dark-dropdown' : ''}
-                        options={commonIndustryTags.map(tag => ({ value: tag, label: tag }))}
+                        options={commonIndustryTags.map((tag) => ({ value: tag, label: tag }))}
                       />
                     </Form.Item>
 
                     <Form.Item
-                      label="Custom Classifications"
-                      name="customClassifications"
-                      extra="Add custom tags that uniquely describe your organization"
+                      label='Custom Classifications'
+                      name='customClassifications'
+                      extra='Add custom tags that uniquely describe your organization'
                     >
                       <Select
-                        mode="tags"
-                        placeholder="Add custom classifications"
+                        mode='tags'
+                        placeholder='Add custom classifications'
                         dropdownClassName={darkMode ? 'org-settings-dark-dropdown' : ''}
                         style={{ width: '100%' }}
                         tokenSeparators={[',']}
@@ -658,7 +680,7 @@ const OrgSettings = React.memo(({ user }) => {
                   </Card>
                 </div>
               </TabPane>
-                         </Tabs>
+            </Tabs>
           </Form>
         </div>
       </div>
@@ -668,8 +690,8 @@ const OrgSettings = React.memo(({ user }) => {
         visible={aiModalVisible}
         onCancel={() => setAiModalVisible(false)}
         onSuccess={(updatedProfile) => {
-          setOrgSettings(prev => ({ 
-            ...prev, 
+          setOrgSettings((prev) => ({
+            ...prev,
             ...updatedProfile,
             lastAiUpdate: new Date().toISOString()
           }))
@@ -684,7 +706,8 @@ const OrgSettings = React.memo(({ user }) => {
       {/* Dark mode styles */}
       <style jsx global>{`
         /* Dark Mode Form Styling */
-        ${darkMode ? `
+        ${darkMode
+          ? `
           .org-settings-form .ant-form-item-label > label {
             color: #E5E7EB !important;
           }
@@ -882,9 +905,11 @@ const OrgSettings = React.memo(({ user }) => {
           .org-settings-tabs-dark .ant-tabs-tabpane {
             color: #F9FAFB !important;
           }
-        ` : ''}
+        `
+          : ''}
 
-        ${!darkMode ? `
+        ${!darkMode
+          ? `
           /* Light mode tabs styling */
           .org-settings-tabs .ant-tabs-tab-active {
             background-color: #059669 !important;
@@ -898,77 +923,78 @@ const OrgSettings = React.memo(({ user }) => {
           .org-settings-tabs .ant-tabs-tab:hover {
             color: #059669 !important;
           }
-        ` : ''}
+        `
+          : ''}
         
         /* Dark mode dropdown options */
         .org-settings-dark-dropdown {
           background-color: #374151 !important;
         }
-        
+
         .org-settings-dark-dropdown .ant-select-item {
-          color: #F9FAFB !important;
+          color: #f9fafb !important;
         }
-        
+
         .org-settings-dark-dropdown .ant-select-item:hover {
-          background-color: #4B5563 !important;
+          background-color: #4b5563 !important;
         }
-        
+
         .org-settings-dark-dropdown .ant-select-item-option-selected {
           background-color: #059669 !important;
-          color: #FFFFFF !important;
+          color: #ffffff !important;
         }
-        
+
         /* Work arrangement dropdown specific styles */
         .work-arrangement-dropdown .ant-select-item {
           min-height: 60px !important;
           padding: 8px 12px !important;
           line-height: 1.4 !important;
         }
-        
+
         .work-arrangement-dropdown.org-settings-dark-dropdown .ant-select-item {
           background-color: #374151 !important;
-          color: #F9FAFB !important;
+          color: #f9fafb !important;
         }
-        
+
         .work-arrangement-dropdown:not(.org-settings-dark-dropdown) .ant-select-item {
-          background-color: #FFFFFF !important;
+          background-color: #ffffff !important;
           color: #374151 !important;
         }
-        
+
         .work-arrangement-dropdown .ant-select-item:hover {
           background-color: ${darkMode ? '#4B5563' : '#F3F4F6'} !important;
         }
-        
+
         .work-arrangement-dropdown .ant-select-item-option-selected {
-          background-color: #10B981 !important;
-          color: #FFFFFF !important;
+          background-color: #10b981 !important;
+          color: #ffffff !important;
         }
-        
+
         /* Form item styling for proper spacing */
         .ant-form-item {
           margin-bottom: 20px !important;
         }
-        
+
         .ant-form-item-label {
           padding-bottom: 8px !important;
         }
-        
+
         /* Button hover states */
         .ant-btn:hover {
           transform: translateY(-1px) !important;
           box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
         }
-        
+
         .ant-btn:active {
           transform: translateY(0) !important;
         }
-        
+
         /* Specific button styling for org settings */
         .org-settings-save-btn:hover:not(:disabled) {
           background-color: #059669 !important;
           border-color: #059669 !important;
         }
-        
+
         .org-settings-reset-btn:hover {
           background-color: ${darkMode ? '#4B5563' : '#6B7280'} !important;
           border-color: ${darkMode ? '#4B5563' : '#6B7280'} !important;
@@ -985,4 +1011,5 @@ const OrgSettings = React.memo(({ user }) => {
 
 OrgSettings.displayName = 'OrgSettings'
 
-export default OrgSettings 
+export default OrgSettings
+export { BusinessSetupModal }

@@ -1,7 +1,7 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
 import React, { useState, useCallback, useEffect, useMemo } from 'react'
-import { Card, Form, Input, Select, Switch, Row, Col, message, Tag, Space } from 'antd'
+import { Card, Form, Input, Select, Switch, Row, Col, message, Space } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faBuilding,
@@ -15,7 +15,6 @@ import {
   faCode,
   faCheckCircle,
   faTimesCircle,
-  faArrowLeft,
   faSave,
   faUndo,
   faInfoCircle
@@ -47,50 +46,59 @@ const BranchEditPage = React.memo(({ user: currentUser }) => {
   const mode = isEdit ? 'edit' : 'add'
 
   // Timezone options
-  const timezoneOptions = useMemo(() => [
-    { value: 'America/New_York', label: 'Eastern Time (ET)' },
-    { value: 'America/Chicago', label: 'Central Time (CT)' },
-    { value: 'America/Denver', label: 'Mountain Time (MT)' },
-    { value: 'America/Los_Angeles', label: 'Pacific Time (PT)' },
-    { value: 'Europe/London', label: 'Greenwich Mean Time (GMT)' },
-    { value: 'Europe/Paris', label: 'Central European Time (CET)' },
-    { value: 'Asia/Tokyo', label: 'Japan Standard Time (JST)' },
-    { value: 'Asia/Shanghai', label: 'China Standard Time (CST)' },
-    { value: 'Australia/Sydney', label: 'Australian Eastern Time (AET)' }
-  ], [])
+  const timezoneOptions = useMemo(
+    () => [
+      { value: 'America/New_York', label: 'Eastern Time (ET)' },
+      { value: 'America/Chicago', label: 'Central Time (CT)' },
+      { value: 'America/Denver', label: 'Mountain Time (MT)' },
+      { value: 'America/Los_Angeles', label: 'Pacific Time (PT)' },
+      { value: 'Europe/London', label: 'Greenwich Mean Time (GMT)' },
+      { value: 'Europe/Paris', label: 'Central European Time (CET)' },
+      { value: 'Asia/Tokyo', label: 'Japan Standard Time (JST)' },
+      { value: 'Asia/Shanghai', label: 'China Standard Time (CST)' },
+      { value: 'Australia/Sydney', label: 'Australian Eastern Time (AET)' }
+    ],
+    []
+  )
 
   // Department options
-  const departmentOptions = useMemo(() => [
-    'Executive',
-    'HR',
-    'Finance',
-    'IT',
-    'Marketing',
-    'Sales',
-    'Engineering',
-    'Product',
-    'Design',
-    'Customer Support',
-    'Operations',
-    'Legal',
-    'Business Development',
-    'Research',
-    'Quality Assurance'
-  ], [])
+  const departmentOptions = useMemo(
+    () => [
+      'Executive',
+      'HR',
+      'Finance',
+      'IT',
+      'Marketing',
+      'Sales',
+      'Engineering',
+      'Product',
+      'Design',
+      'Customer Support',
+      'Operations',
+      'Legal',
+      'Business Development',
+      'Research',
+      'Quality Assurance'
+    ],
+    []
+  )
 
   // Country options
-  const countryOptions = useMemo(() => [
-    'United States',
-    'United Kingdom',
-    'Canada',
-    'Germany',
-    'France',
-    'Japan',
-    'Australia',
-    'India',
-    'Singapore',
-    'Netherlands'
-  ], [])
+  const countryOptions = useMemo(
+    () => [
+      'United States',
+      'United Kingdom',
+      'Canada',
+      'Germany',
+      'France',
+      'Japan',
+      'Australia',
+      'India',
+      'Singapore',
+      'Netherlands'
+    ],
+    []
+  )
 
   // Set initial form values
   useEffect(() => {
@@ -128,46 +136,49 @@ const BranchEditPage = React.memo(({ user: currentUser }) => {
   }, [])
 
   // Handle form submission
-  const handleSubmit = useCallback(async (values) => {
-    setLoading(true)
-    try {
-      const branchData = {
-        name: values.name,
-        code: values.code.toUpperCase(),
-        address: {
-          street: values.street,
-          city: values.city,
-          state: values.state,
-          zipCode: values.zipCode,
-          country: values.country
-        },
-        phone: values.phone,
-        email: values.email,
-        manager: values.manager,
-        status: values.status,
-        timezone: values.timezone,
-        description: values.description,
-        departments: values.departments || [],
-        isHeadquarters: values.isHeadquarters || false
-      }
+  const handleSubmit = useCallback(
+    async (values) => {
+      setLoading(true)
+      try {
+        const branchData = {
+          name: values.name,
+          code: values.code.toUpperCase(),
+          address: {
+            street: values.street,
+            city: values.city,
+            state: values.state,
+            zipCode: values.zipCode,
+            country: values.country
+          },
+          phone: values.phone,
+          email: values.email,
+          manager: values.manager,
+          status: values.status,
+          timezone: values.timezone,
+          description: values.description,
+          departments: values.departments || [],
+          isHeadquarters: values.isHeadquarters || false
+        }
 
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      console.log('Saving branch:', branchData)
-      
-      setHasChanges(false)
-      message.success(`Branch ${mode === 'add' ? 'created' : 'updated'} successfully!`)
-      
-      // Navigate back to branch management
-      navigate('/business-dashboard/branch-management')
-    } catch (error) {
-      console.error('Error saving branch:', error)
-      message.error('Failed to save branch')
-    } finally {
-      setLoading(false)
-    }
-  }, [mode, navigate])
+        // Simulate API delay
+        await new Promise((resolve) => setTimeout(resolve, 1000))
+
+        console.log('Saving branch:', branchData)
+
+        setHasChanges(false)
+        message.success(`Branch ${mode === 'add' ? 'created' : 'updated'} successfully!`)
+
+        // Navigate back to branch management
+        navigate('/business-dashboard/branch-management')
+      } catch (error) {
+        console.error('Error saving branch:', error)
+        message.error('Failed to save branch')
+      } finally {
+        setLoading(false)
+      }
+    },
+    [mode, navigate]
+  )
 
   // Handle reset
   const handleReset = useCallback(() => {
@@ -201,28 +212,22 @@ const BranchEditPage = React.memo(({ user: currentUser }) => {
     message.info('Changes have been reset')
   }, [form, mode, branchToEdit])
 
-  // Handle back navigation
-  const handleBack = useCallback(() => {
-    if (hasChanges) {
-      const confirmed = window.confirm('You have unsaved changes. Are you sure you want to leave?')
-      if (!confirmed) return
-    }
-    navigate('/business-dashboard/branch-management')
-  }, [navigate, hasChanges])
-
   // Generate branch code from name
-  const handleNameChange = useCallback((e) => {
-    const name = e.target.value
-    if (mode === 'add' && name) {
-      const code = name
-        .split(' ')
-        .map(word => word.charAt(0))
-        .join('')
-        .toUpperCase()
-        .substring(0, 4)
-      form.setFieldValue('code', code)
-    }
-  }, [mode, form])
+  const handleNameChange = useCallback(
+    (e) => {
+      const name = e.target.value
+      if (mode === 'add' && name) {
+        const code = name
+          .split(' ')
+          .map((word) => word.charAt(0))
+          .join('')
+          .toUpperCase()
+          .substring(0, 4)
+        form.setFieldValue('code', code)
+      }
+    },
+    [mode, form]
+  )
 
   return (
     <div
@@ -263,14 +268,14 @@ const BranchEditPage = React.memo(({ user: currentUser }) => {
                 {mode === 'add' ? 'Create a new branch location' : 'Update branch details and settings'}
               </p>
             </div>
-            
+
             <div className='flex space-x-3'>
               {hasChanges && (
                 <Button
                   size='large'
                   icon={<FontAwesomeIcon icon={faUndo} />}
                   onClick={handleReset}
-                  className="reset-branch-btn font-medium"
+                  className='reset-branch-btn font-medium'
                   style={{
                     background: '#ffffff',
                     backgroundColor: '#ffffff',
@@ -284,7 +289,7 @@ const BranchEditPage = React.memo(({ user: currentUser }) => {
                   Reset
                 </Button>
               )}
-              
+
               <Button
                 type='default'
                 size='large'
@@ -292,7 +297,7 @@ const BranchEditPage = React.memo(({ user: currentUser }) => {
                 onClick={() => form.submit()}
                 loading={loading}
                 disabled={!hasChanges && mode === 'edit'}
-                className="create-branch-page-btn font-medium"
+                className='create-branch-page-btn font-medium'
                 style={{
                   background: '#ffffff',
                   backgroundColor: '#ffffff',
@@ -313,7 +318,7 @@ const BranchEditPage = React.memo(({ user: currentUser }) => {
         <div className='relative p-6 space-y-6'>
           <Form
             form={form}
-            layout="vertical"
+            layout='vertical'
             onFinish={handleSubmit}
             onValuesChange={handleValuesChange}
             className={`${darkMode ? 'branch-edit-form' : ''}`}
@@ -322,7 +327,7 @@ const BranchEditPage = React.memo(({ user: currentUser }) => {
             <Card
               title={
                 <div className='flex items-center space-x-3'>
-                  <FontAwesomeIcon icon={faBuilding} className="text-emerald-600" />
+                  <FontAwesomeIcon icon={faBuilding} className='text-emerald-600' />
                   <span>Basic Information</span>
                 </div>
               }
@@ -340,32 +345,32 @@ const BranchEditPage = React.memo(({ user: currentUser }) => {
               <Row gutter={16}>
                 <Col xs={24} md={12}>
                   <Form.Item
-                    label="Branch Name"
-                    name="name"
+                    label='Branch Name'
+                    name='name'
                     rules={[
                       { required: true, message: 'Please enter branch name' },
                       { min: 2, message: 'Branch name must be at least 2 characters' }
                     ]}
                   >
-                    <Input 
-                      placeholder="Enter branch name" 
+                    <Input
+                      placeholder='Enter branch name'
                       onChange={handleNameChange}
                       prefix={<FontAwesomeIcon icon={faBuilding} />}
                     />
                   </Form.Item>
                 </Col>
-                
+
                 <Col xs={24} md={12}>
                   <Form.Item
-                    label="Branch Code"
-                    name="code"
+                    label='Branch Code'
+                    name='code'
                     rules={[
                       { required: true, message: 'Please enter branch code' },
                       { min: 2, max: 10, message: 'Code must be between 2-10 characters' }
                     ]}
                   >
-                    <Input 
-                      placeholder="Enter branch code" 
+                    <Input
+                      placeholder='Enter branch code'
                       style={{ textTransform: 'uppercase' }}
                       prefix={<FontAwesomeIcon icon={faCode} />}
                     />
@@ -376,30 +381,24 @@ const BranchEditPage = React.memo(({ user: currentUser }) => {
               <Row gutter={16}>
                 <Col xs={24} md={12}>
                   <Form.Item
-                    label="Manager"
-                    name="manager"
+                    label='Manager'
+                    name='manager'
                     rules={[{ required: true, message: 'Please enter manager name' }]}
                   >
-                    <Input 
-                      placeholder="Enter manager name" 
-                      prefix={<FontAwesomeIcon icon={faUser} />}
-                    />
+                    <Input placeholder='Enter manager name' prefix={<FontAwesomeIcon icon={faUser} />} />
                   </Form.Item>
                 </Col>
-                
+
                 <Col xs={24} md={12}>
                   <Form.Item
-                    label="Email"
-                    name="email"
+                    label='Email'
+                    name='email'
                     rules={[
                       { required: true, message: 'Please enter branch email' },
                       { type: 'email', message: 'Please enter a valid email address' }
                     ]}
                   >
-                    <Input 
-                      placeholder="Enter branch email" 
-                      prefix={<FontAwesomeIcon icon={faEnvelope} />}
-                    />
+                    <Input placeholder='Enter branch email' prefix={<FontAwesomeIcon icon={faEnvelope} />} />
                   </Form.Item>
                 </Col>
               </Row>
@@ -407,28 +406,25 @@ const BranchEditPage = React.memo(({ user: currentUser }) => {
               <Row gutter={16}>
                 <Col xs={24} md={12}>
                   <Form.Item
-                    label="Phone"
-                    name="phone"
+                    label='Phone'
+                    name='phone'
                     rules={[{ required: true, message: 'Please enter phone number' }]}
                   >
-                    <Input 
-                      placeholder="Enter phone number" 
-                      prefix={<FontAwesomeIcon icon={faPhone} />}
-                    />
+                    <Input placeholder='Enter phone number' prefix={<FontAwesomeIcon icon={faPhone} />} />
                   </Form.Item>
                 </Col>
-                
+
                 <Col xs={24} md={12}>
                   <Form.Item
-                    label="Timezone"
-                    name="timezone"
+                    label='Timezone'
+                    name='timezone'
                     rules={[{ required: true, message: 'Please select timezone' }]}
                   >
-                    <Select 
-                      placeholder="Select timezone"
+                    <Select
+                      placeholder='Select timezone'
                       dropdownClassName={darkMode ? 'branch-edit-dark-dropdown' : ''}
                     >
-                      {timezoneOptions.map(tz => (
+                      {timezoneOptions.map((tz) => (
                         <Option key={tz.value} value={tz.value}>
                           <Space>
                             <FontAwesomeIcon icon={faClock} />
@@ -446,7 +442,7 @@ const BranchEditPage = React.memo(({ user: currentUser }) => {
             <Card
               title={
                 <div className='flex items-center space-x-3'>
-                  <FontAwesomeIcon icon={faMapMarkerAlt} className="text-emerald-600" />
+                  <FontAwesomeIcon icon={faMapMarkerAlt} className='text-emerald-600' />
                   <span>Address Information</span>
                 </div>
               }
@@ -462,55 +458,44 @@ const BranchEditPage = React.memo(({ user: currentUser }) => {
               }}
             >
               <Form.Item
-                label="Street Address"
-                name="street"
+                label='Street Address'
+                name='street'
                 rules={[{ required: true, message: 'Please enter street address' }]}
               >
-                <Input placeholder="Enter street address" />
+                <Input placeholder='Enter street address' />
               </Form.Item>
 
               <Row gutter={16}>
                 <Col xs={24} md={8}>
-                  <Form.Item
-                    label="City"
-                    name="city"
-                    rules={[{ required: true, message: 'Please enter city' }]}
-                  >
-                    <Input placeholder="Enter city" />
+                  <Form.Item label='City' name='city' rules={[{ required: true, message: 'Please enter city' }]}>
+                    <Input placeholder='Enter city' />
                   </Form.Item>
                 </Col>
-                
+
                 <Col xs={24} md={8}>
                   <Form.Item
-                    label="State/Province"
-                    name="state"
+                    label='State/Province'
+                    name='state'
                     rules={[{ required: true, message: 'Please enter state/province' }]}
                   >
-                    <Input placeholder="Enter state/province" />
+                    <Input placeholder='Enter state/province' />
                   </Form.Item>
                 </Col>
-                
+
                 <Col xs={24} md={8}>
                   <Form.Item
-                    label="ZIP/Postal Code"
-                    name="zipCode"
+                    label='ZIP/Postal Code'
+                    name='zipCode'
                     rules={[{ required: true, message: 'Please enter ZIP/postal code' }]}
                   >
-                    <Input placeholder="Enter ZIP/postal code" />
+                    <Input placeholder='Enter ZIP/postal code' />
                   </Form.Item>
                 </Col>
               </Row>
 
-              <Form.Item
-                label="Country"
-                name="country"
-                rules={[{ required: true, message: 'Please select country' }]}
-              >
-                <Select 
-                  placeholder="Select country"
-                  dropdownClassName={darkMode ? 'branch-edit-dark-dropdown' : ''}
-                >
-                  {countryOptions.map(country => (
+              <Form.Item label='Country' name='country' rules={[{ required: true, message: 'Please select country' }]}>
+                <Select placeholder='Select country' dropdownClassName={darkMode ? 'branch-edit-dark-dropdown' : ''}>
+                  {countryOptions.map((country) => (
                     <Option key={country} value={country}>
                       <Space>
                         <FontAwesomeIcon icon={faGlobe} />
@@ -526,7 +511,7 @@ const BranchEditPage = React.memo(({ user: currentUser }) => {
             <Card
               title={
                 <div className='flex items-center space-x-3'>
-                  <FontAwesomeIcon icon={faInfoCircle} className="text-emerald-600" />
+                  <FontAwesomeIcon icon={faInfoCircle} className='text-emerald-600' />
                   <span>Additional Settings</span>
                 </div>
               }
@@ -543,22 +528,15 @@ const BranchEditPage = React.memo(({ user: currentUser }) => {
             >
               <Row gutter={16}>
                 <Col xs={24} md={12}>
-                  <Form.Item
-                    label="Status"
-                    name="status"
-                    rules={[{ required: true, message: 'Please select status' }]}
-                  >
-                    <Select 
-                      placeholder="Select status"
-                      dropdownClassName={darkMode ? 'branch-edit-dark-dropdown' : ''}
-                    >
-                      <Option value="active">
+                  <Form.Item label='Status' name='status' rules={[{ required: true, message: 'Please select status' }]}>
+                    <Select placeholder='Select status' dropdownClassName={darkMode ? 'branch-edit-dark-dropdown' : ''}>
+                      <Option value='active'>
                         <Space>
                           <FontAwesomeIcon icon={faCheckCircle} style={{ color: SEMANTIC_COLORS.success }} />
                           Active
                         </Space>
                       </Option>
-                      <Option value="inactive">
+                      <Option value='inactive'>
                         <Space>
                           <FontAwesomeIcon icon={faTimesCircle} style={{ color: BRAND_COLORS.mediumGray }} />
                           Inactive
@@ -567,18 +545,15 @@ const BranchEditPage = React.memo(({ user: currentUser }) => {
                     </Select>
                   </Form.Item>
                 </Col>
-                
+
                 <Col xs={24} md={12}>
-                  <Form.Item
-                    label="Departments"
-                    name="departments"
-                  >
-                    <Select 
-                      mode="multiple"
-                      placeholder="Select departments"
+                  <Form.Item label='Departments' name='departments'>
+                    <Select
+                      mode='multiple'
+                      placeholder='Select departments'
                       dropdownClassName={darkMode ? 'branch-edit-dark-dropdown' : ''}
                     >
-                      {departmentOptions.map(dept => (
+                      {departmentOptions.map((dept) => (
                         <Option key={dept} value={dept}>
                           <Space>
                             <FontAwesomeIcon icon={faUsers} />
@@ -592,29 +567,19 @@ const BranchEditPage = React.memo(({ user: currentUser }) => {
               </Row>
 
               <Form.Item
-                label="Description"
-                name="description"
+                label='Description'
+                name='description'
                 extra="Brief description of the branch's purpose and operations"
               >
-                <TextArea
-                  rows={4}
-                  placeholder="Describe the branch..."
-                  showCount
-                  maxLength={500}
-                />
+                <TextArea rows={4} placeholder='Describe the branch...' showCount maxLength={500} />
               </Form.Item>
 
-              <Form.Item
-                name="isHeadquarters"
-                valuePropName="checked"
-              >
-                <div className="flex items-center space-x-3 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+              <Form.Item name='isHeadquarters' valuePropName='checked'>
+                <div className='flex items-center space-x-3 p-4 rounded-lg border border-gray-200 dark:border-gray-600'>
                   <Switch />
                   <div>
-                    <div className="font-medium text-gray-900 dark:text-white">
-                      Headquarters Branch
-                    </div>
-                    <div className="text-sm text-gray-500 dark:text-gray-400">
+                    <div className='font-medium text-gray-900 dark:text-white'>Headquarters Branch</div>
+                    <div className='text-sm text-gray-500 dark:text-gray-400'>
                       Mark this branch as the organization's headquarters
                     </div>
                   </div>
@@ -628,7 +593,8 @@ const BranchEditPage = React.memo(({ user: currentUser }) => {
       {/* Dark mode styles */}
       <style jsx global>{`
         /* Dark Mode Form Styling */
-        ${darkMode ? `
+        ${darkMode
+          ? `
           .branch-edit-form .ant-form-item-label > label {
             color: #E5E7EB !important;
           }
@@ -725,26 +691,27 @@ const BranchEditPage = React.memo(({ user: currentUser }) => {
           .branch-edit-form .ant-input-prefix {
             color: #9CA3AF !important;
           }
-        ` : ''}
+        `
+          : ''}
 
         /* Dark mode dropdown options */
         .branch-edit-dark-dropdown {
           background-color: #374151 !important;
         }
-        
+
         .branch-edit-dark-dropdown .ant-select-item {
-          color: #F9FAFB !important;
+          color: #f9fafb !important;
         }
-        
+
         .branch-edit-dark-dropdown .ant-select-item:hover {
-          background-color: #4B5563 !important;
+          background-color: #4b5563 !important;
         }
-        
+
         .branch-edit-dark-dropdown .ant-select-item-option-selected {
           background-color: #059669 !important;
-          color: #FFFFFF !important;
+          color: #ffffff !important;
         }
-        
+
         /* Create Branch Page Button Styling */
         .create-branch-page-btn,
         .create-branch-page-btn.ant-btn,
@@ -757,7 +724,7 @@ const BranchEditPage = React.memo(({ user: currentUser }) => {
           visibility: visible !important;
           transition: all 0.2s ease !important;
         }
-        
+
         .create-branch-page-btn:hover,
         .create-branch-page-btn.ant-btn:hover,
         button.create-branch-page-btn:hover {
@@ -766,41 +733,42 @@ const BranchEditPage = React.memo(({ user: currentUser }) => {
           color: #047857 !important;
           border: 1px solid #f8f9fa !important;
           transform: translateY(-1px) !important;
-          box-shadow: 0 4px 8px rgba(0,0,0,0.15) !important;
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
         }
-        
+
         .create-branch-page-btn:disabled,
         .create-branch-page-btn.ant-btn:disabled,
         button.create-branch-page-btn:disabled {
           transform: none !important;
           cursor: not-allowed !important;
         }
-        
+
         /* Reset Branch Button Styling */
         .reset-branch-btn,
         .reset-branch-btn.ant-btn,
         button.reset-branch-btn {
           background: #ffffff !important;
           background-color: #ffffff !important;
-          color: #6B7280 !important;
+          color: #6b7280 !important;
           border: 1px solid #ffffff !important;
           opacity: 1 !important;
           visibility: visible !important;
           transition: all 0.2s ease !important;
         }
-        
+
         .reset-branch-btn:hover,
         .reset-branch-btn.ant-btn:hover,
         button.reset-branch-btn:hover {
           background: #f8f9fa !important;
           background-color: #f8f9fa !important;
-          color: #4B5563 !important;
+          color: #4b5563 !important;
           border: 1px solid #f8f9fa !important;
           transform: translateY(-1px) !important;
-          box-shadow: 0 4px 8px rgba(0,0,0,0.15) !important;
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
         }
-        
-        ${darkMode ? `
+
+        ${darkMode
+          ? `
           /* Enhanced Dark Mode Styling */
           .branch-edit-form .ant-switch {
             background-color: #4B5563 !important;
@@ -889,7 +857,8 @@ const BranchEditPage = React.memo(({ user: currentUser }) => {
           .branch-edit-dark-dropdown .ant-select-item-option-selected .svg-inline--fa {
             color: #FFFFFF !important;
           }
-        ` : ''}
+        `
+          : ''}
       `}</style>
     </div>
   )
@@ -897,4 +866,4 @@ const BranchEditPage = React.memo(({ user: currentUser }) => {
 
 BranchEditPage.displayName = 'BranchEditPage'
 
-export default BranchEditPage 
+export default BranchEditPage

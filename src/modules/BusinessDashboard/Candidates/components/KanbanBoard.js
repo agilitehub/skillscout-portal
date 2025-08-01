@@ -2,7 +2,7 @@
 // Frontend Instructions Rule Applied!
 import React, { useState, useRef } from 'react'
 import { useDrop } from 'react-dnd'
-import { Select, Input, Space } from 'antd'
+import { Select, Input } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch, faBriefcase, faColumns, faTable } from '@fortawesome/free-solid-svg-icons'
 import CandidateCard from './CandidateCard'
@@ -12,120 +12,122 @@ const { Option } = Select
 /**
  * Filter bar component for searching and filtering candidates
  */
-const FilterBar = React.memo(({ 
-  jobListings, 
-  selectedJobListing, 
-  onJobListingChange, 
-  searchTerm, 
-  onSearchChange,
-  darkMode,
-  // View toggle props
-  viewMode,
-  onViewModeChange,
-  showViewToggle = false
-}) => {
-  return (
-    <div className={`mb-6 p-4 rounded-lg border ${
-      darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
-    }`}>
-      <div className='flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between'>
-        {/* Left side - View as controls */}
-        <div className='flex items-center space-x-4'>
-          <div className='flex items-center space-x-2'>
-            <span className={`text-sm font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-              View as:
-            </span>
-          </div>
-          
-          {/* View Toggle (when enabled) */}
-          {showViewToggle && (
-            <div className='min-w-32'>
-              <Select
-                value={viewMode}
-                onChange={onViewModeChange}
-                style={{
-                  width: 140,
-                  height: 32
-                }}
-                className={`${darkMode ? 'kanban-select-dark' : ''}`}
-                size='small'
-                dropdownClassName={darkMode ? 'kanban-dark-dropdown' : ''}
-                options={[
-                  {
-                    value: 'kanban',
-                    label: (
-                      <div className='flex items-center space-x-2'>
-                        <FontAwesomeIcon icon={faColumns} />
-                        <span>Board</span>
-                      </div>
-                    )
-                  },
-                  {
-                    value: 'table',
-                    label: (
-                      <div className='flex items-center space-x-2'>
-                        <FontAwesomeIcon icon={faTable} />
-                        <span>Table</span>
-                      </div>
-                    )
-                  }
-                ]}
-              />
+const FilterBar = React.memo(
+  ({
+    jobListings,
+    selectedJobListing,
+    onJobListingChange,
+    searchTerm,
+    onSearchChange,
+    darkMode,
+    // View toggle props
+    viewMode,
+    onViewModeChange,
+    showViewToggle = false
+  }) => {
+    return (
+      <div
+        className={`mb-6 p-4 rounded-lg border ${
+          darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
+        }`}
+      >
+        <div className='flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between'>
+          {/* Left side - View as controls */}
+          <div className='flex items-center space-x-4'>
+            <div className='flex items-center space-x-2'>
+              <span className={`text-sm font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>View as:</span>
             </div>
-          )}
-        </div>
 
-        {/* Right side - Filter and Search */}
-        <div className='flex items-center space-x-4'>
-          {/* Job Listing Filter */}
-          <div className='min-w-48'>
-            <Select
-              placeholder={
-                <div className='flex items-center space-x-2'>
-                  <FontAwesomeIcon icon={faBriefcase} className='text-xs' />
-                  <span>Filter by Job Listing</span>
-                </div>
-              }
-              value={selectedJobListing}
-              onChange={onJobListingChange}
-              allowClear
-              className={`w-full ${darkMode ? 'kanban-select-dark' : ''}`}
-              style={{ minWidth: 200 }}
-              dropdownClassName={darkMode ? 'kanban-dark-dropdown' : ''}
-            >
-              {jobListings.map(listing => (
-                <Option key={listing.id} value={listing.id}>
+            {/* View Toggle (when enabled) */}
+            {showViewToggle && (
+              <div className='min-w-32'>
+                <Select
+                  value={viewMode}
+                  onChange={onViewModeChange}
+                  style={{
+                    width: 140,
+                    height: 32
+                  }}
+                  className={`${darkMode ? 'kanban-select-dark' : ''}`}
+                  size='small'
+                  dropdownClassName={darkMode ? 'kanban-dark-dropdown' : ''}
+                  options={[
+                    {
+                      value: 'kanban',
+                      label: (
+                        <div className='flex items-center space-x-2'>
+                          <FontAwesomeIcon icon={faColumns} />
+                          <span>Board</span>
+                        </div>
+                      )
+                    },
+                    {
+                      value: 'table',
+                      label: (
+                        <div className='flex items-center space-x-2'>
+                          <FontAwesomeIcon icon={faTable} />
+                          <span>Table</span>
+                        </div>
+                      )
+                    }
+                  ]}
+                />
+              </div>
+            )}
+          </div>
+
+          {/* Right side - Filter and Search */}
+          <div className='flex items-center space-x-4'>
+            {/* Job Listing Filter */}
+            <div className='min-w-48'>
+              <Select
+                placeholder={
                   <div className='flex items-center space-x-2'>
                     <FontAwesomeIcon icon={faBriefcase} className='text-xs' />
-                    <span>{listing.title}</span>
+                    <span>Filter by Job Listing</span>
                   </div>
-                </Option>
-              ))}
-            </Select>
-          </div>
-          
-          {/* General Search */}
-          <div className='min-w-56'>
-            <Input
-              id="candidates-search-input"
-              placeholder="Search candidates..."
-              prefix={<FontAwesomeIcon icon={faSearch} className='text-gray-400' />}
-              value={searchTerm}
-              onChange={(e) => onSearchChange(e.target.value)}
-              className={darkMode ? 'kanban-input-dark' : ''}
-              style={{
-                backgroundColor: darkMode ? '#4B5563' : '#ffffff',
-                borderColor: darkMode ? '#6B7280' : '#d1d5db',
-                color: darkMode ? '#F9FAFB' : '#111827',
-                '--placeholder-color': darkMode ? '#ffffff' : '#9ca3af'
-              }}
-            />
+                }
+                value={selectedJobListing}
+                onChange={onJobListingChange}
+                allowClear
+                className={`w-full ${darkMode ? 'kanban-select-dark' : ''}`}
+                style={{ minWidth: 200 }}
+                dropdownClassName={darkMode ? 'kanban-dark-dropdown' : ''}
+              >
+                {jobListings.map((listing) => (
+                  <Option key={listing.id} value={listing.id}>
+                    <div className='flex items-center space-x-2'>
+                      <FontAwesomeIcon icon={faBriefcase} className='text-xs' />
+                      <span>{listing.title}</span>
+                    </div>
+                  </Option>
+                ))}
+              </Select>
+            </div>
+
+            {/* General Search */}
+            <div className='min-w-56'>
+              <Input
+                id='candidates-search-input'
+                placeholder='Search candidates...'
+                prefix={<FontAwesomeIcon icon={faSearch} className='text-gray-400' />}
+                value={searchTerm}
+                onChange={(e) => onSearchChange(e.target.value)}
+                className={darkMode ? 'kanban-input-dark' : ''}
+                style={{
+                  backgroundColor: darkMode ? '#4B5563' : '#ffffff',
+                  borderColor: darkMode ? '#6B7280' : '#d1d5db',
+                  color: darkMode ? '#F9FAFB' : '#111827',
+                  '--placeholder-color': darkMode ? '#ffffff' : '#9ca3af'
+                }}
+              />
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  )
-})
+    )
+  }
+)
 
 // Force placeholder styling for dark mode
 const applyPlaceholderStyles = () => {
@@ -159,10 +161,7 @@ if (typeof window !== 'undefined') {
  */
 const DropIndicator = React.memo(({ position, darkMode }) => {
   return (
-    <div 
-      className="relative w-full flex justify-center"
-      style={{ height: '4px', margin: '8px 0' }}
-    >
+    <div className='relative w-full flex justify-center' style={{ height: '4px', margin: '8px 0' }}>
       <div
         className={`w-full h-1 rounded-full transition-all duration-200 ${
           darkMode ? 'bg-emerald-400' : 'bg-emerald-500'
@@ -174,8 +173,6 @@ const DropIndicator = React.memo(({ position, darkMode }) => {
     </div>
   )
 })
-
-
 
 /**
  * Individual stage column for the Kanban board
@@ -208,16 +205,16 @@ const StageColumn = React.memo(
 
         const hoverBoundingRect = columnRef.current.getBoundingClientRect()
         const clientOffset = monitor.getClientOffset()
-        
+
         if (!clientOffset) return
 
         // Calculate mouse position relative to column
         const hoverClientY = clientOffset.y - hoverBoundingRect.top
-        
+
         // Find all candidate cards and their positions
         const candidateElements = columnRef.current.querySelectorAll('[data-candidate-id]')
         const candidates = safeCandidates || []
-        
+
         let newPosition = candidates.length // Default to end
 
         // Find the best insertion position based on mouse Y position
@@ -293,27 +290,37 @@ const StageColumn = React.memo(
         className={`w-full min-h-[500px] flex flex-col transition-all duration-200 cursor-pointer ${
           darkMode ? 'bg-gray-800/80 backdrop-blur-sm shadow-xl' : 'bg-white/80 backdrop-blur-sm shadow-lg'
         } rounded-lg border ${
-          columnIsOver 
-            ? darkMode 
-              ? 'border-emerald-500/60 bg-emerald-500/8 shadow-2xl ring-2 ring-emerald-500/20' 
+          columnIsOver
+            ? darkMode
+              ? 'border-emerald-500/60 bg-emerald-500/8 shadow-2xl ring-2 ring-emerald-500/20'
               : 'border-emerald-500/60 bg-emerald-500/8 shadow-2xl ring-2 ring-emerald-500/20'
-            : darkMode 
-              ? 'border-gray-700/50' 
+            : darkMode
+              ? 'border-gray-700/50'
               : 'border-gray-200/50'
         }`}
       >
         {/* Stage Header */}
-        <div className={`p-3 border-b transition-colors duration-200 ${
-          columnIsOver
-            ? darkMode ? 'border-emerald-500/50' : 'border-emerald-500/50'
-            : darkMode ? 'border-gray-700' : 'border-gray-200'
-        }`}>
+        <div
+          className={`p-3 border-b transition-colors duration-200 ${
+            columnIsOver
+              ? darkMode
+                ? 'border-emerald-500/50'
+                : 'border-emerald-500/50'
+              : darkMode
+                ? 'border-gray-700'
+                : 'border-gray-200'
+          }`}
+        >
           <div className='text-center space-y-2'>
             <div
               className={`inline-flex px-2.5 py-1 rounded-full text-xs font-bold border transition-colors duration-200 ${
                 columnIsOver
-                  ? darkMode ? 'bg-emerald-800 text-emerald-200 border-emerald-600' : 'bg-emerald-100 text-emerald-800 border-emerald-300'
-                  : darkMode ? getStageDarkColor(stage.color) : getStageColor(stage.color)
+                  ? darkMode
+                    ? 'bg-emerald-800 text-emerald-200 border-emerald-600'
+                    : 'bg-emerald-100 text-emerald-800 border-emerald-300'
+                  : darkMode
+                    ? getStageDarkColor(stage.color)
+                    : getStageColor(stage.color)
               }`}
             >
               {stage.count}
@@ -321,10 +328,14 @@ const StageColumn = React.memo(
             <h3
               className={`text-xs font-semibold leading-tight transition-colors duration-200 ${
                 columnIsOver
-                  ? darkMode ? 'text-emerald-200' : 'text-emerald-800'
-                  : darkMode ? 'text-white' : 'text-gray-900'
+                  ? darkMode
+                    ? 'text-emerald-200'
+                    : 'text-emerald-800'
+                  : darkMode
+                    ? 'text-white'
+                    : 'text-gray-900'
               }`}
-              style={{ 
+              style={{
                 wordBreak: 'break-word',
                 hyphens: 'auto',
                 lineHeight: '1.2'
@@ -339,9 +350,7 @@ const StageColumn = React.memo(
         <div className='p-4 min-h-32 flex-1'>
           <div className='space-y-3'>
             {/* Smart drop indicator before first card */}
-            {columnIsOver && dropPosition === 0 && (
-              <DropIndicator position={0} darkMode={darkMode} />
-            )}
+            {columnIsOver && dropPosition === 0 && <DropIndicator position={0} darkMode={darkMode} />}
 
             {/* Candidate cards with smart drop indicators */}
             {safeCandidates.map((candidate, index) => (
@@ -377,9 +386,7 @@ const StageColumn = React.memo(
             )}
 
             {/* Drop indicator for empty columns */}
-            {safeCandidates.length === 0 && columnIsOver && (
-              <DropIndicator position={0} darkMode={darkMode} />
-            )}
+            {safeCandidates.length === 0 && columnIsOver && <DropIndicator position={0} darkMode={darkMode} />}
           </div>
         </div>
       </div>

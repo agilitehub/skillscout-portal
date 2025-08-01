@@ -16,14 +16,13 @@ import {
   faQuestionCircle,
   faBriefcase,
   faFile,
-  faSpinner,
-  faUpload
+  faSpinner
 } from '@fortawesome/free-solid-svg-icons'
-import { Dropdown, Modal, Form, Input, message, Upload, Avatar } from 'antd'
-import { Button } from '../../index'
+import { Dropdown, Modal, Form, message } from 'antd'
 import { useTheme } from '../../../context/ThemeContext'
 import { useAuth } from '../../../context/AuthContext'
 import { BRAND_COLORS } from '../../../theme/colors'
+import { BusinessSetupModal } from '../../../../modules/BusinessDashboard/OrgSettings/components'
 import {
   searchWithFallback,
   getSearchSuggestions,
@@ -31,6 +30,8 @@ import {
   clearRecentSearches,
   highlightText
 } from '../../../lib/search-controller'
+import { getUserOrganization, createOrganizationAndAssignToUser } from '../../../lib/supabase-controller'
+import { ProfileModal, ProfileAvatar, ProfileDisplay } from '../../profile'
 
 /**
  * Simplified Header component for the application
@@ -42,10 +43,12 @@ const Header = ({ user }) => {
   const [selectedDashboard, setSelectedDashboard] = useState('personal') // 'personal' or 'business'
   const [isDashboardDropdownOpen, setIsDashboardDropdownOpen] = useState(false)
   const [isBusinessSetupOpen, setIsBusinessSetupOpen] = useState(false)
-  const [businessInfo, setBusinessInfo] = useState({ name: '', domain: '' })
+  // eslint-disable-next-line no-unused-vars
+  const [businessInfo, setBusinessInfo] = useState({ name: '', domain: '' }) // Legacy support - used by other components
+  const [organizationData, setOrganizationData] = useState(null)
+  const [isCheckingOrganization, setIsCheckingOrganization] = useState(false)
   const [businessForm] = Form.useForm()
   const [isUserProfileOpen, setIsUserProfileOpen] = useState(false)
-  const [userProfileForm] = Form.useForm()
   const [searchQuery, setSearchQuery] = useState('')
   const [isSearchFocused, setIsSearchFocused] = useState(false)
   const [searchResults, setSearchResults] = useState([])
@@ -66,14 +69,53 @@ const Header = ({ user }) => {
     return iconMap[sourceTable] || faFile
   }, [])
 
-  // Update selected dashboard based on current route
-  useEffect(() => {
-    if (location.pathname === '/business-dashboard') {
-      setSelectedDashboard('business')
-    } else if (location.pathname === '/dashboard') {
-      setSelectedDashboard('personal')
+  // Check if user has organization
+  const checkUserOrganization = useCallback(async () => {
+    if (!user?.id) return { hasOrganization: false }
+
+    setIsCheckingOrganization(true)
+    try {
+      const result = await getUserOrganization(user.id)
+      if (result.success) {
+        setOrganizationData(result.data.organization)
+        return {
+          hasOrganization: result.data.hasOrganization,
+          organization: result.data.organization
+        }
+      } else {
+        console.error('Error checking user organization:', result.error)
+        return { hasOrganization: false }
+      }
+    } catch (error) {
+      console.error('Error checking user organization:', error)
+      return { hasOrganization: false }
+    } finally {
+      setIsCheckingOrganization(false)
     }
-  }, [location.pathname])
+  }, [user?.id])
+
+  // Update selected dashboard based on current route and check organization if on business dashboard
+  useEffect(() => {
+    const handleRouteAndOrgCheck = async () => {
+      if (location.pathname === '/business-dashboard') {
+        setSelectedDashboard('business')
+        // Check if user has organization when accessing business dashboard directly
+        if (user?.id) {
+          const orgCheck = await checkUserOrganization()
+          if (!orgCheck.hasOrganization) {
+            // Redirect to personal dashboard if no organization
+            message.warning('Please set up your organization to access the Business Dashboard.')
+            navigate('/dashboard')
+            setSelectedDashboard('personal')
+          }
+        }
+      } else if (location.pathname === '/dashboard') {
+        setSelectedDashboard('personal')
+      }
+    }
+
+    handleRouteAndOrgCheck()
+  }, [location.pathname, user?.id, checkUserOrganization, navigate])
 
   // Handle logout click - show confirmation dialog
   const handleLogoutClick = useCallback(() => {
@@ -101,62 +143,88 @@ const Header = ({ user }) => {
     }
   }, [navigate, logout])
 
-  // Check if business info is complete
-  const isBusinessSetupComplete = useCallback(() => {
-    return businessInfo.name && businessInfo.domain
-  }, [businessInfo])
+  // Legacy function kept for reference - now using Supabase organization check directly
 
   // Handle dashboard switch
   const handleDashboardSwitch = useCallback(
-    (dashboardType) => {
+    async (dashboardType) => {
       setIsDashboardDropdownOpen(false) // Close dropdown after selection
 
       if (dashboardType === 'business') {
-        // Check if business setup is complete
-        if (!isBusinessSetupComplete()) {
+        // Check if user has organization in Supabase
+        const orgCheck = await checkUserOrganization()
+
+        if (!orgCheck.hasOrganization) {
+          // Show setup modal if no organization
           setIsBusinessSetupOpen(true)
           return
         }
+
+        // User has organization, proceed to business dashboard
         setSelectedDashboard(dashboardType)
-        // Store dashboard preference in localStorage
         localStorage.setItem('skillscout_dashboard_type', dashboardType)
         navigate('/business-dashboard')
       } else {
         setSelectedDashboard(dashboardType)
-        // Store dashboard preference in localStorage
         localStorage.setItem('skillscout_dashboard_type', dashboardType)
         navigate('/dashboard')
       }
     },
-    [navigate, isBusinessSetupComplete]
+    [navigate, checkUserOrganization]
   )
 
   // Handle business setup form submission
   const handleBusinessSetup = useCallback(
     async (values) => {
       try {
-        // Here you would typically save to a backend/database
-        // For now, we'll store in local state and localStorage
-        const businessData = {
-          name: values.businessName,
-          domain: values.emailDomain
+        if (!user?.id) {
+          message.error('User not authenticated. Please log in again.')
+          return
         }
 
-        setBusinessInfo(businessData)
-        localStorage.setItem('skillscout_business_info', JSON.stringify(businessData))
+        // Prepare organization data
+        const organizationData = {
+          ...values,
+          // Transform founded_year to number if provided
+          founded_year: values.founded_year ? parseInt(values.founded_year, 10) : null
+        }
 
-        message.success('Business information saved successfully!')
-        setIsBusinessSetupOpen(false)
-        setSelectedDashboard('business')
-        // Store dashboard preference in localStorage
-        localStorage.setItem('skillscout_dashboard_type', 'business')
-        navigate('/business-dashboard')
+        // Create organization and assign to user in Supabase
+        const result = await createOrganizationAndAssignToUser(organizationData, user.id)
+
+        if (result.success) {
+          // Update local state
+          setOrganizationData(result.data.organization)
+          setBusinessInfo({
+            name: result.data.organization.organization_name || '',
+            domain: '' // Remove email domain as it's not in the new schema
+          })
+
+          // Store organization data for legacy compatibility
+          localStorage.setItem('skillscout_organization_data', JSON.stringify(result.data.organization))
+          localStorage.setItem(
+            'skillscout_business_info',
+            JSON.stringify({
+              name: result.data.organization.organization_name || '',
+              domain: ''
+            })
+          )
+
+          message.success('Organization profile created successfully!')
+          setIsBusinessSetupOpen(false)
+          setSelectedDashboard('business')
+          localStorage.setItem('skillscout_dashboard_type', 'business')
+          navigate('/business-dashboard')
+        } else {
+          console.error('Error creating organization:', result.error)
+          message.error(result.error || 'Failed to create organization. Please try again.')
+        }
       } catch (error) {
-        console.error('Error saving business info:', error)
-        message.error('Failed to save business information. Please try again.')
+        console.error('Error saving organization info:', error)
+        message.error('An unexpected error occurred. Please try again.')
       }
     },
-    [navigate]
+    [navigate, user?.id]
   )
 
   // Handle business setup modal close
@@ -167,45 +235,60 @@ const Header = ({ user }) => {
 
   // Handle user profile modal
   const handleUserProfileOpen = useCallback(() => {
-    // Pre-populate form with existing user data
-    userProfileForm.setFieldsValue({
-      firstName: user?.ProfileEntryResponse?.FirstName || '',
-      lastName: user?.ProfileEntryResponse?.LastName || '',
-    })
     setIsUserProfileOpen(true)
-  }, [userProfileForm, user])
+  }, [])
 
   const handleUserProfileClose = useCallback(() => {
     setIsUserProfileOpen(false)
-    userProfileForm.resetFields()
-  }, [userProfileForm])
-
-  const handleUserProfileSave = useCallback(async (values) => {
-    try {
-      // Here you would typically save to a backend/database
-      // For now, we'll just show a success message
-      console.log('Saving user profile:', values)
-      
-      message.success('Profile updated successfully!')
-      setIsUserProfileOpen(false)
-    } catch (error) {
-      console.error('Error saving user profile:', error)
-      message.error('Failed to update profile. Please try again.')
-    }
   }, [])
 
-  // Load business info from localStorage on mount
+  // Check user's organization status when user changes
   useEffect(() => {
-    const savedBusinessInfo = localStorage.getItem('skillscout_business_info')
-    if (savedBusinessInfo) {
-      try {
-        const parsed = JSON.parse(savedBusinessInfo)
-        setBusinessInfo(parsed)
-      } catch (error) {
-        console.error('Error parsing saved business info:', error)
+    const checkOrganizationStatus = async () => {
+      if (user?.id) {
+        const orgCheck = await checkUserOrganization()
+        if (orgCheck.hasOrganization && orgCheck.organization) {
+          setBusinessInfo({
+            name: orgCheck.organization.organization_name || '',
+            domain: '' // No longer using domain
+          })
+        }
       }
     }
-  }, [])
+
+    checkOrganizationStatus()
+  }, [user?.id, checkUserOrganization])
+
+  // Load business info from localStorage as fallback (legacy support)
+  useEffect(() => {
+    // Only load from localStorage if no user or organization data
+    if (!user?.id && !organizationData) {
+      // Try to load comprehensive organization data first
+      const savedOrgData = localStorage.getItem('skillscout_organization_data')
+      if (savedOrgData) {
+        try {
+          const parsed = JSON.parse(savedOrgData)
+          setBusinessInfo({
+            name: parsed.organization_name || '',
+            domain: '' // No longer using domain
+          })
+        } catch (error) {
+          console.error('Error parsing saved organization data:', error)
+        }
+      } else {
+        // Fallback to legacy business info format
+        const savedBusinessInfo = localStorage.getItem('skillscout_business_info')
+        if (savedBusinessInfo) {
+          try {
+            const parsed = JSON.parse(savedBusinessInfo)
+            setBusinessInfo(parsed)
+          } catch (error) {
+            console.error('Error parsing saved business info:', error)
+          }
+        }
+      }
+    }
+  }, [user?.id, organizationData])
 
   // Load saved dashboard preference on mount
   useEffect(() => {
@@ -423,6 +506,7 @@ const Header = ({ user }) => {
 
       <button
         onClick={() => handleDashboardSwitch('business')}
+        disabled={isCheckingOrganization}
         className={`w-full py-3 px-4 text-left flex items-center text-sm transition-all duration-200
                    ${
                      selectedDashboard === 'business'
@@ -432,9 +516,9 @@ const Header = ({ user }) => {
                        : darkMode
                          ? 'text-white bg-gray-800 hover:bg-gray-700'
                          : 'text-gray-700 bg-white hover:bg-gray-50'
-                   }`}
+                   } ${isCheckingOrganization ? 'opacity-50 cursor-not-allowed' : ''}`}
         onMouseEnter={(e) => {
-          if (selectedDashboard !== 'business') {
+          if (selectedDashboard !== 'business' && !isCheckingOrganization) {
             if (darkMode) {
               e.target.style.backgroundColor = BRAND_COLORS.emeraldAccent
               e.target.style.color = 'white'
@@ -445,7 +529,7 @@ const Header = ({ user }) => {
           }
         }}
         onMouseLeave={(e) => {
-          if (selectedDashboard !== 'business') {
+          if (selectedDashboard !== 'business' && !isCheckingOrganization) {
             if (darkMode) {
               e.target.style.backgroundColor = '#374151' // gray-700
               e.target.style.color = 'white'
@@ -456,7 +540,11 @@ const Header = ({ user }) => {
           }
         }}
       >
-        <FontAwesomeIcon icon={faBuilding} className='mr-3 w-4' />
+        {isCheckingOrganization ? (
+          <FontAwesomeIcon icon={faSpinner} className='mr-3 w-4 animate-spin' />
+        ) : (
+          <FontAwesomeIcon icon={faBuilding} className='mr-3 w-4' />
+        )}
         Business Dashboard
         {selectedDashboard === 'business' && <div className='ml-auto w-2 h-2 bg-emerald-500 rounded-full'></div>}
       </button>
@@ -495,9 +583,9 @@ const Header = ({ user }) => {
         <FontAwesomeIcon icon={faUser} className='mr-2 w-4' />
         User Profile
       </button>
-      
+
       <div className={`border-t ${darkMode ? 'border-gray-700' : 'border-gray-200'}`} />
-      
+
       <button
         onClick={handleLogoutClick}
         className={`w-full py-3 px-4 text-left flex items-center text-sm transition-all duration-200
@@ -742,10 +830,14 @@ const Header = ({ user }) => {
                         : `linear-gradient(135deg, ${BRAND_COLORS.tealGreen}, ${BRAND_COLORS.emeraldBright}40)`
                     }}
                   >
-                    <FontAwesomeIcon
-                      icon={selectedDashboard === 'business' ? faBuilding : faUserTie}
-                      className='text-xs md:text-sm'
-                    />
+                    {isCheckingOrganization ? (
+                      <FontAwesomeIcon icon={faSpinner} className='text-xs md:text-sm animate-spin' />
+                    ) : (
+                      <FontAwesomeIcon
+                        icon={selectedDashboard === 'business' ? faBuilding : faUserTie}
+                        className='text-xs md:text-sm'
+                      />
+                    )}
                   </div>
                   <span className='hidden sm:block text-xs md:text-sm font-medium text-white mr-1'>
                     {selectedDashboard === 'business' ? 'Business Dashboard' : 'Personal Dashboard'}
@@ -770,19 +862,14 @@ const Header = ({ user }) => {
                         : `linear-gradient(135deg, ${BRAND_COLORS.tealGreen}, ${BRAND_COLORS.emeraldBright}40)`
                     }}
                   >
-                    {user.ProfileEntryResponse?.ProfilePic ? (
-                      <img
-                        src={user.ProfileEntryResponse.ProfilePic}
-                        alt={user.ProfileEntryResponse.Username}
-                        className='w-full h-full object-cover rounded-full'
-                      />
-                    ) : (
-                      <FontAwesomeIcon icon={faUser} className='text-sm md:text-base' />
-                    )}
+                    <ProfileAvatar user={user} size='100%' className='w-full h-full object-cover rounded-full' />
                   </div>
-                  <span className='hidden md:block text-sm font-medium text-white truncate max-w-[100px] lg:max-w-[200px]'>
-                    {user.ProfileEntryResponse?.Username || user.name || 'User'}
-                  </span>
+                  <ProfileDisplay
+                    user={user}
+                    format='full'
+                    className='hidden md:block text-sm font-medium text-white truncate max-w-[100px] lg:max-w-[200px]'
+                    fallback={user?.ProfileEntryResponse?.Username || user?.name || 'User'}
+                  />
                 </div>
               </Dropdown>
             ) : null}
@@ -837,284 +924,15 @@ const Header = ({ user }) => {
       </Modal>
 
       {/* Business Setup Modal */}
-      <Modal
-        title={
-          <div className='flex items-center space-x-2'>
-            <FontAwesomeIcon icon={faBuilding} style={{ color: darkMode ? '#10b981' : '#059669' }} />
-            <span style={{ color: darkMode ? '#ffffff' : '#000000' }}>Business Dashboard Setup</span>
-          </div>
-        }
-        open={isBusinessSetupOpen}
-        onCancel={handleBusinessSetupClose}
-        footer={null}
-        width={500}
-        className={darkMode ? 'ant-modal-dark' : ''}
-        styles={{
-          content: {
-            backgroundColor: darkMode ? '#374151' : '#ffffff',
-            color: darkMode ? '#ffffff' : '#000000'
-          },
-          body: {
-            backgroundColor: darkMode ? '#374151' : '#ffffff',
-            color: darkMode ? '#ffffff' : '#000000'
-          },
-          header: {
-            backgroundColor: darkMode ? '#374151' : '#ffffff',
-            borderBottom: darkMode ? '1px solid #4B5563' : '1px solid #e5e7eb'
-          }
-        }}
-      >
-        {/* Dark Mode Form Styling */}
-        {darkMode && (
-          <style>
-            {`
-               .business-setup-form .ant-form-item-label > label {
-                 color: #E5E7EB !important;
-               }
-               .business-setup-form .ant-input {
-                 background-color: #4B5563 !important;
-                 border-color: #6B7280 !important;
-                 color: #F9FAFB !important;
-               }
-               .business-setup-form .ant-input:focus {
-                 border-color: #059669 !important;
-                 box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
-               }
-               .business-setup-form .ant-input::placeholder {
-                 color: #9CA3AF !important;
-               }
-               .business-setup-form .ant-input-group-addon {
-                 background-color: #4B5563 !important;
-                 border-color: #6B7280 !important;
-                 color: #F9FAFB !important;
-               }
-             `}
-          </style>
-        )}
-
-        <div className='space-y-4'>
-          <div className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-            <p className='mb-3'>
-              To access the Business Dashboard, please provide your business information. This helps us customize your
-              experience and organize your business data.
-            </p>
-            <div
-              className={`p-3 rounded-lg ${darkMode ? 'bg-blue-900/20 border border-blue-700' : 'bg-blue-50 border border-blue-200'}`}
-            >
-              <p className={`text-xs ${darkMode ? 'text-blue-300' : 'text-blue-700'} mb-0`}>
-                <strong>Note:</strong> This information is required to access business features and will be used to
-                organize your job postings and questionnaires.
-              </p>
-            </div>
-          </div>
-
-          <Form
-            form={businessForm}
-            layout='vertical'
-            onFinish={handleBusinessSetup}
-            className={`${darkMode ? 'business-setup-form' : ''}`}
-          >
-            <Form.Item
-              label={<span className={darkMode ? 'text-gray-300' : ''}>Business Name</span>}
-              name='businessName'
-              rules={[
-                { required: true, message: 'Please enter your business name' },
-                { min: 2, message: 'Business name must be at least 2 characters' }
-              ]}
-            >
-              <Input placeholder='e.g. TechCorp Solutions' autoFocus />
-            </Form.Item>
-
-            <Form.Item
-              label={<span className={darkMode ? 'text-gray-300' : ''}>Email Domain</span>}
-              name='emailDomain'
-              rules={[
-                { required: true, message: 'Please enter your business email domain' },
-                {
-                  pattern: /^[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]*\.([a-zA-Z]{2,}|[a-zA-Z]{2,}\.[a-zA-Z]{2,})$/,
-                  message: 'Please enter a valid domain (e.g. company.com)'
-                }
-              ]}
-            >
-              <Input placeholder='e.g. company.com' addonBefore='@' />
-            </Form.Item>
-
-            <div className='flex justify-end space-x-3 pt-4 border-t border-gray-200 dark:border-gray-600'>
-              <Button
-                onClick={handleBusinessSetupClose}
-                className={darkMode ? 'border-gray-600 text-gray-300 hover:border-gray-500' : ''}
-              >
-                Cancel
-              </Button>
-              <Button
-                type='primary'
-                htmlType='submit'
-                style={{
-                  backgroundColor: darkMode ? '#059669' : '#10b981',
-                  borderColor: darkMode ? '#059669' : '#10b981'
-                }}
-              >
-                Setup Business Dashboard
-              </Button>
-            </div>
-          </Form>
-        </div>
-      </Modal>
+      <BusinessSetupModal
+        isOpen={isBusinessSetupOpen}
+        onClose={handleBusinessSetupClose}
+        onSubmit={handleBusinessSetup}
+        form={businessForm}
+      />
 
       {/* User Profile Modal */}
-      <Modal
-        title={
-          <div className='flex items-center space-x-2'>
-            <FontAwesomeIcon icon={faUser} style={{ color: darkMode ? '#10b981' : '#059669' }} />
-            <span style={{ color: darkMode ? '#ffffff' : '#000000' }}>User Profile</span>
-          </div>
-        }
-        open={isUserProfileOpen}
-        onCancel={handleUserProfileClose}
-        footer={null}
-        width={500}
-        className={darkMode ? 'ant-modal-dark' : ''}
-        styles={{
-          content: {
-            backgroundColor: darkMode ? '#374151' : '#ffffff',
-            color: darkMode ? '#ffffff' : '#000000'
-          },
-          body: {
-            backgroundColor: darkMode ? '#374151' : '#ffffff',
-            color: darkMode ? '#ffffff' : '#000000'
-          },
-          header: {
-            backgroundColor: darkMode ? '#374151' : '#ffffff',
-            borderBottom: darkMode ? '1px solid #4B5563' : '1px solid #e5e7eb'
-          }
-        }}
-      >
-        {/* Dark Mode Form Styling */}
-        {darkMode && (
-          <style>
-            {`
-               .user-profile-form .ant-form-item-label > label {
-                 color: #E5E7EB !important;
-               }
-               .user-profile-form .ant-input {
-                 background-color: #4B5563 !important;
-                 border-color: #6B7280 !important;
-                 color: #F9FAFB !important;
-               }
-               .user-profile-form .ant-input:focus {
-                 border-color: #059669 !important;
-                 box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
-               }
-               .user-profile-form .ant-input::placeholder {
-                 color: #9CA3AF !important;
-               }
-               .user-profile-form .ant-upload.ant-upload-select {
-                 background-color: #4B5563 !important;
-                 border-color: #6B7280 !important;
-               }
-               .user-profile-form .ant-upload.ant-upload-select:hover {
-                 border-color: #059669 !important;
-               }
-               .user-profile-form .ant-upload-text {
-                 color: #E5E7EB !important;
-               }
-               .user-profile-form .ant-upload-hint {
-                 color: #9CA3AF !important;
-               }
-             `}
-          </style>
-        )}
-
-        <div className='space-y-6'>
-          <div className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-            <p className='mb-3'>
-              Update your personal information and profile picture.
-            </p>
-          </div>
-
-          <Form
-            form={userProfileForm}
-            layout='vertical'
-            onFinish={handleUserProfileSave}
-            className={`${darkMode ? 'user-profile-form' : ''}`}
-          >
-            {/* Profile Picture Upload */}
-            <Form.Item
-              label={<span className={darkMode ? 'text-gray-300' : ''}>Profile Picture</span>}
-              name='profilePicture'
-            >
-              <div className='flex items-center space-x-4'>
-                <Avatar
-                  size={80}
-                  src={user?.ProfileEntryResponse?.ProfilePic}
-                  icon={<FontAwesomeIcon icon={faUser} />}
-                  className={`${darkMode ? 'bg-gray-600' : 'bg-gray-200'}`}
-                />
-                <Upload
-                  accept='image/*'
-                  showUploadList={false}
-                  beforeUpload={(file) => {
-                    // Handle file upload logic here
-                    // For now, just prevent default upload
-                    console.log('File selected:', file)
-                    return false
-                  }}
-                >
-                  <Button
-                    icon={<FontAwesomeIcon icon={faUpload} />}
-                    className={darkMode ? 'border-gray-600 text-gray-300 hover:border-gray-500' : ''}
-                  >
-                    Upload Photo
-                  </Button>
-                </Upload>
-              </div>
-            </Form.Item>
-
-            <div className='grid grid-cols-2 gap-4'>
-              <Form.Item
-                label={<span className={darkMode ? 'text-gray-300' : ''}>First Name</span>}
-                name='firstName'
-                rules={[
-                  { required: true, message: 'Please enter your first name' },
-                  { min: 2, message: 'First name must be at least 2 characters' }
-                ]}
-              >
-                <Input placeholder='e.g. John' />
-              </Form.Item>
-
-              <Form.Item
-                label={<span className={darkMode ? 'text-gray-300' : ''}>Last Name</span>}
-                name='lastName'
-                rules={[
-                  { required: true, message: 'Please enter your last name' },
-                  { min: 2, message: 'Last name must be at least 2 characters' }
-                ]}
-              >
-                <Input placeholder='e.g. Doe' />
-              </Form.Item>
-            </div>
-
-            <div className='flex justify-end space-x-3 pt-4 border-t border-gray-200 dark:border-gray-600'>
-              <Button
-                onClick={handleUserProfileClose}
-                className={darkMode ? 'border-gray-600 text-gray-300 hover:border-gray-500' : ''}
-              >
-                Cancel
-              </Button>
-              <Button
-                type='primary'
-                htmlType='submit'
-                style={{
-                  backgroundColor: darkMode ? '#059669' : '#10b981',
-                  borderColor: darkMode ? '#059669' : '#10b981'
-                }}
-              >
-                Save Profile
-              </Button>
-            </div>
-          </Form>
-        </div>
-      </Modal>
+      <ProfileModal isOpen={isUserProfileOpen} onClose={handleUserProfileClose} user={user} />
     </header>
   )
 }

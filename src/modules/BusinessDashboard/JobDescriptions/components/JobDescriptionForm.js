@@ -1,7 +1,7 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
 
-import React, { useState, useCallback, useEffect, useRef } from 'react'
+import React, { useState, useCallback, useEffect } from 'react'
 import { Card, Form, Space, message, Row, Col, Tabs, Spin, Input, Select, Modal } from 'antd'
 import { Button } from '../../../../core/components'
 import { useNavigate, useLocation } from 'react-router-dom'
@@ -59,7 +59,7 @@ const CreateJobDescription = React.memo(({ user }) => {
   const [validationModalVisible, setValidationModalVisible] = useState(false)
   const [validationErrors, setValidationErrors] = useState([])
   const [activeTab, setActiveTab] = useState('1')
-  const tabsRef = useRef(null)
+
   const [fieldCompletionCounts, setFieldCompletionCounts] = useState({
     basicInfo: { completed: 0, total: 6 },
     detailedInfo: { completed: 0, total: 5 }
@@ -72,10 +72,10 @@ const CreateJobDescription = React.memo(({ user }) => {
   // Calculate field completion counts
   const calculateFieldCounts = useCallback(() => {
     const values = form.getFieldsValue()
-    
+
     // Basic Info required fields
     const basicInfoFields = ['title', 'department', 'reportsToRole', 'experienceLevel', 'keywords', 'overview']
-    const basicInfoCompleted = basicInfoFields.filter(field => {
+    const basicInfoCompleted = basicInfoFields.filter((field) => {
       const value = values[field]
       if (field === 'keywords') {
         return Array.isArray(value) && value.length > 0
@@ -83,9 +83,15 @@ const CreateJobDescription = React.memo(({ user }) => {
       return value && String(value).trim().length > 0
     }).length
 
-    // Detailed Info required fields  
-    const detailedInfoFields = ['responsibilities', 'requirements', 'educationExperience', 'technicalSkills', 'softSkills']
-    const detailedInfoCompleted = detailedInfoFields.filter(field => {
+    // Detailed Info required fields
+    const detailedInfoFields = [
+      'responsibilities',
+      'requirements',
+      'educationExperience',
+      'technicalSkills',
+      'softSkills'
+    ]
+    const detailedInfoCompleted = detailedInfoFields.filter((field) => {
       const value = values[field]
       return value && String(value).trim().length > 0
     }).length
@@ -113,6 +119,7 @@ const CreateJobDescription = React.memo(({ user }) => {
     if (!lookupsLoading) {
       calculateFieldCounts()
     }
+    // eslint-disable-next-line
   }, [lookupsLoading])
 
   // Load existing job description data for editing
@@ -138,7 +145,7 @@ const CreateJobDescription = React.memo(({ user }) => {
             softSkills: result.data.softSkills,
             preferredSkills: result.data.preferredSkills
           })
-          
+
           // Calculate field counts after loading data
           setTimeout(() => {
             calculateFieldCounts()
@@ -157,6 +164,7 @@ const CreateJobDescription = React.memo(({ user }) => {
         setInitialDataLoading(false)
       }
     },
+    // eslint-disable-next-line
     [form, navigate]
   )
 
@@ -246,7 +254,7 @@ const CreateJobDescription = React.memo(({ user }) => {
     [user, navigate, isEditMode, editId]
   )
 
-    // Handle form validation and submission
+  // Handle form validation and submission
   const handleSaveClick = useCallback(async () => {
     try {
       // Validate all fields first
@@ -254,37 +262,40 @@ const CreateJobDescription = React.memo(({ user }) => {
       await handleFormSubmit(values)
     } catch (errorInfo) {
       console.log('Validation failed:', errorInfo)
-      
+
       // Count errors by tab
       const basicInfoFields = ['title', 'department', 'reportsToRole', 'experienceLevel', 'keywords', 'overview']
-      const detailedInfoFields = ['responsibilities', 'requirements', 'educationExperience', 'technicalSkills', 'softSkills']
-      
-      const basicInfoErrors = errorInfo.errorFields?.filter(field => 
-        basicInfoFields.includes(field.name[0])
-      ) || []
-      
-      const detailedInfoErrors = errorInfo.errorFields?.filter(field => 
-        detailedInfoFields.includes(field.name[0])
-      ) || []
+      const detailedInfoFields = [
+        'responsibilities',
+        'requirements',
+        'educationExperience',
+        'technicalSkills',
+        'softSkills'
+      ]
+
+      const basicInfoErrors = errorInfo.errorFields?.filter((field) => basicInfoFields.includes(field.name[0])) || []
+
+      const detailedInfoErrors =
+        errorInfo.errorFields?.filter((field) => detailedInfoFields.includes(field.name[0])) || []
 
       // Create structured error list for modal
       const errorList = []
       const fieldLabels = {
-        'title': 'Job Title',
-        'department': 'Department', 
-        'reportsToRole': 'Reports To Role',
-        'experienceLevel': 'Experience Level',
-        'keywords': 'Keywords',
-        'overview': 'Job Overview',
-        'responsibilities': 'Responsibilities',
-        'requirements': 'Requirements',
-        'educationExperience': 'Education and Experience',
-        'technicalSkills': 'Technical Skills',
-        'softSkills': 'Soft Skills'
+        title: 'Job Title',
+        department: 'Department',
+        reportsToRole: 'Reports To Role',
+        experienceLevel: 'Experience Level',
+        keywords: 'Keywords',
+        overview: 'Job Overview',
+        responsibilities: 'Responsibilities',
+        requirements: 'Requirements',
+        educationExperience: 'Education and Experience',
+        technicalSkills: 'Technical Skills',
+        softSkills: 'Soft Skills'
       }
 
       if (basicInfoErrors.length > 0) {
-        basicInfoErrors.forEach(field => {
+        basicInfoErrors.forEach((field) => {
           errorList.push({
             tab: 'Basic Information',
             tabKey: '1',
@@ -293,9 +304,9 @@ const CreateJobDescription = React.memo(({ user }) => {
           })
         })
       }
-      
+
       if (detailedInfoErrors.length > 0) {
-        detailedInfoErrors.forEach(field => {
+        detailedInfoErrors.forEach((field) => {
           errorList.push({
             tab: 'Detailed Information',
             tabKey: '2',
@@ -327,29 +338,29 @@ const CreateJobDescription = React.memo(({ user }) => {
   // Handle validation modal close and navigate to field
   const handleValidationModalOk = useCallback(() => {
     setValidationModalVisible(false)
-    
+
     // Switch to first tab with errors and scroll to first error
     const firstError = validationErrors[0]
     if (firstError) {
       setActiveTab(firstError.tabKey)
-      
+
       // Map field labels back to field names for scrolling
       const fieldNameMap = {
         'Job Title': 'title',
-        'Department': 'department',
+        Department: 'department',
         'Reports To Role': 'reportsToRole',
         'Experience Level': 'experienceLevel',
-        'Keywords': 'keywords',
+        Keywords: 'keywords',
         'Job Overview': 'overview',
-        'Responsibilities': 'responsibilities',
-        'Requirements': 'requirements',
+        Responsibilities: 'responsibilities',
+        Requirements: 'requirements',
         'Education and Experience': 'educationExperience',
         'Technical Skills': 'technicalSkills',
         'Soft Skills': 'softSkills'
       }
-      
+
       const fieldName = fieldNameMap[firstError.field]
-      
+
       // Small delay to allow tab switch, then scroll to first error
       setTimeout(() => {
         if (fieldName) {
@@ -365,7 +376,7 @@ const CreateJobDescription = React.memo(({ user }) => {
     setTimeout(() => {
       calculateFieldCounts()
     }, 50)
-    
+
     // Clear validation error indicators when user starts making changes
     if (tabValidationErrors.basicInfo || tabValidationErrors.detailedInfo || validationModalVisible) {
       setTabValidationErrors({
@@ -375,6 +386,7 @@ const CreateJobDescription = React.memo(({ user }) => {
       setValidationModalVisible(false)
       setValidationErrors([])
     }
+    // eslint-disable-next-line
   }, [tabValidationErrors, validationModalVisible])
 
   // Handle tab change and recalculate counts
@@ -384,13 +396,14 @@ const CreateJobDescription = React.memo(({ user }) => {
     setTimeout(() => {
       calculateFieldCounts()
     }, 50)
+    // eslint-disable-next-line
   }, [])
 
   // Completion Badge Component
   const CompletionBadge = ({ completed, total, darkMode }) => {
     const isComplete = completed === total
     const percentage = total > 0 ? Math.round((completed / total) * 100) : 0
-    
+
     return (
       <span
         className={`completion-badge inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ml-2 ${
@@ -777,12 +790,10 @@ const CreateJobDescription = React.memo(({ user }) => {
                   </style>
                 )}
 
-
-
-                <Tabs 
+                <Tabs
                   activeKey={activeTab}
                   onChange={handleTabChange}
-                  size='large' 
+                  size='large'
                   className={`${darkMode ? 'dark-tabs' : ''}`}
                 >
                   {/* Tab 1: Basic Information & Job Details */}
@@ -791,7 +802,7 @@ const CreateJobDescription = React.memo(({ user }) => {
                       <span className='flex items-center'>
                         <FontAwesomeIcon icon={faBuilding} />
                         <span className='ml-2'>Basic Information</span>
-                        <CompletionBadge 
+                        <CompletionBadge
                           completed={fieldCompletionCounts.basicInfo.completed}
                           total={fieldCompletionCounts.basicInfo.total}
                           darkMode={darkMode}
@@ -985,7 +996,7 @@ const CreateJobDescription = React.memo(({ user }) => {
                       <span className='flex items-center'>
                         <FontAwesomeIcon icon={faTasks} />
                         <span className='ml-2'>Detailed Information</span>
-                        <CompletionBadge 
+                        <CompletionBadge
                           completed={fieldCompletionCounts.detailedInfo.completed}
                           total={fieldCompletionCounts.detailedInfo.total}
                           darkMode={darkMode}
@@ -1209,33 +1220,28 @@ const CreateJobDescription = React.memo(({ user }) => {
             <Modal
               title={
                 <div className='flex items-center space-x-2'>
-                  <FontAwesomeIcon 
-                    icon={faExclamationTriangle} 
-                    className='text-red-500' 
-                  />
-                  <span className={darkMode ? 'text-white' : 'text-gray-900'}>
-                    Incomplete Required Fields
-                  </span>
+                  <FontAwesomeIcon icon={faExclamationTriangle} className='text-red-500' />
+                  <span className={darkMode ? 'text-white' : 'text-gray-900'}>Incomplete Required Fields</span>
                 </div>
               }
               open={validationModalVisible}
               onOk={handleValidationModalOk}
               onCancel={() => setValidationModalVisible(false)}
-              okText="Take Me There"
-              cancelText="Close"
+              okText='Take Me There'
+              cancelText='Close'
               width={500}
               className={darkMode ? 'dark-modal' : ''}
               okButtonProps={{
                 icon: <FontAwesomeIcon icon={faCheckCircle} />,
                 size: 'large',
-                className: darkMode 
-                  ? 'bg-emerald-600 border-emerald-600 hover:bg-emerald-700' 
+                className: darkMode
+                  ? 'bg-emerald-600 border-emerald-600 hover:bg-emerald-700'
                   : 'bg-emerald-600 border-emerald-600 hover:bg-emerald-700'
               }}
               cancelButtonProps={{
                 size: 'large',
-                className: darkMode 
-                  ? 'bg-gray-600 border-gray-600 text-white hover:bg-gray-700' 
+                className: darkMode
+                  ? 'bg-gray-600 border-gray-600 text-white hover:bg-gray-700'
                   : 'bg-gray-500 border-gray-500 text-white hover:bg-gray-600'
               }}
             >
@@ -1243,11 +1249,11 @@ const CreateJobDescription = React.memo(({ user }) => {
                 <p className={`text-base mb-4 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                   Please complete the following required fields before saving:
                 </p>
-                
+
                 <div className='space-y-3'>
                   {validationErrors
                     .reduce((acc, error) => {
-                      const existingTab = acc.find(tab => tab.tabKey === error.tabKey)
+                      const existingTab = acc.find((tab) => tab.tabKey === error.tabKey)
                       if (existingTab) {
                         existingTab.fields.push(error.field)
                       } else {
@@ -1260,26 +1266,24 @@ const CreateJobDescription = React.memo(({ user }) => {
                       return acc
                     }, [])
                     .map((tabGroup) => (
-                      <div 
+                      <div
                         key={tabGroup.tabKey}
                         className={`p-3 rounded-lg border ${
                           darkMode ? 'bg-gray-800 border-gray-600' : 'bg-red-50 border-red-200'
                         }`}
                       >
                         <div className='flex items-center space-x-2 mb-2'>
-                          <FontAwesomeIcon 
-                            icon={tabGroup.tabKey === '1' ? faBuilding : faTasks} 
+                          <FontAwesomeIcon
+                            icon={tabGroup.tabKey === '1' ? faBuilding : faTasks}
                             className={`text-sm ${darkMode ? 'text-red-400' : 'text-red-600'}`}
                           />
-                          <span className={`font-semibold text-sm ${
-                            darkMode ? 'text-red-400' : 'text-red-700'
-                          }`}>
+                          <span className={`font-semibold text-sm ${darkMode ? 'text-red-400' : 'text-red-700'}`}>
                             {tabGroup.tab}
                           </span>
                         </div>
                         <ul className='space-y-1 ml-5'>
                           {tabGroup.fields.map((field, index) => (
-                            <li 
+                            <li
                               key={index}
                               className={`text-sm flex items-center space-x-2 ${
                                 darkMode ? 'text-gray-300' : 'text-red-600'
@@ -1291,13 +1295,14 @@ const CreateJobDescription = React.memo(({ user }) => {
                           ))}
                         </ul>
                       </div>
-                    ))
-                  }
+                    ))}
                 </div>
 
-                <div className={`mt-4 p-3 rounded-lg ${
-                  darkMode ? 'bg-blue-900/30 border border-blue-700' : 'bg-blue-50 border border-blue-200'
-                }`}>
+                <div
+                  className={`mt-4 p-3 rounded-lg ${
+                    darkMode ? 'bg-blue-900/30 border border-blue-700' : 'bg-blue-50 border border-blue-200'
+                  }`}
+                >
                   <p className={`text-sm ${darkMode ? 'text-blue-300' : 'text-blue-700'}`}>
                     💡 <strong>Tip:</strong> Click "Take Me There" to automatically navigate to the first missing field.
                   </p>

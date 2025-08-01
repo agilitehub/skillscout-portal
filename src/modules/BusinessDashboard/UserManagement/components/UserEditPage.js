@@ -1,7 +1,7 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
 import React, { useState, useCallback, useEffect, useMemo } from 'react'
-import { Card, Form, Input, Select, Switch, Space, Divider, message, Tag } from 'antd'
+import { Card, Form, Input, Select, Switch, Space, message } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faUser,
@@ -12,8 +12,7 @@ import {
   faUndo,
   faUserCheck,
   faUserTimes,
-  faCheckCircle,
-  faTimesCircle
+  faCheckCircle
 } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useTheme } from '../../../../core/context/ThemeContext'
@@ -35,67 +34,75 @@ const UserEditPage = React.memo(({ user: currentUser }) => {
 
   // Get user data from location state
   const userToEdit = location.state?.user
-  const isEdit = location.state?.isEdit || false
 
   // Role definitions
-  const roles = useMemo(() => ({
-    admin: {
-      label: 'Admin',
-      color: SEMANTIC_COLORS.error,
-      description: 'Full access to all features'
-    },
-    recruiter: {
-      label: 'Recruiter',
-      color: BRAND_COLORS.emeraldPrimary,
-      description: 'Can manage candidates and job postings'
-    },
-    viewer: {
-      label: 'Viewer',
-      color: BRAND_COLORS.shakespeare,
-      description: 'Read-only access to candidates and reports'
-    }
-  }), [])
+  const roles = useMemo(
+    () => ({
+      admin: {
+        label: 'Admin',
+        color: SEMANTIC_COLORS.error,
+        description: 'Full access to all features'
+      },
+      recruiter: {
+        label: 'Recruiter',
+        color: BRAND_COLORS.emeraldPrimary,
+        description: 'Can manage candidates and job postings'
+      },
+      viewer: {
+        label: 'Viewer',
+        color: BRAND_COLORS.shakespeare,
+        description: 'Read-only access to candidates and reports'
+      }
+    }),
+    []
+  )
 
   // Status definitions
-  const statusConfig = useMemo(() => ({
-    active: { label: 'Active', color: SEMANTIC_COLORS.success, icon: faUserCheck },
-    inactive: { label: 'Inactive', color: BRAND_COLORS.mediumGray, icon: faUserTimes },
-    pending: { label: 'Pending', color: SEMANTIC_COLORS.warning, icon: faEnvelope }
-  }), [])
+  const statusConfig = useMemo(
+    () => ({
+      active: { label: 'Active', color: SEMANTIC_COLORS.success, icon: faUserCheck },
+      inactive: { label: 'Inactive', color: BRAND_COLORS.mediumGray, icon: faUserTimes },
+      pending: { label: 'Pending', color: SEMANTIC_COLORS.warning, icon: faEnvelope }
+    }),
+    []
+  )
 
   // Permission definitions
-  const permissionLabels = useMemo(() => ({
-    publishListings: {
-      label: 'Publish Listings',
-      description: 'Create and manage job listings',
-      icon: faCheckCircle
-    },
-    editOrgProfile: {
-      label: 'Edit Organization Profile',
-      description: 'Modify company information and settings',
-      icon: faCheckCircle
-    },
-    manageQuestionnaires: {
-      label: 'Manage Questionnaires',
-      description: 'Create and edit assessment questionnaires',
-      icon: faCheckCircle
-    },
-    viewCandidates: {
-      label: 'View Candidates',
-      description: 'Access candidate profiles and applications',
-      icon: faCheckCircle
-    },
-    manageCandidates: {
-      label: 'Manage Candidates',
-      description: 'Edit candidate information and status',
-      icon: faCheckCircle
-    },
-    viewReports: {
-      label: 'View Reports',
-      description: 'Access analytics and reporting features',
-      icon: faCheckCircle
-    }
-  }), [])
+  const permissionLabels = useMemo(
+    () => ({
+      publishListings: {
+        label: 'Publish Listings',
+        description: 'Create and manage job listings',
+        icon: faCheckCircle
+      },
+      editOrgProfile: {
+        label: 'Edit Organization Profile',
+        description: 'Modify company information and settings',
+        icon: faCheckCircle
+      },
+      manageQuestionnaires: {
+        label: 'Manage Questionnaires',
+        description: 'Create and edit assessment questionnaires',
+        icon: faCheckCircle
+      },
+      viewCandidates: {
+        label: 'View Candidates',
+        description: 'Access candidate profiles and applications',
+        icon: faCheckCircle
+      },
+      manageCandidates: {
+        label: 'Manage Candidates',
+        description: 'Edit candidate information and status',
+        icon: faCheckCircle
+      },
+      viewReports: {
+        label: 'View Reports',
+        description: 'Access analytics and reporting features',
+        icon: faCheckCircle
+      }
+    }),
+    []
+  )
 
   // Set initial form values
   useEffect(() => {
@@ -116,38 +123,41 @@ const UserEditPage = React.memo(({ user: currentUser }) => {
   }, [])
 
   // Handle form submission
-  const handleSubmit = useCallback(async (values) => {
-    setLoading(true)
-    try {
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      // Extract permissions from values
-      const { name, email, role, status, ...permissions } = values
-      
-      const updatedUser = {
-        ...userToEdit,
-        name,
-        email,
-        role,
-        status,
-        permissions
+  const handleSubmit = useCallback(
+    async (values) => {
+      setLoading(true)
+      try {
+        // Simulate API delay
+        await new Promise((resolve) => setTimeout(resolve, 1000))
+
+        // Extract permissions from values
+        const { name, email, role, status, ...permissions } = values
+
+        const updatedUser = {
+          ...userToEdit,
+          name,
+          email,
+          role,
+          status,
+          permissions
+        }
+
+        console.log('Saving user:', updatedUser)
+
+        setHasChanges(false)
+        message.success('User updated successfully!')
+
+        // Navigate back to user management
+        navigate('/business-dashboard/user-management')
+      } catch (error) {
+        console.error('Error updating user:', error)
+        message.error('Failed to update user')
+      } finally {
+        setLoading(false)
       }
-      
-      console.log('Saving user:', updatedUser)
-      
-      setHasChanges(false)
-      message.success('User updated successfully!')
-      
-      // Navigate back to user management
-      navigate('/business-dashboard/user-management')
-    } catch (error) {
-      console.error('Error updating user:', error)
-      message.error('Failed to update user')
-    } finally {
-      setLoading(false)
-    }
-  }, [userToEdit, navigate])
+    },
+    [userToEdit, navigate]
+  )
 
   // Handle reset
   const handleReset = useCallback(() => {
@@ -221,15 +231,11 @@ const UserEditPage = React.memo(({ user: currentUser }) => {
                 Back
               </Button>
               <div>
-                <h1 className='text-2xl font-bold text-white'>
-                  Edit User - {userToEdit.name}
-                </h1>
-                <p className='text-emerald-100 text-sm'>
-                  Update user details and permissions
-                </p>
+                <h1 className='text-2xl font-bold text-white'>Edit User - {userToEdit.name}</h1>
+                <p className='text-emerald-100 text-sm'>Update user details and permissions</p>
               </div>
             </div>
-            
+
             <div className='flex space-x-3'>
               {hasChanges && (
                 <Button
@@ -245,7 +251,7 @@ const UserEditPage = React.memo(({ user: currentUser }) => {
                   Reset
                 </Button>
               )}
-              
+
               <Button
                 type='primary'
                 icon={<FontAwesomeIcon icon={faSave} />}
@@ -254,21 +260,9 @@ const UserEditPage = React.memo(({ user: currentUser }) => {
                 disabled={!hasChanges}
                 className={`shadow-md hover:shadow-lg transition-all duration-200`}
                 style={{
-                  backgroundColor: hasChanges 
-                    ? BRAND_COLORS.emeraldPrimary 
-                    : darkMode 
-                      ? '#4B5563' 
-                      : '#E5E7EB',
-                  borderColor: hasChanges 
-                    ? BRAND_COLORS.emeraldPrimary 
-                    : darkMode 
-                      ? '#4B5563' 
-                      : '#E5E7EB',
-                  color: hasChanges 
-                    ? '#FFFFFF' 
-                    : darkMode 
-                      ? '#9CA3AF' 
-                      : '#6B7280'
+                  backgroundColor: hasChanges ? BRAND_COLORS.emeraldPrimary : darkMode ? '#4B5563' : '#E5E7EB',
+                  borderColor: hasChanges ? BRAND_COLORS.emeraldPrimary : darkMode ? '#4B5563' : '#E5E7EB',
+                  color: hasChanges ? '#FFFFFF' : darkMode ? '#9CA3AF' : '#6B7280'
                 }}
               >
                 Save Changes
@@ -281,7 +275,7 @@ const UserEditPage = React.memo(({ user: currentUser }) => {
         <div className='relative p-6 space-y-6'>
           <Form
             form={form}
-            layout="vertical"
+            layout='vertical'
             onFinish={handleSubmit}
             onValuesChange={handleValuesChange}
             className={`${darkMode ? 'user-edit-form' : ''}`}
@@ -290,7 +284,7 @@ const UserEditPage = React.memo(({ user: currentUser }) => {
             <Card
               title={
                 <div className='flex items-center space-x-3'>
-                  <FontAwesomeIcon icon={faUser} className="text-emerald-600" />
+                  <FontAwesomeIcon icon={faUser} className='text-emerald-600' />
                   <span>User Information</span>
                 </div>
               }
@@ -305,42 +299,35 @@ const UserEditPage = React.memo(({ user: currentUser }) => {
                 color: darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray
               }}
             >
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
                 <Form.Item
-                  label="Full Name"
-                  name="name"
+                  label='Full Name'
+                  name='name'
                   rules={[
-                    { required: true, message: 'Please enter the user\'s name' },
+                    { required: true, message: "Please enter the user's name" },
                     { min: 2, message: 'Name must be at least 2 characters' }
                   ]}
                 >
-                  <Input placeholder="Enter full name" />
+                  <Input placeholder='Enter full name' />
                 </Form.Item>
 
                 <Form.Item
-                  label="Email Address"
-                  name="email"
+                  label='Email Address'
+                  name='email'
                   rules={[
                     { required: true, message: 'Please enter email address' },
                     { type: 'email', message: 'Please enter a valid email address' }
                   ]}
                 >
-                  <Input placeholder="Enter email address" />
+                  <Input placeholder='Enter email address' />
                 </Form.Item>
 
-                <Form.Item
-                  label="Role"
-                  name="role"
-                  rules={[{ required: true, message: 'Please select a role' }]}
-                >
-                  <Select placeholder="Select role" dropdownClassName={darkMode ? 'user-edit-dark-dropdown' : ''}>
+                <Form.Item label='Role' name='role' rules={[{ required: true, message: 'Please select a role' }]}>
+                  <Select placeholder='Select role' dropdownClassName={darkMode ? 'user-edit-dark-dropdown' : ''}>
                     {Object.entries(roles).map(([key, config]) => (
                       <Select.Option key={key} value={key}>
                         <Space>
-                          <div 
-                            className="w-2 h-2 rounded-full" 
-                            style={{ backgroundColor: config.color }}
-                          />
+                          <div className='w-2 h-2 rounded-full' style={{ backgroundColor: config.color }} />
                           <span>{config.label}</span>
                         </Space>
                       </Select.Option>
@@ -348,12 +335,8 @@ const UserEditPage = React.memo(({ user: currentUser }) => {
                   </Select>
                 </Form.Item>
 
-                <Form.Item
-                  label="Status"
-                  name="status"
-                  rules={[{ required: true, message: 'Please select status' }]}
-                >
-                  <Select placeholder="Select status" dropdownClassName={darkMode ? 'user-edit-dark-dropdown' : ''}>
+                <Form.Item label='Status' name='status' rules={[{ required: true, message: 'Please select status' }]}>
+                  <Select placeholder='Select status' dropdownClassName={darkMode ? 'user-edit-dark-dropdown' : ''}>
                     {Object.entries(statusConfig).map(([key, config]) => (
                       <Select.Option key={key} value={key}>
                         <Space>
@@ -371,7 +354,7 @@ const UserEditPage = React.memo(({ user: currentUser }) => {
             <Card
               title={
                 <div className='flex items-center space-x-3'>
-                  <FontAwesomeIcon icon={faShieldAlt} className="text-emerald-600" />
+                  <FontAwesomeIcon icon={faShieldAlt} className='text-emerald-600' />
                   <span>Permissions</span>
                 </div>
               }
@@ -386,24 +369,20 @@ const UserEditPage = React.memo(({ user: currentUser }) => {
                 color: darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray
               }}
             >
-              <div className="space-y-4">
+              <div className='space-y-4'>
                 {Object.entries(permissionLabels).map(([key, config]) => (
-                  <div key={key} className="flex items-center justify-between p-4 rounded-lg border border-gray-200 dark:border-gray-600">
-                    <div className="flex items-center space-x-3">
-                      <FontAwesomeIcon 
-                        icon={config.icon}
-                        className="text-emerald-600"
-                      />
+                  <div
+                    key={key}
+                    className='flex items-center justify-between p-4 rounded-lg border border-gray-200 dark:border-gray-600'
+                  >
+                    <div className='flex items-center space-x-3'>
+                      <FontAwesomeIcon icon={config.icon} className='text-emerald-600' />
                       <div>
-                        <div className="font-medium text-gray-900 dark:text-white">
-                          {config.label}
-                        </div>
-                        <div className="text-sm text-gray-500 dark:text-gray-400">
-                          {config.description}
-                        </div>
+                        <div className='font-medium text-gray-900 dark:text-white'>{config.label}</div>
+                        <div className='text-sm text-gray-500 dark:text-gray-400'>{config.description}</div>
                       </div>
                     </div>
-                    <Form.Item name={key} valuePropName="checked" noStyle>
+                    <Form.Item name={key} valuePropName='checked' noStyle>
                       <Switch />
                     </Form.Item>
                   </div>
@@ -417,7 +396,8 @@ const UserEditPage = React.memo(({ user: currentUser }) => {
       {/* Dark mode styles */}
       <style jsx global>{`
         /* Dark Mode Form Styling */
-        ${darkMode ? `
+        ${darkMode
+          ? `
           .user-edit-form .ant-form-item-label > label {
             color: #E5E7EB !important;
           }
@@ -473,24 +453,25 @@ const UserEditPage = React.memo(({ user: currentUser }) => {
           .user-edit-form .ant-form-item-explain-error {
             color: #F87171 !important;
           }
-        ` : ''}
+        `
+          : ''}
 
         /* Dark mode dropdown options */
         .user-edit-dark-dropdown {
           background-color: #374151 !important;
         }
-        
+
         .user-edit-dark-dropdown .ant-select-item {
-          color: #F9FAFB !important;
+          color: #f9fafb !important;
         }
-        
+
         .user-edit-dark-dropdown .ant-select-item:hover {
-          background-color: #4B5563 !important;
+          background-color: #4b5563 !important;
         }
-        
+
         .user-edit-dark-dropdown .ant-select-item-option-selected {
           background-color: #059669 !important;
-          color: #FFFFFF !important;
+          color: #ffffff !important;
         }
       `}</style>
     </div>
@@ -499,4 +480,4 @@ const UserEditPage = React.memo(({ user: currentUser }) => {
 
 UserEditPage.displayName = 'UserEditPage'
 
-export default UserEditPage 
+export default UserEditPage
