@@ -108,7 +108,7 @@ const TableActions = React.memo(({ record, actions = [], size = 'small', wrap = 
         size={size}
         icon={<FontAwesomeIcon icon={config.icon} className={`${config.color} transition-colors duration-200`} />}
         onClick={() => config.onClick(record)}
-        className={`!bg-transparent !border-transparent hover:!bg-gray-100 dark:hover:!bg-gray-700 transition-all duration-200`}
+        className={config.className || `!bg-transparent !border-transparent hover:!bg-gray-100 dark:hover:!bg-gray-700 transition-all duration-200`}
         disabled={config.disabled}
         style={config.style}
       />
@@ -138,7 +138,7 @@ const TableActions = React.memo(({ record, actions = [], size = 'small', wrap = 
               type='text'
               size={size}
               icon={<FontAwesomeIcon icon={config.icon} className={`${config.color} transition-colors duration-200`} />}
-              className={`!bg-transparent !border-transparent hover:!bg-gray-100 dark:hover:!bg-gray-700 transition-all duration-200`}
+              className={config.className || `!bg-transparent !border-transparent hover:!bg-gray-100 dark:hover:!bg-gray-700 transition-all duration-200`}
               disabled={config.disabled}
               style={config.style}
             />

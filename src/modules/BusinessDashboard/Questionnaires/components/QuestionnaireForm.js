@@ -6,7 +6,7 @@ import { Card, Form, message, Row, Col, Select, Input, Switch, Divider, Spin } f
 import { Button } from '../../../../core/components'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSave, faTimes, faClipboardCheck, faQuestion } from '@fortawesome/free-solid-svg-icons'
+import { faSave, faTimes, faClipboardCheck, faQuestion, faTrashAlt } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../../core/context/ThemeContext'
 import BusinessSidebar from '../../components/BusinessSidebar'
 import TableView from '../../../../core/components/view-components/table-view/TableView'
@@ -268,10 +268,27 @@ const QuestionnaireForm = React.memo(({ user }) => {
           actions={[
             {
               key: 'edit',
+              tooltip: 'Edit Question',
+              color: '!text-white',
+              className: 'questionnaire-form-edit-btn !bg-green-600 hover:!bg-green-700 !border-green-600 hover:!border-green-700',
+              style: {
+                backgroundColor: '#059669 !important',
+                borderColor: '#059669 !important',
+                color: 'white !important'
+              },
               onClick: handleEditQuestion
             },
             {
               key: 'delete',
+              icon: faTrashAlt,
+              tooltip: 'Delete Question',
+              color: '!text-white',
+              className: 'questionnaire-form-delete-btn !bg-red-600 hover:!bg-red-700 !border-red-600 hover:!border-red-700',
+              style: {
+                backgroundColor: '#DC2626 !important',
+                borderColor: '#DC2626 !important',
+                color: 'white !important'
+              },
               confirm: {
                 title: 'Delete Question',
                 description: 'Are you sure you want to delete this question?',
@@ -287,13 +304,159 @@ const QuestionnaireForm = React.memo(({ user }) => {
   ]
 
   return (
-    <div
-      className={`min-h-screen ${
-        darkMode
-          ? 'bg-gradient-to-br from-slate-700 via-slate-600 to-emerald-800'
-          : 'bg-gradient-to-br from-sky-100 via-gray-50 to-emerald-100'
-      }`}
-    >
+    <>
+      {/* Action Button Custom Styling */}
+      <style jsx global>{`
+        .questionnaire-form-delete-btn,
+        .questionnaire-form-delete-btn.ant-btn,
+        .questionnaire-form-delete-btn button {
+          background-color: #DC2626 !important;
+          border-color: #DC2626 !important;
+          color: white !important;
+        }
+        
+        .questionnaire-form-delete-btn:hover,
+        .questionnaire-form-delete-btn.ant-btn:hover,
+        .questionnaire-form-delete-btn button:hover {
+          background-color: #B91C1C !important;
+          border-color: #B91C1C !important;
+          color: white !important;
+        }
+        
+        .questionnaire-form-delete-btn .anticon,
+        .questionnaire-form-delete-btn svg {
+          color: white !important;
+        }
+
+        .questionnaire-form-edit-btn,
+        .questionnaire-form-edit-btn.ant-btn,
+        .questionnaire-form-edit-btn button {
+          background-color: #059669 !important;
+          border-color: #059669 !important;
+          color: white !important;
+        }
+        
+        .questionnaire-form-edit-btn:hover,
+        .questionnaire-form-edit-btn.ant-btn:hover,
+        .questionnaire-form-edit-btn button:hover {
+          background-color: #047857 !important;
+          border-color: #047857 !important;
+          color: white !important;
+        }
+        
+        .questionnaire-form-edit-btn .anticon,
+        .questionnaire-form-edit-btn svg {
+          color: white !important;
+        }
+
+        /* Add Question Button Styling */
+        .add-question-btn,
+        .add-question-btn.ant-btn {
+          background-color: #059669 !important;
+          border-color: #059669 !important;
+          color: white !important;
+          font-weight: 500 !important;
+          padding: 8px 24px !important;
+          height: auto !important;
+          min-height: 40px !important;
+          display: inline-flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          font-size: 14px !important;
+          border-radius: 6px !important;
+        }
+        
+        .add-question-btn:hover,
+        .add-question-btn.ant-btn:hover {
+          background-color: #047857 !important;
+          border-color: #047857 !important;
+          color: white !important;
+          transform: none !important;
+        }
+        
+        .add-question-btn:focus,
+        .add-question-btn.ant-btn:focus {
+          background-color: #059669 !important;
+          border-color: #059669 !important;
+          color: white !important;
+          box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
+        }
+        
+        .add-question-btn .anticon,
+        .add-question-btn svg {
+          color: white !important;
+          margin-right: 8px !important;
+        }
+
+        /* Form Action Buttons Styling */
+        .questionnaire-form-cancel-btn,
+        .questionnaire-form-cancel-btn.ant-btn {
+          background-color: #6B7280 !important;
+          border-color: #6B7280 !important;
+          color: white !important;
+          font-weight: 500 !important;
+          padding: 8px 24px !important;
+          height: auto !important;
+          min-height: 40px !important;
+          display: inline-flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          font-size: 14px !important;
+          border-radius: 6px !important;
+        }
+        
+        .questionnaire-form-cancel-btn:hover,
+        .questionnaire-form-cancel-btn.ant-btn:hover {
+          background-color: #4B5563 !important;
+          border-color: #4B5563 !important;
+          color: white !important;
+          transform: none !important;
+        }
+        
+        .questionnaire-form-cancel-btn .anticon,
+        .questionnaire-form-cancel-btn svg {
+          color: white !important;
+          margin-right: 8px !important;
+        }
+
+        .questionnaire-form-update-btn,
+        .questionnaire-form-update-btn.ant-btn {
+          background-color: #059669 !important;
+          border-color: #059669 !important;
+          color: white !important;
+          font-weight: 500 !important;
+          padding: 8px 24px !important;
+          height: auto !important;
+          min-height: 40px !important;
+          display: inline-flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          font-size: 14px !important;
+          border-radius: 6px !important;
+        }
+        
+        .questionnaire-form-update-btn:hover,
+        .questionnaire-form-update-btn.ant-btn:hover {
+          background-color: #047857 !important;
+          border-color: #047857 !important;
+          color: white !important;
+          transform: none !important;
+        }
+        
+        .questionnaire-form-update-btn .anticon,
+        .questionnaire-form-update-btn svg {
+          color: white !important;
+          margin-right: 8px !important;
+        }
+      `}</style>
+
+      <div
+        className={`min-h-screen ${
+          darkMode
+            ? 'bg-gradient-to-br from-slate-700 via-slate-600 to-emerald-800'
+            : 'bg-gradient-to-br from-sky-100 via-gray-50 to-emerald-100'
+        }`}
+      >
       {/* Background overlay for full coverage */}
       <div
         className={`fixed inset-0 ${
@@ -519,12 +682,10 @@ const QuestionnaireForm = React.memo(({ user }) => {
                   </h3>
                   <Button
                     type='primary'
-                    icon={<FontAwesomeIcon icon={faQuestion} className="mr-2" />}
+                    icon={<FontAwesomeIcon icon={faQuestion} />}
                     onClick={handleAddQuestion}
-                    style={{
-                      background: darkMode ? '#059669' : '#10b981',
-                      borderColor: darkMode ? '#059669' : '#10b981'
-                    }}
+                    className="add-question-btn"
+                    size="large"
                   >
                     Add Question
                   </Button>
@@ -545,27 +706,23 @@ const QuestionnaireForm = React.memo(({ user }) => {
               {/* Form Actions */}
               <div className='flex justify-end space-x-4 mt-8 pt-6 border-t border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 -mx-6 -mb-6 px-6 pb-6 rounded-b-lg'>
                 <Button
-                  variant='secondary'
-                  icon={<FontAwesomeIcon icon={faTimes} className="mr-2" />}
+                  type='default'
+                  icon={<FontAwesomeIcon icon={faTimes} />}
                   onClick={handleCancel}
                   disabled={loading}
                   size='large'
-                  className='px-8 py-3'
+                  className='questionnaire-form-cancel-btn'
                 >
                   Cancel
                 </Button>
                 <Button
                   type='primary'
-                  icon={<FontAwesomeIcon icon={faSave} className="mr-2" />}
+                  icon={<FontAwesomeIcon icon={faSave} />}
                   onClick={() => form.submit()}
                   loading={loading}
                   size='large'
-                  className='px-8 py-3'
-                  style={{
-                    background: darkMode ? '#059669' : '#10b981',
-                    borderColor: darkMode ? '#059669' : '#10b981',
-                    minWidth: '180px'
-                  }}
+                  className='questionnaire-form-update-btn'
+                  style={{ minWidth: '180px' }}
                 >
                   Update Questionnaire
                 </Button>
@@ -672,6 +829,7 @@ const QuestionnaireForm = React.memo(({ user }) => {
         </div>
       )}
     </div>
+    </>
   )
 })
 
