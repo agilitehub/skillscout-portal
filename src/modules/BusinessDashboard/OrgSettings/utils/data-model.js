@@ -10,31 +10,47 @@
 export const WORK_ARRANGEMENTS = {
   REMOTE: 'remote',
   HYBRID: 'hybrid',
-  OFFICE: 'office'
+  ONSITE: 'onsite' // Changed from 'office' to match schema constraint
 }
 
 // Currency definitions
-export const CURRENCIES = [
-  'USD', 'EUR', 'GBP', 'CAD', 'AUD', 'JPY', 'CHF', 'SEK', 'NOK', 'DKK'
-]
+export const CURRENCIES = ['USD', 'EUR', 'GBP', 'CAD', 'AUD', 'JPY', 'CHF', 'SEK', 'NOK', 'DKK']
 
 // Language definitions
 export const LANGUAGES = [
-  'English', 'Spanish', 'French', 'German', 'Italian', 'Portuguese',
-  'Dutch', 'Swedish', 'Norwegian', 'Danish'
+  'English',
+  'Spanish',
+  'French',
+  'German',
+  'Italian',
+  'Portuguese',
+  'Dutch',
+  'Swedish',
+  'Norwegian',
+  'Danish'
 ]
 
 // Industry definitions
 export const INDUSTRIES = [
-  'Technology', 'Healthcare', 'Finance', 'Education', 'Retail',
-  'Manufacturing', 'Consulting', 'Media', 'Government', 'Non-profit',
-  'Real Estate', 'Transportation', 'Energy', 'Agriculture', 'Other'
+  'Technology',
+  'Healthcare',
+  'Finance',
+  'Education',
+  'Retail',
+  'Manufacturing',
+  'Consulting',
+  'Media',
+  'Government',
+  'Non-profit',
+  'Real Estate',
+  'Transportation',
+  'Energy',
+  'Agriculture',
+  'Other'
 ]
 
 // Employee range definitions
-export const EMPLOYEE_RANGES = [
-  '1-10', '11-50', '51-200', '201-500', '501-1000', '1001-5000', '5000+'
-]
+export const EMPLOYEE_RANGES = ['1-10', '11-50', '51-200', '201-500', '501-1000', '1001-5000', '5000+']
 
 /**
  * Organization Settings Schema
@@ -43,28 +59,26 @@ export const EMPLOYEE_RANGES = [
 export const OrgSettingsSchema = {
   // Organization Profile
   organizationName: { type: 'string', required: true, minLength: 2, maxLength: 100 },
-  industry: { type: 'string', required: true, enum: INDUSTRIES },
+  industry: { type: 'string', required: false, enum: INDUSTRIES },
   description: { type: 'string', required: false, maxLength: 1000 },
   website: { type: 'string', required: false, format: 'url', maxLength: 255 },
   foundedYear: { type: 'string', required: false, pattern: /^\d{4}$/ },
   employeeRange: { type: 'string', required: false, enum: EMPLOYEE_RANGES },
-  
+
   // Work Arrangements
-  defaultWorkArrangement: { type: 'string', required: true, enum: Object.values(WORK_ARRANGEMENTS) },
-  
+  defaultWorkArrangement: { type: 'string', required: false, enum: Object.values(WORK_ARRANGEMENTS) },
+
   // Preferences
-  currency: { type: 'string', required: true, enum: CURRENCIES },
-  country: { type: 'string', required: true, maxLength: 100 },
-  language: { type: 'string', required: true, enum: LANGUAGES },
+  currency: { type: 'string', required: false, enum: CURRENCIES },
+  country: { type: 'string', required: false, maxLength: 100 },
+  language: { type: 'string', required: false, enum: LANGUAGES },
   timezone: { type: 'string', required: false, maxLength: 100 },
-  
+
   // Industry Tags
   industryTags: { type: 'array', required: false, itemType: 'string' },
-  customClassifications: { type: 'array', required: false, itemType: 'string' },
-  
-  // AI Profile settings
-  aiProfileEnabled: { type: 'boolean', required: false },
-  lastAiUpdate: { type: 'string', required: false, format: 'iso-date' }
+  customClassifications: { type: 'array', required: false, itemType: 'string' }
+
+  // Removed AI Profile settings as they're not in the database schema
 }
 
 /**
@@ -75,39 +89,44 @@ export const OrgSettingsSchema = {
 export const validateOrgSettings = (settingsData) => {
   const errors = []
 
-  // Required fields validation
+  // Required fields validation (only organization_name is NOT NULL in schema)
   if (!settingsData.organizationName || typeof settingsData.organizationName !== 'string') {
     errors.push('Organization name is required and must be a string')
   } else if (settingsData.organizationName.length < 2 || settingsData.organizationName.length > 100) {
     errors.push('Organization name must be between 2 and 100 characters')
   }
 
-  if (!settingsData.industry || !INDUSTRIES.includes(settingsData.industry)) {
-    errors.push('Industry is required and must be a valid industry')
+  // Optional fields validation (all other fields are NULL in schema)
+  if (settingsData.industry && !INDUSTRIES.includes(settingsData.industry)) {
+    errors.push('Industry must be a valid industry')
   }
 
-  if (!settingsData.currency || !CURRENCIES.includes(settingsData.currency)) {
-    errors.push('Currency is required and must be a valid currency code')
+  if (settingsData.currency && !CURRENCIES.includes(settingsData.currency)) {
+    errors.push('Currency must be a valid currency code')
   }
 
-  if (!settingsData.country || typeof settingsData.country !== 'string') {
-    errors.push('Country is required and must be a string')
-  } else if (settingsData.country.length > 100) {
+  if (settingsData.country && typeof settingsData.country !== 'string') {
+    errors.push('Country must be a string')
+  } else if (settingsData.country && settingsData.country.length > 100) {
     errors.push('Country must be 100 characters or less')
   }
 
-  if (!settingsData.language || !LANGUAGES.includes(settingsData.language)) {
-    errors.push('Language is required and must be a valid language')
+  if (settingsData.language && !LANGUAGES.includes(settingsData.language)) {
+    errors.push('Language must be a valid language')
   }
 
-  if (!settingsData.defaultWorkArrangement || 
-      !Object.values(WORK_ARRANGEMENTS).includes(settingsData.defaultWorkArrangement)) {
-    errors.push('Default work arrangement is required and must be valid')
+  if (
+    settingsData.defaultWorkArrangement &&
+    !Object.values(WORK_ARRANGEMENTS).includes(settingsData.defaultWorkArrangement)
+  ) {
+    errors.push('Default work arrangement must be valid (remote, hybrid, or onsite)')
   }
 
   // Optional field validation
-  if (settingsData.description && 
-      (typeof settingsData.description !== 'string' || settingsData.description.length > 1000)) {
+  if (
+    settingsData.description &&
+    (typeof settingsData.description !== 'string' || settingsData.description.length > 1000)
+  ) {
     errors.push('Description must be a string with 1000 characters or less')
   }
 
@@ -125,24 +144,20 @@ export const validateOrgSettings = (settingsData) => {
 
   if (settingsData.industryTags && !Array.isArray(settingsData.industryTags)) {
     errors.push('Industry tags must be an array')
-  } else if (settingsData.industryTags && 
-             !settingsData.industryTags.every(tag => typeof tag === 'string' && tag.length <= 50)) {
+  } else if (
+    settingsData.industryTags &&
+    !settingsData.industryTags.every((tag) => typeof tag === 'string' && tag.length <= 50)
+  ) {
     errors.push('Industry tags must be strings with 50 characters or less')
   }
 
   if (settingsData.customClassifications && !Array.isArray(settingsData.customClassifications)) {
     errors.push('Custom classifications must be an array')
-  } else if (settingsData.customClassifications && 
-             !settingsData.customClassifications.every(tag => typeof tag === 'string' && tag.length <= 50)) {
+  } else if (
+    settingsData.customClassifications &&
+    !settingsData.customClassifications.every((tag) => typeof tag === 'string' && tag.length <= 50)
+  ) {
     errors.push('Custom classifications must be strings with 50 characters or less')
-  }
-
-  if (settingsData.aiProfileEnabled !== undefined && typeof settingsData.aiProfileEnabled !== 'boolean') {
-    errors.push('AI profile enabled must be a boolean')
-  }
-
-  if (settingsData.lastAiUpdate && !isValidISODate(settingsData.lastAiUpdate)) {
-    errors.push('Last AI update must be a valid ISO date')
   }
 
   return {
@@ -159,21 +174,20 @@ export const validateOrgSettings = (settingsData) => {
 export const transformToDatabase = (settingsData) => {
   return {
     organization_name: settingsData.organizationName?.trim(),
-    industry: settingsData.industry,
+    industry: settingsData.industry || null,
     description: settingsData.description?.trim() || null,
     website: settingsData.website?.trim() || null,
     founded_year: settingsData.foundedYear || null,
     employee_range: settingsData.employeeRange || null,
-    default_work_arrangement: settingsData.defaultWorkArrangement,
-    currency: settingsData.currency,
-    country: settingsData.country?.trim(),
-    language: settingsData.language,
+    default_work_arrangement: settingsData.defaultWorkArrangement || null,
+    currency: settingsData.currency || null,
+    country: settingsData.country?.trim() || null,
+    language: settingsData.language || null,
     timezone: settingsData.timezone || null,
     industry_tags: settingsData.industryTags || [],
-    custom_classifications: settingsData.customClassifications || [],
-    ai_profile_enabled: settingsData.aiProfileEnabled || false,
-    last_ai_update: settingsData.lastAiUpdate || null,
-    updated_at: new Date().toISOString()
+    custom_classifications: settingsData.customClassifications || []
+    // Note: created_by, modified_by, created_at, modified_at are handled by database triggers
+    // ai_profile_enabled and last_ai_update are not in the schema, so we'll remove them
   }
 }
 
@@ -184,6 +198,7 @@ export const transformToDatabase = (settingsData) => {
  */
 export const transformFromDatabase = (dbData) => {
   return {
+    id: dbData.id,
     organizationName: dbData.organization_name,
     industry: dbData.industry,
     description: dbData.description,
@@ -197,10 +212,11 @@ export const transformFromDatabase = (dbData) => {
     timezone: dbData.timezone,
     industryTags: dbData.industry_tags || [],
     customClassifications: dbData.custom_classifications || [],
-    aiProfileEnabled: dbData.ai_profile_enabled || false,
-    lastAiUpdate: dbData.last_ai_update,
+    // Database managed fields
     createdAt: dbData.created_at,
-    updatedAt: dbData.updated_at
+    modifiedAt: dbData.modified_at,
+    createdBy: dbData.created_by,
+    modifiedBy: dbData.modified_by
   }
 }
 
@@ -210,7 +226,7 @@ export const transformFromDatabase = (dbData) => {
  */
 export const getDefaultOrgSettings = () => {
   return {
-    organizationName: '',
+    organizationName: '', // Only required field
     industry: '',
     description: '',
     website: '',
@@ -222,8 +238,8 @@ export const getDefaultOrgSettings = () => {
     language: 'English',
     timezone: 'America/New_York',
     industryTags: [],
-    customClassifications: [],
-    aiProfileEnabled: true
+    customClassifications: []
+    // Removed aiProfileEnabled as it's not in the schema
   }
 }
 
@@ -244,8 +260,8 @@ export const getWorkArrangementInfo = (arrangement) => {
       description: 'Mix of remote and office work',
       icon: 'faUsers'
     },
-    [WORK_ARRANGEMENTS.OFFICE]: {
-      label: 'Office-bound',
+    [WORK_ARRANGEMENTS.ONSITE]: {
+      label: 'On-site',
       description: 'Primarily office-based work',
       icon: 'faBuilding'
     }
@@ -261,16 +277,16 @@ export const getWorkArrangementInfo = (arrangement) => {
  */
 export const getCurrencyInfo = (currencyCode) => {
   const currencies = {
-    'USD': { name: 'US Dollar', symbol: '$' },
-    'EUR': { name: 'Euro', symbol: '€' },
-    'GBP': { name: 'British Pound', symbol: '£' },
-    'CAD': { name: 'Canadian Dollar', symbol: 'C$' },
-    'AUD': { name: 'Australian Dollar', symbol: 'A$' },
-    'JPY': { name: 'Japanese Yen', symbol: '¥' },
-    'CHF': { name: 'Swiss Franc', symbol: 'CHF' },
-    'SEK': { name: 'Swedish Krona', symbol: 'kr' },
-    'NOK': { name: 'Norwegian Krone', symbol: 'kr' },
-    'DKK': { name: 'Danish Krone', symbol: 'kr' }
+    USD: { name: 'US Dollar', symbol: '$' },
+    EUR: { name: 'Euro', symbol: '€' },
+    GBP: { name: 'British Pound', symbol: '£' },
+    CAD: { name: 'Canadian Dollar', symbol: 'C$' },
+    AUD: { name: 'Australian Dollar', symbol: 'A$' },
+    JPY: { name: 'Japanese Yen', symbol: '¥' },
+    CHF: { name: 'Swiss Franc', symbol: 'CHF' },
+    SEK: { name: 'Swedish Krona', symbol: 'kr' },
+    NOK: { name: 'Norwegian Krone', symbol: 'kr' },
+    DKK: { name: 'Danish Krone', symbol: 'kr' }
   }
 
   return currencies[currencyCode] || { name: currencyCode, symbol: currencyCode }
@@ -282,41 +298,49 @@ export const getCurrencyInfo = (currencyCode) => {
  * @returns {Object} Completeness information
  */
 export const calculateProfileCompleteness = (settings) => {
-  const requiredFields = [
-    'organizationName', 'industry', 'currency', 'country', 'language', 'defaultWorkArrangement'
-  ]
-  
+  const requiredFields = ['organizationName'] // Only organization_name is NOT NULL in schema
+
   const optionalFields = [
-    'description', 'website', 'foundedYear', 'employeeRange', 'industryTags', 'customClassifications'
+    'industry',
+    'description',
+    'website',
+    'foundedYear',
+    'employeeRange',
+    'defaultWorkArrangement',
+    'currency',
+    'country',
+    'language',
+    'timezone',
+    'industryTags',
+    'customClassifications'
   ]
-  
+
   let completedRequired = 0
   let completedOptional = 0
   const missingRequired = []
   const missingOptional = []
-  
-  requiredFields.forEach(field => {
+
+  requiredFields.forEach((field) => {
     if (settings[field] && settings[field] !== '') {
       completedRequired++
     } else {
       missingRequired.push(field)
     }
   })
-  
-  optionalFields.forEach(field => {
-    if (settings[field] && 
-        (Array.isArray(settings[field]) ? settings[field].length > 0 : settings[field] !== '')) {
+
+  optionalFields.forEach((field) => {
+    if (settings[field] && (Array.isArray(settings[field]) ? settings[field].length > 0 : settings[field] !== '')) {
       completedOptional++
     } else {
       missingOptional.push(field)
     }
   })
-  
+
   // Required fields are worth 70%, optional 30%
   const requiredScore = (completedRequired / requiredFields.length) * 70
   const optionalScore = (completedOptional / optionalFields.length) * 30
   const totalScore = Math.round(requiredScore + optionalScore)
-  
+
   return {
     percentage: totalScore,
     completedRequired,
@@ -336,11 +360,11 @@ export const calculateProfileCompleteness = (settings) => {
  */
 export const validateIndustryTags = (tags) => {
   if (!Array.isArray(tags)) return []
-  
+
   return tags
-    .filter(tag => typeof tag === 'string' && tag.trim().length > 0)
-    .map(tag => tag.trim())
-    .filter(tag => tag.length <= 50)
+    .filter((tag) => typeof tag === 'string' && tag.trim().length > 0)
+    .map((tag) => tag.trim())
+    .filter((tag) => tag.length <= 50)
     .slice(0, 20) // Limit to 20 tags
 }
 
@@ -351,23 +375,23 @@ export const validateIndustryTags = (tags) => {
  */
 export const generateOrgSummary = (settings) => {
   const parts = []
-  
+
   if (settings.organizationName) {
     parts.push(settings.organizationName)
   }
-  
+
   if (settings.industry) {
     parts.push(`in ${settings.industry}`)
   }
-  
+
   if (settings.employeeRange) {
     parts.push(`with ${settings.employeeRange} employees`)
   }
-  
+
   if (settings.country) {
     parts.push(`based in ${settings.country}`)
   }
-  
+
   return parts.join(' ')
 }
 
@@ -380,13 +404,14 @@ export const isStartup = (settings) => {
   const startupIndicators = [
     settings.foundedYear && parseInt(settings.foundedYear) >= new Date().getFullYear() - 5,
     settings.employeeRange && ['1-10', '11-50', '51-200'].includes(settings.employeeRange),
-    settings.customClassifications?.some(tag => 
-      tag.toLowerCase().includes('startup') || 
-      tag.toLowerCase().includes('seed') || 
-      tag.toLowerCase().includes('series')
+    settings.customClassifications?.some(
+      (tag) =>
+        tag.toLowerCase().includes('startup') ||
+        tag.toLowerCase().includes('seed') ||
+        tag.toLowerCase().includes('series')
     )
   ]
-  
+
   return startupIndicators.filter(Boolean).length >= 2
 }
 
@@ -447,4 +472,4 @@ const orgSettingsConfig = {
   isStartup
 }
 
-export default orgSettingsConfig 
+export default orgSettingsConfig

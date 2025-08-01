@@ -1,34 +1,28 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
 import React, { useState, useCallback, useEffect } from 'react'
-import { Card, Form, Input, Select, Space, Row, Col, Alert, message, Tabs } from 'antd'
+import { Card, Form, Alert, message, Tabs, Modal } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faBuilding,
   faRobot,
   faGlobe,
-  faDollarSign,
-  faLanguage,
-  faBriefcase,
-  faHome,
-  faUsers,
-  faTags,
   faFileAlt,
   faSave,
-  faUndo,
-  faMapMarkerAlt,
   faCog,
-  faIndustry
+  faIndustry,
+  faSignOutAlt
 } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../../core/context/ThemeContext'
 import { Button } from '../../../../core/components'
 import BusinessSidebar from '../../components/BusinessSidebar'
 import { BRAND_COLORS } from '../../../../core/theme/colors'
+import { clearUserOrganization, createOrganizationAndAssignToUser } from '../../../../core/lib/supabase-controller'
+import orgSettingsController from '../utils/controller'
 import AIProfileModal from './AIProfileModal'
 import BusinessSetupModal from './BusinessSetupModal'
+import OrganizationProfileForm from './OrganizationProfileForm'
 
-const { TextArea } = Input
-const { Option } = Select
 const { TabPane } = Tabs
 
 /**
@@ -38,113 +32,65 @@ const { TabPane } = Tabs
 const OrgSettings = React.memo(({ user }) => {
   const { darkMode } = useTheme()
   const [form] = Form.useForm()
+  const [businessSetupForm] = Form.useForm()
   const [loading, setLoading] = useState(false)
   const [hasChanges, setHasChanges] = useState(false)
   const [aiModalVisible, setAiModalVisible] = useState(false)
+  const [businessSetupModalVisible, setBusinessSetupModalVisible] = useState(false)
+  const [leavingOrganization, setLeavingOrganization] = useState(false)
+  const [loadingOrgData, setLoadingOrgData] = useState(true)
+  const [organizationId, setOrganizationId] = useState(null)
+  const [hasOrganization, setHasOrganization] = useState(false)
   const [activeTab, setActiveTab] = useState('general')
+  const [modal, contextHolder] = Modal.useModal()
 
-  // Mock organization data - in real app this would come from API
-  const [orgSettings, setOrgSettings] = useState({
-    // Organization Profile
-    organizationName: 'TechCorp Solutions',
-    industry: 'Technology',
-    description:
-      'We are a leading technology company focused on innovative software solutions that help businesses transform digitally.',
-    website: 'https://techcorp.com',
-    foundedYear: '2020',
-    employeeRange: '50-200',
+  // Organization data - loaded from API
+  const [orgSettings, setOrgSettings] = useState({})
 
-    // Work Arrangements
-    defaultWorkArrangement: 'hybrid',
-
-    // Preferences
-    currency: 'USD',
-    country: 'United States',
-    language: 'English',
-    timezone: 'America/New_York',
-
-    // Industry Tags
-    industryTags: ['Software Development', 'Cloud Computing', 'AI/Machine Learning', 'SaaS'],
-    customClassifications: ['Startup', 'B2B', 'Enterprise Solutions'],
-
-    // AI Profile settings
-    aiProfileEnabled: true,
-    lastAiUpdate: '2024-01-15T10:30:00Z'
-  })
-
-  // Options data
-  const workArrangementOptions = [
-    { value: 'remote', label: 'Remote', icon: faHome, description: 'Fully remote work' },
-    { value: 'hybrid', label: 'Hybrid', icon: faUsers, description: 'Mix of remote and office work' },
-    { value: 'office', label: 'Office-bound', icon: faBuilding, description: 'Primarily office-based work' }
-  ]
-
-  const currencyOptions = ['USD', 'EUR', 'GBP', 'CAD', 'AUD', 'JPY', 'CHF', 'SEK', 'NOK', 'DKK']
-
-  const countryOptions = [
-    'United States',
-    'United Kingdom',
-    'Canada',
-    'Germany',
-    'France',
-    'Australia',
-    'Netherlands',
-    'Sweden',
-    'Norway',
-    'Denmark',
-    'Switzerland'
-  ]
-
-  const languageOptions = [
-    'English',
-    'Spanish',
-    'French',
-    'German',
-    'Italian',
-    'Portuguese',
-    'Dutch',
-    'Swedish',
-    'Norwegian',
-    'Danish'
-  ]
-
-  const employeeRangeOptions = ['1-10', '11-50', '51-200', '201-500', '501-1000', '1001-5000', '5000+']
-
-  const industryOptions = [
-    'Technology',
-    'Healthcare',
-    'Finance',
-    'Education',
-    'Retail',
-    'Manufacturing',
-    'Consulting',
-    'Media',
-    'Government',
-    'Non-profit',
-    'Real Estate',
-    'Other'
-  ]
-
-  const commonIndustryTags = [
-    'Software Development',
-    'Cloud Computing',
-    'AI/Machine Learning',
-    'Data Analytics',
-    'Cybersecurity',
-    'Mobile Development',
-    'Web Development',
-    'DevOps',
-    'SaaS',
-    'E-commerce',
-    'Fintech',
-    'Healthcare Tech',
-    'EdTech',
-    'PropTech'
-  ]
-
-  // Set initial form values
+  // Load organization data on mount
   useEffect(() => {
-    form.setFieldsValue(orgSettings)
+    const loadOrganizationData = async () => {
+      if (!user?.id) {
+        setLoadingOrgData(false)
+        return
+      }
+
+      try {
+        setLoadingOrgData(true)
+        const result = await orgSettingsController.getOrgSettings(user.id)
+
+        if (result.success) {
+          if (result.hasOrganization && result.data) {
+            setOrgSettings(result.data)
+            setOrganizationId(result.data.id)
+            setHasOrganization(true)
+            form.setFieldsValue(result.data)
+          } else {
+            // User has no organization
+            setHasOrganization(false)
+            setOrgSettings({})
+            setOrganizationId(null)
+          }
+        } else {
+          console.error('Failed to load organization data:', result.error)
+          message.error(`Failed to load organization data: ${result.error}`)
+        }
+      } catch (error) {
+        console.error('Error loading organization data:', error)
+        message.error('An error occurred while loading organization data')
+      } finally {
+        setLoadingOrgData(false)
+      }
+    }
+
+    loadOrganizationData()
+  }, [user?.id, form])
+
+  // Update form values when organization data changes
+  useEffect(() => {
+    if (Object.keys(orgSettings).length > 0) {
+      form.setFieldsValue(orgSettings)
+    }
   }, [orgSettings, form])
 
   // Handle form values change
@@ -153,29 +99,34 @@ const OrgSettings = React.memo(({ user }) => {
   }, [])
 
   // Handle form submission
-  const handleSubmit = useCallback(async (values) => {
-    setLoading(true)
-    try {
-      // Simulate API delay
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+  const handleSubmit = useCallback(
+    async (values) => {
+      if (!organizationId || !user?.id) {
+        message.error('Unable to update organization settings: Missing organization or user information')
+        return
+      }
 
-      setOrgSettings((prev) => ({ ...prev, ...values }))
-      setHasChanges(false)
-      message.success('Organization settings updated successfully!')
-    } catch (error) {
-      console.error('Error updating organization settings:', error)
-      message.error('Failed to update organization settings')
-    } finally {
-      setLoading(false)
-    }
-  }, [])
+      setLoading(true)
+      try {
+        const result = await orgSettingsController.updateOrgSettings(organizationId, values, user.id)
 
-  // Handle reset
-  const handleReset = useCallback(() => {
-    form.setFieldsValue(orgSettings)
-    setHasChanges(false)
-    message.info('Changes have been reset')
-  }, [form, orgSettings])
+        if (result.success) {
+          setOrgSettings(result.data)
+          setHasChanges(false)
+          message.success(result.message || 'Organization settings updated successfully!')
+        } else {
+          console.error('Error updating organization settings:', result.error)
+          message.error(`Failed to update organization settings: ${result.error}`)
+        }
+      } catch (error) {
+        console.error('Unexpected error updating organization settings:', error)
+        message.error('An unexpected error occurred while updating organization settings')
+      } finally {
+        setLoading(false)
+      }
+    },
+    [organizationId, user?.id]
+  )
 
   // Handle AI profile interaction
   const handleAiProfileUpdate = useCallback(() => {
@@ -186,6 +137,101 @@ const OrgSettings = React.memo(({ user }) => {
   const handleTabChange = useCallback((key) => {
     setActiveTab(key)
   }, [])
+
+  // Handle leave organization
+  const handleLeaveOrganization = useCallback(() => {
+    modal.confirm({
+      title: 'Leave Organization',
+      content: (
+        <div>
+          <p>
+            Are you sure you want to leave <strong>{orgSettings.organizationName}</strong>?
+          </p>
+          <p className='text-red-600 mt-2'>
+            <strong>Warning:</strong> This action will remove you from the organization and you will lose access to all
+            organization data.
+          </p>
+        </div>
+      ),
+      okText: 'Leave Organization',
+      okType: 'danger',
+      cancelText: 'Cancel',
+      okButtonProps: {
+        danger: true,
+        loading: leavingOrganization
+      },
+      onOk: async () => {
+        setLeavingOrganization(true)
+        try {
+          // Clear the user's org_id from the database
+          const result = await clearUserOrganization(user?.id)
+
+          if (result.success) {
+            // Clear local state and show setup modal
+            setOrgSettings({})
+            form.resetFields()
+            setBusinessSetupModalVisible(true)
+            message.success('You have successfully left the organization.')
+          } else {
+            console.error('Error leaving organization:', result.error)
+            message.error(`Failed to leave organization: ${result.error}`)
+          }
+        } catch (error) {
+          console.error('Unexpected error leaving organization:', error)
+          message.error('An unexpected error occurred while leaving the organization.')
+        } finally {
+          setLeavingOrganization(false)
+        }
+      },
+      className: darkMode ? 'ant-modal-dark' : ''
+    })
+  }, [orgSettings.organizationName, darkMode, leavingOrganization, user?.id, form])
+
+  // Handle business setup modal close
+  const handleBusinessSetupModalClose = useCallback(() => {
+    setBusinessSetupModalVisible(false)
+  }, [])
+
+  // Handle business setup submission
+  const handleBusinessSetupSubmit = useCallback(
+    async (values) => {
+      let result = null
+      try {
+        // Prepare organization data
+        const organizationData = {
+          ...values,
+          // Transform founded_year to number if provided
+          founded_year: values.founded_year ? parseInt(values.founded_year, 10) : null
+        }
+
+        // Create organization and assign to user in Supabase
+        result = await createOrganizationAndAssignToUser(organizationData, user.id)
+
+        if (result.success) {
+          setBusinessSetupModalVisible(false)
+          message.success('Organization setup completed successfully!')
+        }
+
+        // Reload organization data
+        setLoadingOrgData(true)
+        result = await orgSettingsController.getOrgSettings(user?.id)
+
+        if (result.success && result.hasOrganization && result.data) {
+          setOrgSettings(result.data)
+          setOrganizationId(result.data.id || null)
+          setHasOrganization(true)
+          form.setFieldsValue(result.data)
+        }
+
+        setLoadingOrgData(false)
+      } catch (error) {
+        console.error('Error setting up organization:', error)
+        message.error('Failed to set up organization')
+        setLoadingOrgData(false)
+      }
+    },
+    [form, user?.id]
+  )
 
   return (
     <div
@@ -207,6 +253,8 @@ const OrgSettings = React.memo(({ user }) => {
       {/* Sidebar */}
       <BusinessSidebar />
 
+      {contextHolder}
+
       {/* Main Content */}
       <div className='flex-1 ml-64 relative'>
         {/* Header */}
@@ -225,24 +273,26 @@ const OrgSettings = React.memo(({ user }) => {
             </div>
 
             <div className='flex space-x-3'>
-              {hasChanges && (
-                <Button
-                  icon={<FontAwesomeIcon icon={faUndo} className="mr-2" />}
-                  onClick={handleReset}
-                  className={`shadow-md hover:shadow-lg transition-all duration-200 org-settings-reset-btn`}
-                  style={{
-                    backgroundColor: darkMode ? '#6B7280' : '#9CA3AF',
-                    borderColor: darkMode ? '#6B7280' : '#9CA3AF',
-                    color: '#FFFFFF'
-                  }}
-                >
-                  Reset
-                </Button>
-              )}
+              <Button
+                danger
+                icon={<FontAwesomeIcon icon={faSignOutAlt} className='mr-2' />}
+                onClick={handleLeaveOrganization}
+                loading={leavingOrganization}
+                disabled={leavingOrganization}
+                className={`shadow-md hover:shadow-lg transition-all duration-200 org-settings-leave-btn`}
+                style={{
+                  backgroundColor: darkMode ? '#DC2626' : '#EF4444',
+                  borderColor: darkMode ? '#DC2626' : '#EF4444',
+                  color: '#FFFFFF'
+                }}
+                title='Leave this organization'
+              >
+                Leave Organization
+              </Button>
 
               <Button
                 type='primary'
-                icon={<FontAwesomeIcon icon={faSave} className="mr-2" />}
+                icon={<FontAwesomeIcon icon={faSave} className='mr-2' />}
                 onClick={() => form.submit()}
                 loading={loading}
                 disabled={!hasChanges}
@@ -261,381 +311,168 @@ const OrgSettings = React.memo(({ user }) => {
 
         {/* Content Area */}
         <div className='relative p-6'>
-          <Form
-            form={form}
-            layout='vertical'
-            onFinish={handleSubmit}
-            onValuesChange={handleValuesChange}
-            className={`${darkMode ? 'org-settings-form' : ''}`}
-          >
-            <Tabs
-              activeKey={activeTab}
-              onChange={handleTabChange}
-              type='card'
-              size='large'
-              className={`org-settings-tabs ${darkMode ? 'org-settings-tabs-dark' : ''}`}
-            >
-              {/* General Tab */}
-              <TabPane
-                tab={
-                  <span className='flex items-center space-x-2'>
-                    <FontAwesomeIcon icon={faCog} />
-                    <span>General</span>
-                  </span>
-                }
-                key='general'
-              >
-                <div className='space-y-6'>
-                  {/* Organization Profile Section */}
-                  <Card
-                    title={
-                      <div className='flex items-center space-x-3'>
-                        <FontAwesomeIcon icon={faBuilding} className='text-emerald-600' />
-                        <span>Organization Profile</span>
-                      </div>
-                    }
-                    className={darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}
-                    headStyle={{
-                      backgroundColor: darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white,
-                      borderBottom: `1px solid ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.borderGray}`,
-                      color: darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray
-                    }}
-                    bodyStyle={{
-                      backgroundColor: darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white,
-                      color: darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray
-                    }}
-                    extra={
-                      <div className='flex space-x-2'>
-                        <Button
-                          type='text'
-                          icon={<FontAwesomeIcon icon={faRobot} />}
-                          onClick={handleAiProfileUpdate}
-                          className={`${darkMode ? 'text-emerald-400 hover:text-emerald-300' : 'text-emerald-600 hover:text-emerald-700'}`}
-                          title='Re-interact with AI'
-                        >
-                          AI Update
-                        </Button>
-                      </div>
-                    }
-                  >
-                    <Row gutter={16}>
-                      <Col xs={24} sm={12}>
-                        <Form.Item
-                          label='Organization Name'
-                          name='organizationName'
-                          rules={[{ required: true, message: 'Please enter organization name' }]}
-                        >
-                          <Input placeholder='Enter organization name' />
-                        </Form.Item>
-                      </Col>
-
-                      <Col xs={24} sm={12}>
-                        <Form.Item label='Website' name='website'>
-                          <Input placeholder='https://company.com' />
-                        </Form.Item>
-                      </Col>
-                    </Row>
-
-                    <Row gutter={16}>
-                      <Col xs={24} sm={6}>
-                        <Form.Item label='Founded Year' name='foundedYear'>
-                          <Input placeholder='2020' />
-                        </Form.Item>
-                      </Col>
-
-                      <Col xs={24} sm={6}>
-                        <Form.Item label='Employee Range' name='employeeRange'>
-                          <Select
-                            placeholder='Select range'
-                            dropdownClassName={darkMode ? 'org-settings-dark-dropdown' : ''}
-                          >
-                            {employeeRangeOptions.map((range) => (
-                              <Option key={range} value={range}>
-                                {range}
-                              </Option>
-                            ))}
-                          </Select>
-                        </Form.Item>
-                      </Col>
-                    </Row>
-
-                    <Form.Item
-                      label='Description'
-                      name='description'
-                      extra="Brief description of your organization's mission and services"
-                    >
-                      <TextArea rows={4} placeholder='Describe your organization...' showCount maxLength={1000} />
-                    </Form.Item>
-
-                    {orgSettings.aiProfileEnabled && (
-                      <Alert
-                        message='AI Profile Assistance Available'
-                        description={
-                          <div>
-                            Your organization profile was last updated with AI assistance on{' '}
-                            {new Date(orgSettings.lastAiUpdate).toLocaleDateString()}. Click "AI Update" to refresh your
-                            profile with the latest information.
-                          </div>
-                        }
-                        type='info'
-                        icon={<FontAwesomeIcon icon={faRobot} />}
-                        showIcon
-                        className='mt-4'
-                      />
-                    )}
-                  </Card>
-
-                  {/* Work Arrangement Settings */}
-                  <Card
-                    title={
-                      <div className='flex items-center space-x-3'>
-                        <FontAwesomeIcon icon={faBriefcase} className='text-emerald-600' />
-                        <span>Default Work Arrangement</span>
-                      </div>
-                    }
-                    className={darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}
-                    headStyle={{
-                      backgroundColor: darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white,
-                      borderBottom: `1px solid ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.borderGray}`,
-                      color: darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray
-                    }}
-                    bodyStyle={{
-                      backgroundColor: darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white,
-                      color: darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray
-                    }}
-                  >
-                    <Form.Item
-                      label='Default Work Arrangement'
-                      name='defaultWorkArrangement'
-                      extra='This will be the default setting for new job postings'
-                      style={{ marginBottom: '24px' }}
-                    >
-                      <Select
-                        placeholder='Select default work arrangement'
-                        size='large'
-                        dropdownClassName={
-                          darkMode
-                            ? 'org-settings-dark-dropdown work-arrangement-dropdown'
-                            : 'work-arrangement-dropdown'
-                        }
-                      >
-                        {workArrangementOptions.map((option) => (
-                          <Option key={option.value} value={option.value}>
-                            <div className='flex items-center space-x-3 py-1'>
-                              <FontAwesomeIcon icon={option.icon} className='flex-shrink-0' />
-                              <div className='flex-1'>
-                                <div className='font-medium text-sm'>{option.label}</div>
-                                <div className={`text-xs mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                                  {option.description}
-                                </div>
-                              </div>
-                            </div>
-                          </Option>
-                        ))}
-                      </Select>
-                    </Form.Item>
-                  </Card>
-
-                  {/* Future Features Preview */}
-                  <Card
-                    title={
-                      <div className='flex items-center space-x-3'>
-                        <FontAwesomeIcon icon={faFileAlt} className='text-gray-400' />
-                        <span className='text-gray-400'>Future Features</span>
-                      </div>
-                    }
-                    className={`${darkMode ? 'bg-gray-800 border-gray-700 future-features-section' : 'bg-white border-gray-200'} opacity-60`}
-                    headStyle={{
-                      backgroundColor: darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white,
-                      borderBottom: `1px solid ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.borderGray}`,
-                      color: darkMode ? BRAND_COLORS.lightGray : BRAND_COLORS.mediumGray
-                    }}
-                    bodyStyle={{
-                      backgroundColor: darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white,
-                      color: darkMode ? BRAND_COLORS.lightGray : BRAND_COLORS.mediumGray
-                    }}
-                  >
-                    <div
-                      className={`p-4 rounded-lg border-2 border-dashed ${
-                        darkMode
-                          ? 'border-gray-600 bg-gray-700/50 future-features-content'
-                          : 'border-gray-300 bg-gray-50/50'
-                      }`}
-                    >
-                      <h4 className={`font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                        🚀 Coming Soon
-                      </h4>
-                      <div className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                        • <strong>Default Job Description Templates:</strong> Create and manage template settings for
-                        consistent job postings
-                        <br />• <strong>Email Templates:</strong> Customize notification and communication templates
-                        <br />• <strong>Integration Settings:</strong> Connect with external HR tools and platforms
-                        <br />• <strong>Compliance Settings:</strong> Configure GDPR, EEOC, and other regulatory
-                        requirements
-                      </div>
-                    </div>
-                  </Card>
-                </div>
-              </TabPane>
-
-              {/* Regional Preferences Tab */}
-              <TabPane
-                tab={
-                  <span className='flex items-center space-x-2'>
-                    <FontAwesomeIcon icon={faGlobe} />
-                    <span>Regional Preferences</span>
-                  </span>
-                }
-                key='regional'
-              >
-                <Card
-                  title={
-                    <div className='flex items-center space-x-3'>
-                      <FontAwesomeIcon icon={faGlobe} className='text-emerald-600' />
-                      <span>Regional Preferences</span>
-                    </div>
-                  }
-                  className={darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}
-                  headStyle={{
-                    backgroundColor: darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white,
-                    borderBottom: `1px solid ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.borderGray}`,
-                    color: darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray
-                  }}
-                  bodyStyle={{
-                    backgroundColor: darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white,
-                    color: darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray
+          {loadingOrgData ? (
+            <div className='flex justify-center items-center h-64'>
+              <div className='text-center'>
+                <div className='animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500 mx-auto'></div>
+                <p className={`mt-4 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>Loading organization data...</p>
+              </div>
+            </div>
+          ) : !hasOrganization ? (
+            <div className='flex justify-center items-center h-64'>
+              <div className='text-center'>
+                <FontAwesomeIcon icon={faBuilding} className='text-6xl text-gray-400 mb-4' />
+                <h3 className={`text-xl font-semibold mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                  No Organization Found
+                </h3>
+                <p className={`mb-4 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                  You need to be part of an organization to access these settings.
+                </p>
+                <Button
+                  type='primary'
+                  icon={<FontAwesomeIcon icon={faBuilding} className='mr-2' />}
+                  onClick={() => setBusinessSetupModalVisible(true)}
+                  style={{
+                    backgroundColor: BRAND_COLORS.emeraldPrimary,
+                    borderColor: BRAND_COLORS.emeraldPrimary
                   }}
                 >
-                  <Row gutter={16}>
-                    <Col xs={24} sm={8}>
-                      <Form.Item
-                        label={
-                          <Space>
-                            <FontAwesomeIcon icon={faDollarSign} />
-                            <span>Preferred Currency</span>
-                          </Space>
-                        }
-                        name='currency'
-                        rules={[{ required: true, message: 'Please select currency' }]}
-                      >
-                        <Select
-                          placeholder='Select currency'
-                          dropdownClassName={darkMode ? 'org-settings-dark-dropdown' : ''}
-                        >
-                          {currencyOptions.map((currency) => (
-                            <Option key={currency} value={currency}>
-                              {currency}
-                            </Option>
-                          ))}
-                        </Select>
-                      </Form.Item>
-                    </Col>
-
-                    <Col xs={24} sm={8}>
-                      <Form.Item
-                        label={
-                          <Space>
-                            <FontAwesomeIcon icon={faMapMarkerAlt} />
-                            <span>Primary Country</span>
-                          </Space>
-                        }
-                        name='country'
-                        rules={[{ required: true, message: 'Please select country' }]}
-                      >
-                        <Select
-                          placeholder='Select country'
-                          dropdownClassName={darkMode ? 'org-settings-dark-dropdown' : ''}
-                        >
-                          {countryOptions.map((country) => (
-                            <Option key={country} value={country}>
-                              {country}
-                            </Option>
-                          ))}
-                        </Select>
-                      </Form.Item>
-                    </Col>
-
-                    <Col xs={24} sm={8}>
-                      <Form.Item
-                        label={
-                          <Space>
-                            <FontAwesomeIcon icon={faLanguage} />
-                            <span>Primary Language</span>
-                          </Space>
-                        }
-                        name='language'
-                        rules={[{ required: true, message: 'Please select language' }]}
-                      >
-                        <Select
-                          placeholder='Select language'
-                          dropdownClassName={darkMode ? 'org-settings-dark-dropdown' : ''}
-                        >
-                          {languageOptions.map((language) => (
-                            <Option key={language} value={language}>
-                              {language}
-                            </Option>
-                          ))}
-                        </Select>
-                      </Form.Item>
-                    </Col>
-                  </Row>
-                </Card>
-              </TabPane>
-
-              {/* Industry & Classifications Tab */}
-              <TabPane
-                tab={
-                  <span className='flex items-center space-x-2'>
-                    <FontAwesomeIcon icon={faIndustry} />
-                    <span>Industry & Classifications</span>
-                  </span>
-                }
-                key='industry'
+                  Create or Join Organization
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <Form
+              form={form}
+              layout='vertical'
+              onFinish={handleSubmit}
+              onValuesChange={handleValuesChange}
+              className={`${darkMode ? 'org-settings-form' : ''}`}
+            >
+              <Tabs
+                activeKey={activeTab}
+                onChange={handleTabChange}
+                type='card'
+                size='large'
+                className={`org-settings-tabs ${darkMode ? 'org-settings-tabs-dark' : ''}`}
               >
-                <div className='space-y-6'>
-                  {/* Industry Selection */}
-                  <Card
-                    title={
-                      <div className='flex items-center space-x-3'>
-                        <FontAwesomeIcon icon={faIndustry} className='text-emerald-600' />
-                        <span>Industry</span>
-                      </div>
-                    }
-                    className={darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}
-                    headStyle={{
-                      backgroundColor: darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white,
-                      borderBottom: `1px solid ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.borderGray}`,
-                      color: darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray
-                    }}
-                    bodyStyle={{
-                      backgroundColor: darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white,
-                      color: darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray
-                    }}
-                  >
-                    <Form.Item
-                      label='Primary Industry'
-                      name='industry'
-                      rules={[{ required: true, message: 'Please select industry' }]}
+                {/* General Tab */}
+                <TabPane
+                  tab={
+                    <span className='flex items-center space-x-2'>
+                      <FontAwesomeIcon icon={faCog} />
+                      <span>General</span>
+                    </span>
+                  }
+                  key='general'
+                >
+                  <div className='space-y-6'>
+                    {/* Organization Profile and Work Arrangement - Using Shared Form */}
+                    <Card
+                      title={
+                        <div className='flex items-center space-x-3'>
+                          <FontAwesomeIcon icon={faBuilding} className='text-emerald-600' />
+                          <span>Organization Profile</span>
+                        </div>
+                      }
+                      className={darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}
+                      headStyle={{
+                        backgroundColor: darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white,
+                        borderBottom: `1px solid ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.borderGray}`,
+                        color: darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray
+                      }}
+                      bodyStyle={{
+                        backgroundColor: darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white,
+                        color: darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray
+                      }}
+                      extra={
+                        <div className='flex space-x-2'>
+                          <Button
+                            type='text'
+                            icon={<FontAwesomeIcon icon={faRobot} />}
+                            onClick={handleAiProfileUpdate}
+                            className={`${darkMode ? 'text-emerald-400 hover:text-emerald-300' : 'text-emerald-600 hover:text-emerald-700'}`}
+                            title='Re-interact with AI'
+                          >
+                            AI Update
+                          </Button>
+                        </div>
+                      }
                     >
-                      <Select
-                        placeholder='Select industry'
+                      <OrganizationProfileForm
+                        fieldNameFormat='camelCase'
+                        showSections={{
+                          organizationProfile: true,
+                          workArrangement: true,
+                          regionalPreferences: false,
+                          industryTags: false,
+                          timezone: false
+                        }}
+                        darkMode={darkMode}
                         dropdownClassName={darkMode ? 'org-settings-dark-dropdown' : ''}
+                        cardWrapper={false}
+                      />
+
+                      {/* Removed AI Profile Alert since aiProfileEnabled is not in the database schema */}
+                    </Card>
+
+                    {/* Future Features Preview */}
+                    <Card
+                      title={
+                        <div className='flex items-center space-x-3'>
+                          <FontAwesomeIcon icon={faFileAlt} className='text-gray-400' />
+                          <span className='text-gray-400'>Future Features</span>
+                        </div>
+                      }
+                      className={`${darkMode ? 'bg-gray-800 border-gray-700 future-features-section' : 'bg-white border-gray-200'} opacity-60`}
+                      headStyle={{
+                        backgroundColor: darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white,
+                        borderBottom: `1px solid ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.borderGray}`,
+                        color: darkMode ? BRAND_COLORS.lightGray : BRAND_COLORS.mediumGray
+                      }}
+                      bodyStyle={{
+                        backgroundColor: darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white,
+                        color: darkMode ? BRAND_COLORS.lightGray : BRAND_COLORS.mediumGray
+                      }}
+                    >
+                      <div
+                        className={`p-4 rounded-lg border-2 border-dashed ${
+                          darkMode
+                            ? 'border-gray-600 bg-gray-700/50 future-features-content'
+                            : 'border-gray-300 bg-gray-50/50'
+                        }`}
                       >
-                        {industryOptions.map((industry) => (
-                          <Option key={industry} value={industry}>
-                            {industry}
-                          </Option>
-                        ))}
-                      </Select>
-                    </Form.Item>
-                  </Card>
+                        <h4 className={`font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                          🚀 Coming Soon
+                        </h4>
+                        <div className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                          • <strong>Default Job Description Templates:</strong> Create and manage template settings for
+                          consistent job postings
+                          <br />• <strong>Email Templates:</strong> Customize notification and communication templates
+                          <br />• <strong>Integration Settings:</strong> Connect with external HR tools and platforms
+                          <br />• <strong>Compliance Settings:</strong> Configure GDPR, EEOC, and other regulatory
+                          requirements
+                        </div>
+                      </div>
+                    </Card>
+                  </div>
+                </TabPane>
 
-                  {/* Industry Tags & Classifications */}
+                {/* Regional Preferences Tab */}
+                <TabPane
+                  tab={
+                    <span className='flex items-center space-x-2'>
+                      <FontAwesomeIcon icon={faGlobe} />
+                      <span>Regional Preferences</span>
+                    </span>
+                  }
+                  key='regional'
+                >
                   <Card
                     title={
                       <div className='flex items-center space-x-3'>
-                        <FontAwesomeIcon icon={faTags} className='text-emerald-600' />
-                        <span>Industry Tags & Classifications</span>
+                        <FontAwesomeIcon icon={faGlobe} className='text-emerald-600' />
+                        <span>Regional Preferences</span>
                       </div>
                     }
                     className={darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}
@@ -649,39 +486,71 @@ const OrgSettings = React.memo(({ user }) => {
                       color: darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray
                     }}
                   >
-                    <Form.Item
-                      label='Industry Tags'
-                      name='industryTags'
-                      extra='Select or add tags that describe your industry focus areas'
-                    >
-                      <Select
-                        mode='tags'
-                        placeholder='Add industry tags'
-                        style={{ width: '100%' }}
-                        tokenSeparators={[',']}
-                        dropdownClassName={darkMode ? 'org-settings-dark-dropdown' : ''}
-                        options={commonIndustryTags.map((tag) => ({ value: tag, label: tag }))}
-                      />
-                    </Form.Item>
-
-                    <Form.Item
-                      label='Custom Classifications'
-                      name='customClassifications'
-                      extra='Add custom tags that uniquely describe your organization'
-                    >
-                      <Select
-                        mode='tags'
-                        placeholder='Add custom classifications'
-                        dropdownClassName={darkMode ? 'org-settings-dark-dropdown' : ''}
-                        style={{ width: '100%' }}
-                        tokenSeparators={[',']}
-                      />
-                    </Form.Item>
+                    <OrganizationProfileForm
+                      fieldNameFormat='camelCase'
+                      showSections={{
+                        organizationProfile: false,
+                        workArrangement: false,
+                        regionalPreferences: true,
+                        industryTags: false,
+                        timezone: false
+                      }}
+                      darkMode={darkMode}
+                      dropdownClassName={darkMode ? 'org-settings-dark-dropdown' : ''}
+                      cardWrapper={false}
+                    />
                   </Card>
-                </div>
-              </TabPane>
-            </Tabs>
-          </Form>
+                </TabPane>
+
+                {/* Industry & Classifications Tab */}
+                <TabPane
+                  tab={
+                    <span className='flex items-center space-x-2'>
+                      <FontAwesomeIcon icon={faIndustry} />
+                      <span>Industry & Classifications</span>
+                    </span>
+                  }
+                  key='industry'
+                >
+                  <div className='space-y-6'>
+                    {/* Industry Selection */}
+                    <Card
+                      title={
+                        <div className='flex items-center space-x-3'>
+                          <FontAwesomeIcon icon={faIndustry} className='text-emerald-600' />
+                          <span>Industry</span>
+                        </div>
+                      }
+                      className={darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}
+                      headStyle={{
+                        backgroundColor: darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white,
+                        borderBottom: `1px solid ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.borderGray}`,
+                        color: darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray
+                      }}
+                      bodyStyle={{
+                        backgroundColor: darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white,
+                        color: darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray
+                      }}
+                    >
+                      <OrganizationProfileForm
+                        fieldNameFormat='camelCase'
+                        showSections={{
+                          organizationProfile: false,
+                          workArrangement: false,
+                          regionalPreferences: false,
+                          industryTags: true,
+                          timezone: false
+                        }}
+                        darkMode={darkMode}
+                        dropdownClassName={darkMode ? 'org-settings-dark-dropdown' : ''}
+                        cardWrapper={false}
+                      />
+                    </Card>
+                  </div>
+                </TabPane>
+              </Tabs>
+            </Form>
+          )}
         </div>
       </div>
 
@@ -692,8 +561,8 @@ const OrgSettings = React.memo(({ user }) => {
         onSuccess={(updatedProfile) => {
           setOrgSettings((prev) => ({
             ...prev,
-            ...updatedProfile,
-            lastAiUpdate: new Date().toISOString()
+            ...updatedProfile
+            // Removed lastAiUpdate as it's not in the database schema
           }))
           form.setFieldsValue(updatedProfile)
           setAiModalVisible(false)
@@ -701,6 +570,14 @@ const OrgSettings = React.memo(({ user }) => {
         }}
         darkMode={darkMode}
         currentProfile={orgSettings}
+      />
+
+      {/* Business Setup Modal */}
+      <BusinessSetupModal
+        isOpen={businessSetupModalVisible}
+        onClose={handleBusinessSetupModalClose}
+        onSubmit={handleBusinessSetupSubmit}
+        form={businessSetupForm}
       />
 
       {/* Dark mode styles */}
@@ -998,6 +875,11 @@ const OrgSettings = React.memo(({ user }) => {
         .org-settings-reset-btn:hover {
           background-color: ${darkMode ? '#4B5563' : '#6B7280'} !important;
           border-color: ${darkMode ? '#4B5563' : '#6B7280'} !important;
+        }
+
+        .org-settings-leave-btn:hover {
+          background-color: ${darkMode ? '#B91C1C' : '#DC2626'} !important;
+          border-color: ${darkMode ? '#B91C1C' : '#DC2626'} !important;
         }
 
         /* Tab content spacing */

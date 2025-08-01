@@ -10,7 +10,6 @@ import {
   faUser,
   faBuilding,
   faUserTie,
-  faChevronDown,
   faSearch,
   faTimes,
   faQuestionCircle,
@@ -40,8 +39,8 @@ const Header = ({ user }) => {
   const navigate = useNavigate()
   const location = useLocation()
   const [isLogoutConfirmOpen, setIsLogoutConfirmOpen] = useState(false)
-  const [selectedDashboard, setSelectedDashboard] = useState('personal') // 'personal' or 'business'
-  const [isDashboardDropdownOpen, setIsDashboardDropdownOpen] = useState(false)
+  const [selectedDashboard, setSelectedDashboard] = useState('business') // 'personal' or 'business'
+  // const [isDashboardDropdownOpen, setIsDashboardDropdownOpen] = useState(false)
   const [isBusinessSetupOpen, setIsBusinessSetupOpen] = useState(false)
   // eslint-disable-next-line no-unused-vars
   const [businessInfo, setBusinessInfo] = useState({ name: '', domain: '' }) // Legacy support - used by other components
@@ -103,10 +102,8 @@ const Header = ({ user }) => {
         if (user?.id) {
           const orgCheck = await checkUserOrganization()
           if (!orgCheck.hasOrganization) {
-            // Redirect to personal dashboard if no organization
-            message.warning('Please set up your organization to access the Business Dashboard.')
-            navigate('/dashboard')
-            setSelectedDashboard('personal')
+            // Show business setup modal
+            setIsBusinessSetupOpen(true)
           }
         }
       } else if (location.pathname === '/dashboard') {
@@ -146,32 +143,32 @@ const Header = ({ user }) => {
   // Legacy function kept for reference - now using Supabase organization check directly
 
   // Handle dashboard switch
-  const handleDashboardSwitch = useCallback(
-    async (dashboardType) => {
-      setIsDashboardDropdownOpen(false) // Close dropdown after selection
+  // const handleDashboardSwitch = useCallback(
+  //   async (dashboardType) => {
+  //     setIsDashboardDropdownOpen(false) // Close dropdown after selection
 
-      if (dashboardType === 'business') {
-        // Check if user has organization in Supabase
-        const orgCheck = await checkUserOrganization()
+  //     if (dashboardType === 'business') {
+  //       // Check if user has organization in Supabase
+  //       const orgCheck = await checkUserOrganization()
 
-        if (!orgCheck.hasOrganization) {
-          // Show setup modal if no organization
-          setIsBusinessSetupOpen(true)
-          return
-        }
+  //       if (!orgCheck.hasOrganization) {
+  //         // Show setup modal if no organization
+  //         setIsBusinessSetupOpen(true)
+  //         return
+  //       }
 
-        // User has organization, proceed to business dashboard
-        setSelectedDashboard(dashboardType)
-        localStorage.setItem('skillscout_dashboard_type', dashboardType)
-        navigate('/business-dashboard')
-      } else {
-        setSelectedDashboard(dashboardType)
-        localStorage.setItem('skillscout_dashboard_type', dashboardType)
-        navigate('/dashboard')
-      }
-    },
-    [navigate, checkUserOrganization]
-  )
+  //       // User has organization, proceed to business dashboard
+  //       setSelectedDashboard(dashboardType)
+  //       localStorage.setItem('skillscout_dashboard_type', dashboardType)
+  //       navigate('/business-dashboard')
+  //     } else {
+  //       setSelectedDashboard(dashboardType)
+  //       localStorage.setItem('skillscout_dashboard_type', dashboardType)
+  //       navigate('/dashboard')
+  //     }
+  //   },
+  //   [navigate, checkUserOrganization]
+  // )
 
   // Handle business setup form submission
   const handleBusinessSetup = useCallback(
@@ -459,97 +456,97 @@ const Header = ({ user }) => {
   )
 
   // Dashboard dropdown component
-  const renderDashboardDropdown = () => (
-    <div
-      className={`rounded-md overflow-hidden ${darkMode ? 'bg-gray-900' : 'bg-white'} 
-                     shadow-lg border ${darkMode ? 'border-gray-700' : 'border-gray-200'} min-w-[180px]`}
-    >
-      <button
-        onClick={() => handleDashboardSwitch('personal')}
-        className={`w-full py-3 px-4 text-left flex items-center text-sm transition-all duration-200
-                   ${
-                     selectedDashboard === 'personal'
-                       ? darkMode
-                         ? 'bg-emerald-700 text-white'
-                         : 'bg-emerald-50 text-emerald-700 border-l-4 border-emerald-500'
-                       : darkMode
-                         ? 'text-white bg-gray-800 hover:bg-gray-700'
-                         : 'text-gray-700 bg-white hover:bg-gray-50'
-                   }`}
-        onMouseEnter={(e) => {
-          if (selectedDashboard !== 'personal') {
-            if (darkMode) {
-              e.target.style.backgroundColor = BRAND_COLORS.emeraldAccent
-              e.target.style.color = 'white'
-            } else {
-              e.target.style.backgroundColor = BRAND_COLORS.seaGreen
-              e.target.style.color = 'white'
-            }
-          }
-        }}
-        onMouseLeave={(e) => {
-          if (selectedDashboard !== 'personal') {
-            if (darkMode) {
-              e.target.style.backgroundColor = '#374151' // gray-700
-              e.target.style.color = 'white'
-            } else {
-              e.target.style.backgroundColor = 'white'
-              e.target.style.color = '#374151' // gray-700
-            }
-          }
-        }}
-      >
-        <FontAwesomeIcon icon={faUserTie} className='mr-3 w-4' />
-        Personal Dashboard
-        {selectedDashboard === 'personal' && <div className='ml-auto w-2 h-2 bg-emerald-500 rounded-full'></div>}
-      </button>
+  // const renderDashboardDropdown = () => (
+  //   <div
+  //     className={`rounded-md overflow-hidden ${darkMode ? 'bg-gray-900' : 'bg-white'}
+  //                    shadow-lg border ${darkMode ? 'border-gray-700' : 'border-gray-200'} min-w-[180px]`}
+  //   >
+  //     <button
+  //       onClick={() => handleDashboardSwitch('personal')}
+  //       className={`w-full py-3 px-4 text-left flex items-center text-sm transition-all duration-200
+  //                  ${
+  //                    selectedDashboard === 'personal'
+  //                      ? darkMode
+  //                        ? 'bg-emerald-700 text-white'
+  //                        : 'bg-emerald-50 text-emerald-700 border-l-4 border-emerald-500'
+  //                      : darkMode
+  //                        ? 'text-white bg-gray-800 hover:bg-gray-700'
+  //                        : 'text-gray-700 bg-white hover:bg-gray-50'
+  //                  }`}
+  //       onMouseEnter={(e) => {
+  //         if (selectedDashboard !== 'personal') {
+  //           if (darkMode) {
+  //             e.target.style.backgroundColor = BRAND_COLORS.emeraldAccent
+  //             e.target.style.color = 'white'
+  //           } else {
+  //             e.target.style.backgroundColor = BRAND_COLORS.seaGreen
+  //             e.target.style.color = 'white'
+  //           }
+  //         }
+  //       }}
+  //       onMouseLeave={(e) => {
+  //         if (selectedDashboard !== 'personal') {
+  //           if (darkMode) {
+  //             e.target.style.backgroundColor = '#374151' // gray-700
+  //             e.target.style.color = 'white'
+  //           } else {
+  //             e.target.style.backgroundColor = 'white'
+  //             e.target.style.color = '#374151' // gray-700
+  //           }
+  //         }
+  //       }}
+  //     >
+  //       <FontAwesomeIcon icon={faUserTie} className='mr-3 w-4' />
+  //       Personal Dashboard
+  //       {selectedDashboard === 'personal' && <div className='ml-auto w-2 h-2 bg-emerald-500 rounded-full'></div>}
+  //     </button>
 
-      <button
-        onClick={() => handleDashboardSwitch('business')}
-        disabled={isCheckingOrganization}
-        className={`w-full py-3 px-4 text-left flex items-center text-sm transition-all duration-200
-                   ${
-                     selectedDashboard === 'business'
-                       ? darkMode
-                         ? 'bg-emerald-700 text-white'
-                         : 'bg-emerald-50 text-emerald-700 border-l-4 border-emerald-500'
-                       : darkMode
-                         ? 'text-white bg-gray-800 hover:bg-gray-700'
-                         : 'text-gray-700 bg-white hover:bg-gray-50'
-                   } ${isCheckingOrganization ? 'opacity-50 cursor-not-allowed' : ''}`}
-        onMouseEnter={(e) => {
-          if (selectedDashboard !== 'business' && !isCheckingOrganization) {
-            if (darkMode) {
-              e.target.style.backgroundColor = BRAND_COLORS.emeraldAccent
-              e.target.style.color = 'white'
-            } else {
-              e.target.style.backgroundColor = BRAND_COLORS.seaGreen
-              e.target.style.color = 'white'
-            }
-          }
-        }}
-        onMouseLeave={(e) => {
-          if (selectedDashboard !== 'business' && !isCheckingOrganization) {
-            if (darkMode) {
-              e.target.style.backgroundColor = '#374151' // gray-700
-              e.target.style.color = 'white'
-            } else {
-              e.target.style.backgroundColor = 'white'
-              e.target.style.color = '#374151' // gray-700
-            }
-          }
-        }}
-      >
-        {isCheckingOrganization ? (
-          <FontAwesomeIcon icon={faSpinner} className='mr-3 w-4 animate-spin' />
-        ) : (
-          <FontAwesomeIcon icon={faBuilding} className='mr-3 w-4' />
-        )}
-        Business Dashboard
-        {selectedDashboard === 'business' && <div className='ml-auto w-2 h-2 bg-emerald-500 rounded-full'></div>}
-      </button>
-    </div>
-  )
+  //     <button
+  //       onClick={() => handleDashboardSwitch('business')}
+  //       disabled={isCheckingOrganization}
+  //       className={`w-full py-3 px-4 text-left flex items-center text-sm transition-all duration-200
+  //                  ${
+  //                    selectedDashboard === 'business'
+  //                      ? darkMode
+  //                        ? 'bg-emerald-700 text-white'
+  //                        : 'bg-emerald-50 text-emerald-700 border-l-4 border-emerald-500'
+  //                      : darkMode
+  //                        ? 'text-white bg-gray-800 hover:bg-gray-700'
+  //                        : 'text-gray-700 bg-white hover:bg-gray-50'
+  //                  } ${isCheckingOrganization ? 'opacity-50 cursor-not-allowed' : ''}`}
+  //       onMouseEnter={(e) => {
+  //         if (selectedDashboard !== 'business' && !isCheckingOrganization) {
+  //           if (darkMode) {
+  //             e.target.style.backgroundColor = BRAND_COLORS.emeraldAccent
+  //             e.target.style.color = 'white'
+  //           } else {
+  //             e.target.style.backgroundColor = BRAND_COLORS.seaGreen
+  //             e.target.style.color = 'white'
+  //           }
+  //         }
+  //       }}
+  //       onMouseLeave={(e) => {
+  //         if (selectedDashboard !== 'business' && !isCheckingOrganization) {
+  //           if (darkMode) {
+  //             e.target.style.backgroundColor = '#374151' // gray-700
+  //             e.target.style.color = 'white'
+  //           } else {
+  //             e.target.style.backgroundColor = 'white'
+  //             e.target.style.color = '#374151' // gray-700
+  //           }
+  //         }
+  //       }}
+  //     >
+  //       {isCheckingOrganization ? (
+  //         <FontAwesomeIcon icon={faSpinner} className='mr-3 w-4 animate-spin' />
+  //       ) : (
+  //         <FontAwesomeIcon icon={faBuilding} className='mr-3 w-4' />
+  //       )}
+  //       Business Dashboard
+  //       {selectedDashboard === 'business' && <div className='ml-auto w-2 h-2 bg-emerald-500 rounded-full'></div>}
+  //     </button>
+  //   </div>
+  // )
 
   // Custom dropdown menu component for better dark mode support
   const renderSignOutDropdown = () => (
@@ -811,8 +808,8 @@ const Header = ({ user }) => {
 
           {/* Right side - Dashboard selector, theme toggle, and user menu */}
           <div className='flex items-center flex-shrink-0'>
-            {/* Dashboard Dropdown */}
-            {user && (
+            {/* Dashboard Dropdown - TODO: Disabled for now */}
+            {/* {user && (
               <Dropdown
                 dropdownRender={renderDashboardDropdown}
                 trigger={['click']}
@@ -845,7 +842,7 @@ const Header = ({ user }) => {
                   <FontAwesomeIcon icon={faChevronDown} className='text-white text-xs opacity-70' />
                 </div>
               </Dropdown>
-            )}
+            )} */}
 
             {/* Theme Toggle */}
             <ThemeToggle className='ml-2 sm:ml-4 md:ml-6 md:mr-3 scale-90 md:scale-100' />

@@ -1,24 +1,12 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
 import React, { useState } from 'react'
-import { Modal, Form, Input, Select, Row, Col, Space } from 'antd'
+import { Modal, Form } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {
-  faBuilding,
-  faGlobe,
-  faDollarSign,
-  faLanguage,
-  faBriefcase,
-  faHome,
-  faUsers,
-  faTags,
-  faMapMarkerAlt
-} from '@fortawesome/free-solid-svg-icons'
+import { faBuilding } from '@fortawesome/free-solid-svg-icons'
 import { Button } from '../../../../core/components'
 import { useTheme } from '../../../../core/context/ThemeContext'
-
-const { TextArea } = Input
-const { Option } = Select
+import OrganizationProfileForm from './OrganizationProfileForm'
 
 /**
  * Business Dashboard Setup Modal Component
@@ -28,96 +16,11 @@ const BusinessSetupModal = ({ isOpen, onClose, onSubmit, form }) => {
   const { darkMode } = useTheme()
   const [loading, setLoading] = useState(false)
 
-  // Options data
-  const workArrangementOptions = [
-    { value: 'remote', label: 'Remote', icon: faHome, description: 'Fully remote work' },
-    { value: 'hybrid', label: 'Hybrid', icon: faUsers, description: 'Mix of remote and office work' },
-    { value: 'onsite', label: 'On-site', icon: faBuilding, description: 'Primarily office-based work' }
-  ]
-
-  const currencyOptions = ['USD', 'EUR', 'GBP', 'CAD', 'AUD', 'JPY', 'CHF', 'SEK', 'NOK', 'DKK']
-
-  const countryOptions = [
-    'United States',
-    'United Kingdom',
-    'Canada',
-    'Germany',
-    'France',
-    'Australia',
-    'Netherlands',
-    'Sweden',
-    'Norway',
-    'Denmark',
-    'Switzerland'
-  ]
-
-  const languageOptions = [
-    'English',
-    'Spanish',
-    'French',
-    'German',
-    'Italian',
-    'Portuguese',
-    'Dutch',
-    'Swedish',
-    'Norwegian',
-    'Danish'
-  ]
-
-  const employeeRangeOptions = ['1-10', '11-50', '51-200', '201-500', '501-1000', '1001-5000', '5000+']
-
-  const industryOptions = [
-    'Technology',
-    'Healthcare',
-    'Finance',
-    'Education',
-    'Retail',
-    'Manufacturing',
-    'Consulting',
-    'Media',
-    'Government',
-    'Non-profit',
-    'Real Estate',
-    'Other'
-  ]
-
-  const commonIndustryTags = [
-    'Software Development',
-    'Cloud Computing',
-    'AI/Machine Learning',
-    'Data Analytics',
-    'Cybersecurity',
-    'Mobile Development',
-    'Web Development',
-    'DevOps',
-    'SaaS',
-    'E-commerce',
-    'Fintech',
-    'Healthcare Tech',
-    'EdTech',
-    'PropTech'
-  ]
-
-  const timezoneOptions = [
-    'America/New_York',
-    'America/Chicago',
-    'America/Denver',
-    'America/Los_Angeles',
-    'Europe/London',
-    'Europe/Paris',
-    'Europe/Berlin',
-    'Europe/Amsterdam',
-    'Asia/Tokyo',
-    'Asia/Shanghai',
-    'Asia/Kolkata',
-    'Australia/Sydney'
-  ]
-
   // Handle form submission with loading state
-  const handleSubmit = async (values) => {
+  const handleSubmit = async () => {
     setLoading(true)
     try {
-      await onSubmit(values)
+      await onSubmit(form.getFieldsValue())
     } finally {
       setLoading(false)
     }
@@ -328,274 +231,19 @@ const BusinessSetupModal = ({ isOpen, onClose, onSubmit, form }) => {
               onFinish={handleSubmit}
               className={`${darkMode ? 'business-setup-form' : ''}`}
             >
-              {/* Organization Profile Section */}
-              <div className='mb-8'>
-                <div className='flex items-center space-x-2 mb-4'>
-                  <FontAwesomeIcon icon={faBuilding} className='text-emerald-600' />
-                  <h3 className={`text-lg font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                    Organization Profile
-                  </h3>
-                </div>
-
-                <Row gutter={16}>
-                  <Col xs={24} md={12}>
-                    <Form.Item
-                      label={<span className={darkMode ? 'text-gray-300' : ''}>Organization Name</span>}
-                      name='organization_name'
-                      rules={[
-                        { required: true, message: 'Please enter your organization name' },
-                        { min: 2, message: 'Organization name must be at least 2 characters' }
-                      ]}
-                    >
-                      <Input placeholder='e.g. TechCorp Solutions' autoFocus />
-                    </Form.Item>
-                  </Col>
-
-                  <Col xs={24} md={12}>
-                    <Form.Item
-                      label={<span className={darkMode ? 'text-gray-300' : ''}>Industry</span>}
-                      name='industry'
-                    >
-                      <Select
-                        placeholder='Select industry'
-                        dropdownClassName={darkMode ? 'business-setup-dark-dropdown' : ''}
-                      >
-                        {industryOptions.map((industry) => (
-                          <Option key={industry} value={industry}>
-                            {industry}
-                          </Option>
-                        ))}
-                      </Select>
-                    </Form.Item>
-                  </Col>
-                </Row>
-
-                <Row gutter={16}>
-                  <Col xs={24} md={12}>
-                    <Form.Item
-                      label={<span className={darkMode ? 'text-gray-300' : ''}>Website</span>}
-                      name='website'
-                      rules={[{ type: 'url', message: 'Please enter a valid URL' }]}
-                    >
-                      <Input placeholder='https://company.com' />
-                    </Form.Item>
-                  </Col>
-
-                  <Col xs={24} md={6}>
-                    <Form.Item
-                      label={<span className={darkMode ? 'text-gray-300' : ''}>Founded Year</span>}
-                      name='founded_year'
-                      rules={[
-                        {
-                          type: 'number',
-                          min: 1800,
-                          max: new Date().getFullYear(),
-                          message: 'Please enter a valid year'
-                        }
-                      ]}
-                    >
-                      <Input type='number' placeholder='2020' />
-                    </Form.Item>
-                  </Col>
-
-                  <Col xs={24} md={6}>
-                    <Form.Item
-                      label={<span className={darkMode ? 'text-gray-300' : ''}>Employee Range</span>}
-                      name='employee_range'
-                    >
-                      <Select
-                        placeholder='Select range'
-                        dropdownClassName={darkMode ? 'business-setup-dark-dropdown' : ''}
-                      >
-                        {employeeRangeOptions.map((range) => (
-                          <Option key={range} value={range}>
-                            {range}
-                          </Option>
-                        ))}
-                      </Select>
-                    </Form.Item>
-                  </Col>
-                </Row>
-
-                <Form.Item
-                  label={<span className={darkMode ? 'text-gray-300' : ''}>Description</span>}
-                  name='description'
-                  extra="Brief description of your organization's mission and services"
-                >
-                  <TextArea rows={3} placeholder='Describe your organization...' showCount maxLength={500} />
-                </Form.Item>
-              </div>
-
-              {/* Work Arrangement Section */}
-              <div className='mb-8'>
-                <div className='flex items-center space-x-2 mb-4'>
-                  <FontAwesomeIcon icon={faBriefcase} className='text-emerald-600' />
-                  <h3 className={`text-lg font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                    Default Work Arrangement
-                  </h3>
-                </div>
-
-                <Form.Item
-                  label={<span className={darkMode ? 'text-gray-300' : ''}>Default Work Arrangement</span>}
-                  name='default_work_arrangement'
-                  extra='This will be the default setting for new job postings'
-                >
-                  <Select
-                    placeholder='Select default work arrangement'
-                    size='large'
-                    dropdownClassName={
-                      darkMode ? 'business-setup-dark-dropdown work-arrangement-dropdown' : 'work-arrangement-dropdown'
-                    }
-                  >
-                    {workArrangementOptions.map((option) => (
-                      <Option key={option.value} value={option.value}>
-                        <div className='flex items-center space-x-3 py-1'>
-                          <FontAwesomeIcon icon={option.icon} className='flex-shrink-0' />
-                          <div className='flex-1'>
-                            <div className='font-medium text-sm'>{option.label}</div>
-                            <div className={`text-xs mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                              {option.description}
-                            </div>
-                          </div>
-                        </div>
-                      </Option>
-                    ))}
-                  </Select>
-                </Form.Item>
-              </div>
-
-              {/* Regional Preferences Section */}
-              <div className='mb-8'>
-                <div className='flex items-center space-x-2 mb-4'>
-                  <FontAwesomeIcon icon={faGlobe} className='text-emerald-600' />
-                  <h3 className={`text-lg font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                    Regional Preferences
-                  </h3>
-                </div>
-
-                <Row gutter={16}>
-                  <Col xs={24} md={8}>
-                    <Form.Item
-                      label={
-                        <Space className={darkMode ? 'text-gray-300' : ''}>
-                          <FontAwesomeIcon icon={faDollarSign} />
-                          <span>Preferred Currency</span>
-                        </Space>
-                      }
-                      name='currency'
-                    >
-                      <Select
-                        placeholder='Select currency'
-                        dropdownClassName={darkMode ? 'business-setup-dark-dropdown' : ''}
-                      >
-                        {currencyOptions.map((currency) => (
-                          <Option key={currency} value={currency}>
-                            {currency}
-                          </Option>
-                        ))}
-                      </Select>
-                    </Form.Item>
-                  </Col>
-
-                  <Col xs={24} md={8}>
-                    <Form.Item
-                      label={
-                        <Space className={darkMode ? 'text-gray-300' : ''}>
-                          <FontAwesomeIcon icon={faMapMarkerAlt} />
-                          <span>Primary Country</span>
-                        </Space>
-                      }
-                      name='country'
-                    >
-                      <Select
-                        placeholder='Select country'
-                        dropdownClassName={darkMode ? 'business-setup-dark-dropdown' : ''}
-                      >
-                        {countryOptions.map((country) => (
-                          <Option key={country} value={country}>
-                            {country}
-                          </Option>
-                        ))}
-                      </Select>
-                    </Form.Item>
-                  </Col>
-
-                  <Col xs={24} md={8}>
-                    <Form.Item
-                      label={
-                        <Space className={darkMode ? 'text-gray-300' : ''}>
-                          <FontAwesomeIcon icon={faLanguage} />
-                          <span>Primary Language</span>
-                        </Space>
-                      }
-                      name='language'
-                    >
-                      <Select
-                        placeholder='Select language'
-                        dropdownClassName={darkMode ? 'business-setup-dark-dropdown' : ''}
-                      >
-                        {languageOptions.map((language) => (
-                          <Option key={language} value={language}>
-                            {language}
-                          </Option>
-                        ))}
-                      </Select>
-                    </Form.Item>
-                  </Col>
-                </Row>
-
-                <Form.Item label={<span className={darkMode ? 'text-gray-300' : ''}>Timezone</span>} name='timezone'>
-                  <Select
-                    placeholder='Select timezone'
-                    dropdownClassName={darkMode ? 'business-setup-dark-dropdown' : ''}
-                  >
-                    {timezoneOptions.map((timezone) => (
-                      <Option key={timezone} value={timezone}>
-                        {timezone}
-                      </Option>
-                    ))}
-                  </Select>
-                </Form.Item>
-              </div>
-
-              {/* Industry Tags & Classifications Section */}
-              <div className='mb-8'>
-                <div className='flex items-center space-x-2 mb-4'>
-                  <FontAwesomeIcon icon={faTags} className='text-emerald-600' />
-                  <h3 className={`text-lg font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                    Industry Tags & Classifications
-                  </h3>
-                </div>
-
-                <Form.Item
-                  label={<span className={darkMode ? 'text-gray-300' : ''}>Industry Tags</span>}
-                  name='industry_tags'
-                  extra='Select or add tags that describe your industry focus areas'
-                >
-                  <Select
-                    mode='tags'
-                    placeholder='Add industry tags'
-                    style={{ width: '100%' }}
-                    tokenSeparators={[',']}
-                    dropdownClassName={darkMode ? 'business-setup-dark-dropdown' : ''}
-                    options={commonIndustryTags.map((tag) => ({ value: tag, label: tag }))}
-                  />
-                </Form.Item>
-
-                <Form.Item
-                  label={<span className={darkMode ? 'text-gray-300' : ''}>Custom Classifications</span>}
-                  name='custom_classifications'
-                  extra='Add custom tags that uniquely describe your organization'
-                >
-                  <Select
-                    mode='tags'
-                    placeholder='Add custom classifications'
-                    dropdownClassName={darkMode ? 'business-setup-dark-dropdown' : ''}
-                    style={{ width: '100%' }}
-                    tokenSeparators={[',']}
-                  />
-                </Form.Item>
-              </div>
+              <OrganizationProfileForm
+                fieldNameFormat='snake_case'
+                showSections={{
+                  organizationProfile: true,
+                  workArrangement: true,
+                  regionalPreferences: true,
+                  industryTags: true,
+                  timezone: true
+                }}
+                darkMode={darkMode}
+                dropdownClassName={darkMode ? 'business-setup-dark-dropdown' : ''}
+                cardWrapper={true}
+              />
             </Form>
           </div>
 
@@ -610,7 +258,7 @@ const BusinessSetupModal = ({ isOpen, onClose, onSubmit, form }) => {
             </Button>
             <Button
               type='primary'
-              onClick={() => form.submit()}
+              onClick={() => handleSubmit()}
               loading={loading}
               style={{
                 backgroundColor: darkMode ? '#059669' : '#10b981',

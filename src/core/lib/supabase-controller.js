@@ -907,6 +907,84 @@ export const createOrganization = async (organizationData, createdBy) => {
 }
 
 /**
+ * Update an existing organization
+ * @param {string} organizationId - Organization UUID
+ * @param {Object} organizationData - Updated organization data
+ * @param {string} modifiedBy - User UUID who modified the organization
+ * @returns {Promise<Object>} Result object with updated organization data
+ */
+export const updateOrganization = async (organizationId, organizationData, modifiedBy) => {
+  try {
+    if (!supabase) {
+      return {
+        success: false,
+        error: 'Supabase client not initialized'
+      }
+    }
+
+    if (!organizationId || !organizationData || !modifiedBy) {
+      return {
+        success: false,
+        error: 'Organization ID, data, and modifier ID are required'
+      }
+    }
+
+    // Validate required fields if they are being updated
+    if (organizationData.organization_name !== undefined && !organizationData.organization_name) {
+      return {
+        success: false,
+        error: 'Organization name cannot be empty'
+      }
+    }
+
+    // Prepare organization data with audit fields
+    const orgData = {
+      ...organizationData,
+      modified_by: modifiedBy,
+      modified_at: new Date().toISOString(),
+      // Ensure arrays are properly formatted if provided
+      industry_tags: organizationData.industry_tags || [],
+      custom_classifications: organizationData.custom_classifications || []
+    }
+
+    // Remove undefined values to avoid overwriting with null
+    Object.keys(orgData).forEach((key) => {
+      if (orgData[key] === undefined) {
+        delete orgData[key]
+      }
+    })
+
+    // Update the organization
+    const { data: organization, error: updateError } = await supabase
+      .from('organizations')
+      .update(orgData)
+      .eq('id', organizationId)
+      .select()
+      .single()
+
+    if (updateError) {
+      console.error('Supabase Controller: Error updating organization:', updateError)
+      return {
+        success: false,
+        error: updateError.message || 'Failed to update organization'
+      }
+    }
+
+    return {
+      success: true,
+      data: organization,
+      message: 'Organization updated successfully'
+    }
+  } catch (error) {
+    console.error('Supabase Controller: Unexpected error in updateOrganization:', error)
+    return {
+      success: false,
+      error: 'An unexpected error occurred while updating organization'
+    }
+  }
+}
+
+/**
  * Update user's organization ID
  * @param {string} userId - User's UUID
  * @param {string} organizationId - Organization UUID
@@ -953,6 +1031,57 @@ export const updateUserOrganization = async (userId, organizationId) => {
     return {
       success: false,
       error: 'An unexpected error occurred while updating user organization'
+    }
+  }
+}
+
+/**
+ * Remove user from organization by clearing their org_id
+ * @param {string} userId - User's UUID
+ * @returns {Promise<Object>} Result object with success status and updated user data
+ */
+export const clearUserOrganization = async (userId) => {
+  try {
+    if (!supabase) {
+      return {
+        success: false,
+        error: 'Supabase client not initialized'
+      }
+    }
+
+    if (!userId) {
+      return {
+        success: false,
+        error: 'User ID is required'
+      }
+    }
+
+    // Clear the user's org_id by setting it to null
+    const { data: userData, error: updateError } = await supabase
+      .from('users')
+      .update({ org_id: null })
+      .eq('id', userId)
+      .select()
+      .single()
+
+    if (updateError) {
+      console.error('Supabase Controller: Error clearing user organization:', updateError)
+      return {
+        success: false,
+        error: updateError.message || 'Failed to remove user from organization'
+      }
+    }
+
+    return {
+      success: true,
+      data: userData,
+      message: 'User successfully removed from organization'
+    }
+  } catch (error) {
+    console.error('Supabase Controller: Unexpected error in clearUserOrganization:', error)
+    return {
+      success: false,
+      error: 'An unexpected error occurred while removing user from organization'
     }
   }
 }

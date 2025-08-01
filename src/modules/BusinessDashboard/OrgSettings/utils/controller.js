@@ -7,6 +7,7 @@
  */
 
 import { validateOrgSettings, transformToDatabase, transformFromDatabase } from './data-model'
+import { getUserOrganization, updateOrganization } from '../../../../core/lib/supabase-controller'
 
 class OrgSettingsController {
   constructor() {
@@ -15,49 +16,100 @@ class OrgSettingsController {
 
   /**
    * Get organization settings
+   * @param {string} userId - User's UUID
    * @returns {Promise} Organization settings data
    */
-  async getOrgSettings() {
+  async getOrgSettings(userId) {
     try {
-      // In a real app, this would make an API call
-      // const response = await supabaseController.from('organization_settings').select('*').single()
-      
-      // For now, return mock data
+      if (!userId) {
+        return {
+          success: false,
+          error: 'User ID is required'
+        }
+      }
+
+      // Get user's organization data from Supabase
+      const result = await getUserOrganization(userId)
+
+      if (!result.success) {
+        return result
+      }
+
+      // If user has no organization, return empty data
+      if (!result.data.hasOrganization || !result.data.organization) {
+        return {
+          success: true,
+          data: null,
+          hasOrganization: false
+        }
+      }
+
+      // Transform database data to frontend format
+      const organizationData = transformFromDatabase(result.data.organization)
+
       return {
         success: true,
-        data: this.getMockOrgSettings()
+        data: organizationData,
+        hasOrganization: true
       }
     } catch (error) {
       console.error('Error fetching organization settings:', error)
-      throw new Error('Failed to fetch organization settings')
+      return {
+        success: false,
+        error: 'Failed to fetch organization settings'
+      }
     }
   }
 
   /**
    * Update organization settings
+   * @param {string} organizationId - Organization UUID
    * @param {Object} settingsData - Updated settings data
+   * @param {string} userId - User UUID who is updating the settings
    * @returns {Promise} Updated settings
    */
-  async updateOrgSettings(settingsData) {
+  async updateOrgSettings(organizationId, settingsData, userId) {
     try {
+      if (!organizationId || !settingsData || !userId) {
+        return {
+          success: false,
+          error: 'Organization ID, settings data, and user ID are required'
+        }
+      }
+
       // Validate settings data
       const validationResult = validateOrgSettings(settingsData)
       if (!validationResult.isValid) {
-        throw new Error(validationResult.errors.join(', '))
+        return {
+          success: false,
+          error: validationResult.errors.join(', ')
+        }
       }
 
-      // In a real app, this would make an API call
-      // const response = await supabaseController.from('organization_settings')
-      //   .upsert({ ...settingsData, updated_at: new Date().toISOString() })
+      // Transform frontend data to database format
+      const databaseData = transformToDatabase(settingsData)
+
+      // Update organization in Supabase
+      const result = await updateOrganization(organizationId, databaseData, userId)
+
+      if (!result.success) {
+        return result
+      }
+
+      // Transform updated data back to frontend format
+      const updatedData = transformFromDatabase(result.data)
 
       return {
         success: true,
-        data: { ...settingsData, updatedAt: new Date().toISOString() },
-        message: 'Organization settings updated successfully'
+        data: updatedData,
+        message: result.message
       }
     } catch (error) {
       console.error('Error updating organization settings:', error)
-      throw new Error('Failed to update organization settings')
+      return {
+        success: false,
+        error: 'Failed to update organization settings'
+      }
     }
   }
 
@@ -70,10 +122,10 @@ class OrgSettingsController {
     try {
       // In a real app, this would call an AI service
       // const response = await aiService.generateOrgProfile(aiInputs)
-      
+
       // Mock AI processing
       const aiProfile = this.generateMockAIProfile(aiInputs)
-      
+
       return {
         success: true,
         data: aiProfile,
@@ -121,9 +173,23 @@ class OrgSettingsController {
       return {
         success: true,
         data: [
-          'United States', 'United Kingdom', 'Canada', 'Germany', 'France',
-          'Australia', 'Netherlands', 'Sweden', 'Norway', 'Denmark', 'Switzerland',
-          'Spain', 'Italy', 'Portugal', 'Belgium', 'Austria', 'Finland'
+          'United States',
+          'United Kingdom',
+          'Canada',
+          'Germany',
+          'France',
+          'Australia',
+          'Netherlands',
+          'Sweden',
+          'Norway',
+          'Denmark',
+          'Switzerland',
+          'Spain',
+          'Italy',
+          'Portugal',
+          'Belgium',
+          'Austria',
+          'Finland'
         ]
       }
     } catch (error) {
@@ -168,9 +234,21 @@ class OrgSettingsController {
       return {
         success: true,
         data: [
-          'Technology', 'Healthcare', 'Finance', 'Education', 'Retail',
-          'Manufacturing', 'Consulting', 'Media', 'Government', 'Non-profit',
-          'Real Estate', 'Transportation', 'Energy', 'Agriculture', 'Other'
+          'Technology',
+          'Healthcare',
+          'Finance',
+          'Education',
+          'Retail',
+          'Manufacturing',
+          'Consulting',
+          'Media',
+          'Government',
+          'Non-profit',
+          'Real Estate',
+          'Transportation',
+          'Energy',
+          'Agriculture',
+          'Other'
         ]
       }
     } catch (error) {
@@ -188,10 +266,25 @@ class OrgSettingsController {
       return {
         success: true,
         data: [
-          'Software Development', 'Cloud Computing', 'AI/Machine Learning', 'Data Analytics',
-          'Cybersecurity', 'Mobile Development', 'Web Development', 'DevOps', 'SaaS',
-          'E-commerce', 'Fintech', 'Healthcare Tech', 'EdTech', 'PropTech',
-          'IoT', 'Blockchain', 'AR/VR', 'Digital Marketing', 'UI/UX Design'
+          'Software Development',
+          'Cloud Computing',
+          'AI/Machine Learning',
+          'Data Analytics',
+          'Cybersecurity',
+          'Mobile Development',
+          'Web Development',
+          'DevOps',
+          'SaaS',
+          'E-commerce',
+          'Fintech',
+          'Healthcare Tech',
+          'EdTech',
+          'PropTech',
+          'IoT',
+          'Blockchain',
+          'AR/VR',
+          'Digital Marketing',
+          'UI/UX Design'
         ]
       }
     } catch (error) {
@@ -209,7 +302,7 @@ class OrgSettingsController {
     try {
       // In a real app, this would validate the domain
       const isValid = /^https?:\/\/.+\..+/.test(website)
-      
+
       return {
         success: true,
         data: {
@@ -230,11 +323,10 @@ class OrgSettingsController {
   async getOrgStatistics() {
     try {
       const settings = this.getMockOrgSettings()
-      
+
       const stats = {
         profileCompleteness: this.calculateProfileCompleteness(settings),
-        lastUpdated: settings.updatedAt || new Date().toISOString(),
-        aiEnhanced: settings.aiProfileEnabled,
+        lastUpdated: settings.modifiedAt || new Date().toISOString(),
         totalSettings: Object.keys(settings).length,
         industryTagCount: settings.industryTags?.length || 0,
         customClassificationCount: settings.customClassifications?.length || 0
@@ -256,35 +348,42 @@ class OrgSettingsController {
    * @returns {number} Completeness percentage
    */
   calculateProfileCompleteness(settings) {
-    const requiredFields = [
-      'organizationName', 'industry', 'description', 'currency', 
-      'country', 'language', 'defaultWorkArrangement'
-    ]
-    
+    const requiredFields = ['organizationName'] // Only organization_name is NOT NULL in schema
+
     const optionalFields = [
-      'website', 'foundedYear', 'employeeRange', 'industryTags', 'customClassifications'
+      'industry',
+      'description',
+      'website',
+      'foundedYear',
+      'employeeRange',
+      'defaultWorkArrangement',
+      'currency',
+      'country',
+      'language',
+      'timezone',
+      'industryTags',
+      'customClassifications'
     ]
-    
+
     let completedRequired = 0
     let completedOptional = 0
-    
-    requiredFields.forEach(field => {
+
+    requiredFields.forEach((field) => {
       if (settings[field] && settings[field] !== '') {
         completedRequired++
       }
     })
-    
-    optionalFields.forEach(field => {
-      if (settings[field] && 
-          (Array.isArray(settings[field]) ? settings[field].length > 0 : settings[field] !== '')) {
+
+    optionalFields.forEach((field) => {
+      if (settings[field] && (Array.isArray(settings[field]) ? settings[field].length > 0 : settings[field] !== '')) {
         completedOptional++
       }
     })
-    
+
     // Required fields are worth 70%, optional 30%
     const requiredScore = (completedRequired / requiredFields.length) * 70
     const optionalScore = (completedOptional / optionalFields.length) * 30
-    
+
     return Math.round(requiredScore + optionalScore)
   }
 
@@ -295,21 +394,21 @@ class OrgSettingsController {
    */
   generateMockAIProfile(inputs) {
     const { businessFocus, targetMarket, uniqueValue, companySize, workCulture } = inputs
-    
+
     let description = businessFocus || 'We are a dynamic organization focused on delivering exceptional results.'
-    
+
     if (targetMarket) {
       description += ` We serve ${targetMarket.toLowerCase()}, providing tailored solutions that meet their specific needs.`
     }
-    
+
     if (uniqueValue) {
       description += ` ${uniqueValue} This sets us apart in the competitive landscape.`
     }
-    
+
     if (workCulture) {
       description += ` Our ${workCulture.toLowerCase()} drives everything we do, ensuring we attract top talent and deliver exceptional results.`
     }
-    
+
     // Generate industry tags based on business focus
     const industryTags = ['Software Development', 'Technology']
     if (businessFocus?.toLowerCase().includes('cloud')) {
@@ -321,7 +420,7 @@ class OrgSettingsController {
     if (businessFocus?.toLowerCase().includes('saas')) {
       industryTags.push('SaaS')
     }
-    
+
     // Generate custom classifications
     const customClassifications = ['Innovation-Driven']
     if (companySize?.toLowerCase().includes('startup')) {
@@ -330,7 +429,7 @@ class OrgSettingsController {
     if (workCulture?.toLowerCase().includes('remote')) {
       customClassifications.push('Remote-First')
     }
-    
+
     return {
       description,
       industryTags: [...new Set(industryTags)],
@@ -348,31 +447,28 @@ class OrgSettingsController {
       // Organization Profile
       organizationName: 'TechCorp Solutions',
       industry: 'Technology',
-      description: 'We are a leading technology company focused on innovative software solutions that help businesses transform digitally.',
+      description:
+        'We are a leading technology company focused on innovative software solutions that help businesses transform digitally.',
       website: 'https://techcorp.com',
       foundedYear: '2020',
       employeeRange: '50-200',
-      
+
       // Work Arrangements
       defaultWorkArrangement: 'hybrid',
-      
+
       // Preferences
       currency: 'USD',
       country: 'United States',
       language: 'English',
       timezone: 'America/New_York',
-      
+
       // Industry Tags
       industryTags: ['Software Development', 'Cloud Computing', 'AI/Machine Learning', 'SaaS'],
       customClassifications: ['Startup', 'B2B', 'Enterprise Solutions'],
-      
-      // AI Profile settings
-      aiProfileEnabled: true,
-      lastAiUpdate: '2024-01-15T10:30:00Z',
-      
+
       // System fields
       createdAt: '2024-01-01T00:00:00Z',
-      updatedAt: '2024-01-15T10:30:00Z'
+      modifiedAt: '2024-01-15T10:30:00Z'
     }
   }
 
@@ -395,8 +491,7 @@ class OrgSettingsController {
         language: 'English',
         timezone: 'America/New_York',
         industryTags: [],
-        customClassifications: [],
-        aiProfileEnabled: true
+        customClassifications: []
       }
 
       return {
@@ -411,4 +506,4 @@ class OrgSettingsController {
   }
 }
 
-export default new OrgSettingsController() 
+export default new OrgSettingsController()

@@ -96,9 +96,9 @@ const AppRoutes = () => {
           user ? (
             (() => {
               // Check for saved dashboard preference
-              const savedDashboard = localStorage.getItem('skillscout_dashboard_type')
-              const targetPath = savedDashboard === 'business' ? '/business-dashboard' : '/dashboard'
-              return <Navigate to={targetPath} replace user={user} />
+              // const savedDashboard = localStorage.getItem('skillscout_dashboard_type')
+              // const targetPath = savedDashboard === 'business' ? '/business-dashboard' : '/dashboard'
+              return <Navigate to='/business-dashboard' replace user={user} />
             })()
           ) : (
             <DefaultLayout>
@@ -109,7 +109,7 @@ const AppRoutes = () => {
       />
 
       {/* Protected routes */}
-      <Route
+      {/* <Route
         path='/dashboard'
         element={
           user ? (
@@ -120,7 +120,7 @@ const AppRoutes = () => {
             <Navigate to='/' replace state={{ from: location }} />
           )
         }
-      />
+      /> */}
 
       <Route
         path='/business-dashboard'
@@ -448,7 +448,7 @@ const AppRoutes = () => {
       />
 
       {/* Fallback - redirect to dashboard if logged in, otherwise to login */}
-      <Route path='*' element={user ? <Navigate to='/dashboard' replace /> : <Navigate to='/' replace />} />
+      <Route path='*' element={user ? <Navigate to='/business-dashboard' replace /> : <Navigate to='/' replace />} />
     </Routes>
   )
 }
