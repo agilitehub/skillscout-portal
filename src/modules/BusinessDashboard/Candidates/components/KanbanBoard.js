@@ -627,6 +627,7 @@ if (typeof document !== 'undefined') {
       background-color: #10B981 !important;
       color: #FFFFFF !important;
     }
+    
   `
   if (!document.head.querySelector('#kanban-filter-styles')) {
     style.id = 'kanban-filter-styles'

@@ -231,7 +231,16 @@ const Candidates = React.memo(({ user }) => {
       sorter: (a, b) => a.name.localeCompare(b.name),
       render: (text, record) => (
         <div className='font-medium'>
-          <div className={darkMode ? 'text-white' : 'text-gray-900'}>{text}</div>
+          <div 
+            className={`cursor-pointer transition-colors duration-200 ${
+              darkMode 
+                ? 'text-blue-400 hover:text-blue-300' 
+                : 'text-blue-600 hover:text-blue-800'
+            }`}
+            onClick={() => handleEdit(record)}
+          >
+            {text}
+          </div>
           <div className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-500'}`}>{record.email}</div>
         </div>
       )

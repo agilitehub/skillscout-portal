@@ -156,14 +156,19 @@ const CandidateCard = React.memo(
         {/* Edit Button */}
         <div
           className={`absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 ${
-            darkMode ? 'text-gray-400 hover:text-white' : 'text-gray-400 hover:text-gray-600'
+            darkMode ? 'text-gray-400 hover:text-white' : 'text-gray-700 hover:text-gray-900'
           }`}
         >
           <Button
             size='small'
             type='text'
             icon={<FontAwesomeIcon icon={faEdit} className='w-3 h-3' />}
-            className={`p-1 ${darkMode ? 'text-gray-400 hover:text-white' : 'text-gray-400 hover:text-gray-600'}`}
+            className={`p-1 ${darkMode ? 'text-gray-400 hover:text-white' : 'text-gray-700 hover:text-gray-900'}`}
+            style={darkMode ? {} : {
+              backgroundColor: 'rgba(255, 255, 255, 0.9)',
+              border: '1px solid #d1d5db',
+              borderRadius: '4px'
+            }}
             onClick={(e) => {
               e.stopPropagation()
               onEditCandidate(candidate)
@@ -254,8 +259,14 @@ const CandidateCard = React.memo(
                   size='small'
                   type='text'
                   className={`opacity-0 group-hover:opacity-100 transition-opacity duration-200 ${
-                    darkMode ? 'text-gray-400 hover:text-white' : 'text-gray-500 hover:text-gray-700'
+                    darkMode ? 'text-gray-400 hover:text-white' : 'text-gray-700 hover:text-gray-900'
                   }`}
+                  style={darkMode ? {} : {
+                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                    border: '1px solid #d1d5db',
+                    borderRadius: '4px',
+                    fontWeight: '500'
+                  }}
                   onMouseDown={(e) => e.stopPropagation()}
                   onClick={(e) => e.stopPropagation()}
                 >
