@@ -274,6 +274,14 @@ const JobListings = React.memo(({ user }) => {
                 icon: faTrash,
                 tooltip: 'Delete Job',
                 onClick: () => handleDeleteJob(record.id),
+                color: darkMode ? '!text-white hover:!text-white' : '!text-white hover:!text-white',
+                style: {
+                  backgroundColor: '#dc2626',
+                  borderColor: '#dc2626',
+                  borderRadius: '6px',
+                  padding: '4px 8px',
+                  color: '#ffffff'
+                },
                 confirm: {
                   title: 'Delete Job Listing',
                   description: 'Are you sure you want to delete this job listing? This action cannot be undone.',
@@ -445,6 +453,33 @@ const JobListings = React.memo(({ user }) => {
           background-color: #f8f9fa !important;
           color: #047857 !important;
           border: 1px solid #f8f9fa !important;
+        }
+
+        /* Delete Icon Styling for Better Visibility */
+        .ant-table-tbody .ant-space .ant-btn[style*="background-color: rgb(220, 38, 38)"],
+        .ant-table-tbody .ant-space .ant-btn[style*="backgroundColor:#dc2626"] {
+          background: #dc2626 !important;
+          border-color: #dc2626 !important;
+        }
+        
+        .ant-table-tbody .ant-space .ant-btn[style*="background-color: rgb(220, 38, 38)"] .anticon,
+        .ant-table-tbody .ant-space .ant-btn[style*="backgroundColor:#dc2626"] .anticon {
+          color: #ffffff !important;
+          filter: brightness(0) invert(1) !important;
+        }
+        
+        /* Prevent hover background change and keep red background */
+        .ant-table-tbody .ant-space .ant-btn[style*="background-color: rgb(220, 38, 38)"]:hover,
+        .ant-table-tbody .ant-space .ant-btn[style*="backgroundColor:#dc2626"]:hover {
+          background: #b91c1c !important;
+          background-color: #b91c1c !important;
+          border-color: #b91c1c !important;
+        }
+        
+        .ant-table-tbody .ant-space .ant-btn[style*="background-color: rgb(220, 38, 38)"]:hover .anticon,
+        .ant-table-tbody .ant-space .ant-btn[style*="backgroundColor:#dc2626"]:hover .anticon {
+          color: #ffffff !important;
+          filter: brightness(0) invert(1) !important;
         }
       `}</style>
     </div>

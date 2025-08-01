@@ -31,34 +31,45 @@ const Candidates = React.memo(({ user }) => {
   const [selectedCandidate, setSelectedCandidate] = useState(null)
   const [selectedJobListing, setSelectedJobListing] = useState(null) // Job listing filter
 
-  // Sample candidates data - in real app this would come from API
-  const [candidatesData, setCandidatesData] = useState({
-    'application-received': [
-      {
-        id: 1,
-        name: 'John Smith',
-        position: 'Senior React Developer',
-        jobListingId: 1,
-        email: 'john.smith@email.com',
-        phone: '+1 (555) 123-4567',
-        appliedDate: '2024-01-15',
-        priority: 'high',
-        tags: ['React', 'JavaScript', 'Senior'],
-        notes: 'Strong technical background with 5+ years experience'
-      },
-      {
-        id: 2,
-        name: 'Sarah Johnson',
-        position: 'UX Designer',
-        jobListingId: 2,
-        email: 'sarah.johnson@email.com',
-        phone: '+1 (555) 987-6543',
-        appliedDate: '2024-01-14',
-        priority: 'medium',
-        tags: ['UI/UX', 'Figma', 'Design'],
-        notes: 'Impressive portfolio with modern design approach'
+  // Load candidates data from localStorage or use default sample data
+  const getInitialCandidatesData = () => {
+    try {
+      const saved = localStorage.getItem('candidatesData')
+      if (saved) {
+        return JSON.parse(saved)
       }
-    ],
+    } catch (error) {
+      console.warn('Error loading candidates data from localStorage:', error)
+    }
+    
+    // Default sample data
+    return {
+      'application-received': [
+        {
+          id: 1,
+          name: 'John Smith',
+          position: 'Senior React Developer',
+          jobListingId: 1,
+          email: 'john.smith@email.com',
+          phone: '+1 (555) 123-4567',
+          appliedDate: '2024-01-15',
+          priority: 'high',
+          tags: ['React', 'JavaScript', 'Senior'],
+          notes: 'Strong technical background with 5+ years experience'
+        },
+        {
+          id: 2,
+          name: 'Sarah Johnson',
+          position: 'UX Designer',
+          jobListingId: 2,
+          email: 'sarah.johnson@email.com',
+          phone: '+1 (555) 987-6543',
+          appliedDate: '2024-01-14',
+          priority: 'medium',
+          tags: ['UI/UX', 'Figma', 'Design'],
+          notes: 'Impressive portfolio with modern design approach'
+        }
+      ],
     screening: [
       {
         id: 3,
@@ -129,7 +140,19 @@ const Candidates = React.memo(({ user }) => {
         notes: 'Offer extended, awaiting response'
       }
     ]
-  })
+    }
+  }
+
+  const [candidatesData, setCandidatesData] = useState(getInitialCandidatesData)
+
+  // Save candidates data to localStorage whenever it changes
+  React.useEffect(() => {
+    try {
+      localStorage.setItem('candidatesData', JSON.stringify(candidatesData))
+    } catch (error) {
+      console.warn('Error saving candidates data to localStorage:', error)
+    }
+  }, [candidatesData])
 
   // Sample job listings - in real app this would come from API
   const jobListings = useMemo(() => [
@@ -644,57 +667,23 @@ const Candidates = React.memo(({ user }) => {
             ) : (
               /* Table View */
               <div>
-                {/* View Toggle for Table Mode */}
-                <div className={`mb-4 p-4 rounded-lg border ${
-                  darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
-                }`}>
-                  <div className='flex items-center justify-between'>
-                    <div className='flex items-center space-x-2'>
-                      <span className={`text-sm font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                        View as:
-                      </span>
-                    </div>
-                    
-                    <Select
-                      value={viewMode}
-                      onChange={handleViewToggle}
-                      style={{
-                        width: 140,
-                        height: 32
-                      }}
-                      className={`${darkMode ? 'table-view-select-dark' : ''}`}
-                      size='small'
-                      dropdownClassName={darkMode ? 'table-view-dark-dropdown' : ''}
-                      options={[
-                        {
-                          value: 'kanban',
-                          label: (
-                            <div className='flex items-center space-x-2'>
-                              <FontAwesomeIcon icon={faColumns} />
-                              <span>Board</span>
-                            </div>
-                          )
-                        },
-                        {
-                          value: 'table',
-                          label: (
-                            <div className='flex items-center space-x-2'>
-                              <FontAwesomeIcon icon={faTable} />
-                              <span>Table</span>
-                            </div>
-                          )
-                        }
-                      ]}
-                    />
-                  </div>
-                </div>
+                {/* Use the same FilterBar component for consistency */}
+                <KanbanBoard.FilterBar
+                  jobListings={jobListings}
+                  selectedJobListing={selectedJobListing}
+                  onJobListingChange={handleJobListingChange}
+                  searchTerm={searchTerm}
+                  onSearchChange={handleSearch}
+                  darkMode={darkMode}
+                  viewMode={viewMode}
+                  onViewModeChange={handleViewToggle}
+                  showViewToggle={true}
+                />
 
                 <TableView
                   columns={tableColumns}
                   dataSource={filteredCandidates}
-                  searchTerm={searchTerm}
-                  onSearch={handleSearch}
-                  searchPlaceholder='Search candidates by name, position, email, or tags...'
+                  showSearch={false}
                   pagination={{
                     pageSize: 15,
                     showSizeChanger: true,
@@ -810,51 +799,6 @@ const Candidates = React.memo(({ user }) => {
               }
               .dark-descriptions .ant-descriptions-bordered .ant-descriptions-row {
                 border-bottom: 1px solid ${BRAND_COLORS.darkSlate} !important;
-              }
-              
-              /* Table View Select Dark Mode Styles */
-              .table-view-select-dark .ant-select-selector {
-                background-color: ${BRAND_COLORS.mediumSlate} !important;
-                border-color: ${BRAND_COLORS.darkSlate} !important;
-                color: ${BRAND_COLORS.white} !important;
-              }
-              
-              .table-view-select-dark .ant-select-selection-placeholder {
-                color: ${BRAND_COLORS.lightGray} !important;
-              }
-              
-              .table-view-select-dark .ant-select-selection-item {
-                color: ${BRAND_COLORS.white} !important;
-              }
-              
-              .table-view-select-dark .ant-select-arrow {
-                color: ${BRAND_COLORS.lightGray} !important;
-              }
-              
-              .table-view-select-dark:hover .ant-select-selector {
-                border-color: ${BRAND_COLORS.emeraldPrimary} !important;
-              }
-              
-              .table-view-select-dark.ant-select-focused .ant-select-selector {
-                border-color: ${BRAND_COLORS.emeraldPrimary} !important;
-                box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2) !important;
-              }
-              
-              .table-view-dark-dropdown {
-                background-color: ${BRAND_COLORS.darkSlateAlt} !important;
-              }
-              
-              .table-view-dark-dropdown .ant-select-item {
-                color: ${BRAND_COLORS.white} !important;
-              }
-              
-              .table-view-dark-dropdown .ant-select-item:hover {
-                background-color: ${BRAND_COLORS.mediumSlate} !important;
-              }
-              
-              .table-view-dark-dropdown .ant-select-item-option-selected {
-                background-color: ${BRAND_COLORS.emeraldPrimary} !important;
-                color: ${BRAND_COLORS.white} !important;
               }
             ` : ''}
             

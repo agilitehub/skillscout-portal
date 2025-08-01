@@ -59,6 +59,7 @@ const CreateJobDescription = React.memo(({ user }) => {
   const [validationModalVisible, setValidationModalVisible] = useState(false)
   const [validationErrors, setValidationErrors] = useState([])
   const [activeTab, setActiveTab] = useState('1')
+  const [isFormReady, setIsFormReady] = useState(false)
 
   const [fieldCompletionCounts, setFieldCompletionCounts] = useState({
     basicInfo: { completed: 0, total: 6 },
@@ -71,41 +72,60 @@ const CreateJobDescription = React.memo(({ user }) => {
 
   // Calculate field completion counts
   const calculateFieldCounts = useCallback(() => {
-    const values = form.getFieldsValue()
+    try {
+      const values = form.getFieldsValue()
+      
+      // Debug log to see what values we're getting
+      console.log('Calculating field counts with values:', values)
 
-    // Basic Info required fields
-    const basicInfoFields = ['title', 'department', 'reportsToRole', 'experienceLevel', 'keywords', 'overview']
-    const basicInfoCompleted = basicInfoFields.filter((field) => {
-      const value = values[field]
-      if (field === 'keywords') {
-        return Array.isArray(value) && value.length > 0
-      }
-      return value && String(value).trim().length > 0
-    }).length
+      // Basic Info required fields
+      const basicInfoFields = ['title', 'department', 'reportsToRole', 'experienceLevel', 'keywords', 'overview']
+      const basicInfoCompleted = basicInfoFields.filter((field) => {
+        const value = values[field]
+        if (field === 'keywords') {
+          return Array.isArray(value) && value.length > 0
+        }
+        return value && String(value).trim().length > 0
+      }).length
 
-    // Detailed Info required fields
-    const detailedInfoFields = [
-      'responsibilities',
-      'requirements',
-      'educationExperience',
-      'technicalSkills',
-      'softSkills'
-    ]
-    const detailedInfoCompleted = detailedInfoFields.filter((field) => {
-      const value = values[field]
-      return value && String(value).trim().length > 0
-    }).length
+      // Detailed Info required fields
+      const detailedInfoFields = [
+        'responsibilities',
+        'requirements',
+        'educationExperience',
+        'technicalSkills',
+        'softSkills'
+      ]
+      const detailedInfoCompleted = detailedInfoFields.filter((field) => {
+        const value = values[field]
+        return value && String(value).trim().length > 0
+      }).length
 
-    setFieldCompletionCounts({
-      basicInfo: { completed: basicInfoCompleted, total: 6 },
-      detailedInfo: { completed: detailedInfoCompleted, total: 5 }
-    })
+      console.log('Field counts calculated:', { 
+        basicInfo: { completed: basicInfoCompleted, total: 6 },
+        detailedInfo: { completed: detailedInfoCompleted, total: 5 }
+      })
+
+      setFieldCompletionCounts({
+        basicInfo: { completed: basicInfoCompleted, total: 6 },
+        detailedInfo: { completed: detailedInfoCompleted, total: 5 }
+      })
+    } catch (error) {
+      console.error('Error calculating field counts:', error)
+    }
   }, [form])
 
   // Load lookup data on component mount
   useEffect(() => {
     loadLookupData()
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+    // For new forms (not edit mode), mark as ready after lookups load
+    if (!isEditMode) {
+      setTimeout(() => {
+        console.log('New form ready after lookups loaded')
+        setIsFormReady(true)
+      }, 1000)
+    }
+  }, [isEditMode]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Load existing data when in edit mode
   useEffect(() => {
@@ -116,11 +136,54 @@ const CreateJobDescription = React.memo(({ user }) => {
 
   // Calculate initial field counts when component mounts and when lookups are loaded
   useEffect(() => {
-    if (!lookupsLoading) {
-      calculateFieldCounts()
+    if (!lookupsLoading && !initialDataLoading) {
+      // Add a delay to ensure form values are properly set
+      setTimeout(() => {
+        calculateFieldCounts()
+      }, 200)
     }
     // eslint-disable-next-line
-  }, [lookupsLoading])
+  }, [lookupsLoading, initialDataLoading])
+
+  // Additional effect to recalculate when form gets populated (especially useful for edit mode)
+  useEffect(() => {
+    if (!lookupsLoading && !initialDataLoading) {
+      const formValues = form.getFieldsValue()
+      // Check if form has been populated with meaningful data
+      if (formValues.title || formValues.overview || formValues.responsibilities) {
+        setTimeout(() => {
+          calculateFieldCounts()
+        }, 100)
+      }
+    }
+  }, [form, lookupsLoading, initialDataLoading, calculateFieldCounts])
+
+  // Force recalculation when the component is fully mounted and form is ready
+  useEffect(() => {
+    if (!lookupsLoading && !initialDataLoading) {
+      // Use multiple attempts to ensure we catch the form when it's fully populated
+      const timeouts = [500, 1000, 1500] // Try at 500ms, 1s, and 1.5s
+      
+      timeouts.forEach(delay => {
+        setTimeout(() => {
+          const values = form.getFieldsValue()
+          if (Object.keys(values).length > 0) {
+            console.log('Force recalculating at', delay, 'ms with values:', values)
+            calculateFieldCounts()
+            setIsFormReady(true)
+          }
+        }, delay)
+      })
+    }
+  }, [lookupsLoading, initialDataLoading, form, calculateFieldCounts])
+
+  // Recalculate whenever the form becomes ready
+  useEffect(() => {
+    if (isFormReady) {
+      console.log('Form is ready, calculating field counts...')
+      calculateFieldCounts()
+    }
+  }, [isFormReady, calculateFieldCounts])
 
   // Load existing job description data for editing
   const loadExistingJobDescription = useCallback(
@@ -146,10 +209,11 @@ const CreateJobDescription = React.memo(({ user }) => {
             preferredSkills: result.data.preferredSkills
           })
 
-          // Calculate field counts after loading data
+          // Calculate field counts after loading data and mark form as ready
           setTimeout(() => {
             calculateFieldCounts()
-          }, 100)
+            setIsFormReady(true)
+          }, 300)
         } else {
           console.error('Error loading job description for edit:', result.error)
           message.error('Failed to load job description data: ' + result.error)
@@ -372,10 +436,14 @@ const CreateJobDescription = React.memo(({ user }) => {
 
   // Clear validation errors when form values change
   const handleFormChange = useCallback(() => {
-    // Update field completion counts with a small delay to ensure form values are updated
+    // Update field completion counts with multiple attempts to ensure accuracy
     setTimeout(() => {
       calculateFieldCounts()
     }, 50)
+    
+    setTimeout(() => {
+      calculateFieldCounts()
+    }, 200)
 
     // Clear validation error indicators when user starts making changes
     if (tabValidationErrors.basicInfo || tabValidationErrors.detailedInfo || validationModalVisible) {
@@ -387,7 +455,7 @@ const CreateJobDescription = React.memo(({ user }) => {
       setValidationErrors([])
     }
     // eslint-disable-next-line
-  }, [tabValidationErrors, validationModalVisible])
+  }, [tabValidationErrors, validationModalVisible, calculateFieldCounts])
 
   // Handle tab change and recalculate counts
   const handleTabChange = useCallback((newActiveKey) => {

@@ -276,6 +276,8 @@ const CreateJobListing = React.memo(({ user }) => {
           </style>
         )}
 
+
+
         <div className='flex-1 overflow-auto p-6 ml-64'>
           <Card className={`max-w-4xl mx-auto ${darkMode ? 'bg-gray-700 border-gray-600' : ''}`}>
             <Form
@@ -418,12 +420,42 @@ const CreateJobListing = React.memo(({ user }) => {
 
               {/* Form Actions */}
               <div className='flex justify-end space-x-4 mt-6'>
-                <Button icon={<FontAwesomeIcon icon={faTimes} />} onClick={handleGoBack} size='large'>
+                <Button 
+                  icon={<FontAwesomeIcon icon={faTimes} className="mr-2" />} 
+                  onClick={handleGoBack} 
+                  size='large'
+                  type='default'
+                  style={{
+                    backgroundColor: darkMode ? '#374151' : '#ffffff',
+                    borderColor: darkMode ? '#4b5563' : '#d1d5db',
+                    color: darkMode ? '#ffffff' : '#374151',
+                    fontWeight: '500',
+                    boxShadow: darkMode 
+                      ? '0 1px 3px rgba(0, 0, 0, 0.3)' 
+                      : '0 1px 2px rgba(0, 0, 0, 0.05)'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.backgroundColor = darkMode ? '#4b5563' : '#f9fafb'
+                    e.target.style.borderColor = darkMode ? '#6b7280' : '#9ca3af'
+                    e.target.style.transform = 'translateY(-1px)'
+                    e.target.style.boxShadow = darkMode 
+                      ? '0 2px 6px rgba(0, 0, 0, 0.4)' 
+                      : '0 2px 4px rgba(0, 0, 0, 0.1)'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.backgroundColor = darkMode ? '#374151' : '#ffffff'
+                    e.target.style.borderColor = darkMode ? '#4b5563' : '#d1d5db'
+                    e.target.style.transform = 'translateY(0)'
+                    e.target.style.boxShadow = darkMode 
+                      ? '0 1px 3px rgba(0, 0, 0, 0.3)' 
+                      : '0 1px 2px rgba(0, 0, 0, 0.05)'
+                  }}
+                >
                   Cancel
                 </Button>
                 <Button
                   type='primary'
-                  icon={<FontAwesomeIcon icon={faSave} />}
+                  icon={<FontAwesomeIcon icon={faSave} className="mr-2" />}
                   onClick={() => form.submit()}
                   loading={loading}
                   size='large'
