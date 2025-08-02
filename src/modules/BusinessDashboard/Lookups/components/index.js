@@ -455,6 +455,21 @@ const Lookups = React.memo(({ user }) => {
           border: 1px solid #ffffff !important;
           opacity: 1 !important;
           visibility: visible !important;
+          font-weight: 500 !important;
+          padding: 8px 16px !important;
+          height: auto !important;
+          min-height: 40px !important;
+          display: inline-flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          border-radius: 6px !important;
+        }
+        
+        .create-new-btn svg,
+        .create-new-btn .anticon,
+        .create-new-btn i {
+          color: #059669 !important;
+          margin-right: 8px !important;
         }
         
         .create-new-btn:hover,
@@ -464,6 +479,12 @@ const Lookups = React.memo(({ user }) => {
           background-color: #f0fdf4 !important;
           color: #047857 !important;
           border-color: #f0fdf4 !important;
+        }
+        
+        .create-new-btn:hover svg,
+        .create-new-btn:hover .anticon,
+        .create-new-btn:hover i {
+          color: #047857 !important;
         }
 
         /* Lookups Action Button Styling */
@@ -521,6 +542,43 @@ const Lookups = React.memo(({ user }) => {
           border-color: #059669 !important;
           color: white !important;
           box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
+        }
+
+        /* Table Row Expand Icon Styling */
+        .ant-table-row-expand-icon-cell button,
+        .ant-table-row-expand-icon-cell .ant-btn {
+          background-color: #059669 !important;
+          border-color: #059669 !important;
+          color: white !important;
+          width: 24px !important;
+          height: 24px !important;
+          min-height: 24px !important;
+          padding: 4px !important;
+          border-radius: 4px !important;
+          display: inline-flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          border: 1px solid #059669 !important;
+        }
+        
+        .ant-table-row-expand-icon-cell button:hover,
+        .ant-table-row-expand-icon-cell .ant-btn:hover {
+          background-color: #047857 !important;
+          border-color: #047857 !important;
+          color: white !important;
+          transform: none !important;
+        }
+        
+        .ant-table-row-expand-icon-cell button svg,
+        .ant-table-row-expand-icon-cell .ant-btn svg {
+          color: white !important;
+          width: 12px !important;
+          height: 12px !important;
+        }
+        
+        .ant-table-row-expand-icon-cell button svg path,
+        .ant-table-row-expand-icon-cell .ant-btn svg path {
+          fill: white !important;
         }
       `}</style>
 
@@ -612,18 +670,9 @@ const Lookups = React.memo(({ user }) => {
                     key='create' 
                     type='default' 
                     size='large'
-                    icon={<FontAwesomeIcon icon={faPlus} className="mr-2" />} 
+                    icon={<FontAwesomeIcon icon={faPlus} />} 
                     onClick={handleAdd}
                     className="create-new-btn font-medium"
-                    style={{
-                      background: '#ffffff',
-                      backgroundColor: '#ffffff',
-                      color: '#059669',
-                      border: '1px solid #ffffff',
-                      fontWeight: '500',
-                      boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                      opacity: '1'
-                    }}
                   >
                     Create New
                   </Button>
