@@ -271,20 +271,20 @@ const Billing = React.memo(({ user }) => {
       render: (_, invoice) => (
         <Space>
           <Button
-            type="text"
+            type="primary"
             size="small"
             icon={<FontAwesomeIcon icon={faEdit} />}
             onClick={() => handleViewInvoice(invoice)}
-            className={darkMode ? 'text-emerald-400 hover:text-emerald-300' : 'text-emerald-600 hover:text-emerald-700'}
+            className="invoice-view-btn"
           >
             View
           </Button>
           <Button
-            type="text"
+            type="primary"
             size="small"
             icon={<FontAwesomeIcon icon={faDownload} />}
             onClick={() => handleDownloadInvoice(invoice)}
-            className={darkMode ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-700'}
+            className="invoice-download-btn"
           >
             Download
           </Button>
@@ -669,6 +669,71 @@ const Billing = React.memo(({ user }) => {
 
       {/* Dark mode styles */}
       <style jsx global>{`
+        /* Invoice Action Button Styling */
+        .invoice-view-btn {
+          background-color: #059669 !important;
+          border-color: #059669 !important;
+          color: white !important;
+          font-weight: 500 !important;
+          padding: 4px 12px !important;
+          height: auto !important;
+          min-height: 32px !important;
+          display: inline-flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          border-radius: 6px !important;
+        }
+        
+        .invoice-view-btn:hover {
+          background-color: #047857 !important;
+          border-color: #047857 !important;
+          color: white !important;
+          transform: none !important;
+        }
+        
+        .invoice-view-btn:focus {
+          background-color: #059669 !important;
+          border-color: #059669 !important;
+          color: white !important;
+          box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
+        }
+        
+        .invoice-view-btn svg {
+          margin-right: 4px !important;
+        }
+        
+        .invoice-download-btn {
+          background-color: #3B82F6 !important;
+          border-color: #3B82F6 !important;
+          color: white !important;
+          font-weight: 500 !important;
+          padding: 4px 12px !important;
+          height: auto !important;
+          min-height: 32px !important;
+          display: inline-flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          border-radius: 6px !important;
+        }
+        
+        .invoice-download-btn:hover {
+          background-color: #2563EB !important;
+          border-color: #2563EB !important;
+          color: white !important;
+          transform: none !important;
+        }
+        
+        .invoice-download-btn:focus {
+          background-color: #3B82F6 !important;
+          border-color: #3B82F6 !important;
+          color: white !important;
+          box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2) !important;
+        }
+        
+        .invoice-download-btn svg {
+          margin-right: 4px !important;
+        }
+        
         /* Dark Mode Form Styling for Billing */
         ${darkMode ? `
           .billing-form .ant-form-item-label > label {

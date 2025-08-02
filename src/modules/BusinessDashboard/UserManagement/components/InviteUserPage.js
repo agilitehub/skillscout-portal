@@ -167,8 +167,8 @@ const InviteUserPage = React.memo(({ user }) => {
               : 'bg-gradient-to-r from-emerald-500 to-emerald-600'
           }`}
         >
-          <div className='max-w-6xl mx-auto px-8 py-6'>
-            <div className='flex items-center justify-between'>
+          <div className='pl-8 pr-8 py-6'>
+            <div className='flex items-center'>
               <div className='flex items-center space-x-4'>
                 <Button
                   type='text'
@@ -177,7 +177,7 @@ const InviteUserPage = React.memo(({ user }) => {
                   className='text-white hover:text-emerald-100 hover:bg-emerald-600/50'
                   size='large'
                 />
-                <div className='flex items-center space-x-3'>
+                <div className='flex items-center space-x-6'>
                   <div
                     className='w-10 h-10 rounded-lg flex items-center justify-center'
                     style={{ backgroundColor: 'rgba(255, 255, 255, 0.2)' }}
@@ -196,7 +196,7 @@ const InviteUserPage = React.memo(({ user }) => {
 
         {/* Content Area */}
         <div className='relative'>
-          <div className='max-w-6xl mx-auto px-8 py-8'>
+          <div className='pl-8 pr-8 py-8'>
             <Card
               className={`shadow-xl ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}
               style={{
@@ -419,9 +419,10 @@ const InviteUserPage = React.memo(({ user }) => {
                   }`}
                 >
                   <Button
+                    type='default'
                     size='large'
                     onClick={handleCancel}
-                    className={darkMode ? 'text-gray-300 border-gray-600' : 'text-gray-600 border-gray-300'}
+                    className='invite-user-cancel-btn'
                   >
                     Cancel
                   </Button>
@@ -526,6 +527,39 @@ const InviteUserPage = React.memo(({ user }) => {
         .ant-select-dropdown:not(.invite-user-dark-dropdown) .ant-select-item-option-selected {
           background-color: ${BRAND_COLORS.emeraldPrimary} !important;
           color: #ffffff !important;
+        }
+
+        /* Invite User Cancel Button Styling */
+        .invite-user-cancel-btn,
+        .invite-user-cancel-btn.ant-btn {
+          background-color: #059669 !important;
+          border-color: #059669 !important;
+          color: white !important;
+          font-weight: 500 !important;
+          padding: 8px 24px !important;
+          height: auto !important;
+          min-height: 40px !important;
+          display: inline-flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          font-size: 14px !important;
+          border-radius: 6px !important;
+        }
+        
+        .invite-user-cancel-btn:hover,
+        .invite-user-cancel-btn.ant-btn:hover {
+          background-color: #047857 !important;
+          border-color: #047857 !important;
+          color: white !important;
+          transform: none !important;
+        }
+        
+        .invite-user-cancel-btn:focus,
+        .invite-user-cancel-btn.ant-btn:focus {
+          background-color: #059669 !important;
+          border-color: #059669 !important;
+          color: white !important;
+          box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
         }
       `}</style>
     </div>

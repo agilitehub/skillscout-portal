@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import { useTheme } from '../../../../core/context/ThemeContext'
 import BusinessSidebar from '../../components/BusinessSidebar'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faList, faPlus, faFilter, faSpinner } from '@fortawesome/free-solid-svg-icons'
+import { faList, faPlus, faFilter, faSpinner, faTrashAlt, faEdit } from '@fortawesome/free-solid-svg-icons'
 import { Select, message, Spin } from 'antd'
 import { Button } from '../../../../core/components'
 import TableView from '../../../../core/components/view-components/table-view/TableView'
@@ -195,6 +195,11 @@ const Lookups = React.memo(({ user }) => {
           actions={[
             {
               key: 'edit',
+              icon: faEdit,
+              tooltip: 'Edit Category',
+              color: 'text-white',
+              className: 'lookups-edit-btn',
+              style: {},
               onClick: () => {
                 // Edit the first profile in the category for now
                 if (record.profiles.length > 0) {
@@ -204,6 +209,11 @@ const Lookups = React.memo(({ user }) => {
             },
             {
               key: 'delete',
+              icon: faTrashAlt,
+              tooltip: 'Delete Category',
+              color: 'text-white',
+              className: 'lookups-delete-btn',
+              style: {},
               onClick: () => {
                 // Delete all profiles in the category
                 record.profiles.forEach((profile) => handleDelete(profile.id))
@@ -454,6 +464,63 @@ const Lookups = React.memo(({ user }) => {
           background-color: #f0fdf4 !important;
           color: #047857 !important;
           border-color: #f0fdf4 !important;
+        }
+
+        /* Lookups Action Button Styling */
+        .lookups-delete-btn {
+          background-color: #EF4444 !important;
+          border-color: #EF4444 !important;
+          color: white !important;
+          font-weight: 500 !important;
+          padding: 4px 8px !important;
+          height: auto !important;
+          min-height: 32px !important;
+          display: inline-flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          border-radius: 6px !important;
+        }
+        
+        .lookups-delete-btn:hover {
+          background-color: #DC2626 !important;
+          border-color: #DC2626 !important;
+          color: white !important;
+          transform: none !important;
+        }
+        
+        .lookups-delete-btn:focus {
+          background-color: #EF4444 !important;
+          border-color: #EF4444 !important;
+          color: white !important;
+          box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2) !important;
+        }
+        
+        .lookups-edit-btn {
+          background-color: #059669 !important;
+          border-color: #059669 !important;
+          color: white !important;
+          font-weight: 500 !important;
+          padding: 4px 8px !important;
+          height: auto !important;
+          min-height: 32px !important;
+          display: inline-flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          border-radius: 6px !important;
+        }
+        
+        .lookups-edit-btn:hover {
+          background-color: #047857 !important;
+          border-color: #047857 !important;
+          color: white !important;
+          transform: none !important;
+        }
+        
+        .lookups-edit-btn:focus {
+          background-color: #059669 !important;
+          border-color: #059669 !important;
+          color: white !important;
+          box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
         }
       `}</style>
 

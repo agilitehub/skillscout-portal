@@ -273,7 +273,7 @@ const BranchEditPage = React.memo(({ user: currentUser }) => {
               {hasChanges && (
                 <Button
                   size='large'
-                  icon={<FontAwesomeIcon icon={faUndo} />}
+                  icon={<FontAwesomeIcon icon={faUndo} className="mr-2" />}
                   onClick={handleReset}
                   className='reset-branch-btn font-medium'
                   style={{
@@ -293,7 +293,7 @@ const BranchEditPage = React.memo(({ user: currentUser }) => {
               <Button
                 type='default'
                 size='large'
-                icon={<FontAwesomeIcon icon={faSave} />}
+                icon={<FontAwesomeIcon icon={faSave} className="mr-2" />}
                 onClick={() => form.submit()}
                 loading={loading}
                 disabled={!hasChanges && mode === 'edit'}

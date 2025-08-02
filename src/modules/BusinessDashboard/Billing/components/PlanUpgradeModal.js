@@ -156,7 +156,88 @@ const PlanUpgradeModal = React.memo(({
           border-color: ${BRAND_COLORS.bluePrimary} !important;
           background: ${darkMode ? 'rgba(59, 130, 246, 0.1)' : 'rgba(59, 130, 246, 0.05)'} !important;
         }
-      `}</style>
+
+        /* Plan Upgrade Modal Footer Button Styling */
+        .plan-upgrade-modal .ant-modal-footer .ant-btn {
+          background-color: ${darkMode ? '#4B5563' : '#ffffff'} !important;
+          border-color: ${darkMode ? '#6B7280' : '#d1d5db'} !important;
+          color: ${darkMode ? '#ffffff' : '#374151'} !important;
+          font-weight: 500 !important;
+          padding: 8px 24px !important;
+          height: auto !important;
+          min-height: 40px !important;
+          display: inline-flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          border-radius: 6px !important;
+        }
+        
+        .plan-upgrade-modal .ant-modal-footer .ant-btn:hover {
+          background-color: ${darkMode ? '#374151' : '#f9fafb'} !important;
+          border-color: ${darkMode ? '#4B5563' : '#d1d5db'} !important;
+          color: ${darkMode ? '#ffffff' : '#111827'} !important;
+          transform: none !important;
+        }
+
+        .plan-upgrade-modal .ant-modal-footer .ant-btn-primary {
+          background-color: #059669 !important;
+          border-color: #059669 !important;
+          color: white !important;
+        }
+        
+        .plan-upgrade-modal .ant-modal-footer .ant-btn-primary:hover {
+          background-color: #047857 !important;
+          border-color: #047857 !important;
+          color: white !important;
+        }
+
+        .plan-upgrade-modal .ant-modal-footer .ant-btn:focus {
+          background-color: ${darkMode ? '#4B5563' : '#ffffff'} !important;
+          border-color: ${darkMode ? '#059669' : '#059669'} !important;
+          color: ${darkMode ? '#ffffff' : '#374151'} !important;
+          box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
+        }
+
+                  .plan-upgrade-modal .ant-modal-footer .ant-btn-primary:focus {
+            background-color: #059669 !important;
+            border-color: #059669 !important;
+            color: white !important;
+            box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
+          }
+
+        /* Plan Tag Styling for Dark Mode */
+        ${darkMode ? `
+          .plan-upgrade-modal .ant-tag {
+            background-color: #374151 !important;
+            border-color: #4B5563 !important;
+            color: #F9FAFB !important;
+          }
+          
+          .plan-upgrade-modal .ant-tag-gold {
+            background-color: #F59E0B !important;
+            border-color: #F59E0B !important;
+            color: #FFFFFF !important;
+          }
+          
+          .plan-upgrade-modal .ant-tag-blue {
+            background-color: #3B82F6 !important;
+            border-color: #3B82F6 !important;
+            color: #FFFFFF !important;
+          }
+        ` : ''}
+
+        /* Plan Title No Wrap */
+        .plan-upgrade-modal .plan-title {
+          white-space: nowrap !important;
+        }
+
+        .plan-upgrade-modal .plan-header-flex {
+          flex-wrap: nowrap !important;
+          justify-content: center !important;
+          align-items: center !important;
+          gap: 4px !important;
+        }
+        `}</style>
 
       <Modal
         title={
@@ -231,14 +312,14 @@ const PlanUpgradeModal = React.memo(({
           />
 
           {/* Plans Grid */}
-          <Row gutter={16}>
+          <Row gutter={[16, 16]}>
             {availablePlans.map(plan => {
               const isCurrentPlan = plan.id === currentPlan.name.toLowerCase()
               const isSelected = selectedPlan?.id === plan.id
               const planConfig = planFeatures[plan.id]
               
               return (
-                <Col xs={24} sm={8} key={plan.id}>
+                <Col xs={24} md={8} key={plan.id}>
                   <Card
                     className={`plan-card h-full ${isSelected ? 'selected' : ''} ${isCurrentPlan ? 'current' : ''}`}
                     onClick={() => handlePlanSelect(plan)}
@@ -261,8 +342,8 @@ const PlanUpgradeModal = React.memo(({
                           />
                         </div>
                         
-                        <div className="flex items-center justify-center space-x-2 mb-2">
-                          <Title level={4} className={`!mb-0 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                        <div className="plan-header-flex flex items-center justify-center space-x-2 mb-2">
+                          <Title level={4} className={`plan-title !mb-0 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                             {plan.name}
                           </Title>
                           {plan.popular && (
