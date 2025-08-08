@@ -190,7 +190,7 @@ const ViewBranchModal = React.memo(({ visible, branch, onCancel, darkMode }) => 
               >
                 <Tag 
                   color={branch.status === 'active' ? SEMANTIC_COLORS.success : BRAND_COLORS.mediumGray}
-                  icon={<FontAwesomeIcon icon={branch.status === 'active' ? faCheckCircle : faTimesCircle} />}
+                  icon={<FontAwesomeIcon icon={branch.status === 'active' ? faCheckCircle : faTimesCircle} style={{ marginRight: '6px' }} />}
                   style={{ fontWeight: '500' }}
                 >
                   {branch.status.charAt(0).toUpperCase() + branch.status.slice(1)}

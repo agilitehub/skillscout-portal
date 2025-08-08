@@ -269,7 +269,7 @@ const BranchManagement = React.memo(({ user }) => {
         render: (status) => (
           <Tag
             color={status === 'active' ? SEMANTIC_COLORS.success : BRAND_COLORS.mediumGray}
-            icon={<FontAwesomeIcon icon={status === 'active' ? faCheckCircle : faTimesCircle} />}
+            icon={<FontAwesomeIcon icon={status === 'active' ? faCheckCircle : faTimesCircle} style={{ marginRight: '6px' }} />}
             style={{ fontWeight: '500' }}
           >
             {status.charAt(0).toUpperCase() + status.slice(1)}
