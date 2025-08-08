@@ -1,6 +1,6 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { NavLink } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
@@ -26,7 +26,26 @@ import { useTheme } from '../../../core/context/ThemeContext'
  */
 const BusinessSidebar = React.memo(() => {
   const { darkMode } = useTheme()
-  const [isSettingsExpanded, setIsSettingsExpanded] = useState(false)
+  
+  // Initialize settings expanded state from localStorage, default to false
+  const [isSettingsExpanded, setIsSettingsExpanded] = useState(() => {
+    try {
+      const savedState = localStorage.getItem('businessSidebar_settingsExpanded')
+      return savedState ? JSON.parse(savedState) : false
+    } catch (error) {
+      console.warn('Error reading sidebar state from localStorage:', error)
+      return false
+    }
+  })
+
+  // Save settings expanded state to localStorage whenever it changes
+  useEffect(() => {
+    try {
+      localStorage.setItem('businessSidebar_settingsExpanded', JSON.stringify(isSettingsExpanded))
+    } catch (error) {
+      console.warn('Error saving sidebar state to localStorage:', error)
+    }
+  }, [isSettingsExpanded])
 
   const toggleSettings = () => {
     setIsSettingsExpanded(!isSettingsExpanded)

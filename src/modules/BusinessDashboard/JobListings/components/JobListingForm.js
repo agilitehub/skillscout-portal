@@ -99,6 +99,89 @@ const CreateJobListing = React.memo(({ user }) => {
           </div>
         </div>
 
+        {/* Global Button Styles */}
+        <style jsx global>{`
+          /* Job Listing Cancel Button Styling */
+          .job-listing-cancel-btn,
+          .job-listing-cancel-btn.ant-btn {
+            background-color: #059669 !important;
+            border-color: #059669 !important;
+            color: white !important;
+            font-weight: 500 !important;
+            padding: 12px 32px !important;
+            height: auto !important;
+            min-height: 48px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            border-radius: 6px !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+          }
+          
+          .job-listing-cancel-btn:hover,
+          .job-listing-cancel-btn.ant-btn:hover {
+            background-color: #047857 !important;
+            border-color: #047857 !important;
+            color: white !important;
+            transform: translateY(-1px) !important;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.15) !important;
+          }
+          
+          .job-listing-cancel-btn:focus,
+          .job-listing-cancel-btn.ant-btn:focus {
+            background-color: #059669 !important;
+            border-color: #059669 !important;
+            color: white !important;
+            box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
+          }
+          
+          .job-listing-cancel-btn svg,
+          .job-listing-cancel-btn .anticon {
+            color: white !important;
+            margin-right: 8px !important;
+          }
+
+          /* Job Listing Create Button Styling */
+          .job-listing-create-btn,
+          .job-listing-create-btn.ant-btn {
+            background: linear-gradient(to right, #059669, #10b981) !important;
+            border-color: #059669 !important;
+            color: white !important;
+            font-weight: 500 !important;
+            padding: 12px 32px !important;
+            height: auto !important;
+            min-height: 48px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            border-radius: 6px !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+          }
+          
+          .job-listing-create-btn:hover,
+          .job-listing-create-btn.ant-btn:hover {
+            background: linear-gradient(to right, #047857, #059669) !important;
+            border-color: #047857 !important;
+            color: white !important;
+            transform: translateY(-1px) !important;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.15) !important;
+          }
+          
+          .job-listing-create-btn:focus,
+          .job-listing-create-btn.ant-btn:focus {
+            background: linear-gradient(to right, #059669, #10b981) !important;
+            border-color: #059669 !important;
+            color: white !important;
+            box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
+          }
+          
+          .job-listing-create-btn svg,
+          .job-listing-create-btn .anticon {
+            color: white !important;
+            margin-right: 8px !important;
+          }
+        `}</style>
+
         {/* Dark Mode Form Styling */}
         {darkMode && (
           <style>
@@ -421,48 +504,21 @@ const CreateJobListing = React.memo(({ user }) => {
               {/* Form Actions */}
               <div className='flex justify-end space-x-4 mt-6'>
                 <Button 
-                  icon={<FontAwesomeIcon icon={faTimes} className="mr-2" />} 
+                  icon={<FontAwesomeIcon icon={faTimes} />} 
                   onClick={handleGoBack} 
                   size='large'
                   type='default'
-                  style={{
-                    backgroundColor: darkMode ? '#374151' : '#ffffff',
-                    borderColor: darkMode ? '#4b5563' : '#d1d5db',
-                    color: darkMode ? '#ffffff' : '#374151',
-                    fontWeight: '500',
-                    boxShadow: darkMode 
-                      ? '0 1px 3px rgba(0, 0, 0, 0.3)' 
-                      : '0 1px 2px rgba(0, 0, 0, 0.05)'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.target.style.backgroundColor = darkMode ? '#4b5563' : '#f9fafb'
-                    e.target.style.borderColor = darkMode ? '#6b7280' : '#9ca3af'
-                    e.target.style.transform = 'translateY(-1px)'
-                    e.target.style.boxShadow = darkMode 
-                      ? '0 2px 6px rgba(0, 0, 0, 0.4)' 
-                      : '0 2px 4px rgba(0, 0, 0, 0.1)'
-                  }}
-                  onMouseLeave={(e) => {
-                    e.target.style.backgroundColor = darkMode ? '#374151' : '#ffffff'
-                    e.target.style.borderColor = darkMode ? '#4b5563' : '#d1d5db'
-                    e.target.style.transform = 'translateY(0)'
-                    e.target.style.boxShadow = darkMode 
-                      ? '0 1px 3px rgba(0, 0, 0, 0.3)' 
-                      : '0 1px 2px rgba(0, 0, 0, 0.05)'
-                  }}
+                  className='job-listing-cancel-btn'
                 >
                   Cancel
                 </Button>
                 <Button
                   type='primary'
-                  icon={<FontAwesomeIcon icon={faSave} className="mr-2" />}
+                  icon={<FontAwesomeIcon icon={faSave} />}
                   onClick={() => form.submit()}
                   loading={loading}
                   size='large'
-                  style={{
-                    background: darkMode ? '#059669' : '#10b981',
-                    borderColor: darkMode ? '#059669' : '#10b981'
-                  }}
+                  className='job-listing-create-btn'
                 >
                   Create Job Listing
                 </Button>

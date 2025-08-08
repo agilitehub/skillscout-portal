@@ -234,6 +234,88 @@ const JobOpportunityForm = React.memo(() => {
 
         {/* Form Card */}
         <Card className={`${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white'} shadow-lg`}>
+          {/* Global Styles */}
+          <style jsx global>{`
+            /* Job Form Cancel Button Styling */
+            .job-form-cancel-btn,
+            .job-form-cancel-btn.ant-btn {
+              background-color: #059669 !important;
+              border-color: #059669 !important;
+              color: white !important;
+              font-weight: 500 !important;
+              padding: 12px 32px !important;
+              height: auto !important;
+              min-height: 48px !important;
+              display: inline-flex !important;
+              align-items: center !important;
+              justify-content: center !important;
+              border-radius: 6px !important;
+            }
+            
+            .job-form-cancel-btn:hover,
+            .job-form-cancel-btn.ant-btn:hover {
+              background-color: #047857 !important;
+              border-color: #047857 !important;
+              color: white !important;
+              transform: none !important;
+            }
+            
+            .job-form-cancel-btn:focus,
+            .job-form-cancel-btn.ant-btn:focus {
+              background-color: #059669 !important;
+              border-color: #059669 !important;
+              color: white !important;
+              box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
+            }
+            
+            .job-form-cancel-btn svg,
+            .job-form-cancel-btn .anticon {
+              color: white !important;
+              margin-right: 8px !important;
+            }
+
+            /* Job Form Create Button Styling */
+            .job-form-create-btn,
+            .job-form-create-btn.ant-btn {
+              background: linear-gradient(to right, #059669, #10b981) !important;
+              border-color: #059669 !important;
+              color: white !important;
+              font-weight: 500 !important;
+              padding: 12px 32px !important;
+              height: auto !important;
+              min-height: 48px !important;
+              min-width: 180px !important;
+              display: inline-flex !important;
+              align-items: center !important;
+              justify-content: center !important;
+              border-radius: 6px !important;
+              box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+            }
+            
+            .job-form-create-btn:hover,
+            .job-form-create-btn.ant-btn:hover {
+              background: linear-gradient(to right, #047857, #059669) !important;
+              border-color: #047857 !important;
+              color: white !important;
+              transform: translateY(-1px) !important;
+              box-shadow: 0 4px 6px rgba(0,0,0,0.15) !important;
+            }
+            
+            .job-form-create-btn:focus,
+            .job-form-create-btn.ant-btn:focus {
+              background: linear-gradient(to right, #059669, #10b981) !important;
+              border-color: #059669 !important;
+              color: white !important;
+              box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
+            }
+            
+            .job-form-create-btn svg,
+            .job-form-create-btn .anticon {
+              color: white !important;
+              margin-right: 8px !important;
+            }
+          `}</style>
+          
           {/* Dark Mode Form Styling */}
           {darkMode && (
             <style>
@@ -573,12 +655,12 @@ const JobOpportunityForm = React.memo(() => {
             {/* Form Actions */}
             <div className='flex justify-end space-x-4 mt-8 pt-6 border-t border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 -mx-6 -mb-6 px-6 pb-6 rounded-b-lg'>
               <Button
-                variant='secondary'
+                type='default'
                 icon={<FontAwesomeIcon icon={faTimes} />}
                 onClick={handleCancel}
                 disabled={loading}
                 size='large'
-                className='px-8 py-3'
+                className='px-8 py-3 job-form-cancel-btn'
               >
                 Cancel
               </Button>
@@ -588,12 +670,7 @@ const JobOpportunityForm = React.memo(() => {
                 onClick={() => form.submit()}
                 loading={loading}
                 size='large'
-                className='px-8 py-3'
-                style={{
-                  background: darkMode ? '#059669' : '#10b981',
-                  borderColor: darkMode ? '#059669' : '#10b981',
-                  minWidth: '180px'
-                }}
+                className='px-8 py-3 job-form-create-btn'
               >
                 {isEditMode ? 'Update Job Listing' : 'Create Job Listing'}
               </Button>

@@ -354,18 +354,9 @@ const JobListings = React.memo(({ user }) => {
               <Button
                 type='default'
                 size='large'
-                icon={<FontAwesomeIcon icon={faPlus} className="mr-2" />}
+                icon={<FontAwesomeIcon icon={faPlus} />}
                 onClick={handleCreateJobOpportunity}
                 className="create-job-listing-btn font-medium"
-                style={{
-                  background: '#ffffff',
-                  backgroundColor: '#ffffff',
-                  color: '#059669',
-                  border: '1px solid #ffffff',
-                  fontWeight: '500',
-                  boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                  opacity: '1'
-                }}
               >
                 Create Job Listing
               </Button>
@@ -434,25 +425,52 @@ const JobListings = React.memo(({ user }) => {
       
       {/* Custom Styles */}
       <style jsx global>{`
-        /* Force Create Job Listing Button Visibility */
+        /* Create Job Listing Button Styling */
         .create-job-listing-btn,
         .create-job-listing-btn.ant-btn,
         button.create-job-listing-btn {
-          background: #ffffff !important;
-          background-color: #ffffff !important;
-          color: #059669 !important;
-          border: 1px solid #ffffff !important;
+          background-color: #059669 !important;
+          border-color: #059669 !important;
+          color: white !important;
+          font-weight: 500 !important;
+          padding: 8px 16px !important;
+          height: auto !important;
+          min-height: 40px !important;
+          display: inline-flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          border-radius: 6px !important;
           opacity: 1 !important;
           visibility: visible !important;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+        }
+        
+        .create-job-listing-btn svg,
+        .create-job-listing-btn .anticon {
+          color: white !important;
+          margin-right: 8px !important;
         }
         
         .create-job-listing-btn:hover,
         .create-job-listing-btn.ant-btn:hover,
         button.create-job-listing-btn:hover {
-          background: #f8f9fa !important;
-          background-color: #f8f9fa !important;
-          color: #047857 !important;
-          border: 1px solid #f8f9fa !important;
+          background-color: #047857 !important;
+          border-color: #047857 !important;
+          color: white !important;
+          transform: none !important;
+        }
+        
+        .create-job-listing-btn:hover svg,
+        .create-job-listing-btn:hover .anticon {
+          color: white !important;
+        }
+        
+        .create-job-listing-btn:focus,
+        .create-job-listing-btn.ant-btn:focus {
+          background-color: #059669 !important;
+          border-color: #059669 !important;
+          color: white !important;
+          box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
         }
 
         /* Delete Icon Styling for Better Visibility */
