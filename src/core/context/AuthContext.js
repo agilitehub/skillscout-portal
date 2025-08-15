@@ -117,7 +117,7 @@ export const AuthProvider = ({ children }) => {
       setLoading(true)
       setAuthError(null)
 
-      const result = await sendMagicLink(email)
+      const result = await sendMagicLink(email, window.location.origin)
 
       if (result.success) {
         return {
