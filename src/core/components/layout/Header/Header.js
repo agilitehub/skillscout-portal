@@ -728,17 +728,17 @@ const Header = ({ user }) => {
       }}
     >
       <div className='px-2 sm:px-4 md:px-6'>
-        <div className='flex h-12 md:h-14 items-center justify-between'>
+        <div className='flex h-10 items-center justify-between'>
           {/* Logo and Title */}
           <Link to='/' className='flex-shrink-0 flex items-center'>
             <div
-              className={`rounded-full p-0 transition-all duration-300 flex items-center justify-center -mt-2 ${
+              className={`rounded-full p-0 transition-all duration-300 flex items-center justify-center -mt-1 ${
                 darkMode ? 'bg-white/15 backdrop-blur-sm shadow-lg' : ''
               }`}
             >
-              <Logo size='small' className='w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 object-contain' />
+              <Logo size='small' className='w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 object-contain' />
             </div>
-            <h1 className='ml-2 sm:ml-3 md:ml-4 text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-white whitespace-nowrap leading-none flex items-center'>
+            <h1 className='ml-2 sm:ml-3 text-sm sm:text-base md:text-lg font-bold text-white whitespace-nowrap leading-none flex items-center'>
               <span className='text-blue-500'>Skill</span>
               <span className='text-emerald-500'>Scout</span>
             </h1>
