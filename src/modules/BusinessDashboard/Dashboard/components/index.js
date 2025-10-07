@@ -273,7 +273,7 @@ const Dashboard = React.memo(() => {
 
   return (
     <div
-      className={`min-h-screen ${
+      className={`h-screen flex ${
         darkMode
           ? 'bg-gradient-to-br from-slate-700 via-slate-600 to-emerald-800'
           : 'bg-gradient-to-br from-sky-100 via-gray-50 to-emerald-100'
@@ -292,16 +292,16 @@ const Dashboard = React.memo(() => {
       <BusinessSidebar />
 
       {/* Main Content */}
-      <div className='flex-1 ml-64 relative z-10'>
+      <div className='flex-1 ml-64 relative z-10 overflow-y-auto'>
         {/* Main Header */}
-        <div className='px-8 py-8'>
-          <div className='flex items-center justify-between mb-8'>
+        <div className='px-4 py-2'>
+          <div className='flex items-center justify-between mb-3'>
             <div>
               <Title
                 level={1}
-                className='!mb-2'
+                className='!mb-1'
                 style={{
-                  fontSize: '36px',
+                  fontSize: '22px',
                   fontWeight: 'bold',
                   margin: 0,
                   color: darkMode ? DARK_THEME.text.primary : LIGHT_THEME.text.primary
@@ -310,7 +310,7 @@ const Dashboard = React.memo(() => {
                 Dashboard
               </Title>
               <Text
-                className='text-lg'
+                className='text-sm'
                 style={{
                   color: darkMode ? DARK_THEME.text.secondary : LIGHT_THEME.text.secondary
                 }}
@@ -319,26 +319,26 @@ const Dashboard = React.memo(() => {
               </Text>
             </div>
 
-            <div className='flex items-center space-x-4'>
+            <div className='flex items-center space-x-2'>
               {/* Quick Actions Dropdown */}
               <Dropdown overlay={quickActionsMenu} trigger={['click']} placement='bottomRight'>
                 <Button
                   type='primary'
-                  size='large'
-                  className='flex items-center space-x-2'
+                  size='small'
+                  className='flex items-center space-x-1'
                   style={{
                     backgroundColor: SEMANTIC_COLORS.secondary,
                     borderColor: SEMANTIC_COLORS.secondary,
-                    boxShadow: `0 2px 8px ${SEMANTIC_COLORS.secondary}20`,
-                    fontSize: '16px',
-                    height: '40px',
-                    paddingLeft: '20px',
-                    paddingRight: '20px'
+                    boxShadow: `0 1px 4px ${SEMANTIC_COLORS.secondary}20`,
+                    fontSize: '13px',
+                    height: '28px',
+                    paddingLeft: '12px',
+                    paddingRight: '12px'
                   }}
                 >
-                  <FontAwesomeIcon icon={faPlus} className='mr-2' />
+                  <FontAwesomeIcon icon={faPlus} className='mr-1' style={{ fontSize: '11px' }} />
                   <span>Quick Actions</span>
-                  <FontAwesomeIcon icon={faChevronDown} className='ml-2' />
+                  <FontAwesomeIcon icon={faChevronDown} className='ml-1' style={{ fontSize: '10px' }} />
                 </Button>
               </Dropdown>
 
@@ -353,7 +353,7 @@ const Dashboard = React.memo(() => {
               >
                 <Button
                   type='text'
-                  className='flex items-center justify-center w-12 h-12 rounded-full bell-button'
+                  className='flex items-center justify-center w-8 h-8 rounded-full bell-button'
                   style={{
                     backgroundColor: 'transparent',
                     border: `1px solid ${darkMode ? DARK_THEME.border.secondary : LIGHT_THEME.border.secondary}`,
@@ -377,7 +377,7 @@ const Dashboard = React.memo(() => {
                   <span
                     style={{
                       color: darkMode ? DARK_THEME.text.primary : LIGHT_THEME.text.primary,
-                      fontSize: '18px',
+                      fontSize: '14px',
                       fontWeight: 'bold',
                       display: 'flex',
                       alignItems: 'center',
@@ -392,22 +392,22 @@ const Dashboard = React.memo(() => {
               {/* Refresh Button */}
               <Button
                 type='secondary'
-                size='large'
-                className='flex items-center space-x-2'
+                size='small'
+                className='flex items-center space-x-1'
                 style={{
                   backgroundColor: SEMANTIC_COLORS.info,
                   borderColor: SEMANTIC_COLORS.info,
-                  boxShadow: `0 2px 8px ${SEMANTIC_COLORS.info}20`,
-                  fontSize: '16px',
-                  height: '40px',
-                  paddingLeft: '20px',
-                  paddingRight: '20px'
+                  boxShadow: `0 1px 4px ${SEMANTIC_COLORS.info}20`,
+                  fontSize: '13px',
+                  height: '28px',
+                  paddingLeft: '12px',
+                  paddingRight: '12px'
                 }}
                 onClick={() => handleGetDashboardStats()}
                 loading={loading}
               >
-                <Space>
-                  <FontAwesomeIcon icon={faRefresh} />
+                <Space size={4}>
+                  <FontAwesomeIcon icon={faRefresh} style={{ fontSize: '11px' }} />
                   <span>Refresh</span>
                 </Space>
               </Button>
@@ -415,12 +415,12 @@ const Dashboard = React.memo(() => {
           </div>
 
           {/* Workspace Cards */}
-          <div className='mb-12'>
+          <div className='mb-3'>
             <Title
               level={2}
-              className='!mb-6'
+              className='!mb-2'
               style={{
-                fontSize: '24px',
+                fontSize: '16px',
                 fontWeight: 'bold',
                 color: darkMode ? DARK_THEME.text.primary : LIGHT_THEME.text.primary
               }}
@@ -428,37 +428,36 @@ const Dashboard = React.memo(() => {
               Workspace
             </Title>
 
-            <Row gutter={[24, 24]}>
+            <Row gutter={[12, 12]}>
               {workspaceCards.map((card, index) => (
                 <Col xs={24} lg={index < 3 ? 8 : 12} key={index}>
                   <Card
                     hoverable
-                    className='h-48 transition-all duration-300 hover:shadow-lg'
+                    className='transition-all duration-300 hover:shadow-lg'
                     style={{
                       backgroundColor: darkMode ? DARK_THEME.background.secondary : LIGHT_THEME.background.primary,
                       borderColor: darkMode ? DARK_THEME.border.primary : LIGHT_THEME.border.primary
                     }}
                     bodyStyle={{
-                      padding: '24px',
-                      backgroundColor: darkMode ? DARK_THEME.background.secondary : LIGHT_THEME.background.primary,
-                      height: '100%'
+                      padding: '12px',
+                      backgroundColor: darkMode ? DARK_THEME.background.secondary : LIGHT_THEME.background.primary
                     }}
                   >
-                    <div className='flex h-full'>
+                    <div className='flex'>
                       <div className='flex-1'>
-                        <div className='flex items-center mb-4'>
+                        <div className='flex items-center mb-2'>
                           <div
-                            className='w-12 h-12 rounded-lg flex items-center justify-center mr-4'
+                            className='w-8 h-8 rounded-lg flex items-center justify-center mr-2'
                             style={{ backgroundColor: card.color + '20' }}
                           >
-                            <FontAwesomeIcon icon={card.icon} style={{ color: card.color, fontSize: '20px' }} />
+                            <FontAwesomeIcon icon={card.icon} style={{ color: card.color, fontSize: '14px' }} />
                           </div>
                           <div className='flex-1'>
                             <Title
                               level={4}
                               className='!mb-0'
                               style={{
-                                fontSize: '18px',
+                                fontSize: '14px',
                                 fontWeight: '600',
                                 margin: 0,
                                 color: darkMode ? DARK_THEME.text.primary : LIGHT_THEME.text.primary
@@ -470,9 +469,9 @@ const Dashboard = React.memo(() => {
                         </div>
 
                         <Text
-                          className='block text-sm mb-4'
+                          className='block text-xs mb-2'
                           style={{
-                            lineHeight: '1.4',
+                            lineHeight: '1.3',
                             color: darkMode ? DARK_THEME.text.secondary : LIGHT_THEME.text.secondary
                           }}
                         >
@@ -483,7 +482,7 @@ const Dashboard = React.memo(() => {
                           {card.stats && (
                             <div>
                               <Text
-                                className='block text-sm'
+                                className='block text-xs'
                                 style={{
                                   color: darkMode ? DARK_THEME.text.tertiary : LIGHT_THEME.text.secondary
                                 }}
@@ -491,7 +490,7 @@ const Dashboard = React.memo(() => {
                                 {card.stats.label}
                               </Text>
                               <Text
-                                className='block text-2xl font-bold'
+                                className='block text-lg font-bold'
                                 style={{
                                   lineHeight: '1.2',
                                   color: darkMode ? DARK_THEME.text.primary : LIGHT_THEME.text.primary
@@ -504,15 +503,15 @@ const Dashboard = React.memo(() => {
 
                           <Button
                             type='primary'
-                            size='middle'
+                            size='small'
                             style={{
                               backgroundColor: card.color,
                               borderColor: card.color,
                               boxShadow: 'none',
-                              fontSize: '14px',
-                              height: '36px',
-                              paddingLeft: '16px',
-                              paddingRight: '16px'
+                              fontSize: '12px',
+                              height: '26px',
+                              paddingLeft: '12px',
+                              paddingRight: '12px'
                             }}
                             onClick={card.action}
                           >
@@ -528,12 +527,12 @@ const Dashboard = React.memo(() => {
           </div>
 
           {/* Recent Activity Summary */}
-          <div>
+          <div className='pb-2'>
             <Title
               level={2}
-              className='!mb-6'
+              className='!mb-2'
               style={{
-                fontSize: '24px',
+                fontSize: '16px',
                 fontWeight: 'bold',
                 color: darkMode ? DARK_THEME.text.primary : LIGHT_THEME.text.primary
               }}
@@ -541,18 +540,16 @@ const Dashboard = React.memo(() => {
               Recent Activity
             </Title>
 
-            <Row gutter={[24, 24]}>
+            <Row gutter={[12, 12]}>
               <Col xs={24} md={8}>
                 <Card
-                  className='h-28'
                   style={{
                     backgroundColor: darkMode ? DARK_THEME.background.secondary : LIGHT_THEME.background.primary,
                     borderColor: darkMode ? DARK_THEME.border.primary : LIGHT_THEME.border.primary
                   }}
                   bodyStyle={{
-                    padding: '24px',
+                    padding: '12px',
                     backgroundColor: darkMode ? DARK_THEME.background.secondary : LIGHT_THEME.background.primary,
-                    height: '100%',
                     display: 'flex',
                     alignItems: 'center'
                   }}
@@ -561,7 +558,7 @@ const Dashboard = React.memo(() => {
                     title={
                       <span
                         style={{
-                          fontSize: '14px',
+                          fontSize: '11px',
                           color: darkMode ? DARK_THEME.text.secondary : LIGHT_THEME.text.secondary
                         }}
                       >
@@ -570,11 +567,11 @@ const Dashboard = React.memo(() => {
                     }
                     value={3}
                     prefix={
-                      <FontAwesomeIcon icon={faUserPlus} style={{ color: SEMANTIC_COLORS.success, fontSize: '18px' }} />
+                      <FontAwesomeIcon icon={faUserPlus} style={{ color: SEMANTIC_COLORS.success, fontSize: '14px' }} />
                     }
                     valueStyle={{
                       color: darkMode ? DARK_THEME.text.primary : LIGHT_THEME.text.primary,
-                      fontSize: '28px'
+                      fontSize: '20px'
                     }}
                   />
                 </Card>
@@ -582,15 +579,13 @@ const Dashboard = React.memo(() => {
 
               <Col xs={24} md={8}>
                 <Card
-                  className='h-28'
                   style={{
                     backgroundColor: darkMode ? DARK_THEME.background.secondary : LIGHT_THEME.background.primary,
                     borderColor: darkMode ? DARK_THEME.border.primary : LIGHT_THEME.border.primary
                   }}
                   bodyStyle={{
-                    padding: '24px',
+                    padding: '12px',
                     backgroundColor: darkMode ? DARK_THEME.background.secondary : LIGHT_THEME.background.primary,
-                    height: '100%',
                     display: 'flex',
                     alignItems: 'center'
                   }}
@@ -599,7 +594,7 @@ const Dashboard = React.memo(() => {
                     title={
                       <span
                         style={{
-                          fontSize: '14px',
+                          fontSize: '11px',
                           color: darkMode ? DARK_THEME.text.secondary : LIGHT_THEME.text.secondary
                         }}
                       >
@@ -608,11 +603,11 @@ const Dashboard = React.memo(() => {
                     }
                     value={7}
                     prefix={
-                      <FontAwesomeIcon icon={faSearch} style={{ color: SEMANTIC_COLORS.primary, fontSize: '18px' }} />
+                      <FontAwesomeIcon icon={faSearch} style={{ color: SEMANTIC_COLORS.primary, fontSize: '14px' }} />
                     }
                     valueStyle={{
                       color: darkMode ? DARK_THEME.text.primary : LIGHT_THEME.text.primary,
-                      fontSize: '28px'
+                      fontSize: '20px'
                     }}
                   />
                 </Card>
@@ -620,15 +615,13 @@ const Dashboard = React.memo(() => {
 
               <Col xs={24} md={8}>
                 <Card
-                  className='h-28'
                   style={{
                     backgroundColor: darkMode ? DARK_THEME.background.secondary : LIGHT_THEME.background.primary,
                     borderColor: darkMode ? DARK_THEME.border.primary : LIGHT_THEME.border.primary
                   }}
                   bodyStyle={{
-                    padding: '24px',
+                    padding: '12px',
                     backgroundColor: darkMode ? DARK_THEME.background.secondary : LIGHT_THEME.background.primary,
-                    height: '100%',
                     display: 'flex',
                     alignItems: 'center'
                   }}
@@ -637,7 +630,7 @@ const Dashboard = React.memo(() => {
                     title={
                       <span
                         style={{
-                          fontSize: '14px',
+                          fontSize: '11px',
                           color: darkMode ? DARK_THEME.text.secondary : LIGHT_THEME.text.secondary
                         }}
                       >
@@ -648,12 +641,12 @@ const Dashboard = React.memo(() => {
                     prefix={
                       <FontAwesomeIcon
                         icon={faChartLine}
-                        style={{ color: SEMANTIC_COLORS.warning, fontSize: '18px' }}
+                        style={{ color: SEMANTIC_COLORS.warning, fontSize: '14px' }}
                       />
                     }
                     valueStyle={{
                       color: darkMode ? DARK_THEME.text.primary : LIGHT_THEME.text.primary,
-                      fontSize: '28px'
+                      fontSize: '20px'
                     }}
                   />
                 </Card>
