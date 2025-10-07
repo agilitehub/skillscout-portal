@@ -2,9 +2,9 @@
 // Frontend Instructions Rule Applied!
 import React, { useState, useCallback, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { message, Tag, Space, Modal, Descriptions, Select } from 'antd'
+import { message, Tag, Space, Modal, Descriptions } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlus, faColumns, faTable, faEdit, faEye } from '@fortawesome/free-solid-svg-icons'
+import { faPlus, faEdit, faEye } from '@fortawesome/free-solid-svg-icons'
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import { useTheme } from '../../../../core/context/ThemeContext'
@@ -41,7 +41,7 @@ const Candidates = React.memo(({ user }) => {
     } catch (error) {
       console.warn('Error loading candidates data from localStorage:', error)
     }
-    
+
     // Default sample data
     return {
       'application-received': [
@@ -70,76 +70,76 @@ const Candidates = React.memo(({ user }) => {
           notes: 'Impressive portfolio with modern design approach'
         }
       ],
-    screening: [
-      {
-        id: 3,
-        name: 'Mike Chen',
-        position: 'Full Stack Developer',
-        jobListingId: 3,
-        email: 'mike.chen@email.com',
-        phone: '+1 (555) 456-7890',
-        appliedDate: '2024-01-10',
-        priority: 'high',
-        tags: ['Full Stack', 'Node.js', 'Python'],
-        notes: 'Passed initial screening, scheduling technical interview'
-      }
-    ],
-    assessment: [
-      {
-        id: 7,
-        name: 'Alex Rodriguez',
-        position: 'Backend Developer',
-        jobListingId: 5,
-        email: 'alex.rodriguez@email.com',
-        phone: '+1 (555) 678-9012',
-        appliedDate: '2024-01-12',
-        priority: 'medium',
-        tags: ['Backend', 'Java', 'Spring'],
-        notes: 'Completed coding assessment, results under review'
-      }
-    ],
-    'technical-interview': [
-      {
-        id: 4,
-        name: 'Emily Davis',
-        position: 'Frontend Developer',
-        jobListingId: 4,
-        email: 'emily.davis@email.com',
-        phone: '+1 (555) 234-5678',
-        appliedDate: '2024-01-08',
-        priority: 'medium',
-        tags: ['Vue.js', 'CSS', 'Frontend'],
-        notes: 'Technical interview scheduled for tomorrow'
-      }
-    ],
-    'final-interview': [
-      {
-        id: 5,
-        name: 'David Wilson',
-        position: 'DevOps Engineer',
-        jobListingId: 6,
-        email: 'david.wilson@email.com',
-        phone: '+1 (555) 345-6789',
-        appliedDate: '2024-01-05',
-        priority: 'high',
-        tags: ['AWS', 'Docker', 'Kubernetes'],
-        notes: 'Excellent technical skills, final interview with team lead'
-      }
-    ],
-    'offer-extended': [
-      {
-        id: 6,
-        name: 'Lisa Brown',
-        position: 'Product Manager',
-        jobListingId: 7,
-        email: 'lisa.brown@email.com',
-        phone: '+1 (555) 567-8901',
-        appliedDate: '2024-01-01',
-        priority: 'high',
-        tags: ['Product Management', 'Agile', 'Strategy'],
-        notes: 'Offer extended, awaiting response'
-      }
-    ]
+      screening: [
+        {
+          id: 3,
+          name: 'Mike Chen',
+          position: 'Full Stack Developer',
+          jobListingId: 3,
+          email: 'mike.chen@email.com',
+          phone: '+1 (555) 456-7890',
+          appliedDate: '2024-01-10',
+          priority: 'high',
+          tags: ['Full Stack', 'Node.js', 'Python'],
+          notes: 'Passed initial screening, scheduling technical interview'
+        }
+      ],
+      assessment: [
+        {
+          id: 7,
+          name: 'Alex Rodriguez',
+          position: 'Backend Developer',
+          jobListingId: 5,
+          email: 'alex.rodriguez@email.com',
+          phone: '+1 (555) 678-9012',
+          appliedDate: '2024-01-12',
+          priority: 'medium',
+          tags: ['Backend', 'Java', 'Spring'],
+          notes: 'Completed coding assessment, results under review'
+        }
+      ],
+      'technical-interview': [
+        {
+          id: 4,
+          name: 'Emily Davis',
+          position: 'Frontend Developer',
+          jobListingId: 4,
+          email: 'emily.davis@email.com',
+          phone: '+1 (555) 234-5678',
+          appliedDate: '2024-01-08',
+          priority: 'medium',
+          tags: ['Vue.js', 'CSS', 'Frontend'],
+          notes: 'Technical interview scheduled for tomorrow'
+        }
+      ],
+      'final-interview': [
+        {
+          id: 5,
+          name: 'David Wilson',
+          position: 'DevOps Engineer',
+          jobListingId: 6,
+          email: 'david.wilson@email.com',
+          phone: '+1 (555) 345-6789',
+          appliedDate: '2024-01-05',
+          priority: 'high',
+          tags: ['AWS', 'Docker', 'Kubernetes'],
+          notes: 'Excellent technical skills, final interview with team lead'
+        }
+      ],
+      'offer-extended': [
+        {
+          id: 6,
+          name: 'Lisa Brown',
+          position: 'Product Manager',
+          jobListingId: 7,
+          email: 'lisa.brown@email.com',
+          phone: '+1 (555) 567-8901',
+          appliedDate: '2024-01-01',
+          priority: 'high',
+          tags: ['Product Management', 'Agile', 'Strategy'],
+          notes: 'Offer extended, awaiting response'
+        }
+      ]
     }
   }
 
@@ -155,25 +155,28 @@ const Candidates = React.memo(({ user }) => {
   }, [candidatesData])
 
   // Sample job listings - in real app this would come from API
-  const jobListings = useMemo(() => [
-    { id: 1, title: 'Senior React Developer', department: 'Engineering' },
-    { id: 2, title: 'UX Designer', department: 'Design' },
-    { id: 3, title: 'Full Stack Developer', department: 'Engineering' },
-    { id: 4, title: 'Frontend Developer', department: 'Engineering' },
-    { id: 5, title: 'Backend Developer', department: 'Engineering' },
-    { id: 6, title: 'DevOps Engineer', department: 'Engineering' },
-    { id: 7, title: 'Product Manager', department: 'Product' },
-    { id: 8, title: 'Data Scientist', department: 'Data' },
-    { id: 9, title: 'QA Engineer', department: 'Quality Assurance' },
-    { id: 10, title: 'Marketing Manager', department: 'Marketing' }
-  ], [])
+  const jobListings = useMemo(
+    () => [
+      { id: 1, title: 'Senior React Developer', department: 'Engineering' },
+      { id: 2, title: 'UX Designer', department: 'Design' },
+      { id: 3, title: 'Full Stack Developer', department: 'Engineering' },
+      { id: 4, title: 'Frontend Developer', department: 'Engineering' },
+      { id: 5, title: 'Backend Developer', department: 'Engineering' },
+      { id: 6, title: 'DevOps Engineer', department: 'Engineering' },
+      { id: 7, title: 'Product Manager', department: 'Product' },
+      { id: 8, title: 'Data Scientist', department: 'Data' },
+      { id: 9, title: 'QA Engineer', department: 'Quality Assurance' },
+      { id: 10, title: 'Marketing Manager', department: 'Marketing' }
+    ],
+    []
+  )
 
   // Helper function to get stage title
   const getStageTitle = useCallback((stageKey) => {
     const stageTitles = {
       'application-received': 'Application Received',
-      'screening': 'Screening',
-      'assessment': 'Assessment',
+      screening: 'Screening',
+      assessment: 'Assessment',
       'technical-interview': 'Technical Interview',
       'final-interview': 'Final Interview',
       'offer-extended': 'Offer Extended'
@@ -210,7 +213,7 @@ const Candidates = React.memo(({ user }) => {
   const flattenedCandidates = useMemo(() => {
     const flattened = []
     for (const [stageKey, candidates] of Object.entries(candidatesData)) {
-      candidates.forEach(candidate => {
+      candidates.forEach((candidate) => {
         flattened.push({
           ...candidate,
           stage: stageKey,
@@ -222,137 +225,142 @@ const Candidates = React.memo(({ user }) => {
   }, [candidatesData, getStageTitle])
 
   // Table columns configuration
-  const tableColumns = useMemo(() => [
-    {
-      title: 'Name',
-      dataIndex: 'name',
-      key: 'name',
-      width: 150,
-      sorter: (a, b) => a.name.localeCompare(b.name),
-      render: (text, record) => (
-        <div className='font-medium'>
-          <div 
-            className={`cursor-pointer transition-colors duration-200 ${
-              darkMode 
-                ? 'text-blue-400 hover:text-blue-300' 
-                : 'text-blue-600 hover:text-blue-800'
-            }`}
-            onClick={() => handleEdit(record)}
-          >
-            {text}
+  const tableColumns = useMemo(
+    () => [
+      {
+        title: 'Name',
+        dataIndex: 'name',
+        key: 'name',
+        width: 150,
+        sorter: (a, b) => a.name.localeCompare(b.name),
+        render: (text, record) => (
+          <div className='font-medium'>
+            <div
+              className={`cursor-pointer transition-colors duration-200 ${
+                darkMode ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-800'
+              }`}
+              onClick={() => handleEdit(record)}
+            >
+              {text}
+            </div>
+            <div className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-500'}`}>{record.email}</div>
           </div>
-          <div className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-500'}`}>{record.email}</div>
-        </div>
-      )
-    },
-    {
-      title: 'Position',
-      dataIndex: 'position',
-      key: 'position',
-      width: 200,
-      sorter: (a, b) => a.position.localeCompare(b.position)
-    },
-    {
-      title: 'Stage',
-      dataIndex: 'stageTitle',
-      key: 'stage',
-      width: 150,
-      sorter: (a, b) => a.stageTitle.localeCompare(b.stageTitle),
-      render: (text, record) => {
-        const stageColors = {
-          'application-received': BRAND_COLORS.shakespeare,
-          'screening': BRAND_COLORS.emeraldPrimary,
-          'assessment': BRAND_COLORS.pictonBlue,
-          'technical-interview': BRAND_COLORS.toreaBay,
-          'final-interview': BRAND_COLORS.emeraldLight,
-          'offer-extended': BRAND_COLORS.forestGreen
-        }
-        return <Tag color={stageColors[record.stage]} style={{ color: 'white', fontWeight: '500' }}>{text}</Tag>
-      }
-    },
-    {
-      title: 'Priority',
-      dataIndex: 'priority',
-      key: 'priority',
-      width: 100,
-      sorter: (a, b) => {
-        const priorityOrder = { high: 3, medium: 2, low: 1 }
-        return priorityOrder[a.priority] - priorityOrder[b.priority]
+        )
       },
-      render: (priority) => {
-        const priorityColors = {
-          high: SEMANTIC_COLORS.error,
-          medium: SEMANTIC_COLORS.warning,
-          low: SEMANTIC_COLORS.success
+      {
+        title: 'Position',
+        dataIndex: 'position',
+        key: 'position',
+        width: 200,
+        sorter: (a, b) => a.position.localeCompare(b.position)
+      },
+      {
+        title: 'Stage',
+        dataIndex: 'stageTitle',
+        key: 'stage',
+        width: 150,
+        sorter: (a, b) => a.stageTitle.localeCompare(b.stageTitle),
+        render: (text, record) => {
+          const stageColors = {
+            'application-received': BRAND_COLORS.shakespeare,
+            screening: BRAND_COLORS.emeraldPrimary,
+            assessment: BRAND_COLORS.pictonBlue,
+            'technical-interview': BRAND_COLORS.toreaBay,
+            'final-interview': BRAND_COLORS.emeraldLight,
+            'offer-extended': BRAND_COLORS.forestGreen
+          }
+          return (
+            <Tag color={stageColors[record.stage]} style={{ color: 'white', fontWeight: '500' }}>
+              {text}
+            </Tag>
+          )
         }
-        return (
-          <Tag color={priorityColors[priority]} style={{ color: 'white', fontWeight: '500' }}>
-            {priority.toUpperCase()}
-          </Tag>
+      },
+      {
+        title: 'Priority',
+        dataIndex: 'priority',
+        key: 'priority',
+        width: 100,
+        sorter: (a, b) => {
+          const priorityOrder = { high: 3, medium: 2, low: 1 }
+          return priorityOrder[a.priority] - priorityOrder[b.priority]
+        },
+        render: (priority) => {
+          const priorityColors = {
+            high: SEMANTIC_COLORS.error,
+            medium: SEMANTIC_COLORS.warning,
+            low: SEMANTIC_COLORS.success
+          }
+          return (
+            <Tag color={priorityColors[priority]} style={{ color: 'white', fontWeight: '500' }}>
+              {priority.toUpperCase()}
+            </Tag>
+          )
+        }
+      },
+      {
+        title: 'Applied Date',
+        dataIndex: 'appliedDate',
+        key: 'appliedDate',
+        width: 120,
+        sorter: (a, b) => new Date(a.appliedDate) - new Date(b.appliedDate),
+        render: (date) => new Date(date).toLocaleDateString()
+      },
+      {
+        title: 'Tags',
+        dataIndex: 'tags',
+        key: 'tags',
+        width: 200,
+        render: (tags) => (
+          <Space wrap>
+            {tags.map((tag) => (
+              <Tag
+                key={tag}
+                className='text-xs'
+                style={{
+                  backgroundColor: darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.lightGray,
+                  color: darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray,
+                  border: `1px solid ${darkMode ? BRAND_COLORS.darkSlate : BRAND_COLORS.borderGray}`
+                }}
+              >
+                {tag}
+              </Tag>
+            ))}
+          </Space>
+        )
+      },
+      {
+        title: 'Phone',
+        dataIndex: 'phone',
+        key: 'phone',
+        width: 140
+      },
+      {
+        title: 'Actions',
+        key: 'actions',
+        width: 120,
+        render: (_, record) => (
+          <Space>
+            <Button
+              type='text'
+              size='small'
+              icon={<FontAwesomeIcon icon={faEye} />}
+              onClick={() => handleView(record)}
+              className={darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-600 hover:text-gray-900'}
+            />
+            <Button
+              type='text'
+              size='small'
+              icon={<FontAwesomeIcon icon={faEdit} />}
+              onClick={() => handleEdit(record)}
+              className={darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-600 hover:text-gray-900'}
+            />
+          </Space>
         )
       }
-    },
-    {
-      title: 'Applied Date',
-      dataIndex: 'appliedDate',
-      key: 'appliedDate',
-      width: 120,
-      sorter: (a, b) => new Date(a.appliedDate) - new Date(b.appliedDate),
-      render: (date) => new Date(date).toLocaleDateString()
-    },
-    {
-      title: 'Tags',
-      dataIndex: 'tags',
-      key: 'tags',
-      width: 200,
-      render: (tags) => (
-        <Space wrap>
-          {tags.map(tag => (
-            <Tag 
-              key={tag} 
-              className='text-xs'
-              style={{ 
-                backgroundColor: darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.lightGray,
-                color: darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray,
-                border: `1px solid ${darkMode ? BRAND_COLORS.darkSlate : BRAND_COLORS.borderGray}`
-              }}
-            >
-              {tag}
-            </Tag>
-          ))}
-        </Space>
-      )
-    },
-    {
-      title: 'Phone',
-      dataIndex: 'phone',
-      key: 'phone',
-      width: 140
-    },
-    {
-      title: 'Actions',
-      key: 'actions',
-      width: 120,
-      render: (_, record) => (
-        <Space>
-          <Button
-            type='text'
-            size='small'
-            icon={<FontAwesomeIcon icon={faEye} />}
-            onClick={() => handleView(record)}
-            className={darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-600 hover:text-gray-900'}
-          />
-          <Button
-            type='text'
-            size='small'
-            icon={<FontAwesomeIcon icon={faEdit} />}
-            onClick={() => handleEdit(record)}
-            className={darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-600 hover:text-gray-900'}
-          />
-        </Space>
-      )
-    }
-  ], [darkMode, handleView, handleEdit])
+    ],
+    [darkMode, handleView, handleEdit]
+  )
 
   // Candidates stages configuration
   const stages = useMemo(
@@ -547,48 +555,49 @@ const Candidates = React.memo(({ user }) => {
   // Filter candidates based on search term
   const filteredCandidates = useMemo(() => {
     if (!searchTerm) return flattenedCandidates
-    
+
     const searchLower = searchTerm.toLowerCase()
-    return flattenedCandidates.filter(candidate => 
-      candidate.name.toLowerCase().includes(searchLower) ||
-      candidate.position.toLowerCase().includes(searchLower) ||
-      candidate.email.toLowerCase().includes(searchLower) ||
-      candidate.tags.some(tag => tag.toLowerCase().includes(searchLower))
+    return flattenedCandidates.filter(
+      (candidate) =>
+        candidate.name.toLowerCase().includes(searchLower) ||
+        candidate.position.toLowerCase().includes(searchLower) ||
+        candidate.email.toLowerCase().includes(searchLower) ||
+        candidate.tags.some((tag) => tag.toLowerCase().includes(searchLower))
     )
   }, [flattenedCandidates, searchTerm])
 
   // Filter candidates data for Kanban board (filters by job listing and search)
   const filteredCandidatesData = useMemo(() => {
     const filtered = {}
-    
+
     // Initialize all stages with empty arrays
-    Object.keys(candidatesData).forEach(stage => {
+    Object.keys(candidatesData).forEach((stage) => {
       filtered[stage] = []
     })
-    
+
     // Filter each stage's candidates
-    Object.keys(candidatesData).forEach(stage => {
+    Object.keys(candidatesData).forEach((stage) => {
       const stageCandidates = candidatesData[stage] || []
-      
-      filtered[stage] = stageCandidates.filter(candidate => {
+
+      filtered[stage] = stageCandidates.filter((candidate) => {
         // Filter by job listing if selected
         const jobListingMatch = !selectedJobListing || candidate.jobListingId === selectedJobListing
-        
+
         // Filter by search term if provided
         let searchMatch = true
         if (searchTerm) {
           const searchLower = searchTerm.toLowerCase()
-          searchMatch = 
+          searchMatch =
             candidate.name.toLowerCase().includes(searchLower) ||
             candidate.position.toLowerCase().includes(searchLower) ||
             candidate.email.toLowerCase().includes(searchLower) ||
-            candidate.tags.some(tag => tag.toLowerCase().includes(searchLower))
+            candidate.tags.some((tag) => tag.toLowerCase().includes(searchLower))
         }
-        
+
         return jobListingMatch && searchMatch
       })
     })
-    
+
     return filtered
   }, [candidatesData, selectedJobListing, searchTerm])
 
@@ -630,9 +639,9 @@ const Candidates = React.memo(({ user }) => {
               <Button
                 type='default'
                 size='large'
-                icon={<FontAwesomeIcon icon={faPlus} className="mr-2" />}
+                icon={<FontAwesomeIcon icon={faPlus} className='mr-2' />}
                 onClick={handleAdd}
-                className="add-candidate-visible font-medium"
+                className='add-candidate-visible font-medium'
                 style={{
                   background: '#ffffff',
                   backgroundColor: '#ffffff',
@@ -737,7 +746,7 @@ const Candidates = React.memo(({ user }) => {
             }
           }}
           style={{
-            top: 20,
+            top: 20
           }}
           maskStyle={{
             backgroundColor: darkMode ? 'rgba(0, 0, 0, 0.7)' : 'rgba(0, 0, 0, 0.45)'
@@ -752,7 +761,7 @@ const Candidates = React.memo(({ user }) => {
               border-radius: 6px !important;
               box-shadow: 0 4px 12px rgba(0, 0, 0, ${darkMode ? '0.3' : '0.15'}) !important;
             }
-            
+
             /* Dropdown Options Styles */
             .ant-select-dropdown .ant-select-item-option {
               color: ${darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray} !important;
@@ -761,22 +770,23 @@ const Candidates = React.memo(({ user }) => {
               border-radius: 4px !important;
               margin: 2px 4px !important;
             }
-            
+
             .ant-select-dropdown .ant-select-item-option:hover {
               background-color: ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.lightGray} !important;
             }
-            
+
             .ant-select-dropdown .ant-select-item-option-selected {
               background-color: ${BRAND_COLORS.emeraldPrimary} !important;
               color: white !important;
               font-weight: 500 !important;
             }
-            
+
             .ant-select-dropdown .ant-select-item-option-selected:hover {
               background-color: ${BRAND_COLORS.emeraldLight} !important;
             }
 
-            ${darkMode ? `
+            ${darkMode
+              ? `
               /* Dark Mode Modal Styles */
               .dark-modal .ant-modal-content {
                 background-color: ${BRAND_COLORS.darkSlateAlt} !important;
@@ -809,8 +819,9 @@ const Candidates = React.memo(({ user }) => {
               .dark-descriptions .ant-descriptions-bordered .ant-descriptions-row {
                 border-bottom: 1px solid ${BRAND_COLORS.darkSlate} !important;
               }
-            ` : ''}
-            
+            `
+              : ''}
+
             /* Force Add Candidate Button Visibility */
             .add-candidate-visible,
             .add-candidate-visible.ant-btn,
@@ -822,7 +833,7 @@ const Candidates = React.memo(({ user }) => {
               opacity: 1 !important;
               visibility: visible !important;
             }
-            
+
             .add-candidate-visible:hover,
             .add-candidate-visible.ant-btn:hover,
             button.add-candidate-visible:hover {
@@ -832,7 +843,7 @@ const Candidates = React.memo(({ user }) => {
               border: 1px solid #f8f9fa !important;
             }
           `}</style>
-          
+
           {selectedCandidate && (
             <div className='space-y-6'>
               {/* Basic Information */}
@@ -867,25 +878,25 @@ const Candidates = React.memo(({ user }) => {
                     })}
                   </Descriptions.Item>
                   <Descriptions.Item label='Current Stage'>
-                    <Tag 
+                    <Tag
                       color={(() => {
                         const stageColors = {
                           'application-received': BRAND_COLORS.shakespeare,
-                          'screening': BRAND_COLORS.emeraldPrimary,
-                          'assessment': BRAND_COLORS.pictonBlue,
+                          screening: BRAND_COLORS.emeraldPrimary,
+                          assessment: BRAND_COLORS.pictonBlue,
                           'technical-interview': BRAND_COLORS.toreaBay,
                           'final-interview': BRAND_COLORS.emeraldLight,
                           'offer-extended': BRAND_COLORS.forestGreen
                         }
                         return stageColors[selectedCandidate.stage]
-                      })()} 
+                      })()}
                       style={{ color: 'white', fontWeight: '500' }}
                     >
                       {getStageTitle(selectedCandidate.stage)}
                     </Tag>
                   </Descriptions.Item>
                   <Descriptions.Item label='Priority' span={2}>
-                    <Tag 
+                    <Tag
                       color={(() => {
                         const priorityColors = {
                           high: SEMANTIC_COLORS.error,
@@ -893,7 +904,7 @@ const Candidates = React.memo(({ user }) => {
                           low: SEMANTIC_COLORS.success
                         }
                         return priorityColors[selectedCandidate.priority]
-                      })()} 
+                      })()}
                       style={{ color: 'white', fontWeight: '500' }}
                     >
                       {selectedCandidate.priority.toUpperCase()} PRIORITY
@@ -908,10 +919,10 @@ const Candidates = React.memo(({ user }) => {
                   Skills & Expertise
                 </h3>
                 <div className='flex flex-wrap gap-2'>
-                  {selectedCandidate.tags.map(tag => (
-                    <Tag 
+                  {selectedCandidate.tags.map((tag) => (
+                    <Tag
                       key={tag}
-                      style={{ 
+                      style={{
                         backgroundColor: darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.lightGray,
                         color: darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray,
                         border: `1px solid ${darkMode ? BRAND_COLORS.darkSlate : BRAND_COLORS.borderGray}`,
@@ -929,24 +940,19 @@ const Candidates = React.memo(({ user }) => {
               {/* Notes */}
               {selectedCandidate.notes && (
                 <div>
-                  <h3 className={`text-lg font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                    Notes
-                  </h3>
-                  <div 
+                  <h3 className={`text-lg font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Notes</h3>
+                  <div
                     className={`p-4 rounded-lg ${
                       darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'
                     } border`}
                   >
-                    <p className={darkMode ? 'text-gray-200' : 'text-gray-700'}>
-                      {selectedCandidate.notes}
-                    </p>
+                    <p className={darkMode ? 'text-gray-200' : 'text-gray-700'}>{selectedCandidate.notes}</p>
                   </div>
                 </div>
               )}
             </div>
           )}
         </Modal>
-
       </div>
     </DndProvider>
   )

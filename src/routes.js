@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Route, Navigate, Routes, useLocation } from 'react-router-dom'
 import Login from './modules/Login'
-import Dashboard from './modules/Dashboard'
+// import Dashboard from './modules/Dashboard'
 import BusinessDashboard from './modules/BusinessDashboard/Dashboard/components'
 import JobListings from './modules/BusinessDashboard/JobListings/components'
 import JobDescriptions from './modules/BusinessDashboard/JobDescriptions/components'
@@ -68,15 +68,10 @@ const AppRoutes = () => {
         id: currentUser.id,
         email: currentUser.email,
         name: currentUser.user_metadata?.full_name || currentUser.email?.split('@')[0] || 'User',
-        avatar: currentUser.user_metadata?.avatar_url || null,
-        ProfileEntryResponse: {
-          Username: currentUser.user_metadata?.username || currentUser.email?.split('@')[0] || 'User',
-          PublicKeyBase58Check: currentUser.id,
-          ProfilePic: currentUser.user_metadata?.avatar_url || null
-        }
+        avatar: currentUser.user_metadata?.avatar_url || null
       }
+
       setUser(transformedUser)
-      console.log('Supabase User:', transformedUser)
     } else {
       setUser(null)
     }

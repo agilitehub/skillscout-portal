@@ -9,7 +9,6 @@ import {
   faBriefcase,
   faChartLine,
   faPlus,
-  faRobot,
   faSearch,
   faEye,
   faSliders,
@@ -183,7 +182,7 @@ const Dashboard = React.memo(() => {
         buttonText: 'Track'
       }
     ],
-    [navigate, dashboardStats]
+    [navigate, dashboardStats, dispatch]
   )
 
   // Quick Actions Dropdown Menu

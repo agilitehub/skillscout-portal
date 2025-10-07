@@ -42,13 +42,10 @@ const Header = ({ user }) => {
   const navigate = useNavigate()
   const location = useLocation()
   const [isLogoutConfirmOpen, setIsLogoutConfirmOpen] = useState(false)
+  // eslint-disable-next-line no-unused-vars
   const [selectedDashboard, setSelectedDashboard] = useState('business') // 'personal' or 'business'
   // const [isDashboardDropdownOpen, setIsDashboardDropdownOpen] = useState(false)
   const [isBusinessSetupOpen, setIsBusinessSetupOpen] = useState(false)
-  // eslint-disable-next-line no-unused-vars
-  const [businessInfo, setBusinessInfo] = useState({ name: '', domain: '' }) // Legacy support - used by other components
-  const [organizationData, setOrganizationData] = useState(null)
-  const [isCheckingOrganization, setIsCheckingOrganization] = useState(false)
   const [businessForm] = Form.useForm()
   const [searchQuery, setSearchQuery] = useState('')
   const [isSearchFocused, setIsSearchFocused] = useState(false)
@@ -75,13 +72,9 @@ const Header = ({ user }) => {
   const checkUserOrganization = useCallback(async () => {
     if (!user?.id) return { hasOrganization: false }
 
-    console.log('user', user)
-
-    setIsCheckingOrganization(true)
     try {
       const result = await getUserOrganization(user.id)
       if (result.success) {
-        setOrganizationData(result.data.organization)
         return {
           hasOrganization: result.data.hasOrganization,
           organization: result.data.organization
@@ -93,8 +86,6 @@ const Header = ({ user }) => {
     } catch (error) {
       console.error('Error checking user organization:', error)
       return { hasOrganization: false }
-    } finally {
-      setIsCheckingOrganization(false)
     }
   }, [user?.id])
 
@@ -195,13 +186,6 @@ const Header = ({ user }) => {
         const result = await createOrganizationAndAssignToUser(organizationData, user.id)
 
         if (result.success) {
-          // Update local state
-          setOrganizationData(result.data.organization)
-          setBusinessInfo({
-            name: result.data.organization.organization_name || '',
-            domain: '' // Remove email domain as it's not in the new schema
-          })
-
           // Store organization data for legacy compatibility
           localStorage.setItem('skillscout_organization_data', JSON.stringify(result.data.organization))
           localStorage.setItem(
@@ -243,54 +227,6 @@ const Header = ({ user }) => {
   const handleUserProfileClose = useCallback(() => {
     dispatch(setUserProfileOpen(false))
   }, [dispatch])
-
-  // Check user's organization status when user changes
-  useEffect(() => {
-    const checkOrganizationStatus = async () => {
-      if (user?.id) {
-        const orgCheck = await checkUserOrganization()
-        if (orgCheck.hasOrganization && orgCheck.organization) {
-          setBusinessInfo({
-            name: orgCheck.organization.organization_name || '',
-            domain: '' // No longer using domain
-          })
-        }
-      }
-    }
-
-    checkOrganizationStatus()
-  }, [user?.id, checkUserOrganization])
-
-  // Load business info from localStorage as fallback (legacy support)
-  useEffect(() => {
-    // Only load from localStorage if no user or organization data
-    if (!user?.id && !organizationData) {
-      // Try to load comprehensive organization data first
-      const savedOrgData = localStorage.getItem('skillscout_organization_data')
-      if (savedOrgData) {
-        try {
-          const parsed = JSON.parse(savedOrgData)
-          setBusinessInfo({
-            name: parsed.organization_name || '',
-            domain: '' // No longer using domain
-          })
-        } catch (error) {
-          console.error('Error parsing saved organization data:', error)
-        }
-      } else {
-        // Fallback to legacy business info format
-        const savedBusinessInfo = localStorage.getItem('skillscout_business_info')
-        if (savedBusinessInfo) {
-          try {
-            const parsed = JSON.parse(savedBusinessInfo)
-            setBusinessInfo(parsed)
-          } catch (error) {
-            console.error('Error parsing saved business info:', error)
-          }
-        }
-      }
-    }
-  }, [user?.id, organizationData])
 
   // Load saved dashboard preference on mount
   useEffect(() => {

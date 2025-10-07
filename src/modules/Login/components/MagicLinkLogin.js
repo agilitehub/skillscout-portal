@@ -151,7 +151,7 @@ const MagicLinkLogin = React.memo(({ onLogin, loading }) => {
                 className='w-full'
                 style={{
                   border: darkMode ? '1px solid rgba(255,255,255,0.3)' : `1px solid ${BRAND_COLORS.borderGray}`,
-                  color: darkMode ? 'white' : 'inherit',
+                  color: 'white',
                   backgroundColor: darkMode ? 'rgba(255,255,255,0.1)' : 'white'
                 }}
               >

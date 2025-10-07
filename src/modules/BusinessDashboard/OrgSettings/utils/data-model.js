@@ -441,16 +441,6 @@ const isValidYear = (year) => {
   return /^\d{4}$/.test(year) && yearNum >= 1800 && yearNum <= currentYear
 }
 
-/**
- * Validate ISO date format
- * @param {string} date - Date string to validate
- * @returns {boolean} Whether date is valid ISO format
- */
-const isValidISODate = (date) => {
-  const parsedDate = new Date(date)
-  return parsedDate instanceof Date && !isNaN(parsedDate) && date === parsedDate.toISOString()
-}
-
 // Export configuration object
 const orgSettingsConfig = {
   WORK_ARRANGEMENTS,

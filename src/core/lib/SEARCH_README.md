@@ -108,7 +108,7 @@ The search supports various options:
 const searchResults = await searchWithFallback(searchTerm, {
   matchThreshold: 0.6, // Similarity threshold (0-1)
   matchCount: 20, // Maximum results to return
-      sourceTables: ['questionnaires', 'job_descriptions'], // Filter by source
+  sourceTables: ['questionnaires', 'job_descriptions'], // Filter by source
   userId: 'user-uuid' // Filter by user (if implemented)
 })
 ```
