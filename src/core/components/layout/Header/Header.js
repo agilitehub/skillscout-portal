@@ -728,7 +728,7 @@ const Header = ({ user }) => {
       }}
     >
       <div className='px-2 sm:px-4 md:px-6'>
-        <div className='flex h-10 items-center justify-between'>
+        <div className='flex h-12 items-center justify-between'>
           {/* Logo and Title */}
           <Link to='/' className='flex-shrink-0 flex items-center'>
             <div
@@ -736,9 +736,9 @@ const Header = ({ user }) => {
                 darkMode ? 'bg-white/15 backdrop-blur-sm shadow-lg' : ''
               }`}
             >
-              <Logo size='small' className='w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 object-contain' />
+              <Logo size='small' className='w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 object-contain' />
             </div>
-            <h1 className='ml-2 sm:ml-3 text-sm sm:text-base md:text-lg font-bold text-white whitespace-nowrap leading-none flex items-center'>
+            <h1 className='ml-2 sm:ml-3 text-base sm:text-lg md:text-xl font-bold text-white whitespace-nowrap leading-none flex items-center'>
               <span className='text-blue-500'>Skill</span>
               <span className='text-emerald-500'>Scout</span>
             </h1>

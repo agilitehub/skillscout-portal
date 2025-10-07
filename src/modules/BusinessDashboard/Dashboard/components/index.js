@@ -272,7 +272,7 @@ const Dashboard = React.memo(() => {
 
   return (
     <div
-      className={`h-screen flex ${
+      className={`h-screen ${
         darkMode
           ? 'bg-gradient-to-br from-slate-700 via-slate-600 to-emerald-800'
           : 'bg-gradient-to-br from-sky-100 via-gray-50 to-emerald-100'
@@ -291,10 +291,10 @@ const Dashboard = React.memo(() => {
       <BusinessSidebar />
 
       {/* Main Content */}
-      <div className='flex-1 ml-64 relative z-10 overflow-y-auto'>
+      <div className='ml-64 h-[calc(100vh-3rem)] flex flex-col overflow-hidden'>
         {/* Main Header */}
-        <div className='px-4 py-2'>
-          <div className='flex items-center justify-between mb-3'>
+        <div className='px-4 py-2 flex-shrink-0'>
+          <div className='flex items-center justify-between mb-2'>
             <div>
               <Title
                 level={1}
@@ -414,10 +414,10 @@ const Dashboard = React.memo(() => {
           </div>
 
           {/* Workspace Cards */}
-          <div className='mb-3'>
+          <div className='px-4 flex-1 flex flex-col overflow-hidden'>
             <Title
               level={2}
-              className='!mb-2'
+              className='!mb-3 flex-shrink-0'
               style={{
                 fontSize: '16px',
                 fontWeight: 'bold',
@@ -427,7 +427,8 @@ const Dashboard = React.memo(() => {
               Workspace
             </Title>
 
-            <Row gutter={[12, 12]}>
+            <div className='flex-1 overflow-y-auto'>
+              <Row gutter={[16, 16]}>
               {workspaceCards.map((card, index) => (
                 <Col xs={24} lg={index < 3 ? 8 : 12} key={index}>
                   <Card
@@ -438,25 +439,25 @@ const Dashboard = React.memo(() => {
                       borderColor: darkMode ? DARK_THEME.border.primary : LIGHT_THEME.border.primary
                     }}
                     bodyStyle={{
-                      padding: '12px',
+                      padding: '16px',
                       backgroundColor: darkMode ? DARK_THEME.background.secondary : LIGHT_THEME.background.primary
                     }}
                   >
                     <div className='flex'>
                       <div className='flex-1'>
-                        <div className='flex items-center mb-2'>
+                        <div className='flex items-center mb-3'>
                           <div
-                            className='w-8 h-8 rounded-lg flex items-center justify-center mr-2'
+                            className='w-10 h-10 rounded-lg flex items-center justify-center mr-3'
                             style={{ backgroundColor: card.color + '20' }}
                           >
-                            <FontAwesomeIcon icon={card.icon} style={{ color: card.color, fontSize: '14px' }} />
+                            <FontAwesomeIcon icon={card.icon} style={{ color: card.color, fontSize: '16px' }} />
                           </div>
                           <div className='flex-1'>
                             <Title
                               level={4}
                               className='!mb-0'
                               style={{
-                                fontSize: '14px',
+                                fontSize: '16px',
                                 fontWeight: '600',
                                 margin: 0,
                                 color: darkMode ? DARK_THEME.text.primary : LIGHT_THEME.text.primary
@@ -468,9 +469,9 @@ const Dashboard = React.memo(() => {
                         </div>
 
                         <Text
-                          className='block text-xs mb-2'
+                          className='block text-sm mb-3'
                           style={{
-                            lineHeight: '1.3',
+                            lineHeight: '1.4',
                             color: darkMode ? DARK_THEME.text.secondary : LIGHT_THEME.text.secondary
                           }}
                         >
@@ -481,7 +482,7 @@ const Dashboard = React.memo(() => {
                           {card.stats && (
                             <div>
                               <Text
-                                className='block text-xs'
+                                className='block text-sm'
                                 style={{
                                   color: darkMode ? DARK_THEME.text.tertiary : LIGHT_THEME.text.secondary
                                 }}
@@ -489,7 +490,7 @@ const Dashboard = React.memo(() => {
                                 {card.stats.label}
                               </Text>
                               <Text
-                                className='block text-lg font-bold'
+                                className='block text-xl font-bold'
                                 style={{
                                   lineHeight: '1.2',
                                   color: darkMode ? DARK_THEME.text.primary : LIGHT_THEME.text.primary
@@ -502,15 +503,15 @@ const Dashboard = React.memo(() => {
 
                           <Button
                             type='primary'
-                            size='small'
+                            size='middle'
                             style={{
                               backgroundColor: card.color,
                               borderColor: card.color,
                               boxShadow: 'none',
-                              fontSize: '12px',
-                              height: '26px',
-                              paddingLeft: '12px',
-                              paddingRight: '12px'
+                              fontSize: '14px',
+                              height: '32px',
+                              paddingLeft: '16px',
+                              paddingRight: '16px'
                             }}
                             onClick={card.action}
                           >
@@ -522,136 +523,10 @@ const Dashboard = React.memo(() => {
                   </Card>
                 </Col>
               ))}
-            </Row>
+              </Row>
+            </div>
           </div>
 
-          {/* Recent Activity Summary */}
-          <div className='pb-2'>
-            <Title
-              level={2}
-              className='!mb-2'
-              style={{
-                fontSize: '16px',
-                fontWeight: 'bold',
-                color: darkMode ? DARK_THEME.text.primary : LIGHT_THEME.text.primary
-              }}
-            >
-              Recent Activity
-            </Title>
-
-            <Row gutter={[12, 12]}>
-              <Col xs={24} md={8}>
-                <Card
-                  style={{
-                    backgroundColor: darkMode ? DARK_THEME.background.secondary : LIGHT_THEME.background.primary,
-                    borderColor: darkMode ? DARK_THEME.border.primary : LIGHT_THEME.border.primary
-                  }}
-                  bodyStyle={{
-                    padding: '12px',
-                    backgroundColor: darkMode ? DARK_THEME.background.secondary : LIGHT_THEME.background.primary,
-                    display: 'flex',
-                    alignItems: 'center'
-                  }}
-                >
-                  <Statistic
-                    title={
-                      <span
-                        style={{
-                          fontSize: '11px',
-                          color: darkMode ? DARK_THEME.text.secondary : LIGHT_THEME.text.secondary
-                        }}
-                      >
-                        New Applications
-                      </span>
-                    }
-                    value={3}
-                    prefix={
-                      <FontAwesomeIcon icon={faUserPlus} style={{ color: SEMANTIC_COLORS.success, fontSize: '14px' }} />
-                    }
-                    valueStyle={{
-                      color: darkMode ? DARK_THEME.text.primary : LIGHT_THEME.text.primary,
-                      fontSize: '20px'
-                    }}
-                  />
-                </Card>
-              </Col>
-
-              <Col xs={24} md={8}>
-                <Card
-                  style={{
-                    backgroundColor: darkMode ? DARK_THEME.background.secondary : LIGHT_THEME.background.primary,
-                    borderColor: darkMode ? DARK_THEME.border.primary : LIGHT_THEME.border.primary
-                  }}
-                  bodyStyle={{
-                    padding: '12px',
-                    backgroundColor: darkMode ? DARK_THEME.background.secondary : LIGHT_THEME.background.primary,
-                    display: 'flex',
-                    alignItems: 'center'
-                  }}
-                >
-                  <Statistic
-                    title={
-                      <span
-                        style={{
-                          fontSize: '11px',
-                          color: darkMode ? DARK_THEME.text.secondary : LIGHT_THEME.text.secondary
-                        }}
-                      >
-                        AI Matches Found
-                      </span>
-                    }
-                    value={7}
-                    prefix={
-                      <FontAwesomeIcon icon={faSearch} style={{ color: SEMANTIC_COLORS.primary, fontSize: '14px' }} />
-                    }
-                    valueStyle={{
-                      color: darkMode ? DARK_THEME.text.primary : LIGHT_THEME.text.primary,
-                      fontSize: '20px'
-                    }}
-                  />
-                </Card>
-              </Col>
-
-              <Col xs={24} md={8}>
-                <Card
-                  style={{
-                    backgroundColor: darkMode ? DARK_THEME.background.secondary : LIGHT_THEME.background.primary,
-                    borderColor: darkMode ? DARK_THEME.border.primary : LIGHT_THEME.border.primary
-                  }}
-                  bodyStyle={{
-                    padding: '12px',
-                    backgroundColor: darkMode ? DARK_THEME.background.secondary : LIGHT_THEME.background.primary,
-                    display: 'flex',
-                    alignItems: 'center'
-                  }}
-                >
-                  <Statistic
-                    title={
-                      <span
-                        style={{
-                          fontSize: '11px',
-                          color: darkMode ? DARK_THEME.text.secondary : LIGHT_THEME.text.secondary
-                        }}
-                      >
-                        Interviews Scheduled
-                      </span>
-                    }
-                    value={2}
-                    prefix={
-                      <FontAwesomeIcon
-                        icon={faChartLine}
-                        style={{ color: SEMANTIC_COLORS.warning, fontSize: '14px' }}
-                      />
-                    }
-                    valueStyle={{
-                      color: darkMode ? DARK_THEME.text.primary : LIGHT_THEME.text.primary,
-                      fontSize: '20px'
-                    }}
-                  />
-                </Card>
-              </Col>
-            </Row>
-          </div>
         </div>
       </div>
 
