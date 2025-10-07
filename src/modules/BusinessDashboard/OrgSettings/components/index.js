@@ -15,7 +15,6 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../../core/context/ThemeContext'
 import { Button } from '../../../../core/components'
-import BusinessSidebar from '../../../../core/components/layout/Sidebar'
 import { BRAND_COLORS } from '../../../../core/theme/colors'
 import { clearUserOrganization, createOrganizationAndAssignToUser } from '../../../../core/lib/supabase-controller'
 import orgSettingsController from '../utils/controller'
@@ -250,13 +249,10 @@ const OrgSettings = React.memo(({ user }) => {
         } pointer-events-none`}
       />
 
-      {/* Sidebar */}
-      <BusinessSidebar />
-
       {contextHolder}
 
       {/* Main Content */}
-      <div className='flex-1 ml-64 relative'>
+      <div className='flex-1 relative'>
         {/* Header */}
         <div
           className={`relative px-8 py-4 border-b flex-shrink-0 shadow-lg ${

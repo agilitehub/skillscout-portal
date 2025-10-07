@@ -24,7 +24,6 @@ import {
 import { useNavigate } from 'react-router-dom'
 import { useTheme } from '../../../../core/context/ThemeContext'
 import { Button } from '../../../../core/components'
-import BusinessSidebar from '../../../../core/components/layout/Sidebar'
 import { BRAND_COLORS, SEMANTIC_COLORS, LIGHT_THEME, DARK_THEME } from '../../../../core/theme/colors'
 import { setUserProfileOpen } from '../../../../core/components/profile/store/profileSlice'
 import { useDispatch } from 'react-redux'
@@ -278,20 +277,8 @@ const Dashboard = React.memo(() => {
           : 'bg-gradient-to-br from-sky-100 via-gray-50 to-emerald-100'
       }`}
     >
-      {/* Background overlay */}
-      <div
-        className={`fixed inset-0 ${
-          darkMode
-            ? 'bg-gradient-to-b from-transparent via-slate-700/30 to-emerald-800/40'
-            : 'bg-gradient-to-b from-transparent via-sky-100/40 to-emerald-100/50'
-        } pointer-events-none`}
-      />
-
-      {/* Sidebar */}
-      <BusinessSidebar />
-
       {/* Main Content */}
-      <div className='flex-1 ml-64 relative z-10 overflow-y-auto'>
+      <div className='relative z-10 overflow-y-auto'>
         {/* Main Header */}
         <div className='px-4 py-2'>
           <div className='flex items-center justify-between mb-3'>

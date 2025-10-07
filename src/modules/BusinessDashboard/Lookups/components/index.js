@@ -3,7 +3,6 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTheme } from '../../../../core/context/ThemeContext'
-import BusinessSidebar from '../../../../core/components/layout/Sidebar'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faList, faPlus, faFilter, faSpinner, faTrashAlt, faEdit } from '@fortawesome/free-solid-svg-icons'
 import { Select, message, Spin } from 'antd'
@@ -599,8 +598,7 @@ const Lookups = React.memo(({ user }) => {
           } pointer-events-none`}
         ></div>
 
-        <BusinessSidebar />
-        <div className='p-6 ml-64 relative z-10'>
+        <div className='p-6 relative z-10'>
           <div className='max-w-7xl mx-auto'>
             {/* Header */}
             <div

@@ -8,7 +8,6 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSave, faTimes, faGift } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../../core/context/ThemeContext'
-import BusinessSidebar from '../../../../core/components/layout/Sidebar'
 import { createJobListing } from '../utils/listing-controller'
 import { getJobDescriptionsForSelection } from '../utils/controller'
 import JobDescriptionPreview from './JobDescriptionPreview'
@@ -79,7 +78,6 @@ const CreateJobListing = React.memo(({ user }) => {
 
   return (
     <div className='flex h-screen bg-gray-100'>
-      <BusinessSidebar />
       <div className={`flex-1 flex flex-col overflow-hidden ${darkMode ? 'bg-gray-800' : 'bg-gray-100'}`}>
         {/* Header */}
         <div

@@ -7,7 +7,6 @@ import { faUserPlus, faEnvelope, faShieldAlt, faArrowLeft, faUser } from '@forta
 import { useNavigate } from 'react-router-dom'
 import { Button } from '../../../../core/components'
 import { useTheme } from '../../../../core/context/ThemeContext'
-import BusinessSidebar from '../../../../core/components/layout/Sidebar'
 import { BRAND_COLORS, SEMANTIC_COLORS } from '../../../../core/theme/colors'
 import userManagementController from '../utils/controller'
 
@@ -153,9 +152,6 @@ const InviteUserPage = React.memo(({ user }) => {
             : 'bg-gradient-to-b from-transparent via-sky-100/40 to-emerald-100/50'
         } pointer-events-none`}
       />
-
-      {/* Sidebar */}
-      <BusinessSidebar />
 
       {/* Main Content */}
       <div className='flex-1 ml-64 relative'>

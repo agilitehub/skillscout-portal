@@ -17,7 +17,6 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../ui/ThemeContext'
 import { useNavigate, useLocation } from 'react-router-dom'
-import BusinessSidebar from '../components/BusinessSidebar'
 import { createJobOpportunity, updateJobOpportunity, getJobOpportunityById } from '../JobOpportunities/utils/controller'
 
 const { Option } = Select
@@ -181,9 +180,6 @@ const CreateJobPosting = React.memo(() => {
           </>
         )}
       </div>
-
-      {/* Business Sidebar */}
-      <BusinessSidebar />
 
       {/* Header */}
       <div
@@ -353,7 +349,10 @@ const CreateJobPosting = React.memo(() => {
                     name='type'
                     rules={[{ required: true, message: 'Please select job type' }]}
                   >
-                    <Select placeholder='Select job type' dropdownClassName={darkMode ? 'create-job-posting-dark-dropdown' : ''}>
+                    <Select
+                      placeholder='Select job type'
+                      dropdownClassName={darkMode ? 'create-job-posting-dark-dropdown' : ''}
+                    >
                       <Option value='Full-time'>Full-time</Option>
                       <Option value='Part-time'>Part-time</Option>
                       <Option value='Contract'>Contract</Option>
@@ -376,7 +375,10 @@ const CreateJobPosting = React.memo(() => {
                     name='workArrangement'
                     rules={[{ required: true, message: 'Please select work arrangement' }]}
                   >
-                    <Select placeholder='Select work arrangement' dropdownClassName={darkMode ? 'create-job-posting-dark-dropdown' : ''}>
+                    <Select
+                      placeholder='Select work arrangement'
+                      dropdownClassName={darkMode ? 'create-job-posting-dark-dropdown' : ''}
+                    >
                       <Option value='On-site'>On-site Only</Option>
                       <Option value='Remote'>Remote Only</Option>
                       <Option value='Hybrid'>Hybrid (Remote + On-site)</Option>
@@ -436,7 +438,10 @@ const CreateJobPosting = React.memo(() => {
                     name='experienceRequired'
                     rules={[{ required: true, message: 'Please select experience level' }]}
                   >
-                    <Select placeholder='Select experience level' dropdownClassName={darkMode ? 'create-job-posting-dark-dropdown' : ''}>
+                    <Select
+                      placeholder='Select experience level'
+                      dropdownClassName={darkMode ? 'create-job-posting-dark-dropdown' : ''}
+                    >
                       <Option value='0-1'>0-1 years</Option>
                       <Option value='2-4'>2-4 years</Option>
                       <Option value='5-7'>5-7 years</Option>
@@ -448,7 +453,11 @@ const CreateJobPosting = React.memo(() => {
                     label={<span className={darkMode ? 'text-gray-300' : ''}>Education Level</span>}
                     name='educationLevel'
                   >
-                    <Select placeholder='Select minimum education' allowClear dropdownClassName={darkMode ? 'create-job-posting-dark-dropdown' : ''}>
+                    <Select
+                      placeholder='Select minimum education'
+                      allowClear
+                      dropdownClassName={darkMode ? 'create-job-posting-dark-dropdown' : ''}
+                    >
                       <Option value='High School'>High School</Option>
                       <Option value='Diploma'>Diploma</Option>
                       <Option value="Bachelor's Degree">Bachelor's Degree</Option>
@@ -469,7 +478,11 @@ const CreateJobPosting = React.memo(() => {
                   label={<span className={darkMode ? 'text-gray-300' : ''}>Industry Experience</span>}
                   name='industryExperience'
                 >
-                                      <Select placeholder='Select industry' allowClear dropdownClassName={darkMode ? 'create-job-posting-dark-dropdown' : ''}>
+                  <Select
+                    placeholder='Select industry'
+                    allowClear
+                    dropdownClassName={darkMode ? 'create-job-posting-dark-dropdown' : ''}
+                  >
                     <Option value='Technology'>Technology</Option>
                     <Option value='Healthcare'>Healthcare</Option>
                     <Option value='Finance'>Finance</Option>
@@ -518,7 +531,11 @@ const CreateJobPosting = React.memo(() => {
                     label={<span className={darkMode ? 'text-gray-300' : ''}>Visa Sponsorship</span>}
                     name='visaSponsorship'
                   >
-                    <Select placeholder='Visa sponsorship available?' allowClear dropdownClassName={darkMode ? 'create-job-posting-dark-dropdown' : ''}>
+                    <Select
+                      placeholder='Visa sponsorship available?'
+                      allowClear
+                      dropdownClassName={darkMode ? 'create-job-posting-dark-dropdown' : ''}
+                    >
                       <Option value='Available'>Available</Option>
                       <Option value='Not Available'>Not Available</Option>
                       <Option value='Case by Case'>Case by Case</Option>
@@ -529,7 +546,11 @@ const CreateJobPosting = React.memo(() => {
                     label={<span className={darkMode ? 'text-gray-300' : ''}>Travel Requirements</span>}
                     name='travelRequirements'
                   >
-                    <Select placeholder='Travel required?' allowClear dropdownClassName={darkMode ? 'create-job-posting-dark-dropdown' : ''}>
+                    <Select
+                      placeholder='Travel required?'
+                      allowClear
+                      dropdownClassName={darkMode ? 'create-job-posting-dark-dropdown' : ''}
+                    >
                       <Option value='None'>No Travel Required</Option>
                       <Option value='Occasional'>Occasional (10-25%)</Option>
                       <Option value='Frequent'>Frequent (25-50%)</Option>
@@ -567,7 +588,11 @@ const CreateJobPosting = React.memo(() => {
                   name='employmentTypes'
                   rules={[{ required: true, message: 'Please select employment types' }]}
                 >
-                                      <Select mode='multiple' placeholder='Select employment types' dropdownClassName={darkMode ? 'create-job-posting-dark-dropdown' : ''}>
+                  <Select
+                    mode='multiple'
+                    placeholder='Select employment types'
+                    dropdownClassName={darkMode ? 'create-job-posting-dark-dropdown' : ''}
+                  >
                     <Option value='Full-time'>Full-time</Option>
                     <Option value='Part-time'>Part-time</Option>
                     <Option value='Contract'>Contract</Option>
@@ -582,7 +607,10 @@ const CreateJobPosting = React.memo(() => {
                     name='resumeRequired'
                     rules={[{ required: true }]}
                   >
-                    <Select placeholder='Is resume required?' dropdownClassName={darkMode ? 'create-job-posting-dark-dropdown' : ''}>
+                    <Select
+                      placeholder='Is resume required?'
+                      dropdownClassName={darkMode ? 'create-job-posting-dark-dropdown' : ''}
+                    >
                       <Option value={true}>Yes, Required</Option>
                       <Option value={false}>Optional</Option>
                     </Select>
@@ -592,7 +620,11 @@ const CreateJobPosting = React.memo(() => {
                     label={<span className={darkMode ? 'text-gray-300' : ''}>Cover Letter</span>}
                     name='coverLetterRequired'
                   >
-                    <Select placeholder='Cover letter requirement' allowClear dropdownClassName={darkMode ? 'create-job-posting-dark-dropdown' : ''}>
+                    <Select
+                      placeholder='Cover letter requirement'
+                      allowClear
+                      dropdownClassName={darkMode ? 'create-job-posting-dark-dropdown' : ''}
+                    >
                       <Option value='Required'>Required</Option>
                       <Option value='Preferred'>Preferred</Option>
                       <Option value='Optional'>Optional</Option>
@@ -603,7 +635,11 @@ const CreateJobPosting = React.memo(() => {
                     label={<span className={darkMode ? 'text-gray-300' : ''}>Portfolio Required</span>}
                     name='portfolioRequired'
                   >
-                    <Select placeholder='Portfolio requirement' allowClear dropdownClassName={darkMode ? 'create-job-posting-dark-dropdown' : ''}>
+                    <Select
+                      placeholder='Portfolio requirement'
+                      allowClear
+                      dropdownClassName={darkMode ? 'create-job-posting-dark-dropdown' : ''}
+                    >
                       <Option value='Required'>Required</Option>
                       <Option value='Preferred'>Preferred</Option>
                       <Option value='Optional'>Optional</Option>
@@ -614,7 +650,11 @@ const CreateJobPosting = React.memo(() => {
                     label={<span className={darkMode ? 'text-gray-300' : ''}>References Required</span>}
                     name='referencesRequired'
                   >
-                    <Select placeholder='References requirement' allowClear dropdownClassName={darkMode ? 'create-job-posting-dark-dropdown' : ''}>
+                    <Select
+                      placeholder='References requirement'
+                      allowClear
+                      dropdownClassName={darkMode ? 'create-job-posting-dark-dropdown' : ''}
+                    >
                       <Option value='Required'>Required Upfront</Option>
                       <Option value='Upon Request'>Upon Request</Option>
                       <Option value='Optional'>Optional</Option>

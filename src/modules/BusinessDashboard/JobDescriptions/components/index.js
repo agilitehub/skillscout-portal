@@ -15,7 +15,6 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../../core/context/ThemeContext'
 import { BRAND_COLORS } from '../../../../core/theme/colors'
-import BusinessSidebar from '../../../../core/components/layout/Sidebar'
 import { getAllJobDescriptions, deleteJobDescription } from '../utils/controller'
 import TableView from '../../../../core/components/view-components/table-view/TableView'
 import TableActions from '../../../../core/components/view-components/table-view/TableActions'
@@ -260,8 +259,7 @@ const JobDescriptions = React.memo(({ user }) => {
           } pointer-events-none`}
         ></div>
 
-        <BusinessSidebar />
-        <div className='p-6 ml-64 relative z-10'>
+        <div className='p-6 relative z-10'>
           {/* Header */}
           <div
             className={`rounded-lg mb-6 px-6 py-4 shadow-lg ${darkMode ? 'bg-gray-800 border border-gray-700' : ''}`}

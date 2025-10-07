@@ -23,7 +23,6 @@ import {
   faCheckCircle
 } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../../core/context/ThemeContext'
-import BusinessSidebar from '../../../../core/components/layout/Sidebar'
 import {
   createJobDescription,
   updateJobDescription,
@@ -506,9 +505,6 @@ const CreateJobDescription = React.memo(({ user }) => {
             : 'bg-gradient-to-b from-transparent via-sky-100/40 to-emerald-100/50'
         } pointer-events-none`}
       ></div>
-
-      {/* Business Sidebar */}
-      <BusinessSidebar />
 
       {/* Main Content */}
       <div className='p-6 ml-64 relative z-10'>

@@ -10,7 +10,6 @@ import { HTML5Backend } from 'react-dnd-html5-backend'
 import { useTheme } from '../../../../core/context/ThemeContext'
 import { Button } from '../../../../core/components'
 import TableView from '../../../../core/components/view-components/table-view/TableView'
-import BusinessSidebar from '../../../../core/components/layout/Sidebar'
 import KanbanBoard from './KanbanBoard'
 import { BRAND_COLORS, SEMANTIC_COLORS } from '../../../../core/theme/colors'
 
@@ -611,19 +610,8 @@ const Candidates = React.memo(({ user }) => {
         }`}
       >
         {/* Background overlay for full coverage */}
-        <div
-          className={`fixed inset-0 ${
-            darkMode
-              ? 'bg-gradient-to-b from-transparent via-slate-700/30 to-emerald-800/40'
-              : 'bg-gradient-to-b from-transparent via-sky-100/40 to-emerald-100/50'
-          } pointer-events-none`}
-        />
-
-        {/* Sidebar */}
-        <BusinessSidebar />
-
         {/* Main Content */}
-        <div className='flex-1 ml-64 relative'>
+        <div className='relative'>
           {/* Header */}
           <div
             className={`relative px-8 py-4 border-b flex-shrink-0 shadow-lg ${

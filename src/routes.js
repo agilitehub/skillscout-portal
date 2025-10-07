@@ -22,6 +22,7 @@ import Billing from './modules/BusinessDashboard/Billing/components'
 import Candidates from './modules/BusinessDashboard/Candidates/components'
 import CandidateForm from './modules/BusinessDashboard/Candidates/components/CandidateForm'
 import Header from './core/components/layout/Header'
+import BusinessDashboardLayout from './core/components/layout/BusinessDashboardLayout'
 import { useAuth } from './core/context/AuthContext'
 import { useTheme } from './core/context/ThemeContext'
 
@@ -108,9 +109,9 @@ const AppRoutes = () => {
         path='/dashboard'
         element={
           user ? (
-            <DashboardLayout user={user}>
+            <BusinessDashboardLayout user={user}>
               <Dashboard user={user} />
-            </DashboardLayout>
+            </BusinessDashboardLayout>
           ) : (
             <Navigate to='/' replace state={{ from: location }} />
           )
@@ -121,9 +122,9 @@ const AppRoutes = () => {
         path='/business-dashboard'
         element={
           user ? (
-            <DashboardLayout user={user}>
+            <BusinessDashboardLayout user={user}>
               <BusinessDashboard user={user} />
-            </DashboardLayout>
+            </BusinessDashboardLayout>
           ) : (
             <Navigate to='/' replace state={{ from: location }} />
           )
@@ -134,9 +135,9 @@ const AppRoutes = () => {
         path='/business-dashboard/candidates'
         element={
           user ? (
-            <DashboardLayout user={user}>
+            <BusinessDashboardLayout user={user}>
               <Candidates user={user} />
-            </DashboardLayout>
+            </BusinessDashboardLayout>
           ) : (
             <Navigate to='/' replace state={{ from: location }} />
           )
@@ -147,9 +148,9 @@ const AppRoutes = () => {
         path='/business-dashboard/candidates/create'
         element={
           user ? (
-            <DashboardLayout user={user}>
+            <BusinessDashboardLayout user={user}>
               <CandidateForm user={user} />
-            </DashboardLayout>
+            </BusinessDashboardLayout>
           ) : (
             <Navigate to='/' replace state={{ from: location }} />
           )
@@ -160,9 +161,9 @@ const AppRoutes = () => {
         path='/business-dashboard/candidates/edit'
         element={
           user ? (
-            <DashboardLayout user={user}>
+            <BusinessDashboardLayout user={user}>
               <CandidateForm user={user} />
-            </DashboardLayout>
+            </BusinessDashboardLayout>
           ) : (
             <Navigate to='/' replace state={{ from: location }} />
           )
@@ -173,9 +174,9 @@ const AppRoutes = () => {
         path='/business-dashboard/job-listings'
         element={
           user ? (
-            <DashboardLayout user={user}>
+            <BusinessDashboardLayout user={user}>
               <JobListings user={user} />
-            </DashboardLayout>
+            </BusinessDashboardLayout>
           ) : (
             <Navigate to='/' replace state={{ from: location }} />
           )
@@ -186,9 +187,9 @@ const AppRoutes = () => {
         path='/business-dashboard/job-listings/create'
         element={
           user ? (
-            <DashboardLayout user={user}>
+            <BusinessDashboardLayout user={user}>
               <JobOpportunityForm user={user} />
-            </DashboardLayout>
+            </BusinessDashboardLayout>
           ) : (
             <Navigate to='/' replace state={{ from: location }} />
           )
@@ -199,9 +200,9 @@ const AppRoutes = () => {
         path='/business-dashboard/job-descriptions'
         element={
           user ? (
-            <DashboardLayout user={user}>
+            <BusinessDashboardLayout user={user}>
               <JobDescriptions user={user} />
-            </DashboardLayout>
+            </BusinessDashboardLayout>
           ) : (
             <Navigate to='/' replace state={{ from: location }} />
           )
@@ -212,9 +213,9 @@ const AppRoutes = () => {
         path='/business-dashboard/job-descriptions/create'
         element={
           user ? (
-            <DashboardLayout user={user}>
+            <BusinessDashboardLayout user={user}>
               <JobDescriptionForm user={user} />
-            </DashboardLayout>
+            </BusinessDashboardLayout>
           ) : (
             <Navigate to='/' replace state={{ from: location }} />
           )
@@ -225,9 +226,9 @@ const AppRoutes = () => {
         path='/business-dashboard/job-descriptions/edit'
         element={
           user ? (
-            <DashboardLayout user={user}>
+            <BusinessDashboardLayout user={user}>
               <JobDescriptionForm user={user} />
-            </DashboardLayout>
+            </BusinessDashboardLayout>
           ) : (
             <Navigate to='/' replace state={{ from: location }} />
           )
@@ -238,9 +239,9 @@ const AppRoutes = () => {
         path='/business-dashboard/questionnaires'
         element={
           user ? (
-            <DashboardLayout user={user}>
+            <BusinessDashboardLayout user={user}>
               <Questionnaires user={user} />
-            </DashboardLayout>
+            </BusinessDashboardLayout>
           ) : (
             <Navigate to='/' replace state={{ from: location }} />
           )
@@ -251,9 +252,9 @@ const AppRoutes = () => {
         path='/business-dashboard/questionnaires/create'
         element={
           user ? (
-            <DashboardLayout user={user}>
+            <BusinessDashboardLayout user={user}>
               <CreateQuestionnaire user={user} />
-            </DashboardLayout>
+            </BusinessDashboardLayout>
           ) : (
             <Navigate to='/' replace state={{ from: location }} />
           )
@@ -264,9 +265,9 @@ const AppRoutes = () => {
         path='/business-dashboard/questionnaires/edit'
         element={
           user ? (
-            <DashboardLayout user={user}>
+            <BusinessDashboardLayout user={user}>
               <QuestionnaireForm user={user} />
-            </DashboardLayout>
+            </BusinessDashboardLayout>
           ) : (
             <Navigate to='/' replace state={{ from: location }} />
           )
@@ -277,9 +278,9 @@ const AppRoutes = () => {
         path='/business-dashboard/create-job-listing'
         element={
           user ? (
-            <DashboardLayout user={user}>
+            <BusinessDashboardLayout user={user}>
               <JobOpportunityForm user={user} />
-            </DashboardLayout>
+            </BusinessDashboardLayout>
           ) : (
             <Navigate to='/' replace state={{ from: location }} />
           )
@@ -290,9 +291,9 @@ const AppRoutes = () => {
         path='/business-dashboard/edit-job-listing'
         element={
           user ? (
-            <DashboardLayout user={user}>
+            <BusinessDashboardLayout user={user}>
               <JobOpportunityForm user={user} />
-            </DashboardLayout>
+            </BusinessDashboardLayout>
           ) : (
             <Navigate to='/' replace state={{ from: location }} />
           )
@@ -303,9 +304,9 @@ const AppRoutes = () => {
         path='/business-dashboard/user-management'
         element={
           user ? (
-            <DashboardLayout user={user}>
+            <BusinessDashboardLayout user={user}>
               <UserManagement user={user} />
-            </DashboardLayout>
+            </BusinessDashboardLayout>
           ) : (
             <Navigate to='/' replace state={{ from: location }} />
           )
@@ -316,9 +317,9 @@ const AppRoutes = () => {
         path='/business-dashboard/user-management/invite'
         element={
           user ? (
-            <DashboardLayout user={user}>
+            <BusinessDashboardLayout user={user}>
               <InviteUserPage user={user} />
-            </DashboardLayout>
+            </BusinessDashboardLayout>
           ) : (
             <Navigate to='/' replace state={{ from: location }} />
           )
@@ -329,9 +330,9 @@ const AppRoutes = () => {
         path='/business-dashboard/user-management/edit'
         element={
           user ? (
-            <DashboardLayout user={user}>
+            <BusinessDashboardLayout user={user}>
               <UserEditPage user={user} />
-            </DashboardLayout>
+            </BusinessDashboardLayout>
           ) : (
             <Navigate to='/' replace state={{ from: location }} />
           )
@@ -342,9 +343,9 @@ const AppRoutes = () => {
         path='/business-dashboard/branch-management'
         element={
           user ? (
-            <DashboardLayout user={user}>
+            <BusinessDashboardLayout user={user}>
               <BranchManagement user={user} />
-            </DashboardLayout>
+            </BusinessDashboardLayout>
           ) : (
             <Navigate to='/' replace state={{ from: location }} />
           )
@@ -355,9 +356,9 @@ const AppRoutes = () => {
         path='/business-dashboard/branch-management/edit'
         element={
           user ? (
-            <DashboardLayout user={user}>
+            <BusinessDashboardLayout user={user}>
               <BranchEditPage user={user} />
-            </DashboardLayout>
+            </BusinessDashboardLayout>
           ) : (
             <Navigate to='/' replace state={{ from: location }} />
           )
@@ -368,9 +369,9 @@ const AppRoutes = () => {
         path='/business-dashboard/branch-management/create'
         element={
           user ? (
-            <DashboardLayout user={user}>
+            <BusinessDashboardLayout user={user}>
               <BranchEditPage user={user} />
-            </DashboardLayout>
+            </BusinessDashboardLayout>
           ) : (
             <Navigate to='/' replace state={{ from: location }} />
           )
@@ -381,9 +382,9 @@ const AppRoutes = () => {
         path='/business-dashboard/org-settings'
         element={
           user ? (
-            <DashboardLayout user={user}>
+            <BusinessDashboardLayout user={user}>
               <OrgSettings user={user} />
-            </DashboardLayout>
+            </BusinessDashboardLayout>
           ) : (
             <Navigate to='/' replace state={{ from: location }} />
           )
@@ -394,9 +395,9 @@ const AppRoutes = () => {
         path='/business-dashboard/billing'
         element={
           user ? (
-            <DashboardLayout user={user}>
+            <BusinessDashboardLayout user={user}>
               <Billing user={user} />
-            </DashboardLayout>
+            </BusinessDashboardLayout>
           ) : (
             <Navigate to='/' replace state={{ from: location }} />
           )
@@ -407,9 +408,9 @@ const AppRoutes = () => {
         path='/business-dashboard/lookups'
         element={
           user ? (
-            <DashboardLayout user={user}>
+            <BusinessDashboardLayout user={user}>
               <Lookups user={user} />
-            </DashboardLayout>
+            </BusinessDashboardLayout>
           ) : (
             <Navigate to='/' replace state={{ from: location }} />
           )
@@ -420,9 +421,9 @@ const AppRoutes = () => {
         path='/business-dashboard/lookups/create'
         element={
           user ? (
-            <DashboardLayout user={user}>
+            <BusinessDashboardLayout user={user}>
               <LookupForm user={user} />
-            </DashboardLayout>
+            </BusinessDashboardLayout>
           ) : (
             <Navigate to='/' replace state={{ from: location }} />
           )
@@ -433,9 +434,9 @@ const AppRoutes = () => {
         path='/business-dashboard/lookups/edit'
         element={
           user ? (
-            <DashboardLayout user={user}>
+            <BusinessDashboardLayout user={user}>
               <LookupForm user={user} />
-            </DashboardLayout>
+            </BusinessDashboardLayout>
           ) : (
             <Navigate to='/' replace state={{ from: location }} />
           )

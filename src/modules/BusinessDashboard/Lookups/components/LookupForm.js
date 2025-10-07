@@ -8,7 +8,6 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSave, faTimes, faList, faPlus } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../../core/context/ThemeContext'
-import BusinessSidebar from '../../../../core/components/layout/Sidebar'
 import { createLookup, updateLookup, getLookupById } from '../utils/controller'
 
 /**
@@ -172,7 +171,6 @@ const LookupForm = React.memo(({ user }) => {
         } pointer-events-none`}
       ></div>
 
-      <BusinessSidebar />
       <div className='ml-64 p-4 md:p-6 relative z-10'>
         <div className='max-w-7xl mx-auto'>
           {/* Header */}

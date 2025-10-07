@@ -8,7 +8,6 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSave, faTimes, faClipboardCheck, faQuestion, faTrashAlt } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../../core/context/ThemeContext'
-import BusinessSidebar from '../../../../core/components/layout/Sidebar'
 import TableView from '../../../../core/components/view-components/table-view/TableView'
 import TableActions from '../../../../core/components/view-components/table-view/TableActions'
 import { updateQuestionnaire, getQuestionnaireById } from '../utils/controller'
@@ -468,7 +467,6 @@ const QuestionnaireForm = React.memo(({ user }) => {
           } pointer-events-none`}
         ></div>
 
-        <BusinessSidebar />
         <div className='ml-64 p-4 md:p-6 relative z-10'>
           <div className='max-w-7xl mx-auto'>
             {/* Header */}

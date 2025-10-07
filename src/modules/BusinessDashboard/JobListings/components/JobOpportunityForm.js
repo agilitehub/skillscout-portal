@@ -8,7 +8,6 @@ import { faSave, faTimes, faBriefcase, faGift } from '@fortawesome/free-solid-sv
 import { useTheme } from '../../../../core/context/ThemeContext'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { Button } from '../../../../core/components'
-import BusinessSidebar from '../../../../core/components/layout/Sidebar'
 import {
   createJobOpportunity,
   updateJobOpportunity,
@@ -208,7 +207,6 @@ const JobOpportunityForm = React.memo(() => {
         } pointer-events-none`}
       ></div>
 
-      <BusinessSidebar />
       <div className='ml-64 p-4 md:p-6 relative z-10'>
         {/* Header */}
         <div

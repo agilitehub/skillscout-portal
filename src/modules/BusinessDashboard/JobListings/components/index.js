@@ -16,7 +16,6 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../../core/context/ThemeContext'
 
-import BusinessSidebar from '../../../../core/components/layout/Sidebar'
 import { getAllJobOpportunities, deleteJobOpportunity, updateJobOpportunityStatus } from '../utils/controller'
 import TableView from '../../../../core/components/view-components/table-view/TableView'
 import TableActions from '../../../../core/components/view-components/table-view/TableActions'
@@ -321,16 +320,7 @@ const JobListings = React.memo(({ user }) => {
       }`}
     >
       {/* Background overlay for full coverage */}
-      <div
-        className={`fixed inset-0 ${
-          darkMode
-            ? 'bg-gradient-to-b from-transparent via-slate-700/30 to-emerald-800/40'
-            : 'bg-gradient-to-b from-transparent via-sky-100/40 to-emerald-100/50'
-        } pointer-events-none`}
-      ></div>
-
-      <BusinessSidebar />
-      <div className='ml-64 p-4 md:p-6 relative z-10'>
+      <div className='p-4 md:p-6 relative z-10'>
         {/* Header */}
         <div
           className={`mb-6 px-8 py-6 rounded-lg shadow-lg border ${

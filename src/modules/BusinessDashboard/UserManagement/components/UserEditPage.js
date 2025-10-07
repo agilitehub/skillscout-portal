@@ -17,7 +17,6 @@ import {
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useTheme } from '../../../../core/context/ThemeContext'
 import { Button } from '../../../../core/components'
-import BusinessSidebar from '../../../../core/components/layout/Sidebar'
 import { BRAND_COLORS, SEMANTIC_COLORS } from '../../../../core/theme/colors'
 
 /**
@@ -206,9 +205,6 @@ const UserEditPage = React.memo(({ user: currentUser }) => {
             : 'bg-gradient-to-b from-transparent via-sky-100/40 to-emerald-100/50'
         } pointer-events-none`}
       />
-
-      {/* Sidebar */}
-      <BusinessSidebar />
 
       {/* Main Content */}
       <div className='flex-1 ml-64 relative'>

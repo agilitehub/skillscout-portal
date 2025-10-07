@@ -7,7 +7,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUser, faEnvelope, faPhone, faFlag, faTags, faStickyNote } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../../core/context/ThemeContext'
 import { Button } from '../../../../core/components'
-import BusinessSidebar from '../../../../core/components/layout/Sidebar'
 
 const { Option } = Select
 const { TextArea } = Input
@@ -187,9 +186,6 @@ const CandidateForm = React.memo(({ user }) => {
             : 'bg-gradient-to-b from-transparent via-sky-100/40 to-emerald-100/50'
         } pointer-events-none`}
       />
-
-      {/* Sidebar */}
-      <BusinessSidebar />
 
       {/* Main Content */}
       <div className='flex-1 ml-64 relative'>

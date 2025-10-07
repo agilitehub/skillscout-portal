@@ -3,7 +3,6 @@
 import React, { useState, useCallback, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTheme } from '../../../../core/context/ThemeContext'
-import BusinessSidebar from '../../../../core/components/layout/Sidebar'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faClipboardCheck, faPlus, faCheckCircle, faTimesCircle, faTrashAlt } from '@fortawesome/free-solid-svg-icons'
 import { Select, message, Tag, Spin, Alert } from 'antd'
@@ -396,8 +395,7 @@ const Questionnaires = React.memo(({ user }) => {
           } pointer-events-none`}
         ></div>
 
-        <BusinessSidebar />
-        <div className='ml-64 relative z-10'>
+        <div className='relative z-10'>
           <div className='p-6'>
             {/* Error Alert */}
             {error && (

@@ -8,7 +8,6 @@ import { useNavigate } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faClipboardCheck } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../../core/context/ThemeContext'
-import BusinessSidebar from '../../../../core/components/layout/Sidebar'
 import { createQuestionnaire } from '../utils/controller'
 import { parseTags } from '../utils/data-model'
 
@@ -70,8 +69,6 @@ const CreateQuestionnaire = React.memo(({ user }) => {
               : 'bg-gradient-to-b from-transparent via-sky-100/40 to-emerald-100/50'
           } pointer-events-none`}
         ></div>
-
-        <BusinessSidebar />
 
         {/* Dark Mode Form Styling */}
         {darkMode && (
