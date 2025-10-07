@@ -165,17 +165,17 @@ const MagicLinkLogin = React.memo(({ onLogin, loading }) => {
   }
 
   return (
-    <div className='w-full max-w-md mx-auto mt-6 mb-4 z-20 relative'>
+    <div className='w-full max-w-md mx-auto mt-4 mb-2 z-20 relative'>
       <Form
         form={form}
         onFinish={handleSubmit}
         layout='vertical'
-        className={`p-6 rounded-lg border ${
+        className={`p-4 rounded-lg border ${
           darkMode ? 'bg-white/10 backdrop-blur-md border-white/20' : 'bg-white shadow-lg border-gray-200'
         }`}
       >
-        <div className='text-center mb-6'>
-          <h3 className={`text-lg font-semibold mb-2 ${darkMode ? 'text-white' : 'text-gray-800'}`}>
+        <div className='text-center mb-4'>
+          <h3 className={`text-lg font-semibold mb-1 ${darkMode ? 'text-white' : 'text-gray-800'}`}>
             Sign In with Email
           </h3>
           <p className={`text-sm ${darkMode ? 'text-white/80' : 'text-gray-600'}`}>
@@ -184,17 +184,17 @@ const MagicLinkLogin = React.memo(({ onLogin, loading }) => {
         </div>
 
         {error && (
-          <Alert message={error} type='error' showIcon className='mb-4' closable onClose={() => setError(null)} />
+          <Alert message={error} type='error' showIcon className='mb-3' closable onClose={() => setError(null)} />
         )}
 
         <Form.Item
           name='email'
           label={<span className={darkMode ? 'text-white/90' : 'text-gray-700'}>Email Address</span>}
           rules={emailRules}
-          className='mb-6'
+          className='mb-4'
         >
           <Input
-            size='large'
+            size='default'
             placeholder='Enter your email address'
             prefix={<FontAwesomeIcon icon={faEnvelope} className='text-gray-400' />}
             className={darkMode ? 'bg-white/20 border-white/30 text-white placeholder-white/50' : ''}
@@ -206,10 +206,10 @@ const MagicLinkLogin = React.memo(({ onLogin, loading }) => {
           <Button
             type='primary'
             htmlType='submit'
-            size='large'
+            size='default'
             loading={loading}
             block
-            className='h-12 font-medium text-white transition-all duration-300 hover:shadow-lg border-0 hover:scale-105 transform'
+            className='h-10 font-medium text-white transition-all duration-300 hover:shadow-lg border-0 hover:scale-105 transform'
             style={{
               background: darkMode
                 ? `linear-gradient(135deg, ${BRAND_COLORS.darkBlue} 0%, ${BRAND_COLORS.shakespeare} 35%, ${BRAND_COLORS.emeraldPrimary} 70%, ${BRAND_COLORS.forestGreen} 100%)`
