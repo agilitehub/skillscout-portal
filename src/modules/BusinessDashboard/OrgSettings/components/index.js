@@ -1,7 +1,7 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
 import React, { useState, useCallback, useEffect } from 'react'
-import { Card, Form, Alert, message, Tabs, Modal } from 'antd'
+import { Card, Form, message, Tabs, Modal } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faBuilding,
@@ -185,7 +185,7 @@ const OrgSettings = React.memo(({ user }) => {
       },
       className: darkMode ? 'ant-modal-dark' : ''
     })
-  }, [orgSettings.organizationName, darkMode, leavingOrganization, user?.id, form])
+  }, [orgSettings.organizationName, darkMode, leavingOrganization, user?.id, form, modal])
 
   // Handle business setup modal close
   const handleBusinessSetupModalClose = useCallback(() => {

@@ -17,7 +17,7 @@ class OrgSettingsController {
   /**
    * Get organization settings
    * @param {string} userId - User's UUID
-   * @returns {Promise} Organization settings data
+   * @returns {Promise<Object>} Organization settings data with success flag and data
    */
   async getOrgSettings(userId) {
     try {
@@ -66,7 +66,7 @@ class OrgSettingsController {
    * @param {string} organizationId - Organization UUID
    * @param {Object} settingsData - Updated settings data
    * @param {string} userId - User UUID who is updating the settings
-   * @returns {Promise} Updated settings
+   * @returns {Promise<Object>} Updated settings with success flag and data
    */
   async updateOrgSettings(organizationId, settingsData, userId) {
     try {
@@ -116,7 +116,7 @@ class OrgSettingsController {
   /**
    * Update organization profile with AI assistance
    * @param {Object} aiInputs - AI interaction inputs
-   * @returns {Promise} AI-generated profile data
+   * @returns {Promise<Object>} AI-generated profile data with success flag and data
    */
   async updateProfileWithAI(aiInputs) {
     try {
@@ -139,164 +139,139 @@ class OrgSettingsController {
 
   /**
    * Get available currencies
-   * @returns {Promise} List of currencies
+   * @returns {Object} List of currencies with success flag and data
    */
   async getAvailableCurrencies() {
-    try {
-      return {
-        success: true,
-        data: [
-          { code: 'USD', name: 'US Dollar', symbol: '$' },
-          { code: 'EUR', name: 'Euro', symbol: '€' },
-          { code: 'GBP', name: 'British Pound', symbol: '£' },
-          { code: 'CAD', name: 'Canadian Dollar', symbol: 'C$' },
-          { code: 'AUD', name: 'Australian Dollar', symbol: 'A$' },
-          { code: 'JPY', name: 'Japanese Yen', symbol: '¥' },
-          { code: 'CHF', name: 'Swiss Franc', symbol: 'CHF' },
-          { code: 'SEK', name: 'Swedish Krona', symbol: 'kr' },
-          { code: 'NOK', name: 'Norwegian Krone', symbol: 'kr' },
-          { code: 'DKK', name: 'Danish Krone', symbol: 'kr' }
-        ]
-      }
-    } catch (error) {
-      console.error('Error fetching currencies:', error)
-      throw new Error('Failed to fetch currencies')
+    return {
+      success: true,
+      data: [
+        { code: 'USD', name: 'US Dollar', symbol: '$' },
+        { code: 'EUR', name: 'Euro', symbol: '€' },
+        { code: 'GBP', name: 'British Pound', symbol: '£' },
+        { code: 'CAD', name: 'Canadian Dollar', symbol: 'C$' },
+        { code: 'AUD', name: 'Australian Dollar', symbol: 'A$' },
+        { code: 'JPY', name: 'Japanese Yen', symbol: '¥' },
+        { code: 'CHF', name: 'Swiss Franc', symbol: 'CHF' },
+        { code: 'SEK', name: 'Swedish Krona', symbol: 'kr' },
+        { code: 'NOK', name: 'Norwegian Krone', symbol: 'kr' },
+        { code: 'DKK', name: 'Danish Krone', symbol: 'kr' }
+      ]
     }
   }
 
   /**
    * Get available countries
-   * @returns {Promise} List of countries
+   * @returns {Object} List of countries with success flag and data
    */
   async getAvailableCountries() {
-    try {
-      return {
-        success: true,
-        data: [
-          'United States',
-          'United Kingdom',
-          'Canada',
-          'Germany',
-          'France',
-          'Australia',
-          'Netherlands',
-          'Sweden',
-          'Norway',
-          'Denmark',
-          'Switzerland',
-          'Spain',
-          'Italy',
-          'Portugal',
-          'Belgium',
-          'Austria',
-          'Finland'
-        ]
-      }
-    } catch (error) {
-      console.error('Error fetching countries:', error)
-      throw new Error('Failed to fetch countries')
+    return {
+      success: true,
+      data: [
+        'United States',
+        'United Kingdom',
+        'Canada',
+        'Germany',
+        'France',
+        'Australia',
+        'Netherlands',
+        'Sweden',
+        'Norway',
+        'Denmark',
+        'Switzerland',
+        'Spain',
+        'Italy',
+        'Portugal',
+        'Belgium',
+        'Austria',
+        'Finland'
+      ]
     }
   }
 
   /**
    * Get available languages
-   * @returns {Promise} List of languages
+   * @returns {Object} List of languages with success flag and data
    */
   async getAvailableLanguages() {
-    try {
-      return {
-        success: true,
-        data: [
-          { code: 'en', name: 'English' },
-          { code: 'es', name: 'Spanish' },
-          { code: 'fr', name: 'French' },
-          { code: 'de', name: 'German' },
-          { code: 'it', name: 'Italian' },
-          { code: 'pt', name: 'Portuguese' },
-          { code: 'nl', name: 'Dutch' },
-          { code: 'sv', name: 'Swedish' },
-          { code: 'no', name: 'Norwegian' },
-          { code: 'da', name: 'Danish' }
-        ]
-      }
-    } catch (error) {
-      console.error('Error fetching languages:', error)
-      throw new Error('Failed to fetch languages')
+    return {
+      success: true,
+      data: [
+        { code: 'en', name: 'English' },
+        { code: 'es', name: 'Spanish' },
+        { code: 'fr', name: 'French' },
+        { code: 'de', name: 'German' },
+        { code: 'it', name: 'Italian' },
+        { code: 'pt', name: 'Portuguese' },
+        { code: 'nl', name: 'Dutch' },
+        { code: 'sv', name: 'Swedish' },
+        { code: 'no', name: 'Norwegian' },
+        { code: 'da', name: 'Danish' }
+      ]
     }
   }
 
   /**
    * Get industry options
-   * @returns {Promise} List of industries
+   * @returns {Object} List of industries with success flag and data
    */
   async getIndustryOptions() {
-    try {
-      return {
-        success: true,
-        data: [
-          'Technology',
-          'Healthcare',
-          'Finance',
-          'Education',
-          'Retail',
-          'Manufacturing',
-          'Consulting',
-          'Media',
-          'Government',
-          'Non-profit',
-          'Real Estate',
-          'Transportation',
-          'Energy',
-          'Agriculture',
-          'Other'
-        ]
-      }
-    } catch (error) {
-      console.error('Error fetching industries:', error)
-      throw new Error('Failed to fetch industries')
+    return {
+      success: true,
+      data: [
+        'Technology',
+        'Healthcare',
+        'Finance',
+        'Education',
+        'Retail',
+        'Manufacturing',
+        'Consulting',
+        'Media',
+        'Government',
+        'Non-profit',
+        'Real Estate',
+        'Transportation',
+        'Energy',
+        'Agriculture',
+        'Other'
+      ]
     }
   }
 
   /**
    * Get common industry tags
-   * @returns {Promise} List of industry tags
+   * @returns {Object} List of industry tags with success flag and data
    */
   async getCommonIndustryTags() {
-    try {
-      return {
-        success: true,
-        data: [
-          'Software Development',
-          'Cloud Computing',
-          'AI/Machine Learning',
-          'Data Analytics',
-          'Cybersecurity',
-          'Mobile Development',
-          'Web Development',
-          'DevOps',
-          'SaaS',
-          'E-commerce',
-          'Fintech',
-          'Healthcare Tech',
-          'EdTech',
-          'PropTech',
-          'IoT',
-          'Blockchain',
-          'AR/VR',
-          'Digital Marketing',
-          'UI/UX Design'
-        ]
-      }
-    } catch (error) {
-      console.error('Error fetching industry tags:', error)
-      throw new Error('Failed to fetch industry tags')
+    return {
+      success: true,
+      data: [
+        'Software Development',
+        'Cloud Computing',
+        'AI/Machine Learning',
+        'Data Analytics',
+        'Cybersecurity',
+        'Mobile Development',
+        'Web Development',
+        'DevOps',
+        'SaaS',
+        'E-commerce',
+        'Fintech',
+        'Healthcare Tech',
+        'EdTech',
+        'PropTech',
+        'IoT',
+        'Blockchain',
+        'AR/VR',
+        'Digital Marketing',
+        'UI/UX Design'
+      ]
     }
   }
 
   /**
    * Validate organization domain/website
    * @param {string} website - Website URL
-   * @returns {Promise} Validation result
+   * @returns {Promise<Object>} Validation result with success flag and data
    */
   async validateWebsite(website) {
     try {
@@ -318,7 +293,7 @@ class OrgSettingsController {
 
   /**
    * Get organization statistics
-   * @returns {Promise} Organization statistics
+   * @returns {Promise<Object>} Organization statistics with success flag and data
    */
   async getOrgStatistics() {
     try {
@@ -474,7 +449,7 @@ class OrgSettingsController {
 
   /**
    * Reset organization settings to defaults
-   * @returns {Promise} Reset result
+   * @returns {Promise<Object>} Reset result with success flag and data
    */
   async resetToDefaults() {
     try {
@@ -506,4 +481,5 @@ class OrgSettingsController {
   }
 }
 
-export default new OrgSettingsController()
+const orgSettingsController = new OrgSettingsController()
+export default orgSettingsController
