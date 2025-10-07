@@ -126,7 +126,7 @@ const BusinessSidebar = React.memo(() => {
 
   return (
     <div
-      className={`w-64 h-full fixed left-0 top-16 md:top-20 z-30 transition-all duration-300 ${
+      className={`w-64 h-full fixed left-0 z-30 transition-all duration-300 ${
         darkMode ? 'bg-gray-900 border-gray-700' : 'bg-white border-gray-200'
       } border-r shadow-lg`}
       style={{

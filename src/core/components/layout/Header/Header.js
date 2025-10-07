@@ -589,7 +589,7 @@ const Header = ({ user }) => {
           onBlur={handleSearchBlur}
           onKeyDown={handleSearchSubmit}
           disabled={isSearchLoading}
-          className={`block w-full pl-10 pr-10 py-2 border rounded-full text-sm transition-all duration-200 ${
+          className={`block w-full pl-10 pr-10 py-1 border rounded-full text-sm transition-all duration-200 ${
             darkMode
               ? 'bg-gray-800/60 border-gray-600 text-white placeholder-gray-400 backdrop-blur-sm'
               : 'bg-white/90 border-gray-300 text-gray-900 placeholder-gray-500 backdrop-blur-sm'
