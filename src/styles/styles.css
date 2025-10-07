@@ -1,0 +1,229 @@
+/* Global Instructions Rule Applied! */
+/* Frontend Instructions Rule Applied! */
+
+/* =================================
+   ENHANCED TABLE STYLING
+   ================================= */
+
+/* Table Header Styling */
+.enhanced-table .ant-table-thead > tr > th {
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  padding: 16px 12px;
+}
+
+/* Light Mode Table Headers */
+.enhanced-table .ant-table-thead > tr > th {
+  background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+  color: #374151;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+/* Dark Mode Table Headers */
+.dark .enhanced-table .ant-table-thead > tr > th {
+  background: linear-gradient(135deg, #374151 0%, #4b5563 100%);
+  color: #e5e7eb;
+  border-bottom: 2px solid #6b7280;
+}
+
+/* Table Body Cells */
+.enhanced-table .ant-table-tbody > tr > td {
+  padding: 16px 12px;
+  transition: all 0.2s ease;
+  background-color: transparent;
+}
+
+/* Light Mode Table Cells */
+.enhanced-table .ant-table-tbody > tr > td {
+  border-bottom: 1px solid #f3f4f6;
+  color: #111827;
+}
+
+/* Dark Mode Table Cells */
+.dark .enhanced-table .ant-table-tbody > tr > td {
+  border-bottom: 1px solid #4b5563;
+  color: #f9fafb;
+}
+
+/* Table Row Hover Effects */
+.enhanced-table .ant-table-tbody > tr:hover > td {
+  transform: translateY(-1px);
+}
+
+/* Light Mode Row Hover */
+.enhanced-table .ant-table-tbody > tr:hover > td {
+  background: linear-gradient(90deg, #f0f9ff 0%, #ecfdf5 100%);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Dark Mode Row Hover */
+.dark .enhanced-table .ant-table-tbody > tr:hover > td {
+  background: linear-gradient(90deg, #374151 0%, #4b5563 100%);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* Selected Row Styling */
+.enhanced-table .ant-table-tbody > tr.ant-table-row-selected > td {
+  background: linear-gradient(90deg, #ecfdf5 0%, #d1fae5 100%);
+  color: #065f46;
+}
+
+.dark .enhanced-table .ant-table-tbody > tr.ant-table-row-selected > td {
+  background: linear-gradient(90deg, #065f46 0%, #047857 100%);
+  color: #ffffff;
+}
+
+/* =================================
+   SEARCH INPUT STYLING
+   ================================= */
+
+/* Light Mode Search */
+.enhanced-table .ant-input-search:hover {
+  border-color: #059669 !important;
+}
+
+.enhanced-table .ant-input-search:focus-within {
+  border-color: #059669 !important;
+  box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
+}
+
+/* Dark Mode Search */
+.dark .dark-search .ant-input {
+  background-color: #4b5563 !important;
+  border-color: #6b7280 !important;
+  color: #ffffff !important;
+  border-radius: 8px !important;
+}
+
+.dark .dark-search .ant-input:focus {
+  border-color: #059669 !important;
+  box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
+}
+
+.dark .dark-search .ant-input::placeholder {
+  color: #ffffff !important;
+}
+
+.dark .dark-search .ant-input-search-button {
+  background-color: #6b7280 !important;
+  border-color: #6b7280 !important;
+  border-radius: 0 8px 8px 0 !important;
+}
+
+.dark .dark-search .ant-input-search-button:hover {
+  background-color: #059669 !important;
+  border-color: #059669 !important;
+}
+
+/* =================================
+   TABLE EMPTY STATE & PLACEHOLDERS
+   ================================= */
+
+.dark .dark-table .ant-table-placeholder {
+  color: #9ca3af !important;
+}
+
+.dark .dark-table .ant-empty-description {
+  color: #9ca3af !important;
+}
+
+/* =================================
+   PAGINATION STYLING
+   ================================= */
+
+.dark .dark-pagination .ant-pagination-item {
+  background-color: #4b5563 !important;
+  border-color: #6b7280 !important;
+}
+
+.dark .dark-pagination .ant-pagination-item a {
+  color: #ffffff !important;
+}
+
+.dark .dark-pagination .ant-pagination-item-active {
+  background-color: #059669 !important;
+}
+
+.dark .dark-pagination .ant-pagination-item-active a {
+  color: #ffffff !important;
+}
+
+.dark .dark-pagination .ant-pagination-prev,
+.dark .dark-pagination .ant-pagination-next {
+  background-color: #4b5563 !important;
+  border-color: #6b7280 !important;
+}
+
+.dark .dark-pagination .ant-pagination-prev a,
+.dark .dark-pagination .ant-pagination-next a {
+  color: #ffffff !important;
+}
+
+.dark .dark-pagination .ant-pagination-jump-prev,
+.dark .dark-pagination .ant-pagination-jump-next {
+  background-color: #4b5563 !important;
+  border-color: #6b7280 !important;
+}
+
+.dark .dark-pagination .ant-pagination-jump-prev a,
+.dark .dark-pagination .ant-pagination-jump-next a {
+  color: #ffffff !important;
+}
+
+.dark .dark-pagination .ant-pagination-options {
+  color: #ffffff !important;
+}
+
+.dark .dark-pagination .ant-select-selector {
+  background-color: #4b5563 !important;
+  border-color: #6b7280 !important;
+  color: #ffffff !important;
+}
+
+.dark .dark-pagination .ant-select-arrow {
+  color: #ffffff !important;
+}
+
+.dark .dark-pagination .ant-pagination-total-text {
+  color: #ffffff !important;
+}
+
+/* =================================
+   TABLE FILTERS & SORTERS
+   ================================= */
+
+.dark .dark-table .ant-table-filter-trigger {
+  color: #9ca3af !important;
+}
+
+.dark .dark-table .ant-table-filter-trigger:hover {
+  color: #ffffff !important;
+}
+
+.dark .dark-table .ant-table-filter-trigger-container {
+  background-color: transparent !important;
+}
+
+.dark .dark-table .ant-table-filter-icon {
+  color: #9ca3af !important;
+}
+
+.dark .dark-table .ant-table-column-sorter {
+  color: #9ca3af !important;
+}
+
+.dark .dark-table .ant-table-column-sorter:hover {
+  color: #ffffff !important;
+}
+
+.dark .dark-table .ant-table-column-sorter-up,
+.dark .dark-table .ant-table-column-sorter-down {
+  color: #9ca3af !important;
+}
+
+.dark .dark-table .ant-table-column-sorter-up:hover,
+.dark .dark-table .ant-table-column-sorter-down:hover {
+  color: #ffffff !important;
+}

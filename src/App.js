@@ -10,6 +10,7 @@ import { store } from './core/store'
 import 'react-toastify/dist/ReactToastify.css'
 
 import 'antd/dist/reset.css'
+import './styles/styles.css'
 
 /**
  * Main App component
