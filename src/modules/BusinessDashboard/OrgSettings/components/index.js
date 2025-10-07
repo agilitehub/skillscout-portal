@@ -15,7 +15,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../../core/context/ThemeContext'
 import { Button } from '../../../../core/components'
-import BusinessSidebar from '../../components/BusinessSidebar'
+import BusinessSidebar from '../../../../core/components/layout/Sidebar'
 import { BRAND_COLORS } from '../../../../core/theme/colors'
 import { clearUserOrganization, createOrganizationAndAssignToUser } from '../../../../core/lib/supabase-controller'
 import orgSettingsController from '../utils/controller'

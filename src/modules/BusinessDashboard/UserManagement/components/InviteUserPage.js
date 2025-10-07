@@ -7,7 +7,7 @@ import { faUserPlus, faEnvelope, faShieldAlt, faArrowLeft, faUser } from '@forta
 import { useNavigate } from 'react-router-dom'
 import { Button } from '../../../../core/components'
 import { useTheme } from '../../../../core/context/ThemeContext'
-import BusinessSidebar from '../../components/BusinessSidebar'
+import BusinessSidebar from '../../../../core/components/layout/Sidebar'
 import { BRAND_COLORS, SEMANTIC_COLORS } from '../../../../core/theme/colors'
 import userManagementController from '../utils/controller'
 
@@ -418,12 +418,7 @@ const InviteUserPage = React.memo(({ user }) => {
                     darkMode ? 'border-gray-600' : 'border-gray-200'
                   }`}
                 >
-                  <Button
-                    type='default'
-                    size='large'
-                    onClick={handleCancel}
-                    className='invite-user-cancel-btn'
-                  >
+                  <Button type='default' size='large' onClick={handleCancel} className='invite-user-cancel-btn'>
                     Cancel
                   </Button>
                   <Button
@@ -545,7 +540,7 @@ const InviteUserPage = React.memo(({ user }) => {
           font-size: 14px !important;
           border-radius: 6px !important;
         }
-        
+
         .invite-user-cancel-btn:hover,
         .invite-user-cancel-btn.ant-btn:hover {
           background-color: #047857 !important;
@@ -553,7 +548,7 @@ const InviteUserPage = React.memo(({ user }) => {
           color: white !important;
           transform: none !important;
         }
-        
+
         .invite-user-cancel-btn:focus,
         .invite-user-cancel-btn.ant-btn:focus {
           background-color: #059669 !important;

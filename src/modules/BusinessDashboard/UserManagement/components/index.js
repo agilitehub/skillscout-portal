@@ -15,7 +15,7 @@ import { useNavigate } from 'react-router-dom'
 import { useTheme } from '../../../../core/context/ThemeContext'
 import { Button } from '../../../../core/components'
 import TableView from '../../../../core/components/view-components/table-view/TableView'
-import BusinessSidebar from '../../components/BusinessSidebar'
+import BusinessSidebar from '../../../../core/components/layout/Sidebar'
 import { BRAND_COLORS, SEMANTIC_COLORS } from '../../../../core/theme/colors'
 import userManagementController from '../utils/controller'
 

@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faClipboardCheck } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../../core/context/ThemeContext'
-import BusinessSidebar from '../../components/BusinessSidebar'
+import BusinessSidebar from '../../../../core/components/layout/Sidebar'
 import { createQuestionnaire } from '../utils/controller'
 import { parseTags } from '../utils/data-model'
 
@@ -23,8 +23,6 @@ const CreateQuestionnaire = React.memo(({ user }) => {
   const navigate = useNavigate()
   const [form] = Form.useForm()
   const [loading, setLoading] = useState(false)
-
-
 
   // Handle form submission
   const handleFormSubmit = useCallback(
@@ -42,12 +40,12 @@ const CreateQuestionnaire = React.memo(({ user }) => {
           message.success('Questionnaire created successfully!')
           navigate('/business-dashboard/questionnaires')
         } else {
-                      console.error('Error creating questionnaire:', result.error)
-            message.error('Failed to create questionnaire: ' + result.error)
-          }
-        } catch (error) {
-          console.error('Unexpected error creating questionnaire:', error)
-          message.error('An unexpected error occurred while creating the questionnaire')
+          console.error('Error creating questionnaire:', result.error)
+          message.error('Failed to create questionnaire: ' + result.error)
+        }
+      } catch (error) {
+        console.error('Unexpected error creating questionnaire:', error)
+        message.error('An unexpected error occurred while creating the questionnaire')
       } finally {
         setLoading(false)
       }
@@ -276,8 +274,8 @@ const CreateQuestionnaire = React.memo(({ user }) => {
           /* Cancel Button Styling */
           .create-questionnaire-cancel-btn,
           .create-questionnaire-cancel-btn.ant-btn {
-            background-color: #6B7280 !important;
-            border-color: #6B7280 !important;
+            background-color: #6b7280 !important;
+            border-color: #6b7280 !important;
             color: white !important;
             font-weight: 500 !important;
             padding: 8px 24px !important;
@@ -289,19 +287,19 @@ const CreateQuestionnaire = React.memo(({ user }) => {
             font-size: 14px !important;
             border-radius: 6px !important;
           }
-          
+
           .create-questionnaire-cancel-btn:hover,
           .create-questionnaire-cancel-btn.ant-btn:hover {
-            background-color: #4B5563 !important;
-            border-color: #4B5563 !important;
+            background-color: #4b5563 !important;
+            border-color: #4b5563 !important;
             color: white !important;
             transform: none !important;
           }
-          
+
           .create-questionnaire-cancel-btn:focus,
           .create-questionnaire-cancel-btn.ant-btn:focus {
-            background-color: #6B7280 !important;
-            border-color: #6B7280 !important;
+            background-color: #6b7280 !important;
+            border-color: #6b7280 !important;
             color: white !important;
             box-shadow: 0 0 0 2px rgba(107, 114, 128, 0.2) !important;
           }
@@ -322,7 +320,7 @@ const CreateQuestionnaire = React.memo(({ user }) => {
             font-size: 14px !important;
             border-radius: 6px !important;
           }
-          
+
           .create-questionnaire-submit-btn:hover,
           .create-questionnaire-submit-btn.ant-btn:hover {
             background-color: #047857 !important;
@@ -330,7 +328,7 @@ const CreateQuestionnaire = React.memo(({ user }) => {
             color: white !important;
             transform: none !important;
           }
-          
+
           .create-questionnaire-submit-btn:focus,
           .create-questionnaire-submit-btn.ant-btn:focus {
             background-color: #059669 !important;
@@ -351,38 +349,38 @@ const CreateQuestionnaire = React.memo(({ user }) => {
                     : 'bg-gradient-to-r from-emerald-500 to-emerald-600'
                 }`}
               >
-              <div className='flex items-center'>
-                <FontAwesomeIcon
-                  icon={faClipboardCheck}
-                  className={`text-lg mr-3 ${darkMode ? 'text-emerald-100' : 'text-white'}`}
-                />
-                <div>
-                  <h1 className='text-xl font-bold text-white'>Create New Questionnaire</h1>
-                  <p className='text-emerald-100 text-sm mt-1'>
-                    Create a new questionnaire with title, category, and other details
-                  </p>
+                <div className='flex items-center'>
+                  <FontAwesomeIcon
+                    icon={faClipboardCheck}
+                    className={`text-lg mr-3 ${darkMode ? 'text-emerald-100' : 'text-white'}`}
+                  />
+                  <div>
+                    <h1 className='text-xl font-bold text-white'>Create New Questionnaire</h1>
+                    <p className='text-emerald-100 text-sm mt-1'>
+                      Create a new questionnaire with title, category, and other details
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* Form */}
-            <Form
-              form={form}
-              layout='vertical'
-              onFinish={handleFormSubmit}
-              className={`${darkMode ? 'dark-form' : ''}`}
-              initialValues={{
-                status: 'Draft',
-                isActive: true
-              }}
-            >
-              <Card
-                className={`shadow-xl ${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-200'}`}
-                style={{
-                  backgroundColor: darkMode ? '#374151' : '#ffffff',
-                  borderColor: darkMode ? '#4B5563' : '#e5e7eb'
+              {/* Form */}
+              <Form
+                form={form}
+                layout='vertical'
+                onFinish={handleFormSubmit}
+                className={`${darkMode ? 'dark-form' : ''}`}
+                initialValues={{
+                  status: 'Draft',
+                  isActive: true
                 }}
               >
+                <Card
+                  className={`shadow-xl ${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-200'}`}
+                  style={{
+                    backgroundColor: darkMode ? '#374151' : '#ffffff',
+                    borderColor: darkMode ? '#4B5563' : '#e5e7eb'
+                  }}
+                >
                   <div className='space-y-6'>
                     {/* Active Toggle */}
                     <div className='mb-4'>
@@ -448,10 +446,10 @@ const CreateQuestionnaire = React.memo(({ user }) => {
                       >
                         Cancel
                       </Button>
-                      <Button 
-                        type='primary' 
-                        htmlType='submit' 
-                        size='large' 
+                      <Button
+                        type='primary'
+                        htmlType='submit'
+                        size='large'
                         loading={loading}
                         className='create-questionnaire-submit-btn'
                       >

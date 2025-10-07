@@ -16,7 +16,7 @@ import { useNavigate } from 'react-router-dom'
 import { useTheme } from '../../../../core/context/ThemeContext'
 import { Button } from '../../../../core/components'
 import TableView from '../../../../core/components/view-components/table-view/TableView'
-import BusinessSidebar from '../../components/BusinessSidebar'
+import BusinessSidebar from '../../../../core/components/layout/Sidebar'
 import { BRAND_COLORS, SEMANTIC_COLORS } from '../../../../core/theme/colors'
 
 /**
@@ -269,7 +269,12 @@ const BranchManagement = React.memo(({ user }) => {
         render: (status) => (
           <Tag
             color={status === 'active' ? SEMANTIC_COLORS.success : BRAND_COLORS.mediumGray}
-            icon={<FontAwesomeIcon icon={status === 'active' ? faCheckCircle : faTimesCircle} style={{ marginRight: '6px' }} />}
+            icon={
+              <FontAwesomeIcon
+                icon={status === 'active' ? faCheckCircle : faTimesCircle}
+                style={{ marginRight: '6px' }}
+              />
+            }
             style={{ fontWeight: '500' }}
           >
             {status.charAt(0).toUpperCase() + status.slice(1)}
@@ -559,7 +564,7 @@ const BranchManagement = React.memo(({ user }) => {
             <Button
               type='default'
               size='large'
-              icon={<FontAwesomeIcon icon={faPlus} className="mr-2" />}
+              icon={<FontAwesomeIcon icon={faPlus} className='mr-2' />}
               onClick={handleAdd}
               className='add-branch-btn font-medium'
               style={{

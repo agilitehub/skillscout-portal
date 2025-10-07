@@ -22,7 +22,7 @@ import {
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useTheme } from '../../../../core/context/ThemeContext'
 import { Button } from '../../../../core/components'
-import BusinessSidebar from '../../components/BusinessSidebar'
+import BusinessSidebar from '../../../../core/components/layout/Sidebar'
 import { BRAND_COLORS, SEMANTIC_COLORS } from '../../../../core/theme/colors'
 
 const { TextArea } = Input
@@ -273,7 +273,7 @@ const BranchEditPage = React.memo(({ user: currentUser }) => {
               {hasChanges && (
                 <Button
                   size='large'
-                  icon={<FontAwesomeIcon icon={faUndo} className="mr-2" />}
+                  icon={<FontAwesomeIcon icon={faUndo} className='mr-2' />}
                   onClick={handleReset}
                   className='reset-branch-btn font-medium'
                   style={{
@@ -293,7 +293,7 @@ const BranchEditPage = React.memo(({ user: currentUser }) => {
               <Button
                 type='default'
                 size='large'
-                icon={<FontAwesomeIcon icon={faSave} className="mr-2" />}
+                icon={<FontAwesomeIcon icon={faSave} className='mr-2' />}
                 onClick={() => form.submit()}
                 loading={loading}
                 disabled={!hasChanges && mode === 'edit'}

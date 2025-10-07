@@ -16,7 +16,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../../core/context/ThemeContext'
 
-import BusinessSidebar from '../../components/BusinessSidebar'
+import BusinessSidebar from '../../../../core/components/layout/Sidebar'
 import { getAllJobOpportunities, deleteJobOpportunity, updateJobOpportunityStatus } from '../utils/controller'
 import TableView from '../../../../core/components/view-components/table-view/TableView'
 import TableActions from '../../../../core/components/view-components/table-view/TableActions'
@@ -138,8 +138,8 @@ const JobListings = React.memo(({ user }) => {
         key: 'location',
         render: (location) => (
           <div className='flex items-center'>
-            <FontAwesomeIcon 
-              icon={faMapMarkerAlt} 
+            <FontAwesomeIcon
+              icon={faMapMarkerAlt}
               className={`mr-1 ${darkMode ? 'text-white' : 'text-gray-500'}`}
               style={{ color: darkMode ? '#ffffff' : '#6b7280' }}
             />
@@ -192,8 +192,8 @@ const JobListings = React.memo(({ user }) => {
         key: 'salary',
         render: (salary) => (
           <div className='flex items-center'>
-            <FontAwesomeIcon 
-              icon={faDollarSign} 
+            <FontAwesomeIcon
+              icon={faDollarSign}
               className={`mr-1 ${darkMode ? 'text-green-300' : 'text-green-500'}`}
               style={{ color: darkMode ? '#86efac' : '#10b981' }}
             />
@@ -230,8 +230,8 @@ const JobListings = React.memo(({ user }) => {
         key: 'applicants',
         render: (count) => (
           <div className='flex items-center'>
-            <FontAwesomeIcon 
-              icon={faUsers} 
+            <FontAwesomeIcon
+              icon={faUsers}
               className={`mr-1 ${darkMode ? 'text-blue-300' : 'text-blue-500'}`}
               style={{ color: darkMode ? '#93c5fd' : '#3b82f6' }}
             />
@@ -247,8 +247,8 @@ const JobListings = React.memo(({ user }) => {
         render: (date) => {
           return (
             <div className='flex items-center'>
-              <FontAwesomeIcon 
-                icon={faCalendarAlt} 
+              <FontAwesomeIcon
+                icon={faCalendarAlt}
                 className={`mr-1 ${darkMode ? 'text-white' : 'text-gray-500'}`}
                 style={{ color: darkMode ? '#ffffff' : '#6b7280' }}
               />
@@ -339,7 +339,7 @@ const JobListings = React.memo(({ user }) => {
               : 'bg-gradient-to-r from-emerald-500 via-emerald-600 to-emerald-600 border-emerald-500'
           }`}
           style={{
-            background: darkMode 
+            background: darkMode
               ? 'linear-gradient(to right, #047857, #059669, #059669)'
               : 'linear-gradient(to right, #10b981, #059669, #059669)',
             borderColor: darkMode ? '#059669' : '#10b981'
@@ -356,7 +356,7 @@ const JobListings = React.memo(({ user }) => {
                 size='large'
                 icon={<FontAwesomeIcon icon={faPlus} />}
                 onClick={handleCreateJobOpportunity}
-                className="create-job-listing-btn font-medium"
+                className='create-job-listing-btn font-medium'
               >
                 Create Job Listing
               </Button>
@@ -369,7 +369,13 @@ const JobListings = React.memo(({ user }) => {
               <Statistic
                 title={<span className={darkMode ? 'text-gray-300' : 'text-gray-600'}>Total Jobs</span>}
                 value={stats.totalJobs}
-                prefix={<FontAwesomeIcon icon={faBriefcase} className={darkMode ? 'text-blue-300' : 'text-blue-500'} style={{ color: darkMode ? '#93c5fd' : '#3b82f6' }} />}
+                prefix={
+                  <FontAwesomeIcon
+                    icon={faBriefcase}
+                    className={darkMode ? 'text-blue-300' : 'text-blue-500'}
+                    style={{ color: darkMode ? '#93c5fd' : '#3b82f6' }}
+                  />
+                }
                 valueStyle={{ color: darkMode ? '#ffffff' : '#1f2937' }}
               />
             </Card>
@@ -377,7 +383,13 @@ const JobListings = React.memo(({ user }) => {
               <Statistic
                 title={<span className={darkMode ? 'text-gray-300' : 'text-gray-600'}>Active Jobs</span>}
                 value={stats.activeJobs}
-                prefix={<FontAwesomeIcon icon={faBriefcase} className={darkMode ? 'text-green-300' : 'text-green-500'} style={{ color: darkMode ? '#86efac' : '#10b981' }} />}
+                prefix={
+                  <FontAwesomeIcon
+                    icon={faBriefcase}
+                    className={darkMode ? 'text-green-300' : 'text-green-500'}
+                    style={{ color: darkMode ? '#86efac' : '#10b981' }}
+                  />
+                }
                 valueStyle={{ color: darkMode ? '#ffffff' : '#1f2937' }}
               />
             </Card>
@@ -385,7 +397,13 @@ const JobListings = React.memo(({ user }) => {
               <Statistic
                 title={<span className={darkMode ? 'text-gray-300' : 'text-gray-600'}>Total Applicants</span>}
                 value={stats.totalApplicants}
-                prefix={<FontAwesomeIcon icon={faUsers} className={darkMode ? 'text-purple-300' : 'text-purple-500'} style={{ color: darkMode ? '#c4b5fd' : '#8b5cf6' }} />}
+                prefix={
+                  <FontAwesomeIcon
+                    icon={faUsers}
+                    className={darkMode ? 'text-purple-300' : 'text-purple-500'}
+                    style={{ color: darkMode ? '#c4b5fd' : '#8b5cf6' }}
+                  />
+                }
                 valueStyle={{ color: darkMode ? '#ffffff' : '#1f2937' }}
               />
             </Card>
@@ -393,7 +411,13 @@ const JobListings = React.memo(({ user }) => {
               <Statistic
                 title={<span className={darkMode ? 'text-gray-300' : 'text-gray-600'}>Avg Applicants</span>}
                 value={stats.avgApplicants}
-                prefix={<FontAwesomeIcon icon={faUsers} className={darkMode ? 'text-orange-300' : 'text-orange-500'} style={{ color: darkMode ? '#fdba74' : '#f97316' }} />}
+                prefix={
+                  <FontAwesomeIcon
+                    icon={faUsers}
+                    className={darkMode ? 'text-orange-300' : 'text-orange-500'}
+                    style={{ color: darkMode ? '#fdba74' : '#f97316' }}
+                  />
+                }
                 valueStyle={{ color: darkMode ? '#ffffff' : '#1f2937' }}
               />
             </Card>
@@ -422,7 +446,7 @@ const JobListings = React.memo(({ user }) => {
           />
         </Card>
       </div>
-      
+
       {/* Custom Styles */}
       <style jsx global>{`
         /* Create Job Listing Button Styling */
@@ -442,15 +466,15 @@ const JobListings = React.memo(({ user }) => {
           border-radius: 6px !important;
           opacity: 1 !important;
           visibility: visible !important;
-          box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
         }
-        
+
         .create-job-listing-btn svg,
         .create-job-listing-btn .anticon {
           color: white !important;
           margin-right: 8px !important;
         }
-        
+
         .create-job-listing-btn:hover,
         .create-job-listing-btn.ant-btn:hover,
         button.create-job-listing-btn:hover {
@@ -459,12 +483,12 @@ const JobListings = React.memo(({ user }) => {
           color: white !important;
           transform: none !important;
         }
-        
+
         .create-job-listing-btn:hover svg,
         .create-job-listing-btn:hover .anticon {
           color: white !important;
         }
-        
+
         .create-job-listing-btn:focus,
         .create-job-listing-btn.ant-btn:focus {
           background-color: #059669 !important;
@@ -474,28 +498,28 @@ const JobListings = React.memo(({ user }) => {
         }
 
         /* Delete Icon Styling for Better Visibility */
-        .ant-table-tbody .ant-space .ant-btn[style*="background-color: rgb(220, 38, 38)"],
-        .ant-table-tbody .ant-space .ant-btn[style*="backgroundColor:#dc2626"] {
+        .ant-table-tbody .ant-space .ant-btn[style*='background-color: rgb(220, 38, 38)'],
+        .ant-table-tbody .ant-space .ant-btn[style*='backgroundColor:#dc2626'] {
           background: #dc2626 !important;
           border-color: #dc2626 !important;
         }
-        
-        .ant-table-tbody .ant-space .ant-btn[style*="background-color: rgb(220, 38, 38)"] .anticon,
-        .ant-table-tbody .ant-space .ant-btn[style*="backgroundColor:#dc2626"] .anticon {
+
+        .ant-table-tbody .ant-space .ant-btn[style*='background-color: rgb(220, 38, 38)'] .anticon,
+        .ant-table-tbody .ant-space .ant-btn[style*='backgroundColor:#dc2626'] .anticon {
           color: #ffffff !important;
           filter: brightness(0) invert(1) !important;
         }
-        
+
         /* Prevent hover background change and keep red background */
-        .ant-table-tbody .ant-space .ant-btn[style*="background-color: rgb(220, 38, 38)"]:hover,
-        .ant-table-tbody .ant-space .ant-btn[style*="backgroundColor:#dc2626"]:hover {
+        .ant-table-tbody .ant-space .ant-btn[style*='background-color: rgb(220, 38, 38)']:hover,
+        .ant-table-tbody .ant-space .ant-btn[style*='backgroundColor:#dc2626']:hover {
           background: #b91c1c !important;
           background-color: #b91c1c !important;
           border-color: #b91c1c !important;
         }
-        
-        .ant-table-tbody .ant-space .ant-btn[style*="background-color: rgb(220, 38, 38)"]:hover .anticon,
-        .ant-table-tbody .ant-space .ant-btn[style*="backgroundColor:#dc2626"]:hover .anticon {
+
+        .ant-table-tbody .ant-space .ant-btn[style*='background-color: rgb(220, 38, 38)']:hover .anticon,
+        .ant-table-tbody .ant-space .ant-btn[style*='backgroundColor:#dc2626']:hover .anticon {
           color: #ffffff !important;
           filter: brightness(0) invert(1) !important;
         }

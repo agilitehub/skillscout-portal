@@ -15,7 +15,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../../core/context/ThemeContext'
 import { BRAND_COLORS } from '../../../../core/theme/colors'
-import BusinessSidebar from '../../components/BusinessSidebar'
+import BusinessSidebar from '../../../../core/components/layout/Sidebar'
 import { getAllJobDescriptions, deleteJobDescription } from '../utils/controller'
 import TableView from '../../../../core/components/view-components/table-view/TableView'
 import TableActions from '../../../../core/components/view-components/table-view/TableActions'
@@ -202,7 +202,8 @@ const JobDescriptions = React.memo(({ user }) => {
                 icon: faTrashAlt,
                 tooltip: 'Delete Job Description',
                 color: '!text-white',
-                className: 'job-description-delete-btn !bg-green-600 hover:!bg-green-700 !border-green-600 hover:!border-green-700',
+                className:
+                  'job-description-delete-btn !bg-green-600 hover:!bg-green-700 !border-green-600 hover:!border-green-700',
                 style: {
                   backgroundColor: '#059669 !important',
                   borderColor: '#059669 !important',
@@ -261,8 +262,6 @@ const JobDescriptions = React.memo(({ user }) => {
 
         <BusinessSidebar />
         <div className='p-6 ml-64 relative z-10'>
-
-
           {/* Header */}
           <div
             className={`rounded-lg mb-6 px-6 py-4 shadow-lg ${darkMode ? 'bg-gray-800 border border-gray-700' : ''}`}
@@ -288,9 +287,9 @@ const JobDescriptions = React.memo(({ user }) => {
               <Button
                 type='default'
                 size='large'
-                icon={<FontAwesomeIcon icon={faPlus} className="mr-2" />}
+                icon={<FontAwesomeIcon icon={faPlus} className='mr-2' />}
                 onClick={handleCreateDescription}
-                className="create-job-description-btn font-medium"
+                className='create-job-description-btn font-medium'
                 style={{
                   background: '#ffffff',
                   backgroundColor: '#ffffff',
@@ -354,7 +353,7 @@ const JobDescriptions = React.memo(({ user }) => {
           />
         </div>
       </div>
-      
+
       {/* Custom Styles */}
       <style jsx global>{`
         /* Force Create Job Description Button Visibility */
@@ -368,7 +367,7 @@ const JobDescriptions = React.memo(({ user }) => {
           opacity: 1 !important;
           visibility: visible !important;
         }
-        
+
         .create-job-description-btn:hover,
         .create-job-description-btn.ant-btn:hover,
         button.create-job-description-btn:hover {
@@ -393,7 +392,7 @@ const JobDescriptions = React.memo(({ user }) => {
           justify-content: center !important;
           border-radius: 6px !important;
         }
-        
+
         .job-description-delete-btn:hover,
         .job-description-delete-btn.ant-btn:hover,
         .job-description-delete-btn button:hover {
@@ -402,7 +401,7 @@ const JobDescriptions = React.memo(({ user }) => {
           color: white !important;
           transform: none !important;
         }
-        
+
         .job-description-delete-btn:focus,
         .job-description-delete-btn.ant-btn:focus,
         .job-description-delete-btn button:focus {
@@ -411,7 +410,7 @@ const JobDescriptions = React.memo(({ user }) => {
           color: white !important;
           box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
         }
-        
+
         .job-description-delete-btn .anticon,
         .job-description-delete-btn svg {
           color: white !important;

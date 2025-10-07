@@ -8,7 +8,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSave, faTimes, faList, faPlus } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../../core/context/ThemeContext'
-import BusinessSidebar from '../../components/BusinessSidebar'
+import BusinessSidebar from '../../../../core/components/layout/Sidebar'
 import { createLookup, updateLookup, getLookupById } from '../utils/controller'
 
 /**
@@ -193,8 +193,8 @@ const LookupForm = React.memo(({ user }) => {
                   {isEditMode ? 'Edit Lookup Profile' : 'Create New Lookup Profile'}
                 </h1>
                 <p className={`text-sm mt-1 ${darkMode ? 'text-gray-300' : 'text-white/90'}`}>
-                  {isEditMode 
-                    ? 'Update your lookup profile details' 
+                  {isEditMode
+                    ? 'Update your lookup profile details'
                     : 'Create a new lookup profile for your organization'}
                 </p>
               </div>
@@ -332,15 +332,8 @@ const LookupForm = React.memo(({ user }) => {
               <div className='space-y-4'>
                 {/* Active Toggle */}
                 <div className='mb-6'>
-                  <Form.Item
-                    label='Active'
-                    name='isActive'
-                    valuePropName='checked'
-                  >
-                    <Switch
-                      defaultChecked={true}
-                      className='mr-3'
-                    />
+                  <Form.Item label='Active' name='isActive' valuePropName='checked'>
+                    <Switch defaultChecked={true} className='mr-3' />
                   </Form.Item>
                 </div>
 
@@ -351,21 +344,12 @@ const LookupForm = React.memo(({ user }) => {
                       name='profileKey'
                       rules={[{ required: true, message: 'Please enter a profile key' }]}
                     >
-                      <Input
-                        placeholder='Provide a unique Profile Key'
-                        style={{ fontWeight: '500' }}
-                      />
+                      <Input placeholder='Provide a unique Profile Key' style={{ fontWeight: '500' }} />
                     </Form.Item>
                   </Col>
                   <Col span={12}>
-                    <Form.Item
-                      label='Group Name (optional)'
-                      name='groupName'
-                    >
-                      <Input
-                        placeholder='Used to group Profiles'
-                        style={{ fontWeight: '500' }}
-                      />
+                    <Form.Item label='Group Name (optional)' name='groupName'>
+                      <Input placeholder='Used to group Profiles' style={{ fontWeight: '500' }} />
                     </Form.Item>
                   </Col>
                 </Row>
@@ -461,14 +445,14 @@ const LookupForm = React.memo(({ user }) => {
               </div>
 
               {/* Form Actions */}
-              <div className={`flex justify-end space-x-4 mt-8 pt-6 border-t -mx-6 -mb-6 px-6 pb-6 rounded-b-lg ${
-                darkMode 
-                  ? 'border-gray-600 bg-gray-700' 
-                  : 'border-gray-200 bg-gray-50'
-              }`}>
+              <div
+                className={`flex justify-end space-x-4 mt-8 pt-6 border-t -mx-6 -mb-6 px-6 pb-6 rounded-b-lg ${
+                  darkMode ? 'border-gray-600 bg-gray-700' : 'border-gray-200 bg-gray-50'
+                }`}
+              >
                 <Button
                   variant='secondary'
-                  icon={<FontAwesomeIcon icon={faTimes} className="mr-2" />}
+                  icon={<FontAwesomeIcon icon={faTimes} className='mr-2' />}
                   onClick={handleCancel}
                   disabled={loading}
                   size='large'
@@ -478,7 +462,7 @@ const LookupForm = React.memo(({ user }) => {
                 </Button>
                 <Button
                   type='primary'
-                  icon={<FontAwesomeIcon icon={faSave} className="mr-2" />}
+                  icon={<FontAwesomeIcon icon={faSave} className='mr-2' />}
                   onClick={() => form.submit()}
                   loading={loading}
                   size='large'
@@ -502,4 +486,4 @@ const LookupForm = React.memo(({ user }) => {
 
 LookupForm.displayName = 'LookupForm'
 
-export default LookupForm 
+export default LookupForm

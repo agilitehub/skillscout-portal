@@ -8,7 +8,7 @@ import { faSave, faTimes, faBriefcase, faGift } from '@fortawesome/free-solid-sv
 import { useTheme } from '../../../../core/context/ThemeContext'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { Button } from '../../../../core/components'
-import BusinessSidebar from '../../components/BusinessSidebar'
+import BusinessSidebar from '../../../../core/components/layout/Sidebar'
 import {
   createJobOpportunity,
   updateJobOpportunity,
@@ -251,7 +251,7 @@ const JobOpportunityForm = React.memo(() => {
               justify-content: center !important;
               border-radius: 6px !important;
             }
-            
+
             .job-form-cancel-btn:hover,
             .job-form-cancel-btn.ant-btn:hover {
               background-color: #047857 !important;
@@ -259,7 +259,7 @@ const JobOpportunityForm = React.memo(() => {
               color: white !important;
               transform: none !important;
             }
-            
+
             .job-form-cancel-btn:focus,
             .job-form-cancel-btn.ant-btn:focus {
               background-color: #059669 !important;
@@ -267,7 +267,7 @@ const JobOpportunityForm = React.memo(() => {
               color: white !important;
               box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
             }
-            
+
             .job-form-cancel-btn svg,
             .job-form-cancel-btn .anticon {
               color: white !important;
@@ -289,18 +289,18 @@ const JobOpportunityForm = React.memo(() => {
               align-items: center !important;
               justify-content: center !important;
               border-radius: 6px !important;
-              box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+              box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
             }
-            
+
             .job-form-create-btn:hover,
             .job-form-create-btn.ant-btn:hover {
               background: linear-gradient(to right, #047857, #059669) !important;
               border-color: #047857 !important;
               color: white !important;
               transform: translateY(-1px) !important;
-              box-shadow: 0 4px 6px rgba(0,0,0,0.15) !important;
+              box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15) !important;
             }
-            
+
             .job-form-create-btn:focus,
             .job-form-create-btn.ant-btn:focus {
               background: linear-gradient(to right, #059669, #10b981) !important;
@@ -308,14 +308,14 @@ const JobOpportunityForm = React.memo(() => {
               color: white !important;
               box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
             }
-            
+
             .job-form-create-btn svg,
             .job-form-create-btn .anticon {
               color: white !important;
               margin-right: 8px !important;
             }
           `}</style>
-          
+
           {/* Dark Mode Form Styling */}
           {darkMode && (
             <style>

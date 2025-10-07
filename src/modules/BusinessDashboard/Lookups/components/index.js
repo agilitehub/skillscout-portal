@@ -3,7 +3,7 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTheme } from '../../../../core/context/ThemeContext'
-import BusinessSidebar from '../../components/BusinessSidebar'
+import BusinessSidebar from '../../../../core/components/layout/Sidebar'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faList, faPlus, faFilter, faSpinner, faTrashAlt, faEdit } from '@fortawesome/free-solid-svg-icons'
 import { Select, message, Spin } from 'antd'
@@ -87,16 +87,17 @@ const Lookups = React.memo(({ user }) => {
   }, [navigate])
 
   // Handle edit existing profile
-  const handleEdit = useCallback((profile) => {
-    navigate('/business-dashboard/lookups/edit', {
-      state: {
-        editId: profile.id,
-        initialData: profile
-      }
-    })
-  }, [navigate])
-
-
+  const handleEdit = useCallback(
+    (profile) => {
+      navigate('/business-dashboard/lookups/edit', {
+        state: {
+          editId: profile.id,
+          initialData: profile
+        }
+      })
+    },
+    [navigate]
+  )
 
   // Handle delete
   const handleDelete = useCallback(
@@ -120,8 +121,6 @@ const Lookups = React.memo(({ user }) => {
     },
     [loadLookups]
   )
-
-
 
   // Group data by categories and calculate stats
   const groupedData = useMemo(() => {
@@ -293,7 +292,8 @@ const Lookups = React.memo(({ user }) => {
       {/* Dark mode styles */}
       <style jsx global>{`
         /* Dark Mode Form Styling for Lookups */
-        ${darkMode ? `
+        ${darkMode
+          ? `
           .lookups-form .ant-form-item-label > label {
             color: #E5E7EB !important;
           }
@@ -425,26 +425,27 @@ const Lookups = React.memo(({ user }) => {
           .lookups-form .ant-form-item .ant-input-prefix {
             color: #9CA3AF !important;
           }
-        ` : ''}
-        
+        `
+          : ''}
+
         /* Dark mode dropdown options */
         .lookups-dark-dropdown {
           background-color: #374151 !important;
         }
-        
+
         .lookups-dark-dropdown .ant-select-item {
-          color: #F9FAFB !important;
+          color: #f9fafb !important;
         }
-        
+
         .lookups-dark-dropdown .ant-select-item:hover {
-          background-color: #4B5563 !important;
+          background-color: #4b5563 !important;
         }
-        
+
         .lookups-dark-dropdown .ant-select-item-option-selected {
           background-color: #059669 !important;
-          color: #FFFFFF !important;
+          color: #ffffff !important;
         }
-        
+
         /* Force Create New Button Visibility */
         .create-new-btn,
         .create-new-btn.ant-btn,
@@ -464,14 +465,14 @@ const Lookups = React.memo(({ user }) => {
           justify-content: center !important;
           border-radius: 6px !important;
         }
-        
+
         .create-new-btn svg,
         .create-new-btn .anticon,
         .create-new-btn i {
           color: #059669 !important;
           margin-right: 8px !important;
         }
-        
+
         .create-new-btn:hover,
         .create-new-btn.ant-btn:hover,
         button.create-new-btn:hover {
@@ -480,7 +481,7 @@ const Lookups = React.memo(({ user }) => {
           color: #047857 !important;
           border-color: #f0fdf4 !important;
         }
-        
+
         .create-new-btn:hover svg,
         .create-new-btn:hover .anticon,
         .create-new-btn:hover i {
@@ -489,8 +490,8 @@ const Lookups = React.memo(({ user }) => {
 
         /* Lookups Action Button Styling */
         .lookups-delete-btn {
-          background-color: #EF4444 !important;
-          border-color: #EF4444 !important;
+          background-color: #ef4444 !important;
+          border-color: #ef4444 !important;
           color: white !important;
           font-weight: 500 !important;
           padding: 4px 8px !important;
@@ -501,21 +502,21 @@ const Lookups = React.memo(({ user }) => {
           justify-content: center !important;
           border-radius: 6px !important;
         }
-        
+
         .lookups-delete-btn:hover {
-          background-color: #DC2626 !important;
-          border-color: #DC2626 !important;
+          background-color: #dc2626 !important;
+          border-color: #dc2626 !important;
           color: white !important;
           transform: none !important;
         }
-        
+
         .lookups-delete-btn:focus {
-          background-color: #EF4444 !important;
-          border-color: #EF4444 !important;
+          background-color: #ef4444 !important;
+          border-color: #ef4444 !important;
           color: white !important;
           box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2) !important;
         }
-        
+
         .lookups-edit-btn {
           background-color: #059669 !important;
           border-color: #059669 !important;
@@ -529,14 +530,14 @@ const Lookups = React.memo(({ user }) => {
           justify-content: center !important;
           border-radius: 6px !important;
         }
-        
+
         .lookups-edit-btn:hover {
           background-color: #047857 !important;
           border-color: #047857 !important;
           color: white !important;
           transform: none !important;
         }
-        
+
         .lookups-edit-btn:focus {
           background-color: #059669 !important;
           border-color: #059669 !important;
@@ -560,7 +561,7 @@ const Lookups = React.memo(({ user }) => {
           justify-content: center !important;
           border: 1px solid #059669 !important;
         }
-        
+
         .ant-table-row-expand-icon-cell button:hover,
         .ant-table-row-expand-icon-cell .ant-btn:hover {
           background-color: #047857 !important;
@@ -568,14 +569,14 @@ const Lookups = React.memo(({ user }) => {
           color: white !important;
           transform: none !important;
         }
-        
+
         .ant-table-row-expand-icon-cell button svg,
         .ant-table-row-expand-icon-cell .ant-btn svg {
           color: white !important;
           width: 12px !important;
           height: 12px !important;
         }
-        
+
         .ant-table-row-expand-icon-cell button svg path,
         .ant-table-row-expand-icon-cell .ant-btn svg path {
           fill: white !important;
@@ -601,8 +602,6 @@ const Lookups = React.memo(({ user }) => {
         <BusinessSidebar />
         <div className='p-6 ml-64 relative z-10'>
           <div className='max-w-7xl mx-auto'>
-
-
             {/* Header */}
             <div
               className={`rounded-lg mb-6 px-6 py-4 shadow-lg ${darkMode ? 'bg-gray-800 border border-gray-700' : ''}`}
@@ -666,13 +665,13 @@ const Lookups = React.memo(({ user }) => {
                 onSearch={setSearchTerm}
                 searchPlaceholder='Search lookups...'
                 toolbarActions={[
-                  <Button 
-                    key='create' 
-                    type='default' 
+                  <Button
+                    key='create'
+                    type='default'
                     size='large'
-                    icon={<FontAwesomeIcon icon={faPlus} />} 
+                    icon={<FontAwesomeIcon icon={faPlus} />}
                     onClick={handleAdd}
-                    className="create-new-btn font-medium"
+                    className='create-new-btn font-medium'
                   >
                     Create New
                   </Button>
@@ -687,8 +686,6 @@ const Lookups = React.memo(({ user }) => {
             </Spin>
           </div>
         </div>
-
-
       </div>
     </>
   )

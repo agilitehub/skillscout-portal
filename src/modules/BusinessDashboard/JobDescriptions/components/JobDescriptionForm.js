@@ -23,7 +23,7 @@ import {
   faCheckCircle
 } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../../core/context/ThemeContext'
-import BusinessSidebar from '../../components/BusinessSidebar'
+import BusinessSidebar from '../../../../core/components/layout/Sidebar'
 import {
   createJobDescription,
   updateJobDescription,
@@ -74,7 +74,7 @@ const CreateJobDescription = React.memo(({ user }) => {
   const calculateFieldCounts = useCallback(() => {
     try {
       const values = form.getFieldsValue()
-      
+
       // Debug log to see what values we're getting
       console.log('Calculating field counts with values:', values)
 
@@ -101,7 +101,7 @@ const CreateJobDescription = React.memo(({ user }) => {
         return value && String(value).trim().length > 0
       }).length
 
-      console.log('Field counts calculated:', { 
+      console.log('Field counts calculated:', {
         basicInfo: { completed: basicInfoCompleted, total: 6 },
         detailedInfo: { completed: detailedInfoCompleted, total: 5 }
       })
@@ -163,8 +163,8 @@ const CreateJobDescription = React.memo(({ user }) => {
     if (!lookupsLoading && !initialDataLoading) {
       // Use multiple attempts to ensure we catch the form when it's fully populated
       const timeouts = [500, 1000, 1500] // Try at 500ms, 1s, and 1.5s
-      
-      timeouts.forEach(delay => {
+
+      timeouts.forEach((delay) => {
         setTimeout(() => {
           const values = form.getFieldsValue()
           if (Object.keys(values).length > 0) {
@@ -440,7 +440,7 @@ const CreateJobDescription = React.memo(({ user }) => {
     setTimeout(() => {
       calculateFieldCounts()
     }, 50)
-    
+
     setTimeout(() => {
       calculateFieldCounts()
     }, 200)
@@ -1254,7 +1254,7 @@ const CreateJobDescription = React.memo(({ user }) => {
                   className={`flex justify-end space-x-3 pt-6 mt-6 border-t ${darkMode ? 'border-gray-600' : 'border-gray-200'}`}
                 >
                   <Button
-                    icon={<FontAwesomeIcon icon={faTimes} className="mr-2" />}
+                    icon={<FontAwesomeIcon icon={faTimes} className='mr-2' />}
                     onClick={() => navigate('/business-dashboard/job-descriptions')}
                     size='large'
                     style={{
@@ -1264,16 +1264,14 @@ const CreateJobDescription = React.memo(({ user }) => {
                       fontWeight: '500'
                     }}
                     className={
-                      darkMode
-                        ? 'hover:bg-red-700 hover:border-red-700'
-                        : 'hover:bg-gray-600 hover:border-gray-600'
+                      darkMode ? 'hover:bg-red-700 hover:border-red-700' : 'hover:bg-gray-600 hover:border-gray-600'
                     }
                   >
                     Cancel
                   </Button>
                   <Button
                     type='primary'
-                    icon={<FontAwesomeIcon icon={faSave} className="mr-2" />}
+                    icon={<FontAwesomeIcon icon={faSave} className='mr-2' />}
                     onClick={handleSaveClick}
                     loading={loading}
                     disabled={initialDataLoading}
@@ -1308,7 +1306,7 @@ const CreateJobDescription = React.memo(({ user }) => {
               width={500}
               className={darkMode ? 'dark-modal' : ''}
               okButtonProps={{
-                icon: <FontAwesomeIcon icon={faCheckCircle} className="mr-2" />,
+                icon: <FontAwesomeIcon icon={faCheckCircle} className='mr-2' />,
                 size: 'large',
                 style: {
                   backgroundColor: '#10b981',

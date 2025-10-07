@@ -8,7 +8,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSave, faTimes, faGift } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../../core/context/ThemeContext'
-import BusinessSidebar from '../../components/BusinessSidebar'
+import BusinessSidebar from '../../../../core/components/layout/Sidebar'
 import { createJobListing } from '../utils/listing-controller'
 import { getJobDescriptionsForSelection } from '../utils/controller'
 import JobDescriptionPreview from './JobDescriptionPreview'
@@ -115,18 +115,18 @@ const CreateJobListing = React.memo(({ user }) => {
             align-items: center !important;
             justify-content: center !important;
             border-radius: 6px !important;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
           }
-          
+
           .job-listing-cancel-btn:hover,
           .job-listing-cancel-btn.ant-btn:hover {
             background-color: #047857 !important;
             border-color: #047857 !important;
             color: white !important;
             transform: translateY(-1px) !important;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.15) !important;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15) !important;
           }
-          
+
           .job-listing-cancel-btn:focus,
           .job-listing-cancel-btn.ant-btn:focus {
             background-color: #059669 !important;
@@ -134,7 +134,7 @@ const CreateJobListing = React.memo(({ user }) => {
             color: white !important;
             box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
           }
-          
+
           .job-listing-cancel-btn svg,
           .job-listing-cancel-btn .anticon {
             color: white !important;
@@ -155,18 +155,18 @@ const CreateJobListing = React.memo(({ user }) => {
             align-items: center !important;
             justify-content: center !important;
             border-radius: 6px !important;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
           }
-          
+
           .job-listing-create-btn:hover,
           .job-listing-create-btn.ant-btn:hover {
             background: linear-gradient(to right, #047857, #059669) !important;
             border-color: #047857 !important;
             color: white !important;
             transform: translateY(-1px) !important;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.15) !important;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15) !important;
           }
-          
+
           .job-listing-create-btn:focus,
           .job-listing-create-btn.ant-btn:focus {
             background: linear-gradient(to right, #059669, #10b981) !important;
@@ -174,7 +174,7 @@ const CreateJobListing = React.memo(({ user }) => {
             color: white !important;
             box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
           }
-          
+
           .job-listing-create-btn svg,
           .job-listing-create-btn .anticon {
             color: white !important;
@@ -359,8 +359,6 @@ const CreateJobListing = React.memo(({ user }) => {
           </style>
         )}
 
-
-
         <div className='flex-1 overflow-auto p-6 ml-64'>
           <Card className={`max-w-4xl mx-auto ${darkMode ? 'bg-gray-700 border-gray-600' : ''}`}>
             <Form
@@ -503,9 +501,9 @@ const CreateJobListing = React.memo(({ user }) => {
 
               {/* Form Actions */}
               <div className='flex justify-end space-x-4 mt-6'>
-                <Button 
-                  icon={<FontAwesomeIcon icon={faTimes} />} 
-                  onClick={handleGoBack} 
+                <Button
+                  icon={<FontAwesomeIcon icon={faTimes} />}
+                  onClick={handleGoBack}
                   size='large'
                   type='default'
                   className='job-listing-cancel-btn'

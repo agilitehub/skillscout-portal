@@ -3,7 +3,7 @@
 import React, { useState, useCallback, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTheme } from '../../../../core/context/ThemeContext'
-import BusinessSidebar from '../../components/BusinessSidebar'
+import BusinessSidebar from '../../../../core/components/layout/Sidebar'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faClipboardCheck, faPlus, faCheckCircle, faTimesCircle, faTrashAlt } from '@fortawesome/free-solid-svg-icons'
 import { Select, message, Tag, Spin, Alert } from 'antd'
@@ -259,7 +259,8 @@ const Questionnaires = React.memo(({ user }) => {
               key: 'edit',
               tooltip: 'Edit Questionnaire',
               color: '!text-white',
-              className: 'questionnaire-edit-btn !bg-green-600 hover:!bg-green-700 !border-green-600 hover:!border-green-700',
+              className:
+                'questionnaire-edit-btn !bg-green-600 hover:!bg-green-700 !border-green-600 hover:!border-green-700',
               style: {
                 backgroundColor: '#059669 !important',
                 borderColor: '#059669 !important',
@@ -300,19 +301,19 @@ const Questionnaires = React.memo(({ user }) => {
         .questionnaire-delete-btn,
         .questionnaire-delete-btn.ant-btn,
         .questionnaire-delete-btn button {
-          background-color: #DC2626 !important;
-          border-color: #DC2626 !important;
+          background-color: #dc2626 !important;
+          border-color: #dc2626 !important;
           color: white !important;
         }
-        
+
         .questionnaire-delete-btn:hover,
         .questionnaire-delete-btn.ant-btn:hover,
         .questionnaire-delete-btn button:hover {
-          background-color: #B91C1C !important;
-          border-color: #B91C1C !important;
+          background-color: #b91c1c !important;
+          border-color: #b91c1c !important;
           color: white !important;
         }
-        
+
         .questionnaire-delete-btn .anticon,
         .questionnaire-delete-btn svg {
           color: white !important;
@@ -325,7 +326,7 @@ const Questionnaires = React.memo(({ user }) => {
           border-color: #059669 !important;
           color: white !important;
         }
-        
+
         .questionnaire-edit-btn:hover,
         .questionnaire-edit-btn.ant-btn:hover,
         .questionnaire-edit-btn button:hover {
@@ -333,7 +334,7 @@ const Questionnaires = React.memo(({ user }) => {
           border-color: #047857 !important;
           color: white !important;
         }
-        
+
         .questionnaire-edit-btn .anticon,
         .questionnaire-edit-btn svg {
           color: white !important;
@@ -355,7 +356,7 @@ const Questionnaires = React.memo(({ user }) => {
           font-size: 14px !important;
           border-radius: 6px !important;
         }
-        
+
         .create-questionnaire-btn:hover,
         .create-questionnaire-btn.ant-btn:hover {
           background-color: #047857 !important;
@@ -363,7 +364,7 @@ const Questionnaires = React.memo(({ user }) => {
           color: white !important;
           transform: none !important;
         }
-        
+
         .create-questionnaire-btn:focus,
         .create-questionnaire-btn.ant-btn:focus {
           background-color: #059669 !important;
@@ -371,14 +372,14 @@ const Questionnaires = React.memo(({ user }) => {
           color: white !important;
           box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
         }
-        
+
         .create-questionnaire-btn .anticon,
         .create-questionnaire-btn svg {
           color: white !important;
           margin-right: 8px !important;
         }
       `}</style>
-      
+
       <div
         className={`min-h-screen relative overflow-hidden ${
           darkMode
@@ -454,13 +455,13 @@ const Questionnaires = React.memo(({ user }) => {
                 onSearch={setSearchTerm}
                 searchPlaceholder='Search questionnaires...'
                 toolbarActions={[
-                  <Button 
-                    key='create' 
-                    type='primary' 
-                    icon={<FontAwesomeIcon icon={faPlus} />} 
+                  <Button
+                    key='create'
+                    type='primary'
+                    icon={<FontAwesomeIcon icon={faPlus} />}
                     onClick={handleAdd}
-                    className="create-questionnaire-btn"
-                    size="large"
+                    className='create-questionnaire-btn'
+                    size='large'
                   >
                     Create Questionnaire
                   </Button>
