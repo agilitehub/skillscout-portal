@@ -44,11 +44,7 @@ const FilterBar = React.memo(
                 <Select
                   value={viewMode}
                   onChange={onViewModeChange}
-                  style={{
-                    width: 140,
-                    height: 32
-                  }}
-                  className={`${darkMode ? 'kanban-select-dark' : ''}`}
+                  className={`kanban-select ${darkMode ? 'kanban-select-dark' : ''}`}
                   size='small'
                   dropdownClassName={darkMode ? 'kanban-dark-dropdown' : ''}
                   options={[
@@ -90,8 +86,7 @@ const FilterBar = React.memo(
                 value={selectedJobListing}
                 onChange={onJobListingChange}
                 allowClear
-                className={`w-full ${darkMode ? 'kanban-select-dark' : ''}`}
-                style={{ minWidth: 200 }}
+                className={`w-full kanban-job-select ${darkMode ? 'kanban-select-dark' : ''}`}
                 dropdownClassName={darkMode ? 'kanban-dark-dropdown' : ''}
               >
                 {jobListings.map((listing) => (
@@ -113,11 +108,8 @@ const FilterBar = React.memo(
                 prefix={<FontAwesomeIcon icon={faSearch} className='text-gray-400' />}
                 value={searchTerm}
                 onChange={(e) => onSearchChange(e.target.value)}
-                className={darkMode ? 'kanban-input-dark' : ''}
+                className={`kanban-search-input ${darkMode ? 'kanban-input-dark' : ''}`}
                 style={{
-                  backgroundColor: darkMode ? '#4B5563' : '#ffffff',
-                  borderColor: darkMode ? '#6B7280' : '#d1d5db',
-                  color: darkMode ? '#F9FAFB' : '#111827',
                   '--placeholder-color': darkMode ? '#ffffff' : '#9ca3af'
                 }}
               />
@@ -161,15 +153,8 @@ if (typeof window !== 'undefined') {
  */
 const DropIndicator = React.memo(({ position, darkMode }) => {
   return (
-    <div className='relative w-full flex justify-center' style={{ height: '4px', margin: '8px 0' }}>
-      <div
-        className={`w-full h-1 rounded-full transition-all duration-200 ${
-          darkMode ? 'bg-emerald-400' : 'bg-emerald-500'
-        }`}
-        style={{
-          boxShadow: `0 0 12px ${darkMode ? 'rgba(52, 211, 153, 0.8)' : 'rgba(16, 185, 129, 0.8)'}`
-        }}
-      />
+    <div className='relative w-full flex justify-center kanban-drop-indicator'>
+      <div className='kanban-drop-indicator-line' />
     </div>
   )
 })
@@ -326,7 +311,7 @@ const StageColumn = React.memo(
               {stage.count}
             </div>
             <h3
-              className={`text-xs font-semibold leading-tight transition-colors duration-200 ${
+              className={`text-xs font-semibold leading-tight transition-colors duration-200 kanban-column-title ${
                 columnIsOver
                   ? darkMode
                     ? 'text-emerald-200'
@@ -335,11 +320,6 @@ const StageColumn = React.memo(
                     ? 'text-white'
                     : 'text-gray-900'
               }`}
-              style={{
-                wordBreak: 'break-word',
-                hyphens: 'auto',
-                lineHeight: '1.2'
-              }}
             >
               {stage.title}
             </h3>

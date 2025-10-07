@@ -107,11 +107,7 @@ const MagicLinkLogin = React.memo(({ onLogin, loading }) => {
           }`}
         >
           <div className='text-center'>
-            <FontAwesomeIcon
-              icon={faCheckCircle}
-              className='text-4xl mb-4'
-              style={{ color: BRAND_COLORS.emeraldPrimary }}
-            />
+            <FontAwesomeIcon icon={faCheckCircle} className='text-4xl mb-4 magic-link-icon' />
             <h3 className={`text-lg font-semibold mb-2 ${darkMode ? 'text-white' : 'text-gray-800'}`}>
               Check Your Email
             </h3>
@@ -123,16 +119,7 @@ const MagicLinkLogin = React.memo(({ onLogin, loading }) => {
             </p>
 
             <div className='space-y-3'>
-              <Button
-                type='primary'
-                onClick={handleResend}
-                disabled={loading}
-                className='w-full'
-                style={{
-                  background: `linear-gradient(135deg, ${BRAND_COLORS.pictonBlue}, ${BRAND_COLORS.seaGreen})`,
-                  border: 'none'
-                }}
-              >
+              <Button type='primary' onClick={handleResend} disabled={loading} className='w-full magic-link-button'>
                 {loading ? (
                   <>
                     <FontAwesomeIcon icon={faSpinner} spin className='mr-2' />
@@ -146,15 +133,7 @@ const MagicLinkLogin = React.memo(({ onLogin, loading }) => {
                 )}
               </Button>
 
-              <Button
-                onClick={handleReset}
-                className='w-full'
-                style={{
-                  border: darkMode ? '1px solid rgba(255,255,255,0.3)' : `1px solid ${BRAND_COLORS.borderGray}`,
-                  color: 'white',
-                  backgroundColor: darkMode ? 'rgba(255,255,255,0.1)' : 'white'
-                }}
-              >
+              <Button onClick={handleReset} className='w-full magic-link-resend-button'>
                 Use Different Email
               </Button>
             </div>
@@ -209,11 +188,8 @@ const MagicLinkLogin = React.memo(({ onLogin, loading }) => {
             size='default'
             loading={loading}
             block
-            className='h-10 font-medium text-white transition-all duration-300 hover:shadow-lg border-0 hover:scale-105 transform'
+            className='h-10 font-medium text-white transition-all duration-300 hover:shadow-lg border-0 hover:scale-105 transform magic-link-submit-button'
             style={{
-              background: darkMode
-                ? `linear-gradient(135deg, ${BRAND_COLORS.darkBlue} 0%, ${BRAND_COLORS.shakespeare} 35%, ${BRAND_COLORS.emeraldPrimary} 70%, ${BRAND_COLORS.forestGreen} 100%)`
-                : `linear-gradient(135deg, ${BRAND_COLORS.pictonBlue} 0%, ${BRAND_COLORS.shakespeare} 25%, ${BRAND_COLORS.seaGreen} 60%, ${BRAND_COLORS.emeraldPrimary} 100%)`,
               boxShadow: darkMode
                 ? `0 6px 20px 0 ${BRAND_COLORS.shakespeare}40, 0 2px 6px 0 ${BRAND_COLORS.emeraldPrimary}30`
                 : `0 6px 20px 0 ${BRAND_COLORS.pictonBlue}40, 0 2px 6px 0 ${BRAND_COLORS.seaGreen}20`

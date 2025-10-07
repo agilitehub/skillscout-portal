@@ -232,7 +232,7 @@ const ChatInput = React.memo(
           multiple
           accept='.pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.gif,.webp,.xls,.xlsx,.csv'
           onChange={handleFileChange}
-          style={{ display: 'none' }}
+          className='chat-file-input'
         />
 
         {/* Dark mode styles for input placeholder */}
@@ -251,16 +251,10 @@ const ChatInput = React.memo(
 
         <div
           className={`relative p-2 md:p-4 border-t transition-all duration-200 ${
-            isDragOver ? 'border-2 border-dashed shadow-lg transform scale-[1.02]' : 'border-t'
+            isDragOver ? 'border-2 border-dashed shadow-lg transform scale-[1.02] chat-drop-zone' : 'border-t'
           }`}
           style={{
-            background: isDragOver
-              ? darkMode
-                ? 'rgba(59, 130, 246, 0.1)'
-                : 'rgba(59, 130, 246, 0.05)'
-              : darkMode
-                ? '#1F2937'
-                : '#ffffff',
+            background: !isDragOver ? (darkMode ? '#1F2937' : '#ffffff') : undefined,
             borderColor: isDragOver
               ? BRAND_COLORS.emeraldPrimary
               : darkMode
@@ -337,13 +331,8 @@ const ChatInput = React.memo(
               type='text'
               onClick={handleAttachFileClick}
               disabled={isDisabled}
-              className='flex items-center justify-center h-auto flex-shrink-0 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200'
+              className='flex items-center justify-center h-auto flex-shrink-0 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 chat-attach-button'
               style={{
-                borderRadius: '8px',
-                minHeight: '44px',
-                width: '44px',
-                padding: '0',
-                color: darkMode ? BRAND_COLORS.shakespeare : BRAND_COLORS.seaGreen,
                 opacity: isDisabled ? 0.5 : 1
               }}
               icon={
@@ -363,18 +352,11 @@ const ChatInput = React.memo(
               disabled={isDisabled}
               maxLength={maxLength}
               autoSize={{ minRows: 1, maxRows: 3 }}
+              className={`chat-textarea flex-grow ${darkMode ? 'dark-mode-input' : ''}`}
               style={{
-                background: darkMode ? '#374151' : '#ffffff',
-                border: `1px solid ${darkMode ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)'}`,
-                color: darkMode ? '#F9FAFB' : '#000000',
-                padding: '12px 16px',
-                fontSize: '0.875rem',
                 boxShadow: 'none',
-                resize: 'none',
-                borderRadius: '8px',
                 opacity: isDisabled ? 0.7 : 1
               }}
-              className={`flex-grow ${darkMode ? 'dark-mode-input' : ''}`}
               placeholder={
                 isUploading
                   ? 'Uploading files...'
@@ -391,13 +373,8 @@ const ChatInput = React.memo(
               type='primary'
               onClick={handleSendMessage}
               disabled={!isInputValid}
-              className='flex items-center justify-center h-auto border-0 flex-shrink-0 transition-all duration-200'
+              className='flex items-center justify-center h-auto border-0 flex-shrink-0 transition-all duration-200 chat-send-button'
               style={{
-                background: `linear-gradient(to right, ${BRAND_COLORS.emeraldPrimary}, ${BRAND_COLORS.seaGreen})`,
-                borderRadius: '8px',
-                minHeight: '44px',
-                width: '44px',
-                padding: '0',
                 opacity: !isInputValid ? 0.6 : 1
               }}
               icon={<FontAwesomeIcon icon={faPaperPlane} className='text-white' />}
@@ -409,22 +386,8 @@ const ChatInput = React.memo(
             <div className='absolute inset-0 z-20 flex items-center justify-center bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-lg border-2 border-dashed border-emerald-500'>
               <div className='text-center'>
                 <FontAwesomeIcon icon={faCloudUploadAlt} className='text-4xl text-emerald-500 mb-2 animate-bounce' />
-                <p
-                  className='font-medium'
-                  style={{
-                    color: darkMode ? '#34D399' : '#059669'
-                  }}
-                >
-                  Drop files here to upload
-                </p>
-                <p
-                  className='text-xs mt-1'
-                  style={{
-                    color: darkMode ? 'rgba(229, 231, 235, 0.9)' : 'rgba(75, 85, 99, 1)'
-                  }}
-                >
-                  PDF, DOC, Images, CSV files supported
-                </p>
+                <p className='font-medium chat-drop-text'>Drop files here to upload</p>
+                <p className='text-xs mt-1 chat-drop-subtext'>PDF, DOC, Images, CSV files supported</p>
               </div>
             </div>
           )}
@@ -437,18 +400,8 @@ const ChatInput = React.memo(
                 isDragOver ? 'opacity-0' : 'opacity-100'
               }`}
             >
-              <FontAwesomeIcon
-                icon={faCloudUploadAlt}
-                className='text-xs'
-                style={{
-                  color: darkMode ? 'rgba(229, 231, 235, 0.9)' : 'rgba(75, 85, 99, 0.8)'
-                }}
-              />
-              <span
-                style={{
-                  color: darkMode ? 'rgba(229, 231, 235, 0.9)' : 'rgba(75, 85, 99, 0.8)'
-                }}
-              >
+              <FontAwesomeIcon icon={faCloudUploadAlt} className='text-xs chat-status-text' />
+              <span className='chat-status-text'>
                 {isUploading ? (
                   'Uploading files...'
                 ) : (
@@ -473,15 +426,9 @@ const ChatInput = React.memo(
               {isStreaming && (
                 <div className='flex items-center space-x-2'>
                   <div className='flex space-x-1'>
-                    <div className='w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse'></div>
-                    <div
-                      className='w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse'
-                      style={{ animationDelay: '0.2s' }}
-                    ></div>
-                    <div
-                      className='w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse'
-                      style={{ animationDelay: '0.4s' }}
-                    ></div>
+                    <div className='chat-streaming-dot'></div>
+                    <div className='chat-streaming-dot'></div>
+                    <div className='chat-streaming-dot'></div>
                   </div>
                   <span className='text-emerald-500'>Streaming...</span>
                   {onCancelStream && (
@@ -489,8 +436,7 @@ const ChatInput = React.memo(
                       type='text'
                       size='small'
                       onClick={onCancelStream}
-                      className='!px-2 !py-0 !h-5 text-xs hover:!bg-red-50 dark:hover:!bg-red-900/20'
-                      style={{ color: '#ef4444' }}
+                      className='!px-2 !py-0 !h-5 text-xs hover:!bg-red-50 dark:hover:!bg-red-900/20 chat-cancel-button'
                     >
                       Cancel
                     </Button>
