@@ -425,7 +425,7 @@ const TableView = React.memo(
           )}
 
           {/* Enhanced Table */}
-          <div className='p-6'>
+          <div className='p-2'>
             <Table
               columns={columns}
               dataSource={dataSource}
