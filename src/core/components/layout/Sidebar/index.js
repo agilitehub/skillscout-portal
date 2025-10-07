@@ -156,7 +156,7 @@ const BusinessSidebar = React.memo(() => {
       </div>
 
       {/* Navigation Menu */}
-      <nav className='p-4 space-y-3'>
+      <nav className='p-2 space-y-1'>
         {/* Main Navigation Items */}
         <div className='space-y-1'>
           {mainNavigationItems.map((item) => (
@@ -165,7 +165,7 @@ const BusinessSidebar = React.memo(() => {
               to={item.path}
               end={item.exact}
               className={({ isActive }) =>
-                `flex items-center px-3 py-3 rounded-lg text-base font-medium transition-all duration-200 ${
+                `flex items-center px-1 py-2 rounded-lg text-base font-medium transition-all duration-200 ${
                   isActive
                     ? darkMode
                       ? 'bg-emerald-700 text-white shadow-lg'
@@ -214,7 +214,7 @@ const BusinessSidebar = React.memo(() => {
         <div className='space-y-1'>
           {/* Settings Header */}
           <div
-            className={`w-full flex items-center px-3 py-2 rounded-lg text-base font-bold transition-all duration-200 cursor-pointer ${
+            className={`w-full flex items-center px-1 py-2 rounded-lg text-base font-bold transition-all duration-200 cursor-pointer ${
               darkMode
                 ? 'text-gray-300 hover:text-white hover:bg-gray-800'
                 : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
@@ -254,7 +254,7 @@ const BusinessSidebar = React.memo(() => {
                 to={item.path}
                 end={item.exact}
                 className={({ isActive }) =>
-                  `flex items-center px-3 py-3 rounded-lg text-base font-medium transition-all duration-200 ${
+                  `flex items-center px-1 py-2 rounded-lg text-base font-medium transition-all duration-200 ${
                     isActive
                       ? darkMode
                         ? 'bg-emerald-700 text-white shadow-lg'
