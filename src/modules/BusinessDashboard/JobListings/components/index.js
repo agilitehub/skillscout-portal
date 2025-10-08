@@ -273,14 +273,6 @@ const JobListings = React.memo(({ user }) => {
                 icon: faTrash,
                 tooltip: 'Delete Job',
                 onClick: () => handleDeleteJob(record.id),
-                color: darkMode ? '!text-white hover:!text-white' : '!text-white hover:!text-white',
-                style: {
-                  backgroundColor: '#dc2626',
-                  borderColor: '#dc2626',
-                  borderRadius: '6px',
-                  padding: '4px 8px',
-                  color: '#ffffff'
-                },
                 confirm: {
                   title: 'Delete Job Listing',
                   description: 'Are you sure you want to delete this job listing? This action cannot be undone.',

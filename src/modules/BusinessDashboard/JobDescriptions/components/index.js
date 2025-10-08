@@ -200,14 +200,6 @@ const JobDescriptions = React.memo(({ user }) => {
                 key: 'delete',
                 icon: faTrashAlt,
                 tooltip: 'Delete Job Description',
-                color: '!text-white',
-                className:
-                  'job-description-delete-btn !bg-green-600 hover:!bg-green-700 !border-green-600 hover:!border-green-700',
-                style: {
-                  backgroundColor: '#059669 !important',
-                  borderColor: '#059669 !important',
-                  color: 'white !important'
-                },
                 onClick: (record) => handleDeleteDescription(record.id),
                 confirm: {
                   title: 'Delete Job Description',
