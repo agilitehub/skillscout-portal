@@ -293,17 +293,23 @@ const Dashboard = React.memo(() => {
       {/* Main Content */}
       <div className='ml-64 pt-12 flex flex-col'>
         {/* Main Header */}
-        <div className='px-4 py-4 flex-shrink-0'>
-          <div className='flex items-center justify-between mb-4'>
+        <div
+          className={`relative px-6 py-3 border-b flex-shrink-0 shadow-lg ${
+            darkMode
+              ? 'bg-gradient-to-r from-emerald-700 to-emerald-600 border border-emerald-600'
+              : 'bg-gradient-to-r from-emerald-500 to-emerald-600'
+          }`}
+        >
+          <div className='flex items-center justify-between'>
             <div>
               <Title
                 level={1}
                 className='!mb-1'
                 style={{
-                  fontSize: '22px',
+                  fontSize: '20px',
                   fontWeight: 'bold',
                   margin: 0,
-                  color: darkMode ? DARK_THEME.text.primary : LIGHT_THEME.text.primary
+                  color: '#ffffff'
                 }}
               >
                 Dashboard
@@ -311,7 +317,7 @@ const Dashboard = React.memo(() => {
               <Text
                 className='text-sm'
                 style={{
-                  color: darkMode ? DARK_THEME.text.secondary : LIGHT_THEME.text.secondary
+                  color: '#d1fae5'
                 }}
               >
                 AI-powered recruitment matching system
@@ -322,22 +328,23 @@ const Dashboard = React.memo(() => {
               {/* Quick Actions Dropdown */}
               <Dropdown overlay={quickActionsMenu} trigger={['click']} placement='bottomRight'>
                 <Button
-                  type='primary'
-                  size='small'
-                  className='flex items-center space-x-1'
+                  type='default'
+                  size='middle'
+                  className='flex items-center space-x-1 dashboard-button'
                   style={{
-                    backgroundColor: SEMANTIC_COLORS.secondary,
-                    borderColor: SEMANTIC_COLORS.secondary,
-                    boxShadow: `0 1px 4px ${SEMANTIC_COLORS.secondary}20`,
+                    backgroundColor: '#ffffff',
+                    borderColor: '#ffffff',
+                    color: '#059669',
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
                     fontSize: '13px',
-                    height: '28px',
+                    height: '32px',
                     paddingLeft: '12px',
                     paddingRight: '12px'
                   }}
                 >
-                  <FontAwesomeIcon icon={faPlus} className='mr-1' style={{ fontSize: '11px' }} />
+                  <FontAwesomeIcon icon={faPlus} style={{ fontSize: '11px', marginRight: '4px' }} />
                   <span>Quick Actions</span>
-                  <FontAwesomeIcon icon={faChevronDown} className='ml-1' style={{ fontSize: '10px' }} />
+                  <FontAwesomeIcon icon={faChevronDown} style={{ fontSize: '10px', marginLeft: '4px' }} />
                 </Button>
               </Dropdown>
 
@@ -351,31 +358,32 @@ const Dashboard = React.memo(() => {
                 }}
               >
                 <Button
-                  type='text'
+                  type='default'
                   className='flex items-center justify-center w-8 h-8 rounded-full bell-button'
                   style={{
-                    backgroundColor: 'transparent',
-                    border: `1px solid ${darkMode ? DARK_THEME.border.secondary : LIGHT_THEME.border.secondary}`,
+                    backgroundColor: '#ffffff',
+                    borderColor: '#ffffff',
+                    color: '#059669',
                     transition: 'all 0.2s ease'
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = darkMode
-                      ? DARK_THEME.background.tertiary
-                      : LIGHT_THEME.background.tertiary
-                    e.currentTarget.style.borderColor = SEMANTIC_COLORS.primary
+                    e.currentTarget.style.backgroundColor = '#f8f9fa'
+                    e.currentTarget.style.borderColor = '#f8f9fa'
+                    e.currentTarget.style.color = '#047857'
+                    e.currentTarget.style.transform = 'translateY(-1px)'
+                    e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.15)'
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = 'transparent'
-                    e.currentTarget.style.borderColor = darkMode
-                      ? DARK_THEME.border.secondary
-                      : LIGHT_THEME.border.secondary
+                    e.currentTarget.style.backgroundColor = '#ffffff'
+                    e.currentTarget.style.borderColor = '#ffffff'
+                    e.currentTarget.style.color = '#059669'
+                    e.currentTarget.style.transform = 'translateY(0)'
+                    e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)'
                   }}
                   onClick={handleShowAlerts}
                 >
-                  {/* Using Unicode bell as fallback if FontAwesome doesn't work */}
                   <span
                     style={{
-                      color: darkMode ? DARK_THEME.text.primary : LIGHT_THEME.text.primary,
                       fontSize: '14px',
                       fontWeight: 'bold',
                       display: 'flex',
@@ -390,30 +398,31 @@ const Dashboard = React.memo(() => {
 
               {/* Refresh Button */}
               <Button
-                type='secondary'
-                size='small'
-                className='flex items-center space-x-1'
+                type='default'
+                size='middle'
+                className='flex items-center space-x-1 dashboard-button'
                 style={{
-                  backgroundColor: SEMANTIC_COLORS.info,
-                  borderColor: SEMANTIC_COLORS.info,
-                  boxShadow: `0 1px 4px ${SEMANTIC_COLORS.info}20`,
+                  backgroundColor: '#ffffff',
+                  borderColor: '#ffffff',
+                  color: '#059669',
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
                   fontSize: '13px',
-                  height: '28px',
+                  height: '32px',
                   paddingLeft: '12px',
                   paddingRight: '12px'
                 }}
                 onClick={() => handleGetDashboardStats()}
                 loading={loading}
               >
-                <Space size={4}>
-                  <FontAwesomeIcon icon={faRefresh} style={{ fontSize: '11px' }} />
-                  <span>Refresh</span>
-                </Space>
+                <FontAwesomeIcon icon={faRefresh} style={{ fontSize: '11px', marginRight: '4px' }} />
+                <span>Refresh</span>
               </Button>
             </div>
           </div>
+        </div>
 
-          {/* Workspace Cards */}
+        {/* Workspace Cards */}
+        <div className='px-6 py-4'>
           <div>
             <Title
               level={2}
@@ -681,6 +690,91 @@ const Dashboard = React.memo(() => {
           )}
         </div>
       </Modal>
+
+      {/* Dashboard Button Styles */}
+      <style jsx global>{`
+        /* Force Dashboard buttons to have white backgrounds */
+        .dashboard-button,
+        .dashboard-button.ant-btn,
+        button.dashboard-button {
+          background: #ffffff !important;
+          background-color: #ffffff !important;
+          color: #059669 !important;
+          border: 1px solid #ffffff !important;
+          opacity: 1 !important;
+          visibility: visible !important;
+        }
+
+        .dashboard-button:hover,
+        .dashboard-button.ant-btn:hover,
+        button.dashboard-button:hover {
+          background: #f8f9fa !important;
+          background-color: #f8f9fa !important;
+          color: #047857 !important;
+          border: 1px solid #f8f9fa !important;
+          transform: translateY(-1px) !important;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.15) !important;
+        }
+
+        /* Bell button specific styles */
+        .bell-button,
+        .bell-button.ant-btn,
+        button.bell-button {
+          background: #ffffff !important;
+          background-color: #ffffff !important;
+          color: #059669 !important;
+          border: 1px solid #ffffff !important;
+        }
+
+        .bell-button:hover,
+        .bell-button.ant-btn:hover,
+        button.bell-button:hover {
+          background: #f8f9fa !important;
+          background-color: #f8f9fa !important;
+          color: #047857 !important;
+          border: 1px solid #f8f9fa !important;
+        }
+
+        /* Ensure icons and text have proper spacing */
+        .dashboard-button .anticon,
+        .dashboard-button svg {
+          margin-right: 4px !important;
+        }
+
+        .dashboard-button span {
+          margin-left: 4px !important;
+        }
+
+        /* Dark mode overrides */
+        ${darkMode ? `
+          .dashboard-button,
+          .dashboard-button.ant-btn,
+          button.dashboard-button {
+            background: #ffffff !important;
+            background-color: #ffffff !important;
+            color: #059669 !important;
+            border: 1px solid #ffffff !important;
+          }
+          
+          .dashboard-button:hover,
+          .dashboard-button.ant-btn:hover,
+          button.dashboard-button:hover {
+            background: #f8f9fa !important;
+            background-color: #f8f9fa !important;
+            color: #047857 !important;
+            border: 1px solid #f8f9fa !important;
+          }
+
+          .bell-button,
+          .bell-button.ant-btn,
+          button.bell-button {
+            background: #ffffff !important;
+            background-color: #ffffff !important;
+            color: #059669 !important;
+            border: 1px solid #ffffff !important;
+          }
+        ` : ''}
+      `}</style>
     </div>
   )
 })
