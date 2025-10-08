@@ -272,7 +272,7 @@ const Dashboard = React.memo(() => {
 
   return (
     <div
-      className={`h-screen ${
+      className={`min-h-screen ${
         darkMode
           ? 'bg-gradient-to-br from-slate-700 via-slate-600 to-emerald-800'
           : 'bg-gradient-to-br from-sky-100 via-gray-50 to-emerald-100'
@@ -291,10 +291,10 @@ const Dashboard = React.memo(() => {
       <BusinessSidebar />
 
       {/* Main Content */}
-      <div className='ml-64 h-[calc(100vh-3rem)] flex flex-col overflow-hidden'>
+      <div className='ml-64 pt-12 flex flex-col'>
         {/* Main Header */}
-        <div className='px-4 py-2 flex-shrink-0'>
-          <div className='flex items-center justify-between mb-2'>
+        <div className='px-4 py-4 flex-shrink-0'>
+          <div className='flex items-center justify-between mb-4'>
             <div>
               <Title
                 level={1}
@@ -414,10 +414,10 @@ const Dashboard = React.memo(() => {
           </div>
 
           {/* Workspace Cards */}
-          <div className='px-4 flex-1 flex flex-col overflow-hidden'>
+          <div>
             <Title
               level={2}
-              className='!mb-3 flex-shrink-0'
+              className='!mb-4'
               style={{
                 fontSize: '16px',
                 fontWeight: 'bold',
@@ -427,8 +427,7 @@ const Dashboard = React.memo(() => {
               Workspace
             </Title>
 
-            <div className='flex-1 overflow-y-auto'>
-              <Row gutter={[16, 16]}>
+            <Row gutter={[16, 16]}>
               {workspaceCards.map((card, index) => (
                 <Col xs={24} lg={index < 3 ? 8 : 12} key={index}>
                   <Card
@@ -523,8 +522,7 @@ const Dashboard = React.memo(() => {
                   </Card>
                 </Col>
               ))}
-              </Row>
-            </div>
+            </Row>
           </div>
 
         </div>
