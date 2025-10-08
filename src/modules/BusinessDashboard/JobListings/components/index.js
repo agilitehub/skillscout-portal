@@ -274,14 +274,6 @@ const JobListings = React.memo(({ user }) => {
                 icon: faTrash,
                 tooltip: 'Delete Job',
                 onClick: () => handleDeleteJob(record.id),
-                color: darkMode ? '!text-white hover:!text-white' : '!text-white hover:!text-white',
-                style: {
-                  backgroundColor: '#dc2626',
-                  borderColor: '#dc2626',
-                  borderRadius: '6px',
-                  padding: '4px 8px',
-                  color: '#ffffff'
-                },
                 confirm: {
                   title: 'Delete Job Listing',
                   description: 'Are you sure you want to delete this job listing? This action cannot be undone.',
@@ -356,7 +348,7 @@ const JobListings = React.memo(({ user }) => {
                 size='large'
                 icon={<FontAwesomeIcon icon={faPlus} />}
                 onClick={handleCreateJobOpportunity}
-                className="create-job-listing-btn font-medium"
+                className='form-btn-primary'
               >
                 Create Job Listing
               </Button>
@@ -422,84 +414,6 @@ const JobListings = React.memo(({ user }) => {
           />
         </Card>
       </div>
-      
-      {/* Custom Styles */}
-      <style jsx global>{`
-        /* Create Job Listing Button Styling */
-        .create-job-listing-btn,
-        .create-job-listing-btn.ant-btn,
-        button.create-job-listing-btn {
-          background-color: #059669 !important;
-          border-color: #059669 !important;
-          color: white !important;
-          font-weight: 500 !important;
-          padding: 8px 16px !important;
-          height: auto !important;
-          min-height: 40px !important;
-          display: inline-flex !important;
-          align-items: center !important;
-          justify-content: center !important;
-          border-radius: 6px !important;
-          opacity: 1 !important;
-          visibility: visible !important;
-          box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
-        }
-        
-        .create-job-listing-btn svg,
-        .create-job-listing-btn .anticon {
-          color: white !important;
-          margin-right: 8px !important;
-        }
-        
-        .create-job-listing-btn:hover,
-        .create-job-listing-btn.ant-btn:hover,
-        button.create-job-listing-btn:hover {
-          background-color: #047857 !important;
-          border-color: #047857 !important;
-          color: white !important;
-          transform: none !important;
-        }
-        
-        .create-job-listing-btn:hover svg,
-        .create-job-listing-btn:hover .anticon {
-          color: white !important;
-        }
-        
-        .create-job-listing-btn:focus,
-        .create-job-listing-btn.ant-btn:focus {
-          background-color: #059669 !important;
-          border-color: #059669 !important;
-          color: white !important;
-          box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
-        }
-
-        /* Delete Icon Styling for Better Visibility */
-        .ant-table-tbody .ant-space .ant-btn[style*="background-color: rgb(220, 38, 38)"],
-        .ant-table-tbody .ant-space .ant-btn[style*="backgroundColor:#dc2626"] {
-          background: #dc2626 !important;
-          border-color: #dc2626 !important;
-        }
-        
-        .ant-table-tbody .ant-space .ant-btn[style*="background-color: rgb(220, 38, 38)"] .anticon,
-        .ant-table-tbody .ant-space .ant-btn[style*="backgroundColor:#dc2626"] .anticon {
-          color: #ffffff !important;
-          filter: brightness(0) invert(1) !important;
-        }
-        
-        /* Prevent hover background change and keep red background */
-        .ant-table-tbody .ant-space .ant-btn[style*="background-color: rgb(220, 38, 38)"]:hover,
-        .ant-table-tbody .ant-space .ant-btn[style*="backgroundColor:#dc2626"]:hover {
-          background: #b91c1c !important;
-          background-color: #b91c1c !important;
-          border-color: #b91c1c !important;
-        }
-        
-        .ant-table-tbody .ant-space .ant-btn[style*="background-color: rgb(220, 38, 38)"]:hover .anticon,
-        .ant-table-tbody .ant-space .ant-btn[style*="backgroundColor:#dc2626"]:hover .anticon {
-          color: #ffffff !important;
-          filter: brightness(0) invert(1) !important;
-        }
-      `}</style>
     </div>
   )
 })

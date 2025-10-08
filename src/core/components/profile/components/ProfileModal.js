@@ -221,48 +221,12 @@ const ProfileModal = ({ isOpen, onClose, user }) => {
         }
       }}
     >
-      {/* Dark Mode Form Styling */}
-      {darkMode && (
-        <style>
-          {`
-             .user-profile-form .ant-form-item-label > label {
-               color: #E5E7EB !important;
-             }
-             .user-profile-form .ant-input {
-               background-color: #4B5563 !important;
-               border-color: #6B7280 !important;
-               color: #F9FAFB !important;
-             }
-             .user-profile-form .ant-input:focus {
-               border-color: #059669 !important;
-               box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
-             }
-             .user-profile-form .ant-input::placeholder {
-               color: #9CA3AF !important;
-             }
-             .user-profile-form .ant-upload.ant-upload-select {
-               background-color: #4B5563 !important;
-               border-color: #6B7280 !important;
-             }
-             .user-profile-form .ant-upload.ant-upload-select:hover {
-               border-color: #059669 !important;
-             }
-             .user-profile-form .ant-upload-text {
-               color: #E5E7EB !important;
-             }
-             .user-profile-form .ant-upload-hint {
-               color: #9CA3AF !important;
-             }
-           `}
-        </style>
-      )}
-
       <div className='space-y-6'>
         <div className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
           <p className='mb-3'>Update your personal information and profile picture.</p>
         </div>
 
-        <Form form={form} layout='vertical' onFinish={handleSave} className={`${darkMode ? 'user-profile-form' : ''}`}>
+        <Form form={form} layout='vertical' onFinish={handleSave} className='global-form'>
           {/* Profile Picture Upload */}
           <Form.Item
             label={<span className={darkMode ? 'text-gray-300' : ''}>Profile Picture</span>}
@@ -319,27 +283,10 @@ const ProfileModal = ({ isOpen, onClose, user }) => {
           </div>
 
           <div className='flex justify-end space-x-3 pt-4 border-t border-gray-200 dark:border-gray-600'>
-            <Button
-              onClick={handleClose}
-              disabled={isSaving}
-              className={
-                darkMode
-                  ? 'border-gray-600 text-gray-600 hover:border-gray-500'
-                  : 'border-gray-600 text-gray-900 hover:border-gray-500'
-              }
-            >
+            <Button className='form-btn-secondary' onClick={handleClose} disabled={isSaving}>
               Cancel
             </Button>
-            <Button
-              type='primary'
-              htmlType='submit'
-              loading={isSaving}
-              disabled={isLoading}
-              style={{
-                backgroundColor: darkMode ? '#059669' : '#10b981',
-                borderColor: darkMode ? '#059669' : '#10b981'
-              }}
-            >
+            <Button className='form-btn-primary' htmlType='submit' loading={isSaving} disabled={isLoading}>
               Save Profile
             </Button>
           </div>

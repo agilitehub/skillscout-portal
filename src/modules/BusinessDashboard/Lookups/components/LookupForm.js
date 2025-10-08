@@ -172,8 +172,7 @@ const LookupForm = React.memo(({ user }) => {
         } pointer-events-none`}
       ></div>
 
-      <BusinessSidebar />
-      <div className='ml-64 p-4 md:p-6 relative z-10'>
+      <div className='p-4 md:p-6 relative z-10'>
         <div className='max-w-7xl mx-auto'>
           {/* Header */}
           <div
@@ -203,128 +202,11 @@ const LookupForm = React.memo(({ user }) => {
 
           {/* Form Card */}
           <Card className={`${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white'} shadow-lg lookups-card`}>
-            {/* Dark Mode Form Styling */}
-            {darkMode && (
-              <style>
-                {`
-                  .page-dark .ant-form-item-label > label {
-                    color: #E5E7EB !important;
-                  }
-                  .page-dark .ant-form-item-extra {
-                    color: #9CA3AF !important;
-                  }
-                  .page-dark .ant-input,
-                  .page-dark input.ant-input,
-                  .page-dark input[type="text"],
-                  .page-dark input {
-                    background-color: #4B5563 !important;
-                    border-color: #6B7280 !important;
-                    color: #F9FAFB !important;
-                  }
-                  .page-dark .ant-input:focus,
-                  .page-dark input.ant-input:focus,
-                  .page-dark input[type="text"]:focus,
-                  .page-dark input:focus {
-                    border-color: #059669 !important;
-                    box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
-                    background-color: #4B5563 !important;
-                    color: #F9FAFB !important;
-                  }
-                  .page-dark .ant-input::placeholder,
-                  .page-dark input::placeholder {
-                    color: #9CA3AF !important;
-                  }
-                  .page-dark .ant-select,
-                  .page-dark .ant-select-selector,
-                  .page-dark .ant-select-single .ant-select-selector {
-                    background-color: #4B5563 !important;
-                    border-color: #6B7280 !important;
-                    color: #F9FAFB !important;
-                  }
-                  .page-dark .ant-select-focused .ant-select-selector,
-                  .page-dark .ant-select:focus .ant-select-selector {
-                    border-color: #059669 !important;
-                    box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
-                    background-color: #4B5563 !important;
-                  }
-                  .page-dark .ant-select-selection-placeholder {
-                    color: #9CA3AF !important;
-                  }
-                  .page-dark .ant-select-selection-item {
-                    color: #F9FAFB !important;
-                    background-color: transparent !important;
-                  }
-                  .page-dark .ant-select-arrow {
-                    color: #9CA3AF !important;
-                  }
-                  .page-dark .ant-select-multiple .ant-select-selection-item {
-                    background-color: #374151 !important;
-                    border-color: #6B7280 !important;
-                    color: #F9FAFB !important;
-                  }
-                  .page-dark .ant-switch {
-                    background-color: #6B7280 !important;
-                  }
-                  .page-dark .ant-switch-checked {
-                    background-color: #10B981 !important;
-                  }
-                  
-                  /* Dark mode dropdown options */
-                  .lookup-dark-dropdown {
-                    background-color: #374151 !important;
-                  }
-                  .lookup-dark-dropdown .ant-select-item {
-                    color: #F9FAFB !important;
-                  }
-                  .lookup-dark-dropdown .ant-select-item:hover {
-                    background-color: #4B5563 !important;
-                  }
-                  .lookup-dark-dropdown .ant-select-item-option-selected {
-                    background-color: #10B981 !important;
-                    color: #FFFFFF !important;
-                  }
-                  
-                  /* Form validation messages */
-                  .ant-form-item-explain-error {
-                    color: #F87171 !important;
-                  }
-                  
-                  /* Card and container fixes */
-                  .lookups-card .ant-card-body {
-                    background-color: #374151 !important;
-                    color: #F9FAFB !important;
-                  }
-                  
-                  .lookups-card .ant-card {
-                    background-color: #374151 !important;
-                    border-color: #4B5563 !important;
-                  }
-                  
-                  /* Text color fixes */
-                  .page-dark h4,
-                  .page-dark .ant-typography,
-                  .page-dark div {
-                    color: #F9FAFB !important;
-                  }
-                  
-                  /* Override any remaining light backgrounds */
-                  .page-dark .ant-form-item {
-                    color: #F9FAFB !important;
-                  }
-                  
-                  /* Button hover states in dark mode */
-                  .page-dark .ant-btn-text:hover {
-                    background-color: #4B5563 !important;
-                  }
-                `}
-              </style>
-            )}
-
             <Form
               form={form}
               layout='vertical'
               onFinish={handleFormSubmit}
-              className={darkMode ? 'page-dark lookups-form' : 'lookups-form'}
+              className='global-form'
               preserve={false}
               initialValues={{ isActive: true }}
               loading={loadingData}
@@ -472,7 +354,7 @@ const LookupForm = React.memo(({ user }) => {
                   onClick={handleCancel}
                   disabled={loading}
                   size='large'
-                  className='px-8 py-3'
+                  className='form-btn-secondary'
                 >
                   Cancel
                 </Button>
@@ -482,12 +364,7 @@ const LookupForm = React.memo(({ user }) => {
                   onClick={() => form.submit()}
                   loading={loading}
                   size='large'
-                  className='px-8 py-3'
-                  style={{
-                    background: darkMode ? '#059669' : '#10b981',
-                    borderColor: darkMode ? '#059669' : '#10b981',
-                    minWidth: '180px'
-                  }}
+                  className='form-btn-primary'
                 >
                   {isEditMode ? 'Update Lookup Profile' : 'Create Lookup Profile'}
                 </Button>

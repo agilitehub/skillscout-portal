@@ -246,14 +246,14 @@ const QuestionnaireForm = React.memo(({ user }) => {
       title: 'ORDER',
       dataIndex: 'questionOrder',
       key: 'questionOrder',
-      width: 70,
+      width: '10%',
       render: (order) => <span className={`font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>#{order}</span>
     },
     {
       title: 'QUESTION',
       dataIndex: 'question',
       key: 'question',
-      width: 400,
+      width: '80%',
       render: (text) => (
         <div className={`font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{truncateText(text, 80)}</div>
       )
@@ -261,7 +261,7 @@ const QuestionnaireForm = React.memo(({ user }) => {
     {
       title: 'ACTIONS',
       key: 'actions',
-      width: 120,
+      width: '10%',
       render: (_, record) => (
         <TableActions
           record={record}
@@ -269,26 +269,14 @@ const QuestionnaireForm = React.memo(({ user }) => {
             {
               key: 'edit',
               tooltip: 'Edit Question',
-              color: '!text-white',
-              className: 'questionnaire-form-edit-btn !bg-green-600 hover:!bg-green-700 !border-green-600 hover:!border-green-700',
-              style: {
-                backgroundColor: '#059669 !important',
-                borderColor: '#059669 !important',
-                color: 'white !important'
-              },
+              className: 'form-btn-primary',
               onClick: handleEditQuestion
             },
             {
               key: 'delete',
               icon: faTrashAlt,
               tooltip: 'Delete Question',
-              color: '!text-white',
-              className: 'questionnaire-form-delete-btn !bg-red-600 hover:!bg-red-700 !border-red-600 hover:!border-red-700',
-              style: {
-                backgroundColor: '#DC2626 !important',
-                borderColor: '#DC2626 !important',
-                color: 'white !important'
-              },
+              className: 'form-btn-danger',
               confirm: {
                 title: 'Delete Question',
                 description: 'Are you sure you want to delete this question?',
@@ -305,151 +293,6 @@ const QuestionnaireForm = React.memo(({ user }) => {
 
   return (
     <>
-      {/* Action Button Custom Styling */}
-      <style jsx global>{`
-        .questionnaire-form-delete-btn,
-        .questionnaire-form-delete-btn.ant-btn,
-        .questionnaire-form-delete-btn button {
-          background-color: #DC2626 !important;
-          border-color: #DC2626 !important;
-          color: white !important;
-        }
-        
-        .questionnaire-form-delete-btn:hover,
-        .questionnaire-form-delete-btn.ant-btn:hover,
-        .questionnaire-form-delete-btn button:hover {
-          background-color: #B91C1C !important;
-          border-color: #B91C1C !important;
-          color: white !important;
-        }
-        
-        .questionnaire-form-delete-btn .anticon,
-        .questionnaire-form-delete-btn svg {
-          color: white !important;
-        }
-
-        .questionnaire-form-edit-btn,
-        .questionnaire-form-edit-btn.ant-btn,
-        .questionnaire-form-edit-btn button {
-          background-color: #059669 !important;
-          border-color: #059669 !important;
-          color: white !important;
-        }
-        
-        .questionnaire-form-edit-btn:hover,
-        .questionnaire-form-edit-btn.ant-btn:hover,
-        .questionnaire-form-edit-btn button:hover {
-          background-color: #047857 !important;
-          border-color: #047857 !important;
-          color: white !important;
-        }
-        
-        .questionnaire-form-edit-btn .anticon,
-        .questionnaire-form-edit-btn svg {
-          color: white !important;
-        }
-
-        /* Add Question Button Styling */
-        .add-question-btn,
-        .add-question-btn.ant-btn {
-          background-color: #059669 !important;
-          border-color: #059669 !important;
-          color: white !important;
-          font-weight: 500 !important;
-          padding: 8px 24px !important;
-          height: auto !important;
-          min-height: 40px !important;
-          display: inline-flex !important;
-          align-items: center !important;
-          justify-content: center !important;
-          font-size: 14px !important;
-          border-radius: 6px !important;
-        }
-        
-        .add-question-btn:hover,
-        .add-question-btn.ant-btn:hover {
-          background-color: #047857 !important;
-          border-color: #047857 !important;
-          color: white !important;
-          transform: none !important;
-        }
-        
-        .add-question-btn:focus,
-        .add-question-btn.ant-btn:focus {
-          background-color: #059669 !important;
-          border-color: #059669 !important;
-          color: white !important;
-          box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
-        }
-        
-        .add-question-btn .anticon,
-        .add-question-btn svg {
-          color: white !important;
-          margin-right: 8px !important;
-        }
-
-        /* Form Action Buttons Styling */
-        .questionnaire-form-cancel-btn,
-        .questionnaire-form-cancel-btn.ant-btn {
-          background-color: #6B7280 !important;
-          border-color: #6B7280 !important;
-          color: white !important;
-          font-weight: 500 !important;
-          padding: 8px 24px !important;
-          height: auto !important;
-          min-height: 40px !important;
-          display: inline-flex !important;
-          align-items: center !important;
-          justify-content: center !important;
-          font-size: 14px !important;
-          border-radius: 6px !important;
-        }
-        
-        .questionnaire-form-cancel-btn:hover,
-        .questionnaire-form-cancel-btn.ant-btn:hover {
-          background-color: #4B5563 !important;
-          border-color: #4B5563 !important;
-          color: white !important;
-          transform: none !important;
-        }
-        
-        .questionnaire-form-cancel-btn .anticon,
-        .questionnaire-form-cancel-btn svg {
-          color: white !important;
-          margin-right: 8px !important;
-        }
-
-        .questionnaire-form-update-btn,
-        .questionnaire-form-update-btn.ant-btn {
-          background-color: #059669 !important;
-          border-color: #059669 !important;
-          color: white !important;
-          font-weight: 500 !important;
-          padding: 8px 24px !important;
-          height: auto !important;
-          min-height: 40px !important;
-          display: inline-flex !important;
-          align-items: center !important;
-          justify-content: center !important;
-          font-size: 14px !important;
-          border-radius: 6px !important;
-        }
-        
-        .questionnaire-form-update-btn:hover,
-        .questionnaire-form-update-btn.ant-btn:hover {
-          background-color: #047857 !important;
-          border-color: #047857 !important;
-          color: white !important;
-          transform: none !important;
-        }
-        
-        .questionnaire-form-update-btn .anticon,
-        .questionnaire-form-update-btn svg {
-          color: white !important;
-          margin-right: 8px !important;
-        }
-      `}</style>
-
       <div
         className={`min-h-screen ${
           darkMode
@@ -466,160 +309,46 @@ const QuestionnaireForm = React.memo(({ user }) => {
         } pointer-events-none`}
       ></div>
 
-      <BusinessSidebar />
-      <div className='ml-64 p-4 md:p-6 relative z-10'>
-        <div className='max-w-7xl mx-auto'>
-          {/* Header */}
-          <div
-            className={`rounded-lg mb-6 px-6 py-4 shadow-lg ${
-              darkMode
-                ? 'bg-gradient-to-r from-emerald-700 to-emerald-600 border border-emerald-600'
-                : 'bg-gradient-to-r from-emerald-500 to-emerald-600'
-            }`}
-          >
-            <div className='flex items-center'>
-              <FontAwesomeIcon
-                icon={faClipboardCheck}
-                className={`text-lg mr-3 ${darkMode ? 'text-emerald-100' : 'text-white'}`}
-              />
-              <div>
-                <h1 className='text-xl font-bold text-white'>Edit Questionnaire</h1>
-                <p className={`text-sm mt-1 ${darkMode ? 'text-gray-300' : 'text-white/90'}`}>
-                  Update your questionnaire details and questions
-                </p>
+        <div className='p-4 md:p-6 relative z-10'>
+          <div className='max-w-7xl mx-auto'>
+            {/* Header */}
+            <div
+              className={`rounded-lg mb-6 px-6 py-4 shadow-lg ${
+                darkMode
+                  ? 'bg-gradient-to-r from-emerald-700 to-emerald-600 border border-emerald-600'
+                  : 'bg-gradient-to-r from-emerald-500 to-emerald-600'
+              }`}
+            >
+              <div className='flex items-center'>
+                <FontAwesomeIcon
+                  icon={faClipboardCheck}
+                  className={`text-lg mr-3 ${darkMode ? 'text-emerald-100' : 'text-white'}`}
+                />
+                <div>
+                  <h1 className='text-xl font-bold text-white'>Edit Questionnaire</h1>
+                  <p className={`text-sm mt-1 ${darkMode ? 'text-gray-300' : 'text-white/90'}`}>
+                    Update your questionnaire details and questions
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Form Card */}
-          <Card className={`${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white'} shadow-lg`}>
-            {/* Dark Mode Form Styling */}
-            {darkMode && (
-              <style>
-                {`
-                  .page-dark .ant-form-item-label > label {
-                    color: #E5E7EB !important;
-                  }
-                  .page-dark .ant-form-item-extra {
-                    color: #9CA3AF !important;
-                  }
-                  .page-dark .ant-input,
-                  .page-dark input.ant-input,
-                  .page-dark input[type="text"],
-                  .page-dark input {
-                    background-color: #4B5563 !important;
-                    border-color: #6B7280 !important;
-                    color: #F9FAFB !important;
-                  }
-                  .page-dark .ant-input:focus,
-                  .page-dark input.ant-input:focus,
-                  .page-dark input[type="text"]:focus,
-                  .page-dark input:focus {
-                    border-color: #059669 !important;
-                    box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
-                    background-color: #4B5563 !important;
-                    color: #F9FAFB !important;
-                  }
-                  .page-dark .ant-input::placeholder,
-                  .page-dark input::placeholder {
-                    color: #9CA3AF !important;
-                  }
-                  .page-dark textarea.ant-input,
-                  .page-dark textarea {
-                    background-color: #4B5563 !important;
-                    border-color: #6B7280 !important;
-                    color: #F9FAFB !important;
-                  }
-                  .page-dark textarea.ant-input:focus,
-                  .page-dark textarea:focus {
-                    border-color: #059669 !important;
-                    box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
-                    background-color: #4B5563 !important;
-                    color: #F9FAFB !important;
-                  }
-                  .page-dark textarea.ant-input::placeholder,
-                  .page-dark textarea::placeholder {
-                    color: #9CA3AF !important;
-                  }
-                  .page-dark .ant-select,
-                  .page-dark .ant-select-selector,
-                  .page-dark .ant-select-single .ant-select-selector {
-                    background-color: #4B5563 !important;
-                    border-color: #6B7280 !important;
-                    color: #F9FAFB !important;
-                  }
-                  .page-dark .ant-select-focused .ant-select-selector,
-                  .page-dark .ant-select:focus .ant-select-selector {
-                    border-color: #059669 !important;
-                    box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
-                    background-color: #4B5563 !important;
-                  }
-                  .page-dark .ant-select-selection-placeholder {
-                    color: #9CA3AF !important;
-                  }
-                  .page-dark .ant-select-selection-item {
-                    color: #F9FAFB !important;
-                    background-color: transparent !important;
-                  }
-                  .page-dark .ant-select-arrow {
-                    color: #9CA3AF !important;
-                  }
-                  .page-dark .ant-select-multiple .ant-select-selection-item {
-                    background-color: #374151 !important;
-                    border-color: #6B7280 !important;
-                    color: #F9FAFB !important;
-                  }
-                  .page-dark .ant-select-selection-item-remove {
-                    color: #9CA3AF !important;
-                  }
-                  .page-dark .ant-select-selection-item-remove:hover {
-                    color: #F9FAFB !important;
-                    background-color: rgba(239, 68, 68, 0.2) !important;
-                  }
-                  .page-dark .ant-switch {
-                    background-color: #6B7280 !important;
-                  }
-                  .page-dark .ant-switch-checked {
-                    background-color: #10B981 !important;
-                  }
-                  
-                  /* Dropdown Options */
-                  .ant-select-dropdown {
-                    background-color: #374151 !important;
-                  }
-                  .ant-select-item {
-                    color: #F9FAFB !important;
-                  }
-                  .ant-select-item:hover {
-                    background-color: #4B5563 !important;
-                  }
-                  .ant-select-item-option-selected {
-                    background-color: #10B981 !important;
-                    color: #FFFFFF !important;
-                  }
-                  
-                  /* Form validation messages */
-                  .ant-form-item-explain-error {
-                    color: #F87171 !important;
-                  }
-                `}
-              </style>
-            )}
-
-            <Form
-              form={form}
-              layout='vertical'
-              onFinish={handleFormSubmit}
-              className={darkMode ? 'page-dark' : ''}
-              preserve={false}
-              initialValues={{ isActive: true, status: 'Draft' }}
-              loading={loadingData}
-            >
-              {/* Questionnaire Details Section */}
-              <div className='mb-6'>
-                <h3 className={`text-lg font-semibold mb-4 ${darkMode ? 'text-emerald-100' : 'text-emerald-800'}`}>
-                  Questionnaire Details
-                </h3>
+            {/* Form Card */}
+            <Card className={`${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white'} shadow-lg`}>
+              <Form
+                form={form}
+                layout='vertical'
+                onFinish={handleFormSubmit}
+                className='global-form'
+                preserve={false}
+                initialValues={{ isActive: true, status: 'Draft' }}
+                loading={loadingData}
+              >
+                {/* Questionnaire Details Section */}
+                <div className='mb-6'>
+                  <h3 className={`text-lg font-semibold mb-4 ${darkMode ? 'text-emerald-100' : 'text-emerald-800'}`}>
+                    Questionnaire Details
+                  </h3>
 
                 {/* Active Toggle */}
                 <div className='mb-6'>
@@ -628,68 +357,78 @@ const QuestionnaireForm = React.memo(({ user }) => {
                   </Form.Item>
                 </div>
 
-                <Row gutter={16}>
-                  <Col span={12}>
-                    <Form.Item
-                      label='Questionnaire Title'
-                      name='title'
-                      rules={[{ required: true, message: 'Please enter an questionnaire title' }]}
-                    >
-                      <Input
-                        placeholder='Enter questionnaire title...'
-                        style={{ fontWeight: '500' }}
-                      />
-                    </Form.Item>
-                  </Col>
-                  <Col span={6}>
-                    <Form.Item
-                      label='Status'
-                      name='status'
-                      rules={[{ required: true, message: 'Please select a status' }]}
-                    >
-                      <Select placeholder='Select status' style={{ fontWeight: '500' }}>
-                        <Option value='Draft'>Draft</Option>
-                        <Option value='Active'>Active</Option>
-                        <Option value='Inactive'>Inactive</Option>
-                        <Option value='Archived'>Archived</Option>
-                      </Select>
-                    </Form.Item>
-                  </Col>
-                  <Col span={6}>
-                    <Form.Item label='Category' name='category'>
-                      <Select placeholder='Select category' style={{ fontWeight: '500' }}>
-                        <Option value='Technical'>Technical</Option>
-                        <Option value='Behavioral'>Behavioral</Option>
-                        <Option value='Cognitive'>Cognitive</Option>
-                        <Option value='Portfolio'>Portfolio</Option>
-                      </Select>
-                    </Form.Item>
-                  </Col>
-                </Row>
+                  <Row gutter={16}>
+                    <Col span={12}>
+                      <Form.Item
+                        label='Questionnaire Title'
+                        name='title'
+                        rules={[{ required: true, message: 'Please enter an questionnaire title' }]}
+                      >
+                        <Input placeholder='Enter questionnaire title...' style={{ fontWeight: '500' }} />
+                      </Form.Item>
+                    </Col>
+                    <Col span={6}>
+                      <Form.Item
+                        label='Status'
+                        name='status'
+                        rules={[{ required: true, message: 'Please select a status' }]}
+                      >
+                        <Select
+                          placeholder='Select status'
+                          style={{ fontWeight: '500' }}
+                          dropdownClassName='global-dropdown'
+                        >
+                          <Option value='Draft'>Draft</Option>
+                          <Option value='Active'>Active</Option>
+                          <Option value='Inactive'>Inactive</Option>
+                          <Option value='Archived'>Archived</Option>
+                        </Select>
+                      </Form.Item>
+                    </Col>
+                    <Col span={6}>
+                      <Form.Item label='Category' name='category'>
+                        <Select
+                          placeholder='Select category'
+                          style={{ fontWeight: '500' }}
+                          dropdownClassName='global-dropdown'
+                        >
+                          <Option value='Technical'>Technical</Option>
+                          <Option value='Behavioral'>Behavioral</Option>
+                          <Option value='Cognitive'>Cognitive</Option>
+                          <Option value='Portfolio'>Portfolio</Option>
+                        </Select>
+                      </Form.Item>
+                    </Col>
+                  </Row>
 
-                <Form.Item label='Tags' name='tags'>
-                  <Select mode='tags' placeholder='Add tags (press Enter to add)' style={{ fontWeight: '500' }} />
-                </Form.Item>
-              </div>
+                  <Form.Item label='Tags' name='tags'>
+                    <Select
+                      mode='tags'
+                      placeholder='Add tags (press Enter to add)'
+                      style={{ fontWeight: '500' }}
+                      dropdownClassName='global-dropdown'
+                    />
+                  </Form.Item>
+                </div>
 
               <Divider className={darkMode ? 'border-gray-600' : 'border-gray-200'} />
 
-              {/* Questions Management Section */}
-              <div className='mb-6'>
-                <div className='flex items-center justify-between mb-4'>
-                  <h3 className={`text-lg font-semibold ${darkMode ? 'text-emerald-100' : 'text-emerald-800'}`}>
-                    Questionnaire Questions ({questionnaireQuestions.length})
-                  </h3>
-                  <Button
-                    type='primary'
-                    icon={<FontAwesomeIcon icon={faQuestion} />}
-                    onClick={handleAddQuestion}
-                    className="add-question-btn"
-                    size="large"
-                  >
-                    Add Question
-                  </Button>
-                </div>
+                {/* Questions Management Section */}
+                <div className='mb-6'>
+                  <div className='flex items-center justify-between mb-4'>
+                    <h3 className={`text-lg font-semibold ${darkMode ? 'text-emerald-100' : 'text-emerald-800'}`}>
+                      Questionnaire Questions ({questionnaireQuestions.length})
+                    </h3>
+                    <Button
+                      type='primary'
+                      icon={<FontAwesomeIcon icon={faQuestion} />}
+                      onClick={handleAddQuestion}
+                      className='form-btn-primary'
+                      size='large'
+                    >
+                      Add Question
+                    </Button>
+                  </div>
 
                 <Spin spinning={questionLoading} tip='Loading questions...'>
                   <TableView
@@ -703,75 +442,72 @@ const QuestionnaireForm = React.memo(({ user }) => {
                 </Spin>
               </div>
 
-              {/* Form Actions */}
-              <div className='flex justify-end space-x-4 mt-8 pt-6 border-t border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 -mx-6 -mb-6 px-6 pb-6 rounded-b-lg'>
-                <Button
-                  type='default'
-                  icon={<FontAwesomeIcon icon={faTimes} />}
-                  onClick={handleCancel}
-                  disabled={loading}
-                  size='large'
-                  className='questionnaire-form-cancel-btn'
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type='primary'
-                  icon={<FontAwesomeIcon icon={faSave} />}
-                  onClick={() => form.submit()}
-                  loading={loading}
-                  size='large'
-                  className='questionnaire-form-update-btn'
-                  style={{ minWidth: '180px' }}
-                >
-                  Update Questionnaire
-                </Button>
-              </div>
-            </Form>
-          </Card>
+                {/* Form Actions */}
+                <div className='flex justify-end space-x-4 mt-8 pt-6 border-t border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 -mx-6 -mb-6 px-6 pb-6 rounded-b-lg'>
+                  <Button
+                    type='default'
+                    icon={<FontAwesomeIcon icon={faTimes} />}
+                    onClick={handleCancel}
+                    disabled={loading}
+                    size='large'
+                    className='form-btn-secondary'
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type='primary'
+                    icon={<FontAwesomeIcon icon={faSave} />}
+                    onClick={() => form.submit()}
+                    loading={loading}
+                    size='large'
+                    className='form-btn-primary'
+                    style={{ minWidth: '180px' }}
+                  >
+                    Update Questionnaire
+                  </Button>
+                </div>
+              </Form>
+            </Card>
+          </div>
         </div>
-      </div>
 
-      {/* Add/Edit Question Modal - keeping this as modal since it's a sub-action */}
-      {isQuestionModalVisible && (
-        <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50'>
-          <div className={`w-full max-w-2xl mx-4 rounded-lg shadow-xl ${darkMode ? 'bg-gray-700' : 'bg-white'}`}>
-            <div className={`px-6 py-4 border-b ${darkMode ? 'border-gray-600 bg-emerald-700' : 'border-gray-200 bg-emerald-500'} rounded-t-lg`}>
-              <div className='flex items-center justify-between'>
-                <h3 className='text-lg font-semibold text-white'>
-                  {editingQuestion ? 'Edit Question' : 'Add Question'}
-                </h3>
-                <button
-                  onClick={() => {
-                    setIsQuestionModalVisible(false)
-                    setEditingQuestion(null)
-                    questionForm.resetFields()
-                  }}
-                  className='text-white hover:text-gray-200 transition-colors p-1 rounded'
-                >
-                  <FontAwesomeIcon icon={faTimes} />
-                </button>
-              </div>
-            </div>
-            
-            <div className='p-6'>
-              <Form
-                form={questionForm}
-                layout='vertical'
-                onFinish={handleQuestionSubmit}
-                className={darkMode ? 'page-dark' : ''}
+        {/* Add/Edit Question Modal - keeping this as modal since it's a sub-action */}
+        {isQuestionModalVisible && (
+          <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50'>
+            <div className={`w-full max-w-2xl mx-4 rounded-lg shadow-xl ${darkMode ? 'bg-gray-700' : 'bg-white'}`}>
+              <div
+                className={`px-6 py-4 border-b ${darkMode ? 'border-gray-600 bg-emerald-700' : 'border-gray-200 bg-emerald-500'} rounded-t-lg`}
               >
-                <Form.Item
-                  label='Question'
-                  name='question'
-                  rules={[{ required: true, message: 'Please enter a question' }]}
-                >
-                  <TextArea
-                    placeholder='Enter the questionnaire question...'
-                    rows={3}
-                    style={{ fontWeight: '500' }}
-                  />
-                </Form.Item>
+                <div className='flex items-center justify-between'>
+                  <h3 className='text-lg font-semibold text-white'>
+                    {editingQuestion ? 'Edit Question' : 'Add Question'}
+                  </h3>
+                  <button
+                    onClick={() => {
+                      setIsQuestionModalVisible(false)
+                      setEditingQuestion(null)
+                      questionForm.resetFields()
+                    }}
+                    className='text-white hover:text-gray-200 transition-colors p-1 rounded'
+                  >
+                    <FontAwesomeIcon icon={faTimes} />
+                  </button>
+                </div>
+              </div>
+
+              <div className='p-6'>
+                <Form form={questionForm} layout='vertical' onFinish={handleQuestionSubmit} className='global-form'>
+                  <Form.Item
+                    label='Question'
+                    name='question'
+                    rules={[{ required: true, message: 'Please enter a question' }]}
+                  >
+                    <TextArea
+                      placeholder='Enter the questionnaire question...'
+                      rows={3}
+                      style={{ fontWeight: '500' }}
+                    />
+                  </Form.Item>
 
                 <Form.Item
                   label='Context'
@@ -797,38 +533,34 @@ const QuestionnaireForm = React.memo(({ user }) => {
                   />
                 </Form.Item>
 
-                <div className='flex justify-end space-x-3 mt-6'>
-                  <Button
-                    variant='secondary'
-                    onClick={() => {
-                      setIsQuestionModalVisible(false)
-                      setEditingQuestion(null)
-                      questionForm.resetFields()
-                    }}
-                    disabled={questionSubmitLoading}
-                    className='px-6 py-2'
-                  >
-                    Cancel
-                  </Button>
-                  <Button 
-                    type='primary'
-                    htmlType='submit' 
-                    loading={questionSubmitLoading} 
-                    className='px-6 py-2'
-                    style={{
-                      background: darkMode ? '#059669' : '#10b981',
-                      borderColor: darkMode ? '#059669' : '#10b981'
-                    }}
-                  >
-                    {editingQuestion ? 'Update Question' : 'Add Question'}
-                  </Button>
-                </div>
-              </Form>
+                  <div className='flex justify-end space-x-3 mt-6'>
+                    <Button
+                      variant='secondary'
+                      onClick={() => {
+                        setIsQuestionModalVisible(false)
+                        setEditingQuestion(null)
+                        questionForm.resetFields()
+                      }}
+                      disabled={questionSubmitLoading}
+                      className='form-btn-secondary'
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      type='primary'
+                      htmlType='submit'
+                      loading={questionSubmitLoading}
+                      className='form-btn-primary'
+                    >
+                      {editingQuestion ? 'Update Question' : 'Add Question'}
+                    </Button>
+                  </div>
+                </Form>
+              </div>
             </div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
     </>
   )
 })

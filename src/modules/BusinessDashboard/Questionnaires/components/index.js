@@ -241,7 +241,7 @@ const Questionnaires = React.memo(({ user }) => {
       key: 'averageScore',
       render: (score) => (
         <span
-          className={`font-medium ${score >= 80 ? 'text-green-600' : score >= 60 ? 'text-yellow-600' : 'text-red-600'}`}
+          className={`font-medium ${score >= 80 ? 'text-green-600' : score >= 60 ? 'text-yellow-600' : 'text-red-400'}`}
         >
           {score}%
         </span>
@@ -258,26 +258,12 @@ const Questionnaires = React.memo(({ user }) => {
             {
               key: 'edit',
               tooltip: 'Edit Questionnaire',
-              color: '!text-white',
-              className: 'questionnaire-edit-btn !bg-green-600 hover:!bg-green-700 !border-green-600 hover:!border-green-700',
-              style: {
-                backgroundColor: '#059669 !important',
-                borderColor: '#059669 !important',
-                color: 'white !important'
-              },
               onClick: (record) => handleEdit(record)
             },
             {
               key: 'delete',
               icon: faTrashAlt,
               tooltip: 'Delete Questionnaire',
-              color: '!text-white',
-              className: 'questionnaire-delete-btn !bg-red-600 hover:!bg-red-700 !border-red-600 hover:!border-red-700',
-              style: {
-                backgroundColor: '#DC2626 !important',
-                borderColor: '#DC2626 !important',
-                color: 'white !important'
-              },
               confirm: {
                 title: 'Delete Questionnaire',
                 description: 'Are you sure you want to delete this questionnaire? This will also delete all questions.',
@@ -295,90 +281,6 @@ const Questionnaires = React.memo(({ user }) => {
 
   return (
     <>
-      {/* Action Button Custom Styling */}
-      <style jsx global>{`
-        .questionnaire-delete-btn,
-        .questionnaire-delete-btn.ant-btn,
-        .questionnaire-delete-btn button {
-          background-color: #DC2626 !important;
-          border-color: #DC2626 !important;
-          color: white !important;
-        }
-        
-        .questionnaire-delete-btn:hover,
-        .questionnaire-delete-btn.ant-btn:hover,
-        .questionnaire-delete-btn button:hover {
-          background-color: #B91C1C !important;
-          border-color: #B91C1C !important;
-          color: white !important;
-        }
-        
-        .questionnaire-delete-btn .anticon,
-        .questionnaire-delete-btn svg {
-          color: white !important;
-        }
-
-        .questionnaire-edit-btn,
-        .questionnaire-edit-btn.ant-btn,
-        .questionnaire-edit-btn button {
-          background-color: #059669 !important;
-          border-color: #059669 !important;
-          color: white !important;
-        }
-        
-        .questionnaire-edit-btn:hover,
-        .questionnaire-edit-btn.ant-btn:hover,
-        .questionnaire-edit-btn button:hover {
-          background-color: #047857 !important;
-          border-color: #047857 !important;
-          color: white !important;
-        }
-        
-        .questionnaire-edit-btn .anticon,
-        .questionnaire-edit-btn svg {
-          color: white !important;
-        }
-
-        /* Create Questionnaire Button Styling */
-        .create-questionnaire-btn,
-        .create-questionnaire-btn.ant-btn {
-          background-color: #059669 !important;
-          border-color: #059669 !important;
-          color: white !important;
-          font-weight: 500 !important;
-          padding: 8px 24px !important;
-          height: auto !important;
-          min-height: 40px !important;
-          display: inline-flex !important;
-          align-items: center !important;
-          justify-content: center !important;
-          font-size: 14px !important;
-          border-radius: 6px !important;
-        }
-        
-        .create-questionnaire-btn:hover,
-        .create-questionnaire-btn.ant-btn:hover {
-          background-color: #047857 !important;
-          border-color: #047857 !important;
-          color: white !important;
-          transform: none !important;
-        }
-        
-        .create-questionnaire-btn:focus,
-        .create-questionnaire-btn.ant-btn:focus {
-          background-color: #059669 !important;
-          border-color: #059669 !important;
-          color: white !important;
-          box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
-        }
-        
-        .create-questionnaire-btn .anticon,
-        .create-questionnaire-btn svg {
-          color: white !important;
-          margin-right: 8px !important;
-        }
-      `}</style>
-      
       <div
         className={`min-h-screen relative overflow-hidden ${
           darkMode
@@ -459,8 +361,8 @@ const Questionnaires = React.memo(({ user }) => {
                     type='primary' 
                     icon={<FontAwesomeIcon icon={faPlus} />} 
                     onClick={handleAdd}
-                    className="create-questionnaire-btn"
-                    size="large"
+                    className='form-btn-primary'
+                    size='large'
                   >
                     Create Questionnaire
                   </Button>
