@@ -3,14 +3,14 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTheme } from '../../../../core/context/ThemeContext'
-import BusinessSidebar from '../../components/BusinessSidebar'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faList, faPlus, faFilter, faSpinner, faTrashAlt, faEdit } from '@fortawesome/free-solid-svg-icons'
+import { faList, faPlus, faFilter, faSpinner, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { Select, message, Spin } from 'antd'
 import { Button } from '../../../../core/components'
 import TableView from '../../../../core/components/view-components/table-view/TableView'
 import TableActions from '../../../../core/components/view-components/table-view/TableActions'
 import { getAllLookups, deleteLookup } from '../utils/controller'
+import Toolbar from '../../../../core/components/Toolbar'
 
 const { Option } = Select
 
@@ -87,16 +87,17 @@ const Lookups = React.memo(({ user }) => {
   }, [navigate])
 
   // Handle edit existing profile
-  const handleEdit = useCallback((profile) => {
-    navigate('/business-dashboard/lookups/edit', {
-      state: {
-        editId: profile.id,
-        initialData: profile
-      }
-    })
-  }, [navigate])
-
-
+  const handleEdit = useCallback(
+    (profile) => {
+      navigate('/business-dashboard/lookups/edit', {
+        state: {
+          editId: profile.id,
+          initialData: profile
+        }
+      })
+    },
+    [navigate]
+  )
 
   // Handle delete
   const handleDelete = useCallback(
@@ -120,8 +121,6 @@ const Lookups = React.memo(({ user }) => {
     },
     [loadLookups]
   )
-
-
 
   // Group data by categories and calculate stats
   const groupedData = useMemo(() => {
@@ -206,7 +205,7 @@ const Lookups = React.memo(({ user }) => {
             },
             {
               key: 'delete',
-              icon: faTrashAlt,
+              icon: faTrash,
               tooltip: 'Delete Category',
               onClick: () => {
                 // Delete all profiles in the category
@@ -299,29 +298,12 @@ const Lookups = React.memo(({ user }) => {
           } pointer-events-none`}
         ></div>
 
-        <BusinessSidebar />
-        <div className='p-6 ml-64 relative z-10'>
-          <div className='max-w-7xl mx-auto'>
-
-
-            {/* Header */}
-            <div
-              className={`rounded-lg mb-6 px-6 py-4 shadow-lg ${darkMode ? 'bg-gray-800 border border-gray-700' : ''}`}
-              style={{
-                background: darkMode
-                  ? 'linear-gradient(135deg, #065f46 0%, #047857 50%, #059669 100%)'
-                  : 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
-              }}
-            >
+        <Toolbar
+          title='Lookups'
+          description='Manage your lookups'
+          renderActions={() => {
+            return (
               <div className='flex items-center justify-between'>
-                <div className='flex items-center'>
-                  <FontAwesomeIcon
-                    icon={faList}
-                    className={`text-lg mr-3 ${darkMode ? 'text-emerald-400' : 'text-white'}`}
-                  />
-                  <h1 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-white'}`}>Lookups</h1>
-                </div>
-
                 <div className='flex items-center space-x-4'>
                   <div className='flex items-center space-x-2'>
                     <FontAwesomeIcon
@@ -354,42 +336,41 @@ const Lookups = React.memo(({ user }) => {
                   </Select>
                 </div>
               </div>
-            </div>
+            )
+          }}
+        />
 
-            {/* Profile Data Table */}
-            <Spin spinning={loading} indicator={<FontAwesomeIcon icon={faSpinner} spin />}>
-              <TableView
-                columns={columns}
-                dataSource={groupedData}
-                rowKey='key'
-                expandedRowRender={expandedRowRender}
-                searchTerm={searchTerm}
-                onSearch={setSearchTerm}
-                searchPlaceholder='Search lookups...'
-                toolbarActions={[
-                  <Button 
-                    key='create' 
-                    type='default' 
-                    size='large'
-                    icon={<FontAwesomeIcon icon={faPlus} />} 
-                    onClick={handleAdd}
-                    className='form-btn-primary'
-                  >
-                    Create New
-                  </Button>
-                ]}
-                pagination={{
-                  total: groupedData.length,
-                  pageSize: 10,
-                  showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} categories`
-                }}
-                emptyText='No lookup categories found'
-              />
-            </Spin>
-          </div>
+        <div className='pl-5 pr-5 pt-2 relative z-10'>
+          <Spin spinning={loading} indicator={<FontAwesomeIcon icon={faSpinner} spin />}>
+            <TableView
+              columns={columns}
+              dataSource={groupedData}
+              rowKey='key'
+              expandedRowRender={expandedRowRender}
+              searchTerm={searchTerm}
+              onSearch={setSearchTerm}
+              searchPlaceholder='Search lookups...'
+              toolbarActions={[
+                <Button
+                  key='create'
+                  type='default'
+                  size='large'
+                  icon={<FontAwesomeIcon icon={faPlus} />}
+                  onClick={handleAdd}
+                  className='form-btn-primary'
+                >
+                  Create New
+                </Button>
+              ]}
+              pagination={{
+                total: groupedData.length,
+                pageSize: 10,
+                showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} categories`
+              }}
+              emptyText='No lookup categories found'
+            />
+          </Spin>
         </div>
-
-
       </div>
     </>
   )

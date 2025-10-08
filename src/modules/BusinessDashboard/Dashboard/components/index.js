@@ -1,7 +1,7 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
 import React, { useState, useCallback, useMemo, useEffect } from 'react'
-import { Card, Row, Col, Statistic, Badge, Typography, Dropdown, Menu, Modal, List, Avatar, Space } from 'antd'
+import { Card, Row, Col, Badge, Typography, Menu, Modal, List, Avatar, Dropdown } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faBuilding,
@@ -16,15 +16,15 @@ import {
   faEdit,
   faBell,
   faUserPlus,
-  faChevronDown,
-  faRefresh,
   faQuestion,
-  faFileAlt
+  faFileAlt,
+  faChevronDown,
+  faRefresh
 } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from 'react-router-dom'
 import { useTheme } from '../../../../core/context/ThemeContext'
 import { Button } from '../../../../core/components'
-import BusinessSidebar from '../../components/BusinessSidebar'
+import Toolbar from '../../../../core/components/Toolbar'
 import { BRAND_COLORS, SEMANTIC_COLORS, LIGHT_THEME, DARK_THEME } from '../../../../core/theme/colors'
 import { setUserProfileOpen } from '../../../../core/components/profile/store/profileSlice'
 import { useDispatch } from 'react-redux'
@@ -287,46 +287,86 @@ const Dashboard = React.memo(() => {
         } pointer-events-none`}
       />
 
-      {/* Sidebar */}
-      <BusinessSidebar />
-
       {/* Main Content */}
-      <div className='ml-64 pt-12 flex flex-col'>
-        {/* Main Header */}
-        <div
-          className={`relative px-6 py-3 border-b flex-shrink-0 shadow-lg ${
-            darkMode
-              ? 'bg-gradient-to-r from-emerald-700 to-emerald-600 border border-emerald-600'
-              : 'bg-gradient-to-r from-emerald-500 to-emerald-600'
-          }`}
-        >
-          <div className='flex items-center justify-between'>
-            <div>
-              <Title
-                level={1}
-                className='!mb-1'
-                style={{
-                  fontSize: '20px',
-                  fontWeight: 'bold',
-                  margin: 0,
-                  color: '#ffffff'
-                }}
-              >
-                Dashboard
-              </Title>
-              <Text
-                className='text-sm'
-                style={{
-                  color: '#d1fae5'
-                }}
-              >
-                AI-powered recruitment matching system
-              </Text>
-            </div>
+      <div className='flex flex-col'>
+        <Toolbar
+          title='Dashboard'
+          description='AI-powered recruitment matching system'
+          renderActions={() => {
+            return (
+              <div className='flex items-center space-x-2'>
+                {/* Quick Actions Dropdown */}
+                <Dropdown overlay={quickActionsMenu} trigger={['click']} placement='bottomRight'>
+                  <Button
+                    type='default'
+                    size='middle'
+                    className='flex items-center space-x-1 dashboard-button'
+                    style={{
+                      backgroundColor: '#ffffff',
+                      borderColor: '#ffffff',
+                      color: '#059669',
+                      boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                      fontSize: '13px',
+                      height: '32px',
+                      paddingLeft: '12px',
+                      paddingRight: '12px'
+                    }}
+                  >
+                    <FontAwesomeIcon icon={faPlus} style={{ fontSize: '11px', marginRight: '4px' }} />
+                    <span>Quick Actions</span>
+                    <FontAwesomeIcon icon={faChevronDown} style={{ fontSize: '10px', marginLeft: '4px' }} />
+                  </Button>
+                </Dropdown>
 
-            <div className='flex items-center space-x-2'>
-              {/* Quick Actions Dropdown */}
-              <Dropdown overlay={quickActionsMenu} trigger={['click']} placement='bottomRight'>
+                {/* Alerts Bell */}
+                <Badge
+                  count={alertsData.filter((alert) => !alert.read).length}
+                  size='small'
+                  style={{
+                    backgroundColor: SEMANTIC_COLORS.error,
+                    color: '#ffffff'
+                  }}
+                >
+                  <Button
+                    type='default'
+                    className='flex items-center justify-center w-8 h-8 rounded-full bell-button'
+                    style={{
+                      backgroundColor: '#ffffff',
+                      borderColor: '#ffffff',
+                      color: '#059669',
+                      transition: 'all 0.2s ease'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = '#f8f9fa'
+                      e.currentTarget.style.borderColor = '#f8f9fa'
+                      e.currentTarget.style.color = '#047857'
+                      e.currentTarget.style.transform = 'translateY(-1px)'
+                      e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.15)'
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = '#ffffff'
+                      e.currentTarget.style.borderColor = '#ffffff'
+                      e.currentTarget.style.color = '#059669'
+                      e.currentTarget.style.transform = 'translateY(0)'
+                      e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)'
+                    }}
+                    onClick={handleShowAlerts}
+                  >
+                    <span
+                      style={{
+                        fontSize: '14px',
+                        fontWeight: 'bold',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                      }}
+                    >
+                      🔔
+                    </span>
+                  </Button>
+                </Badge>
+
+                {/* Refresh Button */}
                 <Button
                   type='default'
                   size='middle'
@@ -341,85 +381,16 @@ const Dashboard = React.memo(() => {
                     paddingLeft: '12px',
                     paddingRight: '12px'
                   }}
+                  onClick={() => handleGetDashboardStats()}
+                  loading={loading}
                 >
-                  <FontAwesomeIcon icon={faPlus} style={{ fontSize: '11px', marginRight: '4px' }} />
-                  <span>Quick Actions</span>
-                  <FontAwesomeIcon icon={faChevronDown} style={{ fontSize: '10px', marginLeft: '4px' }} />
+                  <FontAwesomeIcon icon={faRefresh} style={{ fontSize: '11px', marginRight: '4px' }} />
+                  <span>Refresh</span>
                 </Button>
-              </Dropdown>
-
-              {/* Alerts Bell */}
-              <Badge
-                count={alertsData.filter((alert) => !alert.read).length}
-                size='small'
-                style={{
-                  backgroundColor: SEMANTIC_COLORS.error,
-                  color: '#ffffff'
-                }}
-              >
-                <Button
-                  type='default'
-                  className='flex items-center justify-center w-8 h-8 rounded-full bell-button'
-                  style={{
-                    backgroundColor: '#ffffff',
-                    borderColor: '#ffffff',
-                    color: '#059669',
-                    transition: 'all 0.2s ease'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = '#f8f9fa'
-                    e.currentTarget.style.borderColor = '#f8f9fa'
-                    e.currentTarget.style.color = '#047857'
-                    e.currentTarget.style.transform = 'translateY(-1px)'
-                    e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.15)'
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = '#ffffff'
-                    e.currentTarget.style.borderColor = '#ffffff'
-                    e.currentTarget.style.color = '#059669'
-                    e.currentTarget.style.transform = 'translateY(0)'
-                    e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)'
-                  }}
-                  onClick={handleShowAlerts}
-                >
-                  <span
-                    style={{
-                      fontSize: '14px',
-                      fontWeight: 'bold',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center'
-                    }}
-                  >
-                    🔔
-                  </span>
-                </Button>
-              </Badge>
-
-              {/* Refresh Button */}
-              <Button
-                type='default'
-                size='middle'
-                className='flex items-center space-x-1 dashboard-button'
-                style={{
-                  backgroundColor: '#ffffff',
-                  borderColor: '#ffffff',
-                  color: '#059669',
-                  boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-                  fontSize: '13px',
-                  height: '32px',
-                  paddingLeft: '12px',
-                  paddingRight: '12px'
-                }}
-                onClick={() => handleGetDashboardStats()}
-                loading={loading}
-              >
-                <FontAwesomeIcon icon={faRefresh} style={{ fontSize: '11px', marginRight: '4px' }} />
-                <span>Refresh</span>
-              </Button>
-            </div>
-          </div>
-        </div>
+              </div>
+            )
+          }}
+        />
 
         {/* Workspace Cards */}
         <div className='px-6 py-4'>
@@ -533,7 +504,6 @@ const Dashboard = React.memo(() => {
               ))}
             </Row>
           </div>
-
         </div>
       </div>
 
@@ -713,7 +683,7 @@ const Dashboard = React.memo(() => {
           color: #047857 !important;
           border: 1px solid #f8f9fa !important;
           transform: translateY(-1px) !important;
-          box-shadow: 0 2px 4px rgba(0,0,0,0.15) !important;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15) !important;
         }
 
         /* Bell button specific styles */
@@ -746,7 +716,8 @@ const Dashboard = React.memo(() => {
         }
 
         /* Dark mode overrides */
-        ${darkMode ? `
+        ${darkMode
+          ? `
           .dashboard-button,
           .dashboard-button.ant-btn,
           button.dashboard-button {
@@ -773,7 +744,8 @@ const Dashboard = React.memo(() => {
             color: #059669 !important;
             border: 1px solid #ffffff !important;
           }
-        ` : ''}
+        `
+          : ''}
       `}</style>
     </div>
   )

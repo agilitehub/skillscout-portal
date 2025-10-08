@@ -6,9 +6,8 @@ import { Card, Form, message, Row, Col, Select, Input, Switch, Divider, Spin } f
 import { Button } from '../../../../core/components'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSave, faTimes, faClipboardCheck, faQuestion, faTrashAlt } from '@fortawesome/free-solid-svg-icons'
+import { faSave, faTimes, faClipboardCheck, faQuestion, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../../core/context/ThemeContext'
-import BusinessSidebar from '../../components/BusinessSidebar'
 import TableView from '../../../../core/components/view-components/table-view/TableView'
 import TableActions from '../../../../core/components/view-components/table-view/TableActions'
 import { updateQuestionnaire, getQuestionnaireById } from '../utils/controller'
@@ -274,7 +273,7 @@ const QuestionnaireForm = React.memo(({ user }) => {
             },
             {
               key: 'delete',
-              icon: faTrashAlt,
+              icon: faTrash,
               tooltip: 'Delete Question',
               className: 'form-btn-danger',
               confirm: {
@@ -300,14 +299,14 @@ const QuestionnaireForm = React.memo(({ user }) => {
             : 'bg-gradient-to-br from-sky-100 via-gray-50 to-emerald-100'
         }`}
       >
-      {/* Background overlay for full coverage */}
-      <div
-        className={`fixed inset-0 ${
-          darkMode
-            ? 'bg-gradient-to-b from-transparent via-slate-700/30 to-emerald-800/40'
-            : 'bg-gradient-to-b from-transparent via-sky-100/40 to-emerald-100/50'
-        } pointer-events-none`}
-      ></div>
+        {/* Background overlay for full coverage */}
+        <div
+          className={`fixed inset-0 ${
+            darkMode
+              ? 'bg-gradient-to-b from-transparent via-slate-700/30 to-emerald-800/40'
+              : 'bg-gradient-to-b from-transparent via-sky-100/40 to-emerald-100/50'
+          } pointer-events-none`}
+        ></div>
 
         <div className='p-4 md:p-6 relative z-10'>
           <div className='max-w-7xl mx-auto'>
@@ -350,12 +349,12 @@ const QuestionnaireForm = React.memo(({ user }) => {
                     Questionnaire Details
                   </h3>
 
-                {/* Active Toggle */}
-                <div className='mb-6'>
-                  <Form.Item label='Active' name='isActive' valuePropName='checked'>
-                    <Switch defaultChecked={true} className='mr-3' />
-                  </Form.Item>
-                </div>
+                  {/* Active Toggle */}
+                  <div className='mb-6'>
+                    <Form.Item label='Active' name='isActive' valuePropName='checked'>
+                      <Switch defaultChecked={true} className='mr-3' />
+                    </Form.Item>
+                  </div>
 
                   <Row gutter={16}>
                     <Col span={12}>
@@ -411,7 +410,7 @@ const QuestionnaireForm = React.memo(({ user }) => {
                   </Form.Item>
                 </div>
 
-              <Divider className={darkMode ? 'border-gray-600' : 'border-gray-200'} />
+                <Divider className={darkMode ? 'border-gray-600' : 'border-gray-200'} />
 
                 {/* Questions Management Section */}
                 <div className='mb-6'>
@@ -430,17 +429,17 @@ const QuestionnaireForm = React.memo(({ user }) => {
                     </Button>
                   </div>
 
-                <Spin spinning={questionLoading} tip='Loading questions...'>
-                  <TableView
-                    columns={questionColumns}
-                    dataSource={questionnaireQuestions}
-                    rowKey='id'
-                    pagination={false}
-                    emptyText='No questions added yet. Click "Add Question" to get started.'
-                    size='small'
-                  />
-                </Spin>
-              </div>
+                  <Spin spinning={questionLoading} tip='Loading questions...'>
+                    <TableView
+                      columns={questionColumns}
+                      dataSource={questionnaireQuestions}
+                      rowKey='id'
+                      pagination={false}
+                      emptyText='No questions added yet. Click "Add Question" to get started.'
+                      size='small'
+                    />
+                  </Spin>
+                </div>
 
                 {/* Form Actions */}
                 <div className='flex justify-end space-x-4 mt-8 pt-6 border-t border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 -mx-6 -mb-6 px-6 pb-6 rounded-b-lg'>
@@ -509,29 +508,29 @@ const QuestionnaireForm = React.memo(({ user }) => {
                     />
                   </Form.Item>
 
-                <Form.Item
-                  label='Context'
-                  name='context'
-                  rules={[{ required: true, message: 'Please enter the context' }]}
-                >
-                  <TextArea
-                    placeholder='Provide context about what this question assesses...'
-                    rows={4}
-                    style={{ fontWeight: '500' }}
-                  />
-                </Form.Item>
+                  <Form.Item
+                    label='Context'
+                    name='context'
+                    rules={[{ required: true, message: 'Please enter the context' }]}
+                  >
+                    <TextArea
+                      placeholder='Provide context about what this question assesses...'
+                      rows={4}
+                      style={{ fontWeight: '500' }}
+                    />
+                  </Form.Item>
 
-                <Form.Item
-                  label='Preferred Feedback'
-                  name='preferredFeedback'
-                  rules={[{ required: true, message: 'Please enter preferred feedback guidelines' }]}
-                >
-                  <TextArea
-                    placeholder='Describe what to look for in good answers and how to evaluate responses...'
-                    rows={4}
-                    style={{ fontWeight: '500' }}
-                  />
-                </Form.Item>
+                  <Form.Item
+                    label='Preferred Feedback'
+                    name='preferredFeedback'
+                    rules={[{ required: true, message: 'Please enter preferred feedback guidelines' }]}
+                  >
+                    <TextArea
+                      placeholder='Describe what to look for in good answers and how to evaluate responses...'
+                      rows={4}
+                      style={{ fontWeight: '500' }}
+                    />
+                  </Form.Item>
 
                   <div className='flex justify-end space-x-3 mt-6'>
                     <Button
@@ -567,4 +566,4 @@ const QuestionnaireForm = React.memo(({ user }) => {
 
 QuestionnaireForm.displayName = 'QuestionnaireForm'
 
-export default QuestionnaireForm 
+export default QuestionnaireForm

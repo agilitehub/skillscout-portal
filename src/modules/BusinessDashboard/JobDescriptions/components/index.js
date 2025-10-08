@@ -5,20 +5,12 @@ import { Tag, message, Card } from 'antd'
 import { Button } from '../../../../core/components'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {
-  faPlus,
-  faUsers,
-  faCalendarAlt,
-  faClipboardCheck,
-  faFileText,
-  faTrashAlt
-} from '@fortawesome/free-solid-svg-icons'
+import { faPlus, faUsers, faCalendarAlt, faClipboardCheck, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../../core/context/ThemeContext'
-import { BRAND_COLORS } from '../../../../core/theme/colors'
-import BusinessSidebar from '../../components/BusinessSidebar'
 import { getAllJobDescriptions, deleteJobDescription } from '../utils/controller'
 import TableView from '../../../../core/components/view-components/table-view/TableView'
 import TableActions from '../../../../core/components/view-components/table-view/TableActions'
+import Toolbar from '../../../../core/components/Toolbar'
 
 /**
  * Job Descriptions page for managing detailed job descriptions
@@ -199,7 +191,7 @@ const JobDescriptions = React.memo(({ user }) => {
             actions={[
               {
                 key: 'delete',
-                icon: faTrashAlt,
+                icon: faTrash,
                 tooltip: 'Delete Job Description',
                 onClick: (record) => handleDeleteDescription(record.id),
                 confirm: {
@@ -252,63 +244,29 @@ const JobDescriptions = React.memo(({ user }) => {
           } pointer-events-none`}
         ></div>
 
-        <BusinessSidebar />
-        <div className='p-6 ml-64 relative z-10'>
+        <Toolbar title='Job Descriptions' description='Create and manage detailed job descriptions' />
 
-
-          {/* Header */}
-          <div
-            className={`rounded-lg mb-6 px-6 py-4 shadow-lg ${darkMode ? 'bg-gray-800 border border-gray-700' : ''}`}
-            style={{
-              background: darkMode
-                ? `linear-gradient(135deg, ${BRAND_COLORS.forestGreen} 0%, ${BRAND_COLORS.emeraldAccent} 50%, ${BRAND_COLORS.emeraldPrimary} 100%)`
-                : `linear-gradient(135deg, ${BRAND_COLORS.emeraldLight} 0%, ${BRAND_COLORS.emeraldPrimary} 100%)`
-            }}
-          >
-            <div className='flex items-center justify-between'>
+        {/* Job Context Alert */}
+        {jobContext && (
+          <div className='mb-6'>
+            <Card className={`${darkMode ? 'bg-blue-900 border-blue-700' : 'bg-blue-50 border-blue-200'}`}>
               <div className='flex items-center'>
-                <FontAwesomeIcon
-                  icon={faFileText}
-                  className={`text-lg mr-3 ${darkMode ? 'text-emerald-400' : 'text-white'}`}
-                />
+                <FontAwesomeIcon icon={faClipboardCheck} className='text-blue-500 mr-3' />
                 <div>
-                  <h1 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-white'}`}>Job Descriptions</h1>
-                  <p className={`text-sm mt-1 ${darkMode ? 'text-gray-300' : 'text-white/90'}`}>
-                    Create and manage detailed job descriptions
+                  <h4 className={`font-semibold ${darkMode ? 'text-blue-200' : 'text-blue-900'}`}>
+                    Viewing descriptions related to: {jobContext.title} at {jobContext.company}
+                  </h4>
+                  <p className={`text-sm ${darkMode ? 'text-blue-300' : 'text-blue-700'}`}>
+                    You navigated here from the job listing. Related job descriptions for "{jobContext.title}" will be
+                    highlighted.
                   </p>
                 </div>
               </div>
-              <Button
-                type='default'
-                size='large'
-                icon={<FontAwesomeIcon icon={faPlus} className="mr-2" />}
-                onClick={handleCreateDescription}
-                className='form-btn-primary'
-              >
-                Create Description
-              </Button>
-            </div>
+            </Card>
           </div>
-          {/* Job Context Alert */}
-          {jobContext && (
-            <div className='mb-6'>
-              <Card className={`${darkMode ? 'bg-blue-900 border-blue-700' : 'bg-blue-50 border-blue-200'}`}>
-                <div className='flex items-center'>
-                  <FontAwesomeIcon icon={faClipboardCheck} className='text-blue-500 mr-3' />
-                  <div>
-                    <h4 className={`font-semibold ${darkMode ? 'text-blue-200' : 'text-blue-900'}`}>
-                      Viewing descriptions related to: {jobContext.title} at {jobContext.company}
-                    </h4>
-                    <p className={`text-sm ${darkMode ? 'text-blue-300' : 'text-blue-700'}`}>
-                      You navigated here from the job listing. Related job descriptions for "{jobContext.title}" will be
-                      highlighted.
-                    </p>
-                  </div>
-                </div>
-              </Card>
-            </div>
-          )}
+        )}
 
+        <div className='pl-5 pr-5 pt-2 relative z-10'>
           {/* Job Descriptions Table */}
           <TableView
             columns={columns}
@@ -318,7 +276,17 @@ const JobDescriptions = React.memo(({ user }) => {
             searchTerm={searchTerm}
             onSearch={setSearchTerm}
             searchPlaceholder='Search job descriptions...'
-            toolbarActions={[]}
+            toolbarActions={[
+              <Button
+                type='default'
+                size='large'
+                icon={<FontAwesomeIcon icon={faPlus} className='mr-2' />}
+                onClick={handleCreateDescription}
+                className='form-btn-primary'
+              >
+                Create Description
+              </Button>
+            ]}
             pagination={{
               pageSize: 10,
               showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} job descriptions`

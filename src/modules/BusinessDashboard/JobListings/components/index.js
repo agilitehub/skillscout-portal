@@ -15,8 +15,6 @@ import {
   faTrash
 } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../../core/context/ThemeContext'
-
-import BusinessSidebar from '../../components/BusinessSidebar'
 import { getAllJobOpportunities, deleteJobOpportunity, updateJobOpportunityStatus } from '../utils/controller'
 import TableView from '../../../../core/components/view-components/table-view/TableView'
 import TableActions from '../../../../core/components/view-components/table-view/TableActions'
@@ -138,8 +136,8 @@ const JobListings = React.memo(({ user }) => {
         key: 'location',
         render: (location) => (
           <div className='flex items-center'>
-            <FontAwesomeIcon 
-              icon={faMapMarkerAlt} 
+            <FontAwesomeIcon
+              icon={faMapMarkerAlt}
               className={`mr-1 ${darkMode ? 'text-white' : 'text-gray-500'}`}
               style={{ color: darkMode ? '#ffffff' : '#6b7280' }}
             />
@@ -192,8 +190,8 @@ const JobListings = React.memo(({ user }) => {
         key: 'salary',
         render: (salary) => (
           <div className='flex items-center'>
-            <FontAwesomeIcon 
-              icon={faDollarSign} 
+            <FontAwesomeIcon
+              icon={faDollarSign}
               className={`mr-1 ${darkMode ? 'text-green-300' : 'text-green-500'}`}
               style={{ color: darkMode ? '#86efac' : '#10b981' }}
             />
@@ -230,8 +228,8 @@ const JobListings = React.memo(({ user }) => {
         key: 'applicants',
         render: (count) => (
           <div className='flex items-center'>
-            <FontAwesomeIcon 
-              icon={faUsers} 
+            <FontAwesomeIcon
+              icon={faUsers}
               className={`mr-1 ${darkMode ? 'text-blue-300' : 'text-blue-500'}`}
               style={{ color: darkMode ? '#93c5fd' : '#3b82f6' }}
             />
@@ -247,8 +245,8 @@ const JobListings = React.memo(({ user }) => {
         render: (date) => {
           return (
             <div className='flex items-center'>
-              <FontAwesomeIcon 
-                icon={faCalendarAlt} 
+              <FontAwesomeIcon
+                icon={faCalendarAlt}
                 className={`mr-1 ${darkMode ? 'text-white' : 'text-gray-500'}`}
                 style={{ color: darkMode ? '#ffffff' : '#6b7280' }}
               />
@@ -321,8 +319,7 @@ const JobListings = React.memo(({ user }) => {
         } pointer-events-none`}
       ></div>
 
-      <BusinessSidebar />
-      <div className='ml-64 p-4 md:p-6 relative z-10'>
+      <div className='p-4 md:p-6 relative z-10'>
         {/* Header */}
         <div
           className={`mb-6 px-8 py-6 rounded-lg shadow-lg border ${
@@ -331,7 +328,7 @@ const JobListings = React.memo(({ user }) => {
               : 'bg-gradient-to-r from-emerald-500 via-emerald-600 to-emerald-600 border-emerald-500'
           }`}
           style={{
-            background: darkMode 
+            background: darkMode
               ? 'linear-gradient(to right, #047857, #059669, #059669)'
               : 'linear-gradient(to right, #10b981, #059669, #059669)',
             borderColor: darkMode ? '#059669' : '#10b981'
@@ -361,7 +358,13 @@ const JobListings = React.memo(({ user }) => {
               <Statistic
                 title={<span className={darkMode ? 'text-gray-300' : 'text-gray-600'}>Total Jobs</span>}
                 value={stats.totalJobs}
-                prefix={<FontAwesomeIcon icon={faBriefcase} className={darkMode ? 'text-blue-300' : 'text-blue-500'} style={{ color: darkMode ? '#93c5fd' : '#3b82f6' }} />}
+                prefix={
+                  <FontAwesomeIcon
+                    icon={faBriefcase}
+                    className={darkMode ? 'text-blue-300' : 'text-blue-500'}
+                    style={{ color: darkMode ? '#93c5fd' : '#3b82f6' }}
+                  />
+                }
                 valueStyle={{ color: darkMode ? '#ffffff' : '#1f2937' }}
               />
             </Card>
@@ -369,7 +372,13 @@ const JobListings = React.memo(({ user }) => {
               <Statistic
                 title={<span className={darkMode ? 'text-gray-300' : 'text-gray-600'}>Active Jobs</span>}
                 value={stats.activeJobs}
-                prefix={<FontAwesomeIcon icon={faBriefcase} className={darkMode ? 'text-green-300' : 'text-green-500'} style={{ color: darkMode ? '#86efac' : '#10b981' }} />}
+                prefix={
+                  <FontAwesomeIcon
+                    icon={faBriefcase}
+                    className={darkMode ? 'text-green-300' : 'text-green-500'}
+                    style={{ color: darkMode ? '#86efac' : '#10b981' }}
+                  />
+                }
                 valueStyle={{ color: darkMode ? '#ffffff' : '#1f2937' }}
               />
             </Card>
@@ -377,7 +386,13 @@ const JobListings = React.memo(({ user }) => {
               <Statistic
                 title={<span className={darkMode ? 'text-gray-300' : 'text-gray-600'}>Total Applicants</span>}
                 value={stats.totalApplicants}
-                prefix={<FontAwesomeIcon icon={faUsers} className={darkMode ? 'text-purple-300' : 'text-purple-500'} style={{ color: darkMode ? '#c4b5fd' : '#8b5cf6' }} />}
+                prefix={
+                  <FontAwesomeIcon
+                    icon={faUsers}
+                    className={darkMode ? 'text-purple-300' : 'text-purple-500'}
+                    style={{ color: darkMode ? '#c4b5fd' : '#8b5cf6' }}
+                  />
+                }
                 valueStyle={{ color: darkMode ? '#ffffff' : '#1f2937' }}
               />
             </Card>
@@ -385,7 +400,13 @@ const JobListings = React.memo(({ user }) => {
               <Statistic
                 title={<span className={darkMode ? 'text-gray-300' : 'text-gray-600'}>Avg Applicants</span>}
                 value={stats.avgApplicants}
-                prefix={<FontAwesomeIcon icon={faUsers} className={darkMode ? 'text-orange-300' : 'text-orange-500'} style={{ color: darkMode ? '#fdba74' : '#f97316' }} />}
+                prefix={
+                  <FontAwesomeIcon
+                    icon={faUsers}
+                    className={darkMode ? 'text-orange-300' : 'text-orange-500'}
+                    style={{ color: darkMode ? '#fdba74' : '#f97316' }}
+                  />
+                }
                 valueStyle={{ color: darkMode ? '#ffffff' : '#1f2937' }}
               />
             </Card>

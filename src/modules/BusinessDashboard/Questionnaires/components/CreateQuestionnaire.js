@@ -8,7 +8,6 @@ import { useNavigate } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faClipboardCheck } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../../core/context/ThemeContext'
-import BusinessSidebar from '../../components/BusinessSidebar'
 import { createQuestionnaire } from '../utils/controller'
 import { parseTags } from '../utils/data-model'
 
@@ -23,8 +22,6 @@ const CreateQuestionnaire = React.memo(({ user }) => {
   const navigate = useNavigate()
   const [form] = Form.useForm()
   const [loading, setLoading] = useState(false)
-
-
 
   // Handle form submission
   const handleFormSubmit = useCallback(
@@ -42,12 +39,12 @@ const CreateQuestionnaire = React.memo(({ user }) => {
           message.success('Questionnaire created successfully!')
           navigate('/business-dashboard/questionnaires')
         } else {
-                      console.error('Error creating questionnaire:', result.error)
-            message.error('Failed to create questionnaire: ' + result.error)
-          }
-        } catch (error) {
-          console.error('Unexpected error creating questionnaire:', error)
-          message.error('An unexpected error occurred while creating the questionnaire')
+          console.error('Error creating questionnaire:', result.error)
+          message.error('Failed to create questionnaire: ' + result.error)
+        }
+      } catch (error) {
+        console.error('Unexpected error creating questionnaire:', error)
+        message.error('An unexpected error occurred while creating the questionnaire')
       } finally {
         setLoading(false)
       }
@@ -73,8 +70,6 @@ const CreateQuestionnaire = React.memo(({ user }) => {
           } pointer-events-none`}
         ></div>
 
-        <BusinessSidebar />
-
         <div className='relative z-10'>
           <div className='px-6 pb-6'>
             <div className='max-w-5xl mx-auto'>
@@ -86,19 +81,19 @@ const CreateQuestionnaire = React.memo(({ user }) => {
                     : 'bg-gradient-to-r from-emerald-500 to-emerald-600'
                 }`}
               >
-              <div className='flex items-center'>
-                <FontAwesomeIcon
-                  icon={faClipboardCheck}
-                  className={`text-lg mr-3 ${darkMode ? 'text-emerald-100' : 'text-white'}`}
-                />
-                <div>
-                  <h1 className='text-xl font-bold text-white'>Create New Questionnaire</h1>
-                  <p className='text-emerald-100 text-sm mt-1'>
-                    Create a new questionnaire with title, category, and other details
-                  </p>
+                <div className='flex items-center'>
+                  <FontAwesomeIcon
+                    icon={faClipboardCheck}
+                    className={`text-lg mr-3 ${darkMode ? 'text-emerald-100' : 'text-white'}`}
+                  />
+                  <div>
+                    <h1 className='text-xl font-bold text-white'>Create New Questionnaire</h1>
+                    <p className='text-emerald-100 text-sm mt-1'>
+                      Create a new questionnaire with title, category, and other details
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
 
               {/* Form */}
               <Form
@@ -183,10 +178,10 @@ const CreateQuestionnaire = React.memo(({ user }) => {
                       >
                         Cancel
                       </Button>
-                      <Button 
-                        type='primary' 
-                        htmlType='submit' 
-                        size='large' 
+                      <Button
+                        type='primary'
+                        htmlType='submit'
+                        size='large'
                         loading={loading}
                         className='form-btn-primary'
                       >
