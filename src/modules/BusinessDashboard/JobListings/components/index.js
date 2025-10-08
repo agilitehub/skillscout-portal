@@ -325,38 +325,42 @@ const JobListings = React.memo(({ user }) => {
       <div className='ml-64 p-4 md:p-6 relative z-10'>
         {/* Header */}
         <div
-          className={`mb-6 px-8 py-6 rounded-lg shadow-lg border ${
+          className={`relative px-6 py-2 border-b flex-shrink-0 shadow-lg ${
             darkMode
-              ? 'bg-gradient-to-r from-emerald-700 via-emerald-600 to-emerald-600 border-emerald-600'
-              : 'bg-gradient-to-r from-emerald-500 via-emerald-600 to-emerald-600 border-emerald-500'
+              ? 'bg-gradient-to-r from-emerald-700 to-emerald-600 border border-emerald-600'
+              : 'bg-gradient-to-r from-emerald-500 to-emerald-600'
           }`}
-          style={{
-            background: darkMode 
-              ? 'linear-gradient(to right, #047857, #059669, #059669)'
-              : 'linear-gradient(to right, #10b981, #059669, #059669)',
-            borderColor: darkMode ? '#059669' : '#10b981'
-          }}
         >
-          <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4'>
+          <div className='flex items-center justify-between'>
             <div>
-              <h1 className='text-2xl md:text-3xl font-bold text-white mb-2'>Job Listings</h1>
-              <p className='text-emerald-100'>Manage your job listings and recruitment activities</p>
+              <h1 className='text-lg font-bold text-white'>Job Listings</h1>
+              <p className='text-emerald-100 text-xs mt-0.5'>Manage your job listings and recruitment activities</p>
             </div>
-            <div className='flex flex-col sm:flex-row gap-3 mt-4 sm:mt-0'>
-              <Button
-                type='default'
-                size='large'
-                icon={<FontAwesomeIcon icon={faPlus} />}
-                onClick={handleCreateJobOpportunity}
-                className='form-btn-primary'
-              >
-                Create Job Listing
-              </Button>
-            </div>
+            <Button
+              type='default'
+              size='small'
+              onClick={handleCreateJobOpportunity}
+              className='create-job-button'
+              style={{
+                backgroundColor: '#ffffff',
+                borderColor: '#ffffff',
+                color: '#059669',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                fontSize: '13px',
+                height: '28px',
+                paddingLeft: '10px',
+                paddingRight: '10px'
+              }}
+            >
+              <FontAwesomeIcon icon={faPlus} style={{ fontSize: '10px', marginRight: '3px' }} />
+              Create Job Listing
+            </Button>
           </div>
+        </div>
 
-          {/* Statistics Cards */}
-          <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6'>
+        {/* Statistics Cards */}
+        <div className='px-6 pt-4 pb-2'>
+          <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-3'>
             <Card className={`${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white'} shadow-lg`}>
               <Statistic
                 title={<span className={darkMode ? 'text-gray-300' : 'text-gray-600'}>Total Jobs</span>}
@@ -393,7 +397,8 @@ const JobListings = React.memo(({ user }) => {
         </div>
 
         {/* Job Listings Table */}
-        <Card className={`${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white'} shadow-lg`}>
+        <div className='px-6 pt-2 pb-4'>
+          <Card className={`${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white'} shadow-lg`}>
           <div className='mb-4'>
             <h2 className={`text-xl font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Job Listings</h2>
             <p className={`${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>Manage and track your job postings</p>
@@ -404,16 +409,113 @@ const JobListings = React.memo(({ user }) => {
             columns={columns}
             loading={loading}
             pagination={{
-              pageSize: 10,
+              pageSize: 8,
               showSizeChanger: true,
               showQuickJumper: true,
-              showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`
+              showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`,
+              pageSizeOptions: ['8', '10', '15', '20']
             }}
             rowKey='id'
-            scroll={{ x: 1200 }}
+            scroll={{ x: 1200, y: 'calc(100vh - 400px)' }}
+            size='small'
           />
-        </Card>
+          </Card>
+        </div>
       </div>
+
+      {/* Job Listings Button Styles */}
+      <style jsx global>{`
+        /* Force Create Job button to have white backgrounds */
+        .create-job-button,
+        .create-job-button.ant-btn,
+        button.create-job-button {
+          background: #ffffff !important;
+          background-color: #ffffff !important;
+          color: #059669 !important;
+          border: 1px solid #ffffff !important;
+          opacity: 1 !important;
+          visibility: visible !important;
+        }
+
+        .create-job-button:hover,
+        .create-job-button.ant-btn:hover,
+        button.create-job-button:hover {
+          background: #f8f9fa !important;
+          background-color: #f8f9fa !important;
+          color: #047857 !important;
+          border: 1px solid #f8f9fa !important;
+          transform: translateY(-1px) !important;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.15) !important;
+        }
+
+        /* Ensure icons and text have proper spacing */
+        .create-job-button svg,
+        .create-job-button .anticon {
+          margin-right: 3px !important;
+        }
+
+        .create-job-button span {
+          margin-left: 3px !important;
+        }
+
+        /* Subtle table row hover effects */
+        .ant-table-tbody > tr:hover > td {
+          background: ${darkMode ? '#374151' : '#f9fafb'} !important;
+        }
+
+        .ant-table-tbody > tr:hover {
+          background: ${darkMode ? '#374151' : '#f9fafb'} !important;
+        }
+
+        /* Remove default Ant Design hover effects */
+        .ant-table-tbody > tr {
+          transition: background-color 0.2s ease !important;
+        }
+
+        .ant-table-tbody > tr:hover {
+          box-shadow: none !important;
+          transform: none !important;
+        }
+
+        /* Dark mode overrides */
+        ${darkMode ? `
+          .create-job-button,
+          .create-job-button.ant-btn,
+          button.create-job-button {
+            background: #ffffff !important;
+            background-color: #ffffff !important;
+            color: #059669 !important;
+            border: 1px solid #ffffff !important;
+          }
+          
+          .create-job-button:hover,
+          .create-job-button.ant-btn:hover,
+          button.create-job-button:hover {
+            background: #f8f9fa !important;
+            background-color: #f8f9fa !important;
+            color: #047857 !important;
+            border: 1px solid #f8f9fa !important;
+          }
+
+          /* Dark mode table row hover */
+          .ant-table-tbody > tr:hover > td {
+            background: #374151 !important;
+          }
+
+          .ant-table-tbody > tr:hover {
+            background: #374151 !important;
+          }
+        ` : `
+          /* Light mode table row hover */
+          .ant-table-tbody > tr:hover > td {
+            background: #f9fafb !important;
+          }
+
+          .ant-table-tbody > tr:hover {
+            background: #f9fafb !important;
+          }
+        `}
+      `}</style>
     </div>
   )
 })
