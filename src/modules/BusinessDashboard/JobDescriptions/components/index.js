@@ -294,7 +294,6 @@ const JobDescriptions = React.memo(({ user }) => {
               </Button>
             </div>
           </div>
-
           {/* Job Context Alert */}
           {jobContext && (
             <div className='mb-6'>
@@ -343,69 +342,6 @@ const JobDescriptions = React.memo(({ user }) => {
           />
         </div>
       </div>
-
-      {/* Custom Styles */}
-      <style jsx global>{`
-        /* Force Create Job Description Button Visibility */
-        .create-job-description-btn,
-        .create-job-description-btn.ant-btn,
-        button.create-job-description-btn {
-          background: #ffffff !important;
-          background-color: #ffffff !important;
-          color: #059669 !important;
-          border: 1px solid #ffffff !important;
-          opacity: 1 !important;
-          visibility: visible !important;
-        }
-
-        .create-job-description-btn:hover,
-        .create-job-description-btn.ant-btn:hover,
-        button.create-job-description-btn:hover {
-          background: #f8f9fa !important;
-          background-color: #f8f9fa !important;
-          color: #047857 !important;
-          border: 1px solid #f8f9fa !important;
-        }
-
-        /* Job Description Delete Button Styling - Green Background with White Icon */
-        .job-description-delete-btn,
-        .job-description-delete-btn.ant-btn,
-        .job-description-delete-btn button {
-          background-color: #059669 !important;
-          border-color: #059669 !important;
-          color: white !important;
-          padding: 8px 12px !important;
-          height: auto !important;
-          min-height: 32px !important;
-          display: inline-flex !important;
-          align-items: center !important;
-          justify-content: center !important;
-          border-radius: 6px !important;
-        }
-
-        .job-description-delete-btn:hover,
-        .job-description-delete-btn.ant-btn:hover,
-        .job-description-delete-btn button:hover {
-          background-color: #047857 !important;
-          border-color: #047857 !important;
-          color: white !important;
-          transform: none !important;
-        }
-
-        .job-description-delete-btn:focus,
-        .job-description-delete-btn.ant-btn:focus,
-        .job-description-delete-btn button:focus {
-          background-color: #059669 !important;
-          border-color: #059669 !important;
-          color: white !important;
-          box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
-        }
-
-        .job-description-delete-btn .anticon,
-        .job-description-delete-btn svg {
-          color: white !important;
-        }
-      `}</style>
     </>
   )
 })

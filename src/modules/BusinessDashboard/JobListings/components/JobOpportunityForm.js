@@ -207,7 +207,7 @@ const JobOpportunityForm = React.memo(() => {
         } pointer-events-none`}
       ></div>
 
-      <div className='ml-64 p-4 md:p-6 relative z-10'>
+      <div className='p-4 md:p-6 relative z-10'>
         {/* Header */}
         <div
           className={`rounded-lg mb-6 px-6 py-4 shadow-lg ${
@@ -232,223 +232,11 @@ const JobOpportunityForm = React.memo(() => {
 
         {/* Form Card */}
         <Card className={`${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white'} shadow-lg`}>
-          {/* Global Styles */}
-          <style jsx global>{`
-            /* Job Form Cancel Button Styling */
-            .job-form-cancel-btn,
-            .job-form-cancel-btn.ant-btn {
-              background-color: #059669 !important;
-              border-color: #059669 !important;
-              color: white !important;
-              font-weight: 500 !important;
-              padding: 12px 32px !important;
-              height: auto !important;
-              min-height: 48px !important;
-              display: inline-flex !important;
-              align-items: center !important;
-              justify-content: center !important;
-              border-radius: 6px !important;
-            }
-
-            .job-form-cancel-btn:hover,
-            .job-form-cancel-btn.ant-btn:hover {
-              background-color: #047857 !important;
-              border-color: #047857 !important;
-              color: white !important;
-              transform: none !important;
-            }
-
-            .job-form-cancel-btn:focus,
-            .job-form-cancel-btn.ant-btn:focus {
-              background-color: #059669 !important;
-              border-color: #059669 !important;
-              color: white !important;
-              box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
-            }
-
-            .job-form-cancel-btn svg,
-            .job-form-cancel-btn .anticon {
-              color: white !important;
-              margin-right: 8px !important;
-            }
-
-            /* Job Form Create Button Styling */
-            .job-form-create-btn,
-            .job-form-create-btn.ant-btn {
-              background: linear-gradient(to right, #059669, #10b981) !important;
-              border-color: #059669 !important;
-              color: white !important;
-              font-weight: 500 !important;
-              padding: 12px 32px !important;
-              height: auto !important;
-              min-height: 48px !important;
-              min-width: 180px !important;
-              display: inline-flex !important;
-              align-items: center !important;
-              justify-content: center !important;
-              border-radius: 6px !important;
-              box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
-            }
-
-            .job-form-create-btn:hover,
-            .job-form-create-btn.ant-btn:hover {
-              background: linear-gradient(to right, #047857, #059669) !important;
-              border-color: #047857 !important;
-              color: white !important;
-              transform: translateY(-1px) !important;
-              box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15) !important;
-            }
-
-            .job-form-create-btn:focus,
-            .job-form-create-btn.ant-btn:focus {
-              background: linear-gradient(to right, #059669, #10b981) !important;
-              border-color: #059669 !important;
-              color: white !important;
-              box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
-            }
-
-            .job-form-create-btn svg,
-            .job-form-create-btn .anticon {
-              color: white !important;
-              margin-right: 8px !important;
-            }
-          `}</style>
-
-          {/* Dark Mode Form Styling */}
-          {darkMode && (
-            <style>
-              {`
-                .page-dark .ant-form-item-label > label {
-                  color: #E5E7EB !important;
-                }
-                .page-dark .ant-form-item-extra {
-                  color: #9CA3AF !important;
-                }
-                .page-dark .ant-input,
-                .page-dark input.ant-input,
-                .page-dark input[type="text"],
-                .page-dark input[type="number"],
-                .page-dark input[type="date"],
-                .page-dark input {
-                  background-color: #4B5563 !important;
-                  border-color: #6B7280 !important;
-                  color: #F9FAFB !important;
-                }
-                .page-dark .ant-input:focus,
-                .page-dark input.ant-input:focus,
-                .page-dark input[type="text"]:focus,
-                .page-dark input[type="number"]:focus,
-                .page-dark input[type="date"]:focus,
-                .page-dark input:focus {
-                  border-color: #059669 !important;
-                  box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
-                  background-color: #4B5563 !important;
-                  color: #F9FAFB !important;
-                }
-                .page-dark .ant-input::placeholder,
-                .page-dark input::placeholder {
-                  color: #9CA3AF !important;
-                }
-                .page-dark textarea.ant-input,
-                .page-dark textarea {
-                  background-color: #4B5563 !important;
-                  border-color: #6B7280 !important;
-                  color: #F9FAFB !important;
-                }
-                .page-dark textarea.ant-input:focus,
-                .page-dark textarea:focus {
-                  border-color: #059669 !important;
-                  box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
-                  background-color: #4B5563 !important;
-                  color: #F9FAFB !important;
-                }
-                .page-dark textarea.ant-input::placeholder,
-                .page-dark textarea::placeholder {
-                  color: #9CA3AF !important;
-                }
-                .page-dark .ant-input-show-count-suffix {
-                  color: #9CA3AF !important;
-                }
-                .page-dark .ant-select,
-                .page-dark .ant-select-selector,
-                .page-dark .ant-select-single .ant-select-selector {
-                  background-color: #4B5563 !important;
-                  border-color: #6B7280 !important;
-                  color: #F9FAFB !important;
-                }
-                .page-dark .ant-select-focused .ant-select-selector,
-                .page-dark .ant-select:focus .ant-select-selector {
-                  border-color: #059669 !important;
-                  box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
-                  background-color: #4B5563 !important;
-                }
-                .page-dark .ant-select-selection-placeholder {
-                  color: #9CA3AF !important;
-                }
-                .page-dark .ant-select-selection-item {
-                  color: #F9FAFB !important;
-                  background-color: transparent !important;
-                }
-                .page-dark .ant-select-arrow {
-                  color: #9CA3AF !important;
-                }
-                
-                /* Dark mode dropdown options */
-                .job-opportunity-dark-dropdown {
-                  background-color: #374151 !important;
-                }
-                .job-opportunity-dark-dropdown .ant-select-item {
-                  color: #F9FAFB !important;
-                }
-                .job-opportunity-dark-dropdown .ant-select-item:hover {
-                  background-color: #4B5563 !important;
-                }
-                .job-opportunity-dark-dropdown .ant-select-item-option-selected {
-                  background-color: #10B981 !important;
-                  color: #FFFFFF !important;
-                }
-                
-                /* Form validation messages */
-                .ant-form-item-explain-error {
-                  color: #F87171 !important;
-                }
-                
-                /* Character count */
-                .ant-input-data-count {
-                  color: #9CA3AF !important;
-                }
-                
-                /* Additional comprehensive styling */
-                .page-dark .ant-form-item-control-input {
-                  background-color: transparent !important;
-                }
-                .page-dark .ant-form-item input,
-                .page-dark .ant-form-item textarea,
-                .page-dark .ant-form-item .ant-select-selector {
-                  background-color: #4B5563 !important;
-                  color: #F9FAFB !important;
-                  border-color: #6B7280 !important;
-                }
-                .page-dark .ant-form-item .ant-input-affix-wrapper {
-                  background-color: #4B5563 !important;
-                  border-color: #6B7280 !important;
-                }
-                .page-dark .ant-form-item .ant-input-affix-wrapper input {
-                  background-color: transparent !important;
-                  color: #F9FAFB !important;
-                }
-                .page-dark .ant-form-item .ant-input-prefix {
-                  color: #9CA3AF !important;
-                }
-              `}
-            </style>
-          )}
-
           <Form
             form={form}
             layout='vertical'
             onFinish={handleFormSubmit}
-            className={darkMode ? 'page-dark' : ''}
+            className='global-form'
             preserve={false}
             initialValues={formInitialValues}
             loading={loadingData || loadingOptions}
@@ -658,7 +446,7 @@ const JobOpportunityForm = React.memo(() => {
                 onClick={handleCancel}
                 disabled={loading}
                 size='large'
-                className='px-8 py-3 job-form-cancel-btn'
+                className='form-btn-secondary'
               >
                 Cancel
               </Button>
@@ -668,7 +456,7 @@ const JobOpportunityForm = React.memo(() => {
                 onClick={() => form.submit()}
                 loading={loading}
                 size='large'
-                className='px-8 py-3 job-form-create-btn'
+                className='form-btn-primary'
               >
                 {isEditMode ? 'Update Job Listing' : 'Create Job Listing'}
               </Button>
