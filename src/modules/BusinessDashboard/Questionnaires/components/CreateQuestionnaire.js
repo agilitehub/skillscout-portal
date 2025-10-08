@@ -70,272 +70,7 @@ const CreateQuestionnaire = React.memo(({ user }) => {
           } pointer-events-none`}
         ></div>
 
-        {/* Dark Mode Form Styling */}
-        {darkMode && (
-          <style>
-            {`
-              /* Enhanced Dark Mode Form Styling with Higher Specificity */
-              body .dark-form .ant-form-item-label > label,
-              .dark-form .ant-form-item-label > label {
-                color: #E5E7EB !important;
-                font-weight: 500 !important;
-              }
-              body .dark-form .ant-form-item-extra,
-              .dark-form .ant-form-item-extra {
-                color: #9CA3AF !important;
-              }
-              
-              /* Input Fields - Multiple selectors for maximum coverage */
-              body .dark-form .ant-input,
-              body .dark-form input.ant-input,
-              body .dark-form input[type="text"],
-              body .dark-form input,
-              .dark-form .ant-input,
-              .dark-form input.ant-input,
-              .dark-form input[type="text"],
-              .dark-form input {
-                background-color: #4B5563 !important;
-                border-color: #6B7280 !important;
-                color: #F9FAFB !important;
-                box-shadow: none !important;
-              }
-              
-              body .dark-form .ant-input:focus,
-              body .dark-form input.ant-input:focus,
-              body .dark-form input[type="text"]:focus,
-              body .dark-form input:focus,
-              .dark-form .ant-input:focus,
-              .dark-form input.ant-input:focus,
-              .dark-form input[type="text"]:focus,
-              .dark-form input:focus {
-                border-color: #059669 !important;
-                box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
-                background-color: #4B5563 !important;
-                color: #F9FAFB !important;
-              }
-              
-              body .dark-form .ant-input::placeholder,
-              body .dark-form input::placeholder,
-              .dark-form .ant-input::placeholder,
-              .dark-form input::placeholder {
-                color: #9CA3AF !important;
-                opacity: 1 !important;
-              }
-              
-              /* TextArea Fields */
-              body .dark-form textarea.ant-input,
-              body .dark-form textarea,
-              .dark-form textarea.ant-input,
-              .dark-form textarea {
-                background-color: #4B5563 !important;
-                border-color: #6B7280 !important;
-                color: #F9FAFB !important;
-                box-shadow: none !important;
-              }
-              
-              body .dark-form textarea.ant-input:focus,
-              body .dark-form textarea:focus,
-              .dark-form textarea.ant-input:focus,
-              .dark-form textarea:focus {
-                border-color: #059669 !important;
-                box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
-                background-color: #4B5563 !important;
-                color: #F9FAFB !important;
-              }
-              
-              /* Select Components */
-              body .dark-form .ant-select,
-              body .dark-form .ant-select-selector,
-              body .dark-form .ant-select-single .ant-select-selector,
-              .dark-form .ant-select,
-              .dark-form .ant-select-selector,
-              .dark-form .ant-select-single .ant-select-selector {
-                background-color: #4B5563 !important;
-                border-color: #6B7280 !important;
-                color: #F9FAFB !important;
-                box-shadow: none !important;
-              }
-              
-              body .dark-form .ant-select-focused .ant-select-selector,
-              body .dark-form .ant-select:focus .ant-select-selector,
-              .dark-form .ant-select-focused .ant-select-selector,
-              .dark-form .ant-select:focus .ant-select-selector {
-                border-color: #059669 !important;
-                box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
-                background-color: #4B5563 !important;
-              }
-              
-              body .dark-form .ant-select-selection-placeholder,
-              .dark-form .ant-select-selection-placeholder {
-                color: #9CA3AF !important;
-                opacity: 1 !important;
-              }
-              
-              body .dark-form .ant-select-selection-item,
-              .dark-form .ant-select-selection-item {
-                color: #F9FAFB !important;
-                background-color: transparent !important;
-              }
-              
-              body .dark-form .ant-select-arrow,
-              .dark-form .ant-select-arrow {
-                color: #9CA3AF !important;
-              }
-              
-              /* Switch Components */
-              body .dark-form .ant-switch,
-              .dark-form .ant-switch {
-                background-color: #6B7280 !important;
-              }
-              
-              body .dark-form .ant-switch-checked,
-              .dark-form .ant-switch-checked {
-                background-color: #10B981 !important;
-              }
-              
-              body .dark-form .ant-switch-inner,
-              .dark-form .ant-switch-inner {
-                color: #F9FAFB !important;
-              }
-              
-              /* Tags in Select */
-              body .dark-form .ant-select-multiple .ant-select-selection-item,
-              .dark-form .ant-select-multiple .ant-select-selection-item {
-                background-color: #374151 !important;
-                border-color: #6B7280 !important;
-                color: #F9FAFB !important;
-              }
-              
-              /* Tags Remove Icons */
-              body .dark-form .ant-select-selection-item-remove,
-              .dark-form .ant-select-selection-item-remove {
-                color: #9CA3AF !important;
-              }
-              
-              body .dark-form .ant-select-selection-item-remove:hover,
-              .dark-form .ant-select-selection-item-remove:hover {
-                color: #F9FAFB !important;
-                background-color: rgba(239, 68, 68, 0.2) !important;
-              }
-              
-              /* Global Dropdown Styling */
-              .ant-select-dropdown {
-                background-color: #374151 !important;
-                border: 1px solid #4B5563 !important;
-              }
-              .ant-select-item {
-                color: #F9FAFB !important;
-                background-color: transparent !important;
-              }
-              .ant-select-item:hover {
-                background-color: #4B5563 !important;
-              }
-              .ant-select-item-option-selected {
-                background-color: #10B981 !important;
-                color: #FFFFFF !important;
-              }
-              .ant-select-item-option-active {
-                background-color: #4B5563 !important;
-              }
-              
-              /* Form Item Controls - Ultimate Override */
-              body .dark-form .ant-form-item-control-input,
-              .dark-form .ant-form-item-control-input {
-                background-color: transparent !important;
-              }
-              
-              body .dark-form .ant-form-item-control-input-content input,
-              body .dark-form .ant-form-item-control-input-content textarea,
-              body .dark-form .ant-form-item-control-input-content .ant-select-selector,
-              .dark-form .ant-form-item-control-input-content input,
-              .dark-form .ant-form-item-control-input-content textarea,
-              .dark-form .ant-form-item-control-input-content .ant-select-selector {
-                background-color: #4B5563 !important;
-                color: #F9FAFB !important;
-                border-color: #6B7280 !important;
-              }
-              
-              /* Validation and Helper Text */
-              .ant-form-item-explain-error {
-                color: #F87171 !important;
-              }
-              .ant-input-data-count {
-                color: #9CA3AF !important;
-              }
-            `}
-          </style>
-        )}
-
-        {/* Button Styling for both Light and Dark Mode */}
-        <style jsx global>{`
-          /* Cancel Button Styling */
-          .create-questionnaire-cancel-btn,
-          .create-questionnaire-cancel-btn.ant-btn {
-            background-color: #6b7280 !important;
-            border-color: #6b7280 !important;
-            color: white !important;
-            font-weight: 500 !important;
-            padding: 8px 24px !important;
-            height: auto !important;
-            min-height: 40px !important;
-            display: inline-flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            font-size: 14px !important;
-            border-radius: 6px !important;
-          }
-
-          .create-questionnaire-cancel-btn:hover,
-          .create-questionnaire-cancel-btn.ant-btn:hover {
-            background-color: #4b5563 !important;
-            border-color: #4b5563 !important;
-            color: white !important;
-            transform: none !important;
-          }
-
-          .create-questionnaire-cancel-btn:focus,
-          .create-questionnaire-cancel-btn.ant-btn:focus {
-            background-color: #6b7280 !important;
-            border-color: #6b7280 !important;
-            color: white !important;
-            box-shadow: 0 0 0 2px rgba(107, 114, 128, 0.2) !important;
-          }
-
-          /* Create Questionnaire Button Styling */
-          .create-questionnaire-submit-btn,
-          .create-questionnaire-submit-btn.ant-btn {
-            background-color: #059669 !important;
-            border-color: #059669 !important;
-            color: white !important;
-            font-weight: 500 !important;
-            padding: 8px 24px !important;
-            height: auto !important;
-            min-height: 40px !important;
-            display: inline-flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            font-size: 14px !important;
-            border-radius: 6px !important;
-          }
-
-          .create-questionnaire-submit-btn:hover,
-          .create-questionnaire-submit-btn.ant-btn:hover {
-            background-color: #047857 !important;
-            border-color: #047857 !important;
-            color: white !important;
-            transform: none !important;
-          }
-
-          .create-questionnaire-submit-btn:focus,
-          .create-questionnaire-submit-btn.ant-btn:focus {
-            background-color: #059669 !important;
-            border-color: #059669 !important;
-            color: white !important;
-            box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
-          }
-        `}</style>
-
-        <div className='ml-64 relative z-10'>
+        <div className='relative z-10'>
           <div className='px-6 pb-6'>
             <div className='max-w-5xl mx-auto'>
               {/* Toolbar with Title */}
@@ -365,7 +100,7 @@ const CreateQuestionnaire = React.memo(({ user }) => {
                 form={form}
                 layout='vertical'
                 onFinish={handleFormSubmit}
-                className={`${darkMode ? 'dark-form' : ''}`}
+                className='global-form'
                 initialValues={{
                   status: 'Draft',
                   isActive: true
@@ -439,7 +174,7 @@ const CreateQuestionnaire = React.memo(({ user }) => {
                           navigate('/business-dashboard/questionnaires')
                         }}
                         size='large'
-                        className='create-questionnaire-cancel-btn'
+                        className='form-btn-secondary'
                       >
                         Cancel
                       </Button>
@@ -448,7 +183,7 @@ const CreateQuestionnaire = React.memo(({ user }) => {
                         htmlType='submit'
                         size='large'
                         loading={loading}
-                        className='create-questionnaire-submit-btn'
+                        className='form-btn-primary'
                       >
                         Create Questionnaire
                       </Button>

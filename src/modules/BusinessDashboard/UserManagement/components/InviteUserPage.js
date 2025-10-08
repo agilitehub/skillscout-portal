@@ -154,7 +154,7 @@ const InviteUserPage = React.memo(({ user }) => {
       />
 
       {/* Main Content */}
-      <div className='flex-1 ml-64 relative'>
+      <div className='flex-1 relative'>
         {/* Header */}
         <div
           className={`relative border-b flex-shrink-0 shadow-lg ${
@@ -207,7 +207,7 @@ const InviteUserPage = React.memo(({ user }) => {
                 initialValues={{
                   role: 'recruiter'
                 }}
-                className={darkMode ? 'invite-form-dark' : 'invite-form'}
+                className='global-form'
               >
                 <Form.Item
                   label={
@@ -414,7 +414,7 @@ const InviteUserPage = React.memo(({ user }) => {
                     darkMode ? 'border-gray-600' : 'border-gray-200'
                   }`}
                 >
-                  <Button type='default' size='large' onClick={handleCancel} className='invite-user-cancel-btn'>
+                  <Button type='default' size='large' onClick={handleCancel} className='form-btn-secondary'>
                     Cancel
                   </Button>
                   <Button
@@ -422,10 +422,7 @@ const InviteUserPage = React.memo(({ user }) => {
                     size='large'
                     loading={loading}
                     onClick={() => form.submit()}
-                    style={{
-                      backgroundColor: BRAND_COLORS.emeraldPrimary,
-                      borderColor: BRAND_COLORS.emeraldPrimary
-                    }}
+                    className='form-btn-primary'
                   >
                     Send Invitation
                   </Button>
@@ -435,124 +432,6 @@ const InviteUserPage = React.memo(({ user }) => {
           </div>
         </div>
       </div>
-
-      {/* Custom Styles */}
-      <style jsx global>{`
-        .invite-form-dark .ant-form-item-label > label {
-          color: #e5e7eb !important;
-        }
-
-        .invite-form-dark .ant-form-item-extra {
-          color: #9ca3af !important;
-        }
-
-        .invite-form-dark .ant-input,
-        .invite-form-dark .ant-input-affix-wrapper {
-          background-color: #4b5563 !important;
-          border-color: #6b7280 !important;
-          color: #f9fafb !important;
-        }
-
-        .invite-form-dark .ant-input:focus,
-        .invite-form-dark .ant-input-affix-wrapper:focus,
-        .invite-form-dark .ant-input-focused,
-        .invite-form-dark .ant-input-affix-wrapper-focused {
-          border-color: ${BRAND_COLORS.emeraldPrimary} !important;
-          box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2) !important;
-        }
-
-        .invite-form-dark .ant-input::placeholder {
-          color: #9ca3af !important;
-        }
-
-        .invite-form-dark .ant-select-selector {
-          background-color: #4b5563 !important;
-          border-color: #6b7280 !important;
-          color: #f9fafb !important;
-        }
-
-        .invite-form-dark .ant-select-arrow {
-          color: #f9fafb !important;
-        }
-
-        .invite-form-dark .ant-select:not(.ant-select-disabled):hover .ant-select-selector {
-          border-color: ${BRAND_COLORS.emeraldPrimary} !important;
-        }
-
-        .invite-form-dark .ant-select-focused .ant-select-selector {
-          border-color: ${BRAND_COLORS.emeraldPrimary} !important;
-          box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2) !important;
-        }
-
-        .invite-user-dark-dropdown {
-          background-color: #374151 !important;
-        }
-
-        .invite-user-dark-dropdown .ant-select-item {
-          color: #f9fafb !important;
-          min-height: 60px !important;
-          padding: 8px 12px !important;
-          line-height: 1.4 !important;
-        }
-
-        .invite-user-dark-dropdown .ant-select-item:hover {
-          background-color: #4b5563 !important;
-        }
-
-        .invite-user-dark-dropdown .ant-select-item-option-selected {
-          background-color: ${BRAND_COLORS.emeraldPrimary} !important;
-          color: #ffffff !important;
-        }
-
-        /* Light mode dropdown styles */
-        .ant-select-dropdown:not(.invite-user-dark-dropdown) .ant-select-item {
-          min-height: 60px !important;
-          padding: 8px 12px !important;
-          line-height: 1.4 !important;
-        }
-
-        .ant-select-dropdown:not(.invite-user-dark-dropdown) .ant-select-item:hover {
-          background-color: #f3f4f6 !important;
-        }
-
-        .ant-select-dropdown:not(.invite-user-dark-dropdown) .ant-select-item-option-selected {
-          background-color: ${BRAND_COLORS.emeraldPrimary} !important;
-          color: #ffffff !important;
-        }
-
-        /* Invite User Cancel Button Styling */
-        .invite-user-cancel-btn,
-        .invite-user-cancel-btn.ant-btn {
-          background-color: #059669 !important;
-          border-color: #059669 !important;
-          color: white !important;
-          font-weight: 500 !important;
-          padding: 8px 24px !important;
-          height: auto !important;
-          min-height: 40px !important;
-          display: inline-flex !important;
-          align-items: center !important;
-          justify-content: center !important;
-          font-size: 14px !important;
-          border-radius: 6px !important;
-        }
-
-        .invite-user-cancel-btn:hover,
-        .invite-user-cancel-btn.ant-btn:hover {
-          background-color: #047857 !important;
-          border-color: #047857 !important;
-          color: white !important;
-          transform: none !important;
-        }
-
-        .invite-user-cancel-btn:focus,
-        .invite-user-cancel-btn.ant-btn:focus {
-          background-color: #059669 !important;
-          border-color: #059669 !important;
-          color: white !important;
-          box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
-        }
-      `}</style>
     </div>
   )
 })

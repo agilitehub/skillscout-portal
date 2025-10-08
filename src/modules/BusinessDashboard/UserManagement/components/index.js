@@ -4,7 +4,6 @@ import React, { useState, useCallback, useMemo, useEffect } from 'react'
 import { message, Tag, Space, Modal, Select, Switch, Spin } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
-  faTrash,
   faUserPlus,
   faEnvelope,
   faUserCheck,
@@ -17,6 +16,7 @@ import { Button } from '../../../../core/components'
 import TableView from '../../../../core/components/view-components/table-view/TableView'
 import { BRAND_COLORS, SEMANTIC_COLORS } from '../../../../core/theme/colors'
 import userManagementController from '../utils/controller'
+import TableActions from '../../../../core/components/view-components/table-view/TableActions'
 
 /**
  * User Management Page
@@ -367,19 +367,14 @@ const UserManagement = React.memo(({ user }) => {
         key: 'actions',
         width: 80,
         render: (_, record) => (
-          <Button
-            type='text'
-            size='small'
-            icon={<FontAwesomeIcon icon={faTrash} />}
-            onClick={() => handleDeleteUser(record.id)}
-            className='text-red-500 hover:text-red-700'
-            title='Remove User'
-            disabled={record.id === user?.id} // Prevent self-deletion
+          <TableActions
+            record={record}
+            actions={[{ key: 'delete', tooltip: 'Remove User', onClick: (record) => handleDeleteUser(record.id) }]}
           />
         )
       }
     ],
-    [darkMode, roles, statusConfig, handleRoleChange, handleStatusToggle, handleDeleteUser, handleEditUser, user]
+    [darkMode, roles, statusConfig, handleRoleChange, handleStatusToggle, handleDeleteUser, handleEditUser]
   )
 
   return (
@@ -421,7 +416,7 @@ const UserManagement = React.memo(({ user }) => {
               size='large'
               icon={<FontAwesomeIcon icon={faUserPlus} className='mr-2' />}
               onClick={handleInviteUser}
-              className='invite-user-btn font-medium'
+              className='form-btn-primary'
             >
               Invite User
             </Button>
@@ -479,81 +474,6 @@ const UserManagement = React.memo(({ user }) => {
           )}
         </div>
       </div>
-
-      {/* Custom Styles */}
-      <style jsx global>{`
-        /* Force white button background for invite button only */
-        .invite-user-btn {
-          background-color: #ffffff !important;
-          color: #059669 !important;
-          border: none !important;
-          box-shadow:
-            0 1px 3px rgba(0, 0, 0, 0.12),
-            0 1px 2px rgba(0, 0, 0, 0.24) !important;
-          padding: 8px 16px !important;
-          height: auto !important;
-          font-size: 14px !important;
-          font-weight: 500 !important;
-          outline: none !important;
-        }
-
-        .invite-user-btn:hover {
-          background-color: #f8f9fa !important;
-          color: #047857 !important;
-          box-shadow:
-            0 3px 6px rgba(0, 0, 0, 0.16),
-            0 3px 6px rgba(0, 0, 0, 0.23) !important;
-          outline: none !important;
-        }
-
-        .invite-user-btn:focus {
-          background-color: #ffffff !important;
-          color: #059669 !important;
-          outline: none !important;
-          box-shadow:
-            0 1px 3px rgba(0, 0, 0, 0.12),
-            0 1px 2px rgba(0, 0, 0, 0.24) !important;
-        }
-
-        .invite-user-btn span,
-        .invite-user-btn .anticon {
-          text-shadow: none !important;
-          outline: none !important;
-          border: none !important;
-        }
-
-        .role-select .ant-select-selector {
-          border: 1px solid ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.borderGray} !important;
-          background-color: ${darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white} !important;
-          color: ${darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray} !important;
-        }
-
-        .role-select .ant-select-arrow {
-          color: ${darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray} !important;
-        }
-
-        .role-select.ant-select-focused .ant-select-selector {
-          border-color: ${BRAND_COLORS.emeraldPrimary} !important;
-          box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2) !important;
-        }
-
-        .user-mgmt-dark-dropdown {
-          background-color: ${BRAND_COLORS.darkSlateAlt} !important;
-        }
-
-        .user-mgmt-dark-dropdown .ant-select-item {
-          color: ${BRAND_COLORS.white} !important;
-        }
-
-        .user-mgmt-dark-dropdown .ant-select-item:hover {
-          background-color: ${BRAND_COLORS.mediumSlate} !important;
-        }
-
-        .user-mgmt-dark-dropdown .ant-select-item-option-selected {
-          background-color: ${BRAND_COLORS.emeraldPrimary} !important;
-          color: ${BRAND_COLORS.white} !important;
-        }
-      `}</style>
     </div>
   )
 })
