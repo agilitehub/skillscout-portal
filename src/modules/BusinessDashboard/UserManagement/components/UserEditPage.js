@@ -17,7 +17,6 @@ import {
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useTheme } from '../../../../core/context/ThemeContext'
 import { Button } from '../../../../core/components'
-import BusinessSidebar from '../../components/BusinessSidebar'
 import { BRAND_COLORS, SEMANTIC_COLORS } from '../../../../core/theme/colors'
 
 /**
@@ -207,11 +206,8 @@ const UserEditPage = React.memo(({ user: currentUser }) => {
         } pointer-events-none`}
       />
 
-      {/* Sidebar */}
-      <BusinessSidebar />
-
       {/* Main Content */}
-      <div className='flex-1 ml-64 relative'>
+      <div className='flex-1 relative'>
         {/* Header */}
         <div
           className={`relative px-8 py-4 border-b flex-shrink-0 shadow-lg ${

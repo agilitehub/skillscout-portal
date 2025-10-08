@@ -22,7 +22,6 @@ import {
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useTheme } from '../../../../core/context/ThemeContext'
 import { Button } from '../../../../core/components'
-import BusinessSidebar from '../../components/BusinessSidebar'
 import { BRAND_COLORS, SEMANTIC_COLORS } from '../../../../core/theme/colors'
 
 const { TextArea } = Input
@@ -246,11 +245,8 @@ const BranchEditPage = React.memo(({ user: currentUser }) => {
         } pointer-events-none`}
       />
 
-      {/* Sidebar */}
-      <BusinessSidebar />
-
       {/* Main Content */}
-      <div className='flex-1 ml-64 relative'>
+      <div className='flex-1 relative'>
         {/* Header */}
         <div
           className={`relative px-8 py-4 border-b flex-shrink-0 shadow-lg ${
@@ -273,7 +269,7 @@ const BranchEditPage = React.memo(({ user: currentUser }) => {
               {hasChanges && (
                 <Button
                   size='large'
-                  icon={<FontAwesomeIcon icon={faUndo} className="mr-2" />}
+                  icon={<FontAwesomeIcon icon={faUndo} className='mr-2' />}
                   onClick={handleReset}
                   className='reset-branch-btn font-medium'
                   style={{
@@ -293,7 +289,7 @@ const BranchEditPage = React.memo(({ user: currentUser }) => {
               <Button
                 type='default'
                 size='large'
-                icon={<FontAwesomeIcon icon={faSave} className="mr-2" />}
+                icon={<FontAwesomeIcon icon={faSave} className='mr-2' />}
                 onClick={() => form.submit()}
                 loading={loading}
                 disabled={!hasChanges && mode === 'edit'}

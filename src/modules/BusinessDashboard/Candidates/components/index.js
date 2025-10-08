@@ -10,7 +10,6 @@ import { HTML5Backend } from 'react-dnd-html5-backend'
 import { useTheme } from '../../../../core/context/ThemeContext'
 import { Button } from '../../../../core/components'
 import TableView from '../../../../core/components/view-components/table-view/TableView'
-import BusinessSidebar from '../../components/BusinessSidebar'
 import KanbanBoard from './KanbanBoard'
 import { BRAND_COLORS, SEMANTIC_COLORS } from '../../../../core/theme/colors'
 
@@ -619,9 +618,6 @@ const Candidates = React.memo(({ user }) => {
           } pointer-events-none`}
         />
 
-        {/* Sidebar */}
-        <BusinessSidebar />
-
         {/* Main Content */}
         <div className='flex-1 ml-64 relative'>
           {/* Header */}
@@ -850,7 +846,7 @@ const Candidates = React.memo(({ user }) => {
               color: #047857 !important;
               border: 1px solid #f8f9fa !important;
               transform: translateY(-1px) !important;
-              box-shadow: 0 2px 4px rgba(0,0,0,0.15) !important;
+              box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15) !important;
             }
 
             /* Ensure icons and text have proper spacing */

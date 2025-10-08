@@ -210,52 +210,61 @@ const TableView = React.memo(
             font-size: 0.75rem;
             letter-spacing: 0.05em;
             padding: 16px 12px;
-            ${darkMode ? `
+            ${darkMode
+              ? `
               background: linear-gradient(135deg, #374151 0%, #4B5563 100%);
               color: #E5E7EB;
               border-bottom: 2px solid #6B7280;
-            ` : `
+            `
+              : `
               background: linear-gradient(135deg, #F9FAFB 0%, #F3F4F6 100%);
               color: #374151;
               border-bottom: 2px solid #E5E7EB;
             `}
           }
-          
+
           .enhanced-table .ant-table-tbody > tr > td {
             padding: 16px 12px;
             border-bottom: 1px solid ${darkMode ? '#4B5563' : '#F3F4F6'};
             transition: all 0.2s ease;
-            ${darkMode ? `
+            ${darkMode
+              ? `
               background-color: transparent;
               color: #F9FAFB;
-            ` : `
+            `
+              : `
               background-color: transparent;
               color: #111827;
             `}
           }
-          
+
           .enhanced-table .ant-table-tbody > tr:hover > td {
-            ${darkMode ? `
+            ${darkMode
+              ? `
               background: linear-gradient(90deg, #374151 0%, #4B5563 100%);
               box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-            ` : `
+            `
+              : `
               background: linear-gradient(90deg, #F0F9FF 0%, #ECFDF5 100%);
               box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             `}
             transform: translateY(-1px);
           }
-          
+
           .enhanced-table .ant-table-tbody > tr.ant-table-row-selected > td {
-            ${darkMode ? `
+            ${darkMode
+              ? `
               background: linear-gradient(90deg, #065F46 0%, #047857 100%);
               color: #FFFFFF;
-            ` : `
+            `
+              : `
               background: linear-gradient(90deg, #ECFDF5 0%, #D1FAE5 100%);
               color: #065F46;
             `}
           }
 
-          ${darkMode ? `
+          ${darkMode
+            ? `
             .dark-search .ant-input {
               background-color: #4b5563 !important;
               border-color: #6b7280 !important;
@@ -278,7 +287,8 @@ const TableView = React.memo(
               background-color: #059669 !important;
               border-color: #059669 !important;
             }
-          ` : `
+          `
+            : `
             .enhanced-table .ant-input-search:hover {
               border-color: #059669 !important;
             }
@@ -287,99 +297,103 @@ const TableView = React.memo(
               box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
             }
           `}
-            .dark-table .ant-table-placeholder {
-              color: #9ca3af !important;
-            }
-            .dark-table .ant-empty-description {
-              color: #9ca3af !important;
-            }
-            .dark-pagination .ant-pagination-item {
-              background-color: #4b5563 !important;
-              border-color: #6b7280 !important;
-            }
-            .dark-pagination .ant-pagination-item a {
-              color: #ffffff !important;
-            }
-            .dark-pagination .ant-pagination-item-active {
-              background-color: #059669 !important;
-            }
-            .dark-pagination .ant-pagination-item-active a {
-              color: #ffffff !important;
-            }
-            .dark-pagination .ant-pagination-prev,
-            .dark-pagination .ant-pagination-next {
-              background-color: #4b5563 !important;
-              border-color: #6b7280 !important;
-            }
-            .dark-pagination .ant-pagination-prev a,
-            .dark-pagination .ant-pagination-next a {
-              color: #ffffff !important;
-            }
-            .dark-pagination .ant-pagination-jump-prev,
-            .dark-pagination .ant-pagination-jump-next {
-              background-color: #4b5563 !important;
-              border-color: #6b7280 !important;
-            }
-            .dark-pagination .ant-pagination-jump-prev a,
-            .dark-pagination .ant-pagination-jump-next a {
-              color: #ffffff !important;
-            }
-            .dark-pagination .ant-pagination-options {
-              color: #ffffff !important;
-            }
-            .dark-pagination .ant-select-selector {
-              background-color: #4b5563 !important;
-              border-color: #6b7280 !important;
-              color: #ffffff !important;
-            }
-            .dark-pagination .ant-select-arrow {
-              color: #ffffff !important;
-            }
-            .dark-pagination .ant-pagination-total-text {
-              color: #ffffff !important;
-            }
-            .dark-table .ant-table-filter-trigger {
-              color: #9ca3af !important;
-            }
-            .dark-table .ant-table-filter-trigger:hover {
-              color: #ffffff !important;
-            }
-            .dark-table .ant-table-filter-trigger-container {
-              background-color: transparent !important;
-            }
-            .dark-table .ant-table-filter-icon {
-              color: #9ca3af !important;
-            }
-            .dark-table .ant-table-column-sorter {
-              color: #9ca3af !important;
-            }
-            .dark-table .ant-table-column-sorter:hover {
-              color: #ffffff !important;
-            }
-            .dark-table .ant-table-column-sorter-up,
-            .dark-table .ant-table-column-sorter-down {
-              color: #9ca3af !important;
-            }
-            .dark-table .ant-table-column-sorter-up:hover,
-            .dark-table .ant-table-column-sorter-down:hover {
-              color: #ffffff !important;
-            }
+          .dark-table .ant-table-placeholder {
+            color: #9ca3af !important;
+          }
+          .dark-table .ant-empty-description {
+            color: #9ca3af !important;
+          }
+          .dark-pagination .ant-pagination-item {
+            background-color: #4b5563 !important;
+            border-color: #6b7280 !important;
+          }
+          .dark-pagination .ant-pagination-item a {
+            color: #ffffff !important;
+          }
+          .dark-pagination .ant-pagination-item-active {
+            background-color: #059669 !important;
+          }
+          .dark-pagination .ant-pagination-item-active a {
+            color: #ffffff !important;
+          }
+          .dark-pagination .ant-pagination-prev,
+          .dark-pagination .ant-pagination-next {
+            background-color: #4b5563 !important;
+            border-color: #6b7280 !important;
+          }
+          .dark-pagination .ant-pagination-prev a,
+          .dark-pagination .ant-pagination-next a {
+            color: #ffffff !important;
+          }
+          .dark-pagination .ant-pagination-jump-prev,
+          .dark-pagination .ant-pagination-jump-next {
+            background-color: #4b5563 !important;
+            border-color: #6b7280 !important;
+          }
+          .dark-pagination .ant-pagination-jump-prev a,
+          .dark-pagination .ant-pagination-jump-next a {
+            color: #ffffff !important;
+          }
+          .dark-pagination .ant-pagination-options {
+            color: #ffffff !important;
+          }
+          .dark-pagination .ant-select-selector {
+            background-color: #4b5563 !important;
+            border-color: #6b7280 !important;
+            color: #ffffff !important;
+          }
+          .dark-pagination .ant-select-arrow {
+            color: #ffffff !important;
+          }
+          .dark-pagination .ant-pagination-total-text {
+            color: #ffffff !important;
+          }
+          .dark-table .ant-table-filter-trigger {
+            color: #9ca3af !important;
+          }
+          .dark-table .ant-table-filter-trigger:hover {
+            color: #ffffff !important;
+          }
+          .dark-table .ant-table-filter-trigger-container {
+            background-color: transparent !important;
+          }
+          .dark-table .ant-table-filter-icon {
+            color: #9ca3af !important;
+          }
+          .dark-table .ant-table-column-sorter {
+            color: #9ca3af !important;
+          }
+          .dark-table .ant-table-column-sorter:hover {
+            color: #ffffff !important;
+          }
+          .dark-table .ant-table-column-sorter-up,
+          .dark-table .ant-table-column-sorter-down {
+            color: #9ca3af !important;
+          }
+          .dark-table .ant-table-column-sorter-up:hover,
+          .dark-table .ant-table-column-sorter-down:hover {
+            color: #ffffff !important;
+          }
         `}</style>
 
-        <Card 
-          className={`${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} shadow-xl rounded-lg overflow-hidden`} 
+        <Card
+          className={`${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} shadow-xl rounded-lg overflow-hidden`}
           {...cardProps}
           bodyStyle={{ padding: 0 }}
         >
           {/* Enhanced Toolbar */}
           {(showSearch || toolbarActions.length > 0) && (
-            <div className={`px-6 py-4 border-b ${
-              darkMode ? 'border-gray-700 bg-gradient-to-r from-gray-800 to-gray-700' : 'border-gray-200 bg-gradient-to-r from-gray-50 to-white'
-            }`}>
+            <div
+              className={`px-6 py-4 border-b ${
+                darkMode
+                  ? 'border-gray-700 bg-gradient-to-r from-gray-800 to-gray-700'
+                  : 'border-gray-200 bg-gradient-to-r from-gray-50 to-white'
+              }`}
+            >
               <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0'>
                 {/* Search */}
                 {showSearch && onSearch && (
-                  <div className="flex-1 max-w-md">
+                  <div className='flex-1 max-w-md'>
                     <Search
                       placeholder={searchPlaceholder}
                       value={searchTerm}
@@ -389,11 +403,8 @@ const TableView = React.memo(
                       style={{
                         backgroundColor: darkMode ? '#4b5563' : '#ffffff',
                         borderRadius: '8px',
-                        boxShadow: darkMode 
-                          ? '0 2px 4px rgba(0, 0, 0, 0.3)' 
-                          : '0 2px 4px rgba(0, 0, 0, 0.1)'
+                        boxShadow: darkMode ? '0 2px 4px rgba(0, 0, 0, 0.3)' : '0 2px 4px rgba(0, 0, 0, 0.1)'
                       }}
-                      size="large"
                     />
                   </div>
                 )}
@@ -402,7 +413,7 @@ const TableView = React.memo(
                 {toolbarActions.length > 0 && (
                   <div className='flex items-center space-x-3'>
                     {toolbarActions.map((action, index) => (
-                      <div key={index} className="transform hover:scale-105 transition-transform duration-200">
+                      <div key={index} className='transform hover:scale-105 transition-transform duration-200'>
                         {action}
                       </div>
                     ))}
@@ -413,7 +424,7 @@ const TableView = React.memo(
           )}
 
           {/* Enhanced Table */}
-          <div className="p-6">
+          <div className='p-6'>
             <Table
               columns={columns}
               dataSource={dataSource}
@@ -431,18 +442,20 @@ const TableView = React.memo(
               locale={{
                 emptyText: (
                   <div className={`py-16 text-center ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                    <div className="mb-6">
-                      <div className={`w-20 h-20 mx-auto rounded-full ${
-                        darkMode ? 'bg-gray-700' : 'bg-gray-100'
-                      } flex items-center justify-center`}>
-                        <FontAwesomeIcon 
-                          icon={faPlus} 
-                          className={`text-3xl ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} 
+                    <div className='mb-6'>
+                      <div
+                        className={`w-20 h-20 mx-auto rounded-full ${
+                          darkMode ? 'bg-gray-700' : 'bg-gray-100'
+                        } flex items-center justify-center`}
+                      >
+                        <FontAwesomeIcon
+                          icon={faPlus}
+                          className={`text-3xl ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}
                         />
                       </div>
                     </div>
-                    <h3 className="text-lg font-semibold mb-2">{emptyText}</h3>
-                    <p className="text-sm opacity-75">Get started by adding your first item.</p>
+                    <h3 className='text-lg font-semibold mb-2'>{emptyText}</h3>
+                    <p className='text-sm opacity-75'>Get started by adding your first item.</p>
                   </div>
                 )
               }}

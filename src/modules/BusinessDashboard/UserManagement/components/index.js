@@ -14,10 +14,10 @@ import { useNavigate } from 'react-router-dom'
 import { useTheme } from '../../../../core/context/ThemeContext'
 import { Button } from '../../../../core/components'
 import TableView from '../../../../core/components/view-components/table-view/TableView'
-import BusinessSidebar from '../../components/BusinessSidebar'
 import { BRAND_COLORS, SEMANTIC_COLORS } from '../../../../core/theme/colors'
 import userManagementController from '../utils/controller'
 import TableActions from '../../../../core/components/view-components/table-view/TableActions'
+import Toolbar from '../../../../core/components/Toolbar'
 
 /**
  * User Management Page
@@ -395,46 +395,12 @@ const UserManagement = React.memo(({ user }) => {
         } pointer-events-none`}
       />
 
-      {/* Sidebar */}
-      <BusinessSidebar />
-
       {/* Main Content */}
-      <div className='flex-1 ml-64 relative'>
-        {/* Header */}
-        <div
-          className={`relative px-8 py-4 border-b flex-shrink-0 shadow-lg ${
-            darkMode
-              ? 'bg-gradient-to-r from-emerald-700 to-emerald-600 border border-emerald-600'
-              : 'bg-gradient-to-r from-emerald-500 to-emerald-600'
-          }`}
-        >
-          <div className='flex items-center justify-between'>
-            <div className='flex flex-col space-y-3'>
-              <div>
-                <h1 className='text-2xl font-bold text-white'>User Management</h1>
-              </div>
-            </div>
-
-            <Button
-              type='default'
-              size='large'
-              icon={<FontAwesomeIcon icon={faUserPlus} className='mr-2' />}
-              onClick={handleInviteUser}
-              className='form-btn-primary'
-            >
-              Invite User
-            </Button>
-          </div>
-        </div>
+      <div className='flex-1 relative'>
+        <Toolbar title='User Management' description='Manage your users and their roles' />
 
         {/* Content Area */}
-        <div className='relative p-6'>
-          {loading && (
-            <div className='flex justify-center items-center py-12'>
-              <Spin size='large' />
-            </div>
-          )}
-
+        <div className='relative pl-5 pr-5 pt-2'>
           {error && (
             <div className='flex justify-center items-center py-12'>
               <div className={`text-center ${darkMode ? 'text-red-400' : 'text-red-600'}`}>
@@ -455,27 +421,36 @@ const UserManagement = React.memo(({ user }) => {
             </div>
           )}
 
-          {!loading && !error && (
-            <TableView
-              columns={tableColumns}
-              dataSource={filteredUsers}
-              searchTerm={searchTerm}
-              onSearch={handleSearch}
-              searchPlaceholder='Search users by name, email, or role...'
-              pagination={{
-                pageSize: 15,
-                showSizeChanger: true,
-                showQuickJumper: true,
-                showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} users`
-              }}
-              scroll={{ x: 1200 }}
-              emptyText='No users found'
-              toolbarActions={[]}
-              cardProps={{
-                className: darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
-              }}
-            />
-          )}
+          <TableView
+            loading={loading}
+            columns={tableColumns}
+            dataSource={filteredUsers}
+            searchTerm={searchTerm}
+            onSearch={handleSearch}
+            searchPlaceholder='Search users by name, email, or role...'
+            pagination={{
+              pageSize: 15,
+              showSizeChanger: true,
+              showQuickJumper: true,
+              showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} users`
+            }}
+            scroll={{ x: 1200 }}
+            emptyText='No users found'
+            toolbarActions={[
+              <Button
+                type='default'
+                size='large'
+                icon={<FontAwesomeIcon icon={faUserPlus} className='mr-2' />}
+                onClick={handleInviteUser}
+                className='form-btn-primary'
+              >
+                Invite User
+              </Button>
+            ]}
+            cardProps={{
+              className: darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
+            }}
+          />
         </div>
       </div>
     </div>

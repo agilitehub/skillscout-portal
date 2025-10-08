@@ -8,7 +8,6 @@ import { faSave, faTimes, faBriefcase, faGift } from '@fortawesome/free-solid-sv
 import { useTheme } from '../../../../core/context/ThemeContext'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { Button } from '../../../../core/components'
-import BusinessSidebar from '../../components/BusinessSidebar'
 import {
   createJobOpportunity,
   updateJobOpportunity,

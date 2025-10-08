@@ -16,8 +16,8 @@ import { useNavigate } from 'react-router-dom'
 import { useTheme } from '../../../../core/context/ThemeContext'
 import { Button } from '../../../../core/components'
 import TableView from '../../../../core/components/view-components/table-view/TableView'
-import BusinessSidebar from '../../components/BusinessSidebar'
 import { BRAND_COLORS, SEMANTIC_COLORS } from '../../../../core/theme/colors'
+import Toolbar from '../../../../core/components/Toolbar'
 
 /**
  * Branch Management Page
@@ -269,7 +269,12 @@ const BranchManagement = React.memo(({ user }) => {
         render: (status) => (
           <Tag
             color={status === 'active' ? SEMANTIC_COLORS.success : BRAND_COLORS.mediumGray}
-            icon={<FontAwesomeIcon icon={status === 'active' ? faCheckCircle : faTimesCircle} style={{ marginRight: '6px' }} />}
+            icon={
+              <FontAwesomeIcon
+                icon={status === 'active' ? faCheckCircle : faTimesCircle}
+                style={{ marginRight: '6px' }}
+              />
+            }
             style={{ fontWeight: '500' }}
           >
             {status.charAt(0).toUpperCase() + status.slice(1)}
@@ -536,49 +541,18 @@ const BranchManagement = React.memo(({ user }) => {
         } pointer-events-none`}
       />
 
-      {/* Sidebar */}
-      <BusinessSidebar />
-
       {/* Main Content */}
-      <div className='flex-1 ml-64 relative'>
-        {/* Header */}
-        <div
-          className={`relative px-8 py-4 border-b flex-shrink-0 shadow-lg ${
-            darkMode
-              ? 'bg-gradient-to-r from-emerald-700 to-emerald-600 border border-emerald-600'
-              : 'bg-gradient-to-r from-emerald-500 to-emerald-600'
-          }`}
-        >
-          <div className='flex items-center justify-between'>
-            <div className='flex flex-col space-y-3'>
-              <div>
-                <h1 className='text-2xl font-bold text-white'>Branch Management</h1>
-              </div>
-            </div>
-
-            <Button
-              type='default'
-              size='large'
-              icon={<FontAwesomeIcon icon={faPlus} className="mr-2" />}
-              onClick={handleAdd}
-              className='add-branch-btn font-medium'
-              style={{
-                background: '#ffffff',
-                backgroundColor: '#ffffff',
-                color: '#059669',
-                border: '1px solid #ffffff',
-                fontWeight: '500',
-                boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                opacity: '1'
-              }}
-            >
-              Add Branch
-            </Button>
-          </div>
-        </div>
+      <div className='flex-1 relative'>
+        <Toolbar
+          title='Branch Management'
+          description='Manage your branches'
+          renderActions={() => {
+            return <Button type='primary' icon={<FontAwesomeIcon icon={faPlus} />} onClick={handleAdd} />
+          }}
+        />
 
         {/* Content Area */}
-        <div className='relative p-6'>
+        <div className='relative pl-5 pr-5 pt-2'>
           <TableView
             columns={tableColumns}
             dataSource={filteredBranches}
@@ -593,7 +567,17 @@ const BranchManagement = React.memo(({ user }) => {
             }}
             scroll={{ x: 1200 }}
             emptyText='No branches found'
-            toolbarActions={[]}
+            toolbarActions={[
+              <Button
+                type='default'
+                size='large'
+                icon={<FontAwesomeIcon icon={faPlus} className='mr-2' />}
+                onClick={handleAdd}
+                className='form-btn-primary'
+              >
+                Add Branch
+              </Button>
+            ]}
             cardProps={{
               className: darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
             }}

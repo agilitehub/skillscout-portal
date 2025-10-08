@@ -3,9 +3,8 @@
 import React, { useState, useCallback, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTheme } from '../../../../core/context/ThemeContext'
-import BusinessSidebar from '../../components/BusinessSidebar'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faClipboardCheck, faPlus, faCheckCircle, faTimesCircle, faTrashAlt } from '@fortawesome/free-solid-svg-icons'
+import { faPlus, faCheckCircle, faTimesCircle, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { Select, message, Tag, Spin, Alert } from 'antd'
 import { Button } from '../../../../core/components'
 import TableView from '../../../../core/components/view-components/table-view/TableView'
@@ -13,6 +12,7 @@ import TableActions from '../../../../core/components/view-components/table-view
 
 // Import controller functions
 import { getAllQuestionnaires, deleteQuestionnaire, searchQuestionnaires } from '../utils/controller'
+import Toolbar from '../../../../core/components/Toolbar'
 
 const { Option } = Select
 
@@ -262,7 +262,7 @@ const Questionnaires = React.memo(({ user }) => {
             },
             {
               key: 'delete',
-              icon: faTrashAlt,
+              icon: faTrash,
               tooltip: 'Delete Questionnaire',
               confirm: {
                 title: 'Delete Questionnaire',
@@ -297,39 +297,12 @@ const Questionnaires = React.memo(({ user }) => {
           } pointer-events-none`}
         ></div>
 
-        <BusinessSidebar />
-        <div className='ml-64 relative z-10'>
-          <div className='p-6'>
-            {/* Error Alert */}
-            {error && (
-              <Alert
-                message='Error'
-                description={error}
-                type='error'
-                showIcon
-                closable
-                onClose={() => setError(null)}
-                className='mb-4'
-              />
-            )}
-
-            {/* Toolbar with Title */}
-            <div
-              className={`rounded-lg mb-6 px-6 py-4 shadow-lg ${
-                darkMode
-                  ? 'bg-gradient-to-r from-emerald-700 to-emerald-600 border border-emerald-600'
-                  : 'bg-gradient-to-r from-emerald-500 to-emerald-600'
-              }`}
-            >
-              <div className='flex items-center justify-between'>
-                <div className='flex items-center'>
-                  <FontAwesomeIcon
-                    icon={faClipboardCheck}
-                    className={`text-lg mr-3 ${darkMode ? 'text-emerald-100' : 'text-white'}`}
-                  />
-                  <h1 className='text-xl font-bold text-white'>Questionnaires</h1>
-                </div>
-
+        <div className='relative z-10'>
+          <Toolbar
+            title='Questionnaires'
+            description='Manage your questionnaires'
+            renderActions={() => {
+              return (
                 <div className='flex items-center space-x-3'>
                   <Select
                     value={selectedStatus}
@@ -343,9 +316,24 @@ const Questionnaires = React.memo(({ user }) => {
                     <Option value='Archived'>Archived</Option>
                   </Select>
                 </div>
-              </div>
-            </div>
+              )
+            }}
+          />
 
+          {/* Error Alert */}
+          {error && (
+            <Alert
+              message='Error'
+              description={error}
+              type='error'
+              showIcon
+              closable
+              onClose={() => setError(null)}
+              className='mb-4'
+            />
+          )}
+
+          <div className='pl-5 pr-5 pt-2'>
             {/* Questionnaire Data Table */}
             <Spin spinning={loading} tip='Loading questionnaires...'>
               <TableView
@@ -356,10 +344,10 @@ const Questionnaires = React.memo(({ user }) => {
                 onSearch={setSearchTerm}
                 searchPlaceholder='Search questionnaires...'
                 toolbarActions={[
-                  <Button 
-                    key='create' 
-                    type='primary' 
-                    icon={<FontAwesomeIcon icon={faPlus} />} 
+                  <Button
+                    key='create'
+                    type='primary'
+                    icon={<FontAwesomeIcon icon={faPlus} />}
                     onClick={handleAdd}
                     className='form-btn-primary'
                     size='large'

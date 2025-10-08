@@ -26,7 +26,7 @@ import { useTheme } from '../../../core/context/ThemeContext'
  */
 const BusinessSidebar = React.memo(() => {
   const { darkMode } = useTheme()
-  
+
   // Initialize settings expanded state from localStorage, default to false
   const [isSettingsExpanded, setIsSettingsExpanded] = useState(() => {
     try {
@@ -126,7 +126,7 @@ const BusinessSidebar = React.memo(() => {
 
   return (
     <div
-      className={`w-64 h-full fixed left-0 top-12 z-30 transition-all duration-300 ${
+      className={`h-full z-30 transition-all duration-300 ${
         darkMode ? 'bg-gray-900 border-gray-700' : 'bg-white border-gray-200'
       } border-r shadow-lg`}
       style={{
@@ -136,7 +136,7 @@ const BusinessSidebar = React.memo(() => {
       }}
     >
       {/* Sidebar Header */}
-      <div className={`p-4 border-b ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+      <div className={`pl-4 pt-4 border-b ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
         <div className='flex items-center'>
           <div
             className='w-8 h-8 rounded-lg flex items-center justify-center mr-3'
@@ -156,7 +156,7 @@ const BusinessSidebar = React.memo(() => {
       </div>
 
       {/* Navigation Menu */}
-      <nav className='p-4 space-y-3'>
+      <nav className='p-4 space-y-2'>
         {/* Main Navigation Items */}
         <div className='space-y-1'>
           {mainNavigationItems.map((item) => (
@@ -165,7 +165,7 @@ const BusinessSidebar = React.memo(() => {
               to={item.path}
               end={item.exact}
               className={({ isActive }) =>
-                `flex items-center px-3 py-3 rounded-lg text-base font-medium transition-all duration-200 ${
+                `flex items-center px-2 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                   isActive
                     ? darkMode
                       ? 'bg-emerald-700 text-white shadow-lg'
@@ -214,8 +214,10 @@ const BusinessSidebar = React.memo(() => {
         <div className='space-y-1'>
           {/* Settings Header */}
           <div
-            className={`w-full flex items-center px-3 py-2 rounded-lg text-base font-bold transition-all duration-200 cursor-pointer ${
-              darkMode ? 'text-gray-300 hover:text-white hover:bg-gray-800' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+            className={`w-full flex items-center px-2 py-2 rounded-lg text-sm font-bold transition-all duration-200 cursor-pointer ${
+              darkMode
+                ? 'text-gray-300 hover:text-white hover:bg-gray-800'
+                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
             }`}
             onClick={toggleSettings}
           >
@@ -230,20 +232,18 @@ const BusinessSidebar = React.memo(() => {
               />
             </div>
             <span className='flex-1 text-left'>{settingsCategory.label}</span>
-            
+
             {/* Collapsible chevron */}
             <div className='ml-2'>
               <FontAwesomeIcon
                 icon={isSettingsExpanded ? faChevronDown : faChevronRight}
-                className={`text-sm transition-transform duration-200 ${
-                  darkMode ? 'text-gray-400' : 'text-gray-500'
-                }`}
+                className={`text-sm transition-transform duration-200 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}
               />
             </div>
           </div>
 
           {/* Settings Items */}
-          <div 
+          <div
             className={`ml-4 space-y-1 overflow-hidden transition-all duration-300 ease-in-out ${
               !isSettingsExpanded ? 'max-h-0 opacity-0' : 'max-h-96 opacity-100'
             }`}
@@ -254,7 +254,7 @@ const BusinessSidebar = React.memo(() => {
                 to={item.path}
                 end={item.exact}
                 className={({ isActive }) =>
-                  `flex items-center px-3 py-3 rounded-lg text-base font-medium transition-all duration-200 ${
+                  `flex items-center px-2 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                     isActive
                       ? darkMode
                         ? 'bg-emerald-700 text-white shadow-lg'
@@ -300,8 +300,6 @@ const BusinessSidebar = React.memo(() => {
           </div>
         </div>
       </nav>
-
-
     </div>
   )
 })
