@@ -18,6 +18,7 @@ import { useTheme } from '../../../../core/context/ThemeContext'
 import { getAllJobOpportunities, deleteJobOpportunity, updateJobOpportunityStatus } from '../utils/controller'
 import TableView from '../../../../core/components/view-components/table-view/TableView'
 import TableActions from '../../../../core/components/view-components/table-view/TableActions'
+import Toolbar from '../../../../core/components/Toolbar'
 
 /**
  * Job Listings component for Recruiters and Employers
@@ -30,6 +31,7 @@ const JobListings = React.memo(({ user }) => {
   // State management
   const [jobOpportunities, setJobOpportunities] = useState([])
   const [loading, setLoading] = useState(false)
+  const [searchTerm, setSearchTerm] = useState('')
 
   // Load job listings from database
   const loadJobOpportunities = useCallback(async () => {
@@ -319,121 +321,36 @@ const JobListings = React.memo(({ user }) => {
         } pointer-events-none`}
       ></div>
 
-      <div className='p-4 md:p-6 relative z-10'>
-        {/* Header */}
-        <div
-          className={`mb-6 px-8 py-6 rounded-lg shadow-lg border ${
-            darkMode
-              ? 'bg-gradient-to-r from-emerald-700 via-emerald-600 to-emerald-600 border-emerald-600'
-              : 'bg-gradient-to-r from-emerald-500 via-emerald-600 to-emerald-600 border-emerald-500'
-          }`}
-          style={{
-            background: darkMode
-              ? 'linear-gradient(to right, #047857, #059669, #059669)'
-              : 'linear-gradient(to right, #10b981, #059669, #059669)',
-            borderColor: darkMode ? '#059669' : '#10b981'
+      <Toolbar title='Job Listings' description='Manage and track your job listings' />
+
+      <div className='pl-5 pr-5 pt-2 relative z-10'>
+        <TableView
+          dataSource={jobOpportunities}
+          columns={columns}
+          loading={loading}
+          searchTerm={searchTerm}
+          onSearch={setSearchTerm}
+          searchPlaceholder='Search job listings...'
+          toolbarActions={[
+            <Button
+              type='default'
+              size='large'
+              icon={<FontAwesomeIcon icon={faPlus} />}
+              onClick={handleCreateJobOpportunity}
+              className='form-btn-primary'
+            >
+              Create Job Listing
+            </Button>
+          ]}
+          pagination={{
+            pageSize: 10,
+            showSizeChanger: true,
+            showQuickJumper: true,
+            showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`
           }}
-        >
-          <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4'>
-            <div>
-              <h1 className='text-2xl md:text-3xl font-bold text-white mb-2'>Job Listings</h1>
-              <p className='text-emerald-100'>Manage your job listings and recruitment activities</p>
-            </div>
-            <div className='flex flex-col sm:flex-row gap-3 mt-4 sm:mt-0'>
-              <Button
-                type='default'
-                size='large'
-                icon={<FontAwesomeIcon icon={faPlus} />}
-                onClick={handleCreateJobOpportunity}
-                className='form-btn-primary'
-              >
-                Create Job Listing
-              </Button>
-            </div>
-          </div>
-
-          {/* Statistics Cards */}
-          <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6'>
-            <Card className={`${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white'} shadow-lg`}>
-              <Statistic
-                title={<span className={darkMode ? 'text-gray-300' : 'text-gray-600'}>Total Jobs</span>}
-                value={stats.totalJobs}
-                prefix={
-                  <FontAwesomeIcon
-                    icon={faBriefcase}
-                    className={darkMode ? 'text-blue-300' : 'text-blue-500'}
-                    style={{ color: darkMode ? '#93c5fd' : '#3b82f6' }}
-                  />
-                }
-                valueStyle={{ color: darkMode ? '#ffffff' : '#1f2937' }}
-              />
-            </Card>
-            <Card className={`${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white'} shadow-lg`}>
-              <Statistic
-                title={<span className={darkMode ? 'text-gray-300' : 'text-gray-600'}>Active Jobs</span>}
-                value={stats.activeJobs}
-                prefix={
-                  <FontAwesomeIcon
-                    icon={faBriefcase}
-                    className={darkMode ? 'text-green-300' : 'text-green-500'}
-                    style={{ color: darkMode ? '#86efac' : '#10b981' }}
-                  />
-                }
-                valueStyle={{ color: darkMode ? '#ffffff' : '#1f2937' }}
-              />
-            </Card>
-            <Card className={`${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white'} shadow-lg`}>
-              <Statistic
-                title={<span className={darkMode ? 'text-gray-300' : 'text-gray-600'}>Total Applicants</span>}
-                value={stats.totalApplicants}
-                prefix={
-                  <FontAwesomeIcon
-                    icon={faUsers}
-                    className={darkMode ? 'text-purple-300' : 'text-purple-500'}
-                    style={{ color: darkMode ? '#c4b5fd' : '#8b5cf6' }}
-                  />
-                }
-                valueStyle={{ color: darkMode ? '#ffffff' : '#1f2937' }}
-              />
-            </Card>
-            <Card className={`${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white'} shadow-lg`}>
-              <Statistic
-                title={<span className={darkMode ? 'text-gray-300' : 'text-gray-600'}>Avg Applicants</span>}
-                value={stats.avgApplicants}
-                prefix={
-                  <FontAwesomeIcon
-                    icon={faUsers}
-                    className={darkMode ? 'text-orange-300' : 'text-orange-500'}
-                    style={{ color: darkMode ? '#fdba74' : '#f97316' }}
-                  />
-                }
-                valueStyle={{ color: darkMode ? '#ffffff' : '#1f2937' }}
-              />
-            </Card>
-          </div>
-        </div>
-
-        {/* Job Listings Table */}
-        <Card className={`${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white'} shadow-lg`}>
-          <div className='mb-4'>
-            <h2 className={`text-xl font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Job Listings</h2>
-            <p className={`${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>Manage and track your job postings</p>
-          </div>
-
-          <TableView
-            dataSource={jobOpportunities}
-            columns={columns}
-            loading={loading}
-            pagination={{
-              pageSize: 10,
-              showSizeChanger: true,
-              showQuickJumper: true,
-              showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`
-            }}
-            rowKey='id'
-            scroll={{ x: 1200 }}
-          />
-        </Card>
+          rowKey='id'
+          scroll={{ x: 1200 }}
+        />
       </div>
     </div>
   )
