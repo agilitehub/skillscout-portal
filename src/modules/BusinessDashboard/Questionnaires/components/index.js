@@ -359,7 +359,7 @@ const Questionnaires = React.memo(({ user }) => {
                     type='primary'
                     icon={<FontAwesomeIcon icon={faPlus} />}
                     onClick={handleAdd}
-                    className='create-questionnaire-btn'
+                    className='form-btn-primary'
                     size='large'
                   >
                     Create Questionnaire

@@ -279,16 +279,7 @@ const JobDescriptions = React.memo(({ user }) => {
                 size='large'
                 icon={<FontAwesomeIcon icon={faPlus} className='mr-2' />}
                 onClick={handleCreateDescription}
-                className='create-job-description-btn font-medium'
-                style={{
-                  background: '#ffffff',
-                  backgroundColor: '#ffffff',
-                  color: '#059669',
-                  border: '1px solid #ffffff',
-                  fontWeight: '500',
-                  boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                  opacity: '1'
-                }}
+                className='form-btn-primary'
               >
                 Create Description
               </Button>
