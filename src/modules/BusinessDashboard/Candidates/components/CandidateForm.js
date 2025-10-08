@@ -7,7 +7,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUser, faEnvelope, faPhone, faFlag, faTags, faStickyNote } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../../core/context/ThemeContext'
 import { Button } from '../../../../core/components'
-import BusinessSidebar from '../../components/BusinessSidebar'
 
 const { Option } = Select
 const { TextArea } = Input
@@ -91,18 +90,18 @@ const CandidateForm = React.memo(({ user }) => {
         setLoading(true)
 
         // Simulate a brief loading delay
-        await new Promise(resolve => setTimeout(resolve, 500))
+        await new Promise((resolve) => setTimeout(resolve, 500))
 
         if (isEditing) {
           // Update existing candidate
           const savedData = localStorage.getItem('candidatesData')
           if (savedData) {
             const candidatesData = JSON.parse(savedData)
-            
+
             // Find and update the candidate across all stages
             let updated = false
             for (const stageKey in candidatesData) {
-              const candidateIndex = candidatesData[stageKey].findIndex(c => c.id === editId)
+              const candidateIndex = candidatesData[stageKey].findIndex((c) => c.id === editId)
               if (candidateIndex !== -1) {
                 candidatesData[stageKey][candidateIndex] = {
                   ...candidatesData[stageKey][candidateIndex],
@@ -113,7 +112,7 @@ const CandidateForm = React.memo(({ user }) => {
                 break
               }
             }
-            
+
             if (updated) {
               localStorage.setItem('candidatesData', JSON.stringify(candidatesData))
               message.success('Updated candidate successfully')
@@ -151,7 +150,7 @@ const CandidateForm = React.memo(({ user }) => {
 
           // Save back to localStorage
           localStorage.setItem('candidatesData', JSON.stringify(candidatesData))
-          
+
           message.success('Added candidate successfully')
         }
 
@@ -187,9 +186,6 @@ const CandidateForm = React.memo(({ user }) => {
             : 'bg-gradient-to-b from-transparent via-sky-100/40 to-emerald-100/50'
         } pointer-events-none`}
       />
-
-      {/* Sidebar */}
-      <BusinessSidebar />
 
       {/* Main Content */}
       <div className='flex-1 ml-64 relative'>
@@ -288,7 +284,12 @@ const CandidateForm = React.memo(({ user }) => {
                     </div>
                   }
                   name='phone'
-                  rules={[{ pattern: /^\+?[1-9]\d{1,14}$|^\+?[\d\s\-()]{10,20}$/, message: 'Please enter a valid phone number' }]}
+                  rules={[
+                    {
+                      pattern: /^\+?[1-9]\d{1,14}$|^\+?[\d\s\-()]{10,20}$/,
+                      message: 'Please enter a valid phone number'
+                    }
+                  ]}
                 >
                   <Input placeholder='+1 (555) 123-4567' />
                 </Form.Item>
@@ -345,12 +346,10 @@ const CandidateForm = React.memo(({ user }) => {
                       {label}
                       {closable && (
                         <button
-                          type="button"
+                          type='button'
                           onClick={onClose}
                           className={`ml-2 inline-flex items-center justify-center w-4 h-4 rounded-full text-xs font-medium hover:opacity-75 focus:outline-none ${
-                            darkMode
-                              ? 'text-emerald-300 hover:bg-emerald-700'
-                              : 'text-emerald-600 hover:bg-emerald-200'
+                            darkMode ? 'text-emerald-300 hover:bg-emerald-700' : 'text-emerald-600 hover:bg-emerald-200'
                           }`}
                         >
                           ×
@@ -394,8 +393,8 @@ const CandidateForm = React.memo(({ user }) => {
                   darkMode ? 'from-gray-800/50 to-gray-700/50' : 'from-gray-50/50 to-white/50'
                 } -mx-6 -mb-6 px-6 py-4 rounded-b-lg`}
               >
-                <Button 
-                  onClick={handleCancel} 
+                <Button
+                  onClick={handleCancel}
                   disabled={loading}
                   type='default'
                   size='large'
@@ -411,9 +410,9 @@ const CandidateForm = React.memo(({ user }) => {
                 >
                   Cancel
                 </Button>
-                <Button 
+                <Button
                   type='default'
-                  htmlType='submit' 
+                  htmlType='submit'
                   loading={loading}
                   size='large'
                   className='min-w-24 candidate-form-submit-btn'
@@ -485,7 +484,8 @@ const CandidateForm = React.memo(({ user }) => {
             text-shadow: none !important;
           }
 
-          ${darkMode ? `
+          ${darkMode
+            ? `
             .ant-form-item-label > label,
             .ant-form-item-extra {
               color: #d1d5db !important;
@@ -531,11 +531,12 @@ const CandidateForm = React.memo(({ user }) => {
               color: #F9FAFB !important;
               background-color: #EF4444 !important;
             }
-          ` : ''}
+          `
+            : ''}
         `}</style>
       </div>
     </div>
   )
 })
 
-export default CandidateForm 
+export default CandidateForm

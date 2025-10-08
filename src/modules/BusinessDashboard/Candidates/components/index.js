@@ -12,6 +12,7 @@ import { Button } from '../../../../core/components'
 import TableView from '../../../../core/components/view-components/table-view/TableView'
 import KanbanBoard from './KanbanBoard'
 import { BRAND_COLORS, SEMANTIC_COLORS } from '../../../../core/theme/colors'
+import Toolbar from '../../../../core/components/Toolbar'
 
 /**
  * Candidates Management Page
@@ -618,48 +619,12 @@ const Candidates = React.memo(({ user }) => {
           } pointer-events-none`}
         />
 
-        {/* Main Content */}
-        <div className='flex-1 ml-64 relative'>
-          {/* Header */}
-          <div
-            className={`relative px-6 py-2 border-b flex-shrink-0 shadow-lg ${
-              darkMode
-                ? 'bg-gradient-to-r from-emerald-700 to-emerald-600 border border-emerald-600'
-                : 'bg-gradient-to-r from-emerald-500 to-emerald-600'
-            }`}
-          >
-            <div className='flex items-center justify-between'>
-              <div>
-                <h1 className='text-lg font-bold text-white'>Candidates</h1>
-                <p className='text-emerald-100 text-xs mt-0.5'>Manage your recruitment pipeline</p>
-              </div>
-              <Button
-                type='default'
-                size='small'
-                onClick={handleAdd}
-                className='add-candidate-visible font-medium'
-                style={{
-                  background: '#ffffff',
-                  backgroundColor: '#ffffff',
-                  color: '#059669',
-                  border: '1px solid #ffffff',
-                  fontWeight: '500',
-                  boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-                  opacity: '1',
-                  height: '28px',
-                  paddingLeft: '10px',
-                  paddingRight: '10px',
-                  fontSize: '13px'
-                }}
-              >
-                <FontAwesomeIcon icon={faPlus} style={{ fontSize: '10px', marginRight: '3px' }} />
-                Add Candidate
-              </Button>
-            </div>
-          </div>
+        <Toolbar title='Candidates' description='Manage your recruitment pipeline' />
 
+        {/* Main Content */}
+        <div className='flex-1 relative'>
           {/* Content Area - Kanban Board or Table View */}
-          <div className='relative p-6'>
+          <div className='relative pl-5 pr-5 pt-2'>
             {viewMode === 'kanban' ? (
               /* Kanban Board with Drag and Drop */
               <KanbanBoard
@@ -711,7 +676,30 @@ const Candidates = React.memo(({ user }) => {
                   }}
                   scroll={{ x: 1400 }}
                   emptyText='No candidates found'
-                  toolbarActions={[]}
+                  toolbarActions={[
+                    <Button
+                      type='default'
+                      size='small'
+                      onClick={handleAdd}
+                      className='form-btn-primary'
+                      style={{
+                        background: '#ffffff',
+                        backgroundColor: '#ffffff',
+                        color: '#059669',
+                        border: '1px solid #ffffff',
+                        fontWeight: '500',
+                        boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                        opacity: '1',
+                        height: '28px',
+                        paddingLeft: '10px',
+                        paddingRight: '10px',
+                        fontSize: '13px'
+                      }}
+                    >
+                      <FontAwesomeIcon icon={faPlus} style={{ fontSize: '10px', marginRight: '3px' }} />
+                      Add Candidate
+                    </Button>
+                  ]}
                   cardProps={{
                     className: darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
                   }}
