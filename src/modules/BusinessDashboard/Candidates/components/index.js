@@ -626,7 +626,7 @@ const Candidates = React.memo(({ user }) => {
         <div className='flex-1 ml-64 relative'>
           {/* Header */}
           <div
-            className={`relative px-8 py-4 border-b flex-shrink-0 shadow-lg ${
+            className={`relative px-6 py-2 border-b flex-shrink-0 shadow-lg ${
               darkMode
                 ? 'bg-gradient-to-r from-emerald-700 to-emerald-600 border border-emerald-600'
                 : 'bg-gradient-to-r from-emerald-500 to-emerald-600'
@@ -634,12 +634,12 @@ const Candidates = React.memo(({ user }) => {
           >
             <div className='flex items-center justify-between'>
               <div>
-                <h1 className='text-2xl font-bold text-white'>Candidates</h1>
+                <h1 className='text-lg font-bold text-white'>Candidates</h1>
+                <p className='text-emerald-100 text-xs mt-0.5'>Manage your recruitment pipeline</p>
               </div>
               <Button
                 type='default'
-                size='large'
-                icon={<FontAwesomeIcon icon={faPlus} className='mr-2' />}
+                size='small'
                 onClick={handleAdd}
                 className='add-candidate-visible font-medium'
                 style={{
@@ -648,10 +648,15 @@ const Candidates = React.memo(({ user }) => {
                   color: '#059669',
                   border: '1px solid #ffffff',
                   fontWeight: '500',
-                  boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                  opacity: '1'
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                  opacity: '1',
+                  height: '28px',
+                  paddingLeft: '10px',
+                  paddingRight: '10px',
+                  fontSize: '13px'
                 }}
               >
+                <FontAwesomeIcon icon={faPlus} style={{ fontSize: '10px', marginRight: '3px' }} />
                 Add Candidate
               </Button>
             </div>
@@ -832,6 +837,9 @@ const Candidates = React.memo(({ user }) => {
               border: 1px solid #ffffff !important;
               opacity: 1 !important;
               visibility: visible !important;
+              height: 28px !important;
+              font-size: 13px !important;
+              padding: 2px 10px !important;
             }
 
             .add-candidate-visible:hover,
@@ -841,6 +849,18 @@ const Candidates = React.memo(({ user }) => {
               background-color: #f8f9fa !important;
               color: #047857 !important;
               border: 1px solid #f8f9fa !important;
+              transform: translateY(-1px) !important;
+              box-shadow: 0 2px 4px rgba(0,0,0,0.15) !important;
+            }
+
+            /* Ensure icons and text have proper spacing */
+            .add-candidate-visible svg,
+            .add-candidate-visible .anticon {
+              margin-right: 4px !important;
+            }
+
+            .add-candidate-visible span {
+              margin-left: 4px !important;
             }
           `}</style>
 
