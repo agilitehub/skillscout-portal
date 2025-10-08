@@ -35,21 +35,21 @@ const TableActions = React.memo(({ record, actions = [], size = 'small', wrap = 
       key: 'view',
       icon: faEye,
       tooltip: 'View',
-      color: darkMode ? '!text-blue-400 hover:!text-blue-300' : '!text-blue-800 hover:!text-blue-900',
+      color: darkMode ? '!text-blue-400 hover:!text-blue-400' : '!text-blue-500 hover:!text-blue-400',
       onClick: (record) => console.log('View:', record)
     },
     edit: {
       key: 'edit',
       icon: faEdit,
       tooltip: 'Edit',
-      color: darkMode ? '!text-green-400 hover:!text-green-300' : '!text-green-800 hover:!text-green-900',
+      color: darkMode ? '!text-green-400 hover:!text-green-300' : '!text-green-500 hover:!text-green-400',
       onClick: (record) => console.log('Edit:', record)
     },
     delete: {
       key: 'delete',
       icon: faTrash,
       tooltip: 'Delete',
-      color: darkMode ? '!text-red-400 hover:!text-red-300' : '!text-red-800 hover:!text-red-900',
+      color: darkMode ? '!text-red-400 hover:!text-red-400' : '!text-red-500 hover:!text-red-400',
       onClick: (record) => console.log('Delete:', record),
       confirm: {
         title: 'Delete Item',
@@ -102,18 +102,6 @@ const TableActions = React.memo(({ record, actions = [], size = 'small', wrap = 
 
     if (!config) return null
 
-    const button = (
-      <Button
-        type='text'
-        size={size}
-        icon={<FontAwesomeIcon icon={config.icon} className={`${config.color} transition-colors duration-200`} />}
-        onClick={() => config.onClick(record)}
-        className={config.className || `!bg-transparent !border-transparent hover:!bg-gray-100 dark:hover:!bg-gray-700 transition-all duration-200`}
-        disabled={config.disabled}
-        style={config.style}
-      />
-    )
-
     // Wrap with confirmation if needed
     if (config.confirm) {
       return (
@@ -134,14 +122,12 @@ const TableActions = React.memo(({ record, actions = [], size = 'small', wrap = 
             okType={config.confirm.okType}
             placement='topRight'
           >
-            <Button
-              type='text'
-              size={size}
-              icon={<FontAwesomeIcon icon={config.icon} className={`${config.color} transition-colors duration-200`} />}
-              className={config.className || `!bg-transparent !border-transparent hover:!bg-gray-100 dark:hover:!bg-gray-700 transition-all duration-200`}
-              disabled={config.disabled}
-              style={config.style}
-            />
+            <Button variant='ghost' disabled={config.disabled} style={config.style}>
+              <FontAwesomeIcon
+                icon={config.icon}
+                className={`text-sm ${config.color} transition-colors duration-200`}
+              />
+            </Button>
           </Popconfirm>
         </Tooltip>
       )
@@ -149,7 +135,9 @@ const TableActions = React.memo(({ record, actions = [], size = 'small', wrap = 
 
     return (
       <Tooltip key={config.key} title={config.tooltip}>
-        {button}
+        <Button variant='ghost' onClick={() => config.onClick(record)} disabled={config.disabled} style={config.style}>
+          <FontAwesomeIcon icon={config.icon} className={`text-sm ${config.color} transition-colors duration-200`} />
+        </Button>
       </Tooltip>
     )
   }
@@ -157,7 +145,7 @@ const TableActions = React.memo(({ record, actions = [], size = 'small', wrap = 
   if (actions.length === 0) return null
 
   return (
-    <Space size='small' wrap={wrap}>
+    <Space size='small' wrap={false}>
       {actions.map(renderAction)}
     </Space>
   )
