@@ -19,6 +19,7 @@ import { BRAND_COLORS } from '../../../../core/theme/colors'
 import PlanUpgradeModal from './PlanUpgradeModal'
 import PaymentMethodModal from './PaymentMethodModal'
 import InvoiceDetailsModal from './InvoiceDetailsModal'
+import Toolbar from '../../../../core/components/Toolbar'
 
 const { Title, Text } = Typography
 
@@ -293,21 +294,7 @@ const Billing = React.memo(({ user }) => {
 
       {/* Main Content */}
       <div className='flex-1 relative'>
-        {/* Header */}
-        <div
-          className={`relative px-8 py-4 border-b flex-shrink-0 shadow-lg ${
-            darkMode
-              ? 'bg-gradient-to-r from-emerald-700 to-emerald-600 border border-emerald-600'
-              : 'bg-gradient-to-r from-emerald-500 to-emerald-600'
-          }`}
-        >
-          <div className='flex items-center justify-between'>
-            <div>
-              <h1 className='text-2xl font-bold text-white'>Billing & Subscription</h1>
-              <p className='text-emerald-100 mt-1'>Manage your subscription plan and billing information</p>
-            </div>
-          </div>
-        </div>
+        <Toolbar title='Billing & Subscription' description='Manage your subscription plan and billing information' />
 
         {/* Content Area */}
         <div className='relative p-6 space-y-6'>

@@ -33,26 +33,22 @@ export const DashboardLayout = ({ children, user }) => {
 
   return (
     <Row
-      className={`flex flex-col h-screen overflow-hidden fixed w-full ${
+      className={`flex flex-col min-h-screen w-full ${
         darkMode
           ? 'bg-gradient-to-br from-slate-700 via-slate-600 to-slate-500'
           : 'bg-gradient-to-br from-sky-100 via-gray-50 to-emerald-100'
       }`}
     >
-      <Col span={24}>
-        <Row>
-          <Col span={24}>
-            <Header user={user} />
-          </Col>
-        </Row>
-        <Row className='flex-nowrap'>
-          <Col flex='260px' className='min-w-[260px] max-w-[280px]'>
-            <BusinessSidebar />
-          </Col>
-          <Col flex='1' className='w-full'>
-            {children}
-          </Col>
-        </Row>
+      <Col span={24} className='flex-shrink-0'>
+        <Header user={user} />
+      </Col>
+      <Col span={24} className='flex-1 flex'>
+        <Col flex='260px' className='min-w-[260px] max-w-[280px] flex-shrink-0'>
+          <BusinessSidebar />
+        </Col>
+        <Col flex='1' className='w-full overflow-y-auto'>
+          {children}
+        </Col>
       </Col>
     </Row>
   )

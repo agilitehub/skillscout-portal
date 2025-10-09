@@ -531,6 +531,51 @@ const BranchManagement = React.memo(({ user }) => {
           color: #047857 !important;
           border: 1px solid #f8f9fa !important;
         }
+
+        /* Dashboard Button Styles */
+        .dashboard-button,
+        .dashboard-button.ant-btn,
+        button.dashboard-button {
+          background: #ffffff !important;
+          background-color: #ffffff !important;
+          color: #059669 !important;
+          border: 1px solid #ffffff !important;
+          opacity: 1 !important;
+          visibility: visible !important;
+        }
+
+        .dashboard-button:hover,
+        .dashboard-button.ant-btn:hover,
+        button.dashboard-button:hover {
+          background: #f8f9fa !important;
+          background-color: #f8f9fa !important;
+          color: #047857 !important;
+          border: 1px solid #f8f9fa !important;
+          transform: translateY(-1px) !important;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15) !important;
+        }
+
+        ${darkMode
+          ? `
+          .dashboard-button,
+          .dashboard-button.ant-btn,
+          button.dashboard-button {
+            background: #ffffff !important;
+            background-color: #ffffff !important;
+            color: #059669 !important;
+            border: 1px solid #ffffff !important;
+          }
+          
+          .dashboard-button:hover,
+          .dashboard-button.ant-btn:hover,
+          button.dashboard-button:hover {
+            background: #f8f9fa !important;
+            background-color: #f8f9fa !important;
+            color: #047857 !important;
+            border: 1px solid #f8f9fa !important;
+          }
+        `
+          : ''}
       `}</style>
       {/* Background overlay */}
       <div
@@ -546,9 +591,27 @@ const BranchManagement = React.memo(({ user }) => {
         <Toolbar
           title='Branch Management'
           description='Manage your branches'
-          renderActions={() => {
-            return <Button type='primary' icon={<FontAwesomeIcon icon={faPlus} />} onClick={handleAdd} />
-          }}
+          renderActions={() => (
+            <Button
+              type='default'
+              size='middle'
+              className='dashboard-button'
+              style={{
+                backgroundColor: '#ffffff',
+                borderColor: '#ffffff',
+                color: '#059669',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                fontSize: '13px',
+                height: '32px',
+                paddingLeft: '12px',
+                paddingRight: '12px'
+              }}
+              onClick={handleAdd}
+            >
+              <FontAwesomeIcon icon={faPlus} style={{ fontSize: '11px', marginRight: '4px' }} />
+              <span>Add Branch</span>
+            </Button>
+          )}
         />
 
         {/* Content Area */}
@@ -567,17 +630,6 @@ const BranchManagement = React.memo(({ user }) => {
             }}
             scroll={{ x: 1200 }}
             emptyText='No branches found'
-            toolbarActions={[
-              <Button
-                type='default'
-                size='large'
-                icon={<FontAwesomeIcon icon={faPlus} className='mr-2' />}
-                onClick={handleAdd}
-                className='form-btn-primary'
-              >
-                Add Branch
-              </Button>
-            ]}
             cardProps={{
               className: darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
             }}

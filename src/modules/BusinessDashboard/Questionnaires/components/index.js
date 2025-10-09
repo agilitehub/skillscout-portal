@@ -315,6 +315,25 @@ const Questionnaires = React.memo(({ user }) => {
                     <Option value='Inactive'>Inactive</Option>
                     <Option value='Archived'>Archived</Option>
                   </Select>
+                  <Button
+                    type='default'
+                    size='middle'
+                    className='dashboard-button'
+                    style={{
+                      backgroundColor: '#ffffff',
+                      borderColor: '#ffffff',
+                      color: '#059669',
+                      boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                      fontSize: '13px',
+                      height: '32px',
+                      paddingLeft: '12px',
+                      paddingRight: '12px'
+                    }}
+                    onClick={handleAdd}
+                  >
+                    <FontAwesomeIcon icon={faPlus} style={{ fontSize: '11px', marginRight: '4px' }} />
+                    <span>Create Questionnaire</span>
+                  </Button>
                 </div>
               )
             }}
@@ -343,18 +362,6 @@ const Questionnaires = React.memo(({ user }) => {
                 searchTerm={searchTerm}
                 onSearch={setSearchTerm}
                 searchPlaceholder='Search questionnaires...'
-                toolbarActions={[
-                  <Button
-                    key='create'
-                    type='primary'
-                    icon={<FontAwesomeIcon icon={faPlus} />}
-                    onClick={handleAdd}
-                    className='form-btn-primary'
-                    size='large'
-                  >
-                    Create Questionnaire
-                  </Button>
-                ]}
                 pagination={{
                   total: filteredData.length,
                   pageSize: 10,
@@ -365,6 +372,53 @@ const Questionnaires = React.memo(({ user }) => {
             </Spin>
           </div>
         </div>
+
+        {/* Dashboard Button Styles */}
+        <style jsx global>{`
+          .dashboard-button,
+          .dashboard-button.ant-btn,
+          button.dashboard-button {
+            background: #ffffff !important;
+            background-color: #ffffff !important;
+            color: #059669 !important;
+            border: 1px solid #ffffff !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+          }
+
+          .dashboard-button:hover,
+          .dashboard-button.ant-btn:hover,
+          button.dashboard-button:hover {
+            background: #f8f9fa !important;
+            background-color: #f8f9fa !important;
+            color: #047857 !important;
+            border: 1px solid #f8f9fa !important;
+            transform: translateY(-1px) !important;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15) !important;
+          }
+
+          ${darkMode
+            ? `
+            .dashboard-button,
+            .dashboard-button.ant-btn,
+            button.dashboard-button {
+              background: #ffffff !important;
+              background-color: #ffffff !important;
+              color: #059669 !important;
+              border: 1px solid #ffffff !important;
+            }
+            
+            .dashboard-button:hover,
+            .dashboard-button.ant-btn:hover,
+            button.dashboard-button:hover {
+              background: #f8f9fa !important;
+              background-color: #f8f9fa !important;
+              color: #047857 !important;
+              border: 1px solid #f8f9fa !important;
+            }
+          `
+            : ''}
+        `}</style>
       </div>
     </>
   )

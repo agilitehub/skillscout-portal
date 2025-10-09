@@ -21,6 +21,7 @@ import orgSettingsController from '../utils/controller'
 import AIProfileModal from './AIProfileModal'
 import BusinessSetupModal from './BusinessSetupModal'
 import OrganizationProfileForm from './OrganizationProfileForm'
+import Toolbar from '../../../../core/components/Toolbar'
 
 const { TabPane } = Tabs
 
@@ -253,57 +254,56 @@ const OrgSettings = React.memo(({ user }) => {
 
       {/* Main Content */}
       <div className='flex-1 relative'>
-        {/* Header */}
-        <div
-          className={`relative px-8 py-4 border-b flex-shrink-0 shadow-lg ${
-            darkMode
-              ? 'bg-gradient-to-r from-emerald-700 to-emerald-600 border border-emerald-600'
-              : 'bg-gradient-to-r from-emerald-500 to-emerald-600'
-          }`}
-        >
-          <div className='flex items-center justify-between'>
-            <div className='flex flex-col space-y-3'>
-              <div>
-                <h1 className='text-2xl font-bold text-white'>Organization Settings</h1>
-              </div>
-            </div>
-
+        <Toolbar
+          title='Organization Settings'
+          description='Manage your organization profile and preferences'
+          renderActions={() => (
             <div className='flex space-x-3'>
               <Button
                 danger
-                icon={<FontAwesomeIcon icon={faSignOutAlt} className='mr-2' />}
+                size='middle'
+                icon={<FontAwesomeIcon icon={faSignOutAlt} style={{ fontSize: '11px', marginRight: '4px' }} />}
                 onClick={handleLeaveOrganization}
                 loading={leavingOrganization}
                 disabled={leavingOrganization}
-                className={`shadow-md hover:shadow-lg transition-all duration-200 org-settings-leave-btn`}
+                className='org-settings-leave-btn'
                 style={{
                   backgroundColor: darkMode ? '#DC2626' : '#EF4444',
                   borderColor: darkMode ? '#DC2626' : '#EF4444',
-                  color: '#FFFFFF'
+                  color: '#FFFFFF',
+                  fontSize: '13px',
+                  height: '32px',
+                  paddingLeft: '12px',
+                  paddingRight: '12px'
                 }}
                 title='Leave this organization'
               >
-                Leave Organization
+                <span>Leave Organization</span>
               </Button>
 
               <Button
                 type='primary'
-                icon={<FontAwesomeIcon icon={faSave} className='mr-2' />}
+                size='middle'
+                icon={<FontAwesomeIcon icon={faSave} style={{ fontSize: '11px', marginRight: '4px' }} />}
                 onClick={() => form.submit()}
                 loading={loading}
                 disabled={!hasChanges}
-                className={`shadow-md hover:shadow-lg transition-all duration-200 org-settings-save-btn`}
+                className='org-settings-save-btn'
                 style={{
                   backgroundColor: hasChanges ? BRAND_COLORS.emeraldPrimary : darkMode ? '#4B5563' : '#E5E7EB',
                   borderColor: hasChanges ? BRAND_COLORS.emeraldPrimary : darkMode ? '#4B5563' : '#E5E7EB',
-                  color: hasChanges ? '#FFFFFF' : darkMode ? '#9CA3AF' : '#6B7280'
+                  color: hasChanges ? '#FFFFFF' : darkMode ? '#9CA3AF' : '#6B7280',
+                  fontSize: '13px',
+                  height: '32px',
+                  paddingLeft: '12px',
+                  paddingRight: '12px'
                 }}
               >
-                Save Changes
+                <span>Save Changes</span>
               </Button>
             </div>
-          </div>
-        </div>
+          )}
+        />
 
         {/* Content Area */}
         <div className='relative p-6'>

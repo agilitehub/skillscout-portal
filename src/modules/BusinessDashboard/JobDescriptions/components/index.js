@@ -244,7 +244,31 @@ const JobDescriptions = React.memo(({ user }) => {
           } pointer-events-none`}
         ></div>
 
-        <Toolbar title='Job Descriptions' description='Create and manage detailed job descriptions' />
+        <Toolbar
+          title='Job Descriptions'
+          description='Create and manage detailed job descriptions'
+          renderActions={() => (
+            <Button
+              type='default'
+              size='middle'
+              className='dashboard-button'
+              style={{
+                backgroundColor: '#ffffff',
+                borderColor: '#ffffff',
+                color: '#059669',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                fontSize: '13px',
+                height: '32px',
+                paddingLeft: '12px',
+                paddingRight: '12px'
+              }}
+              onClick={handleCreateDescription}
+            >
+              <FontAwesomeIcon icon={faPlus} style={{ fontSize: '11px', marginRight: '4px' }} />
+              <span>Create Description</span>
+            </Button>
+          )}
+        />
 
         {/* Job Context Alert */}
         {jobContext && (
@@ -276,17 +300,6 @@ const JobDescriptions = React.memo(({ user }) => {
             searchTerm={searchTerm}
             onSearch={setSearchTerm}
             searchPlaceholder='Search job descriptions...'
-            toolbarActions={[
-              <Button
-                type='default'
-                size='large'
-                icon={<FontAwesomeIcon icon={faPlus} className='mr-2' />}
-                onClick={handleCreateDescription}
-                className='form-btn-primary'
-              >
-                Create Description
-              </Button>
-            ]}
             pagination={{
               pageSize: 10,
               showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} job descriptions`
@@ -304,6 +317,53 @@ const JobDescriptions = React.memo(({ user }) => {
             emptyText='No job descriptions found'
           />
         </div>
+
+        {/* Dashboard Button Styles */}
+        <style jsx global>{`
+          .dashboard-button,
+          .dashboard-button.ant-btn,
+          button.dashboard-button {
+            background: #ffffff !important;
+            background-color: #ffffff !important;
+            color: #059669 !important;
+            border: 1px solid #ffffff !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+          }
+
+          .dashboard-button:hover,
+          .dashboard-button.ant-btn:hover,
+          button.dashboard-button:hover {
+            background: #f8f9fa !important;
+            background-color: #f8f9fa !important;
+            color: #047857 !important;
+            border: 1px solid #f8f9fa !important;
+            transform: translateY(-1px) !important;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15) !important;
+          }
+
+          ${darkMode
+            ? `
+            .dashboard-button,
+            .dashboard-button.ant-btn,
+            button.dashboard-button {
+              background: #ffffff !important;
+              background-color: #ffffff !important;
+              color: #059669 !important;
+              border: 1px solid #ffffff !important;
+            }
+            
+            .dashboard-button:hover,
+            .dashboard-button.ant-btn:hover,
+            button.dashboard-button:hover {
+              background: #f8f9fa !important;
+              background-color: #f8f9fa !important;
+              color: #047857 !important;
+              border: 1px solid #f8f9fa !important;
+            }
+          `
+            : ''}
+        `}</style>
       </div>
     </>
   )
