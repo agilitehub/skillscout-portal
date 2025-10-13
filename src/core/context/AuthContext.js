@@ -8,7 +8,8 @@ import {
   signOut,
   onAuthStateChange,
   getSession,
-  isAuthenticated
+  isAuthenticated,
+  activateUserOnLogin
 } from '../../core/lib/supabase-controller'
 import { fetchUserProfile, clearProfile } from '../components/profile'
 
@@ -52,6 +53,12 @@ export const AuthProvider = ({ children }) => {
         const sessionResult = await getSession()
         if (sessionResult.success && sessionResult.session) {
           setCurrentUser(sessionResult.session.user)
+
+          // Activate user status on session restore (in case they were pending)
+          if (sessionResult.session.user?.id) {
+            await activateUserOnLogin(sessionResult.session.user.id)
+          }
+
           // Load user profile when session is restored
           if (sessionResult.session.user?.id) {
             dispatch(fetchUserProfile(sessionResult.session.user.id))
@@ -63,11 +70,15 @@ export const AuthProvider = ({ children }) => {
         // Set up auth state listener
         const unsubscribe = onAuthStateChange(async (event, session) => {
           try {
-            console.log('AuthContext: Auth state changed:', event, session?.user?.email)
-
             if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session) {
               setCurrentUser(session.user)
               setAuthError(null)
+
+              // Activate user status on successful login
+              if (session.user?.id) {
+                await activateUserOnLogin(session.user.id)
+              }
+
               // Load user profile when user signs in (only if not already loaded from session restore)
               if (session.user?.id && !currentUser) {
                 dispatch(fetchUserProfile(session.user.id))
