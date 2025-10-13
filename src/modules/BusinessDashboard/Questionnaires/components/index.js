@@ -375,23 +375,17 @@ const Questionnaires = React.memo(({ user }) => {
                   showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} questionnaires`
                 }}
                 emptyText={
-                  loading ? (
-                    <span className={darkMode ? 'text-gray-200' : 'text-gray-700'}>
-                      Loading questionnaires...
-                    </span>
-                  ) : (
-                    <div className='text-center py-8'>
-                      <div className={`text-4xl mb-4 ${darkMode ? 'text-gray-400' : 'text-gray-300'}`}>
-                        📋
-                      </div>
-                      <p className={`text-lg font-medium ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                        No questionnaires found
-                      </p>
-                      <p className={`text-sm mt-2 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                        Get started by creating your first questionnaire
-                      </p>
+                  <div className='text-center py-8'>
+                    <div className={`text-4xl mb-4 ${darkMode ? 'text-gray-400' : 'text-gray-300'}`}>
+                      📋
                     </div>
-                  )
+                    <p className={`text-lg font-medium ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                      No questionnaires found
+                    </p>
+                    <p className={`text-sm mt-2 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                      Get started by creating your first questionnaire
+                    </p>
+                  </div>
                 }
               />
             </Spin>

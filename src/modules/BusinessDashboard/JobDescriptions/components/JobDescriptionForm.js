@@ -1130,6 +1130,38 @@ const CreateJobDescription = React.memo(({ user }) => {
           .dark-select-dropdown .ant-select-item-option-selected:hover {
             background-color: #047857 !important;
           }
+          
+          .dark-modal .ant-modal-content {
+            background-color: #374151 !important;
+            color: #F9FAFB !important;
+          }
+          
+          .dark-modal .ant-modal-header {
+            background-color: #374151 !important;
+            border-bottom-color: #4B5563 !important;
+          }
+          
+          .dark-modal .ant-modal-title {
+            color: #F9FAFB !important;
+          }
+          
+          .dark-modal .ant-modal-body {
+            background-color: #374151 !important;
+            color: #F9FAFB !important;
+          }
+          
+          .dark-modal .ant-modal-footer {
+            background-color: #374151 !important;
+            border-top-color: #4B5563 !important;
+          }
+          
+          .dark-modal .ant-modal-close {
+            color: #F9FAFB !important;
+          }
+          
+          .dark-modal .ant-modal-close:hover {
+            color: #FFFFFF !important;
+          }
         ` : ''}
       `}</style>
     </div>

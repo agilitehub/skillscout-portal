@@ -205,12 +205,6 @@ const Dashboard = React.memo(() => {
             label: 'Manage Listing',
             icon: <FontAwesomeIcon icon={faEdit} />,
             onClick: () => navigate('/business-dashboard/job-listings')
-          },
-          {
-            key: 'scouting-search',
-            label: 'Scouting / Search',
-            icon: <FontAwesomeIcon icon={faSearch} />,
-            onClick: () => navigate('/business-dashboard/candidates')
           }
         ]}
       />
