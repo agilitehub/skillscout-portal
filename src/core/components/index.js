@@ -6,7 +6,6 @@
  */
 
 export { default as Button } from './Button'
-export { default as BackgroundEffect } from './BackgroundEffect'
 export { default as FileUpload } from './FileUpload'
 export { default as Logo } from './Logo'
 export { default as StatusBadge } from './StatusBadge'

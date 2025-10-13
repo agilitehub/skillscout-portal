@@ -128,7 +128,7 @@ const BusinessSidebar = React.memo(() => {
     <div
       className={`h-full z-30 transition-all duration-300 ${
         darkMode ? 'bg-gray-900 border-gray-700' : 'bg-white border-gray-200'
-      } border-r shadow-lg`}
+      } shadow-lg`}
       style={{
         background: darkMode
           ? 'linear-gradient(180deg, #1f2937 0%, #111827 100%)'
