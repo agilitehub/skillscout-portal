@@ -9,6 +9,7 @@ import { Button } from '../../../../core/components'
 import { useTheme } from '../../../../core/context/ThemeContext'
 import userManagementController from '../utils/controller'
 import Toolbar from '../../../../core/components/Toolbar'
+import ModuleContainer from '../../../../core/components/layout/Container/ModuleContainer'
 
 /**
  * Invite User Page Component
@@ -103,75 +104,74 @@ const InviteUserPage = React.memo(() => {
         <Toolbar title='Invite New User' description='Send an invitation to a new user to join your organization' />
 
         {/* Content Area */}
-        <div className='relative'>
-          <div className='p-6'>
-            <Card
-              className={`shadow-xl ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}
-              style={{
-                backgroundColor: darkMode ? '#374151' : '#ffffff',
-                borderColor: darkMode ? '#4B5563' : '#e5e7eb'
+        <ModuleContainer>
+          <Card
+            className={`shadow-xl ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}
+            style={{
+              backgroundColor: darkMode ? '#374151' : '#ffffff',
+              borderColor: darkMode ? '#4B5563' : '#e5e7eb'
+            }}
+          >
+            <Form
+              form={form}
+              layout='vertical'
+              onFinish={handleSubmit}
+              initialValues={{
+                role: 'recruiter'
               }}
+              className='global-form'
             >
-              <Form
-                form={form}
-                layout='vertical'
-                onFinish={handleSubmit}
-                initialValues={{
-                  role: 'recruiter'
-                }}
-                className='global-form'
-              >
-                <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-                  <Form.Item
-                    label={
-                      <Space>
-                        <FontAwesomeIcon icon={faUser} className='text-gray-400' />
-                        <span>First Name</span>
-                      </Space>
-                    }
-                    name='first_name'
-                    rules={[
-                      { required: true, message: 'Please enter first name' },
-                      { min: 1, message: 'First name must be at least 1 character' }
-                    ]}
-                  >
-                    <Input placeholder='John' />
-                  </Form.Item>
+              <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+                <Form.Item
+                  label={
+                    <Space>
+                      <FontAwesomeIcon icon={faUser} className='text-gray-400' />
+                      <span>First Name</span>
+                    </Space>
+                  }
+                  name='first_name'
+                  rules={[
+                    { required: true, message: 'Please enter first name' },
+                    { min: 1, message: 'First name must be at least 1 character' }
+                  ]}
+                >
+                  <Input placeholder='John' />
+                </Form.Item>
 
-                  <Form.Item
-                    label={
-                      <Space>
-                        <FontAwesomeIcon icon={faUser} className='text-gray-400' />
-                        <span>Last Name</span>
-                      </Space>
-                    }
-                    name='last_name'
-                    rules={[
-                      { required: true, message: 'Please enter last name' },
-                      { min: 1, message: 'Last name must be at least 1 character' }
-                    ]}
-                  >
-                    <Input placeholder='Smith' />
-                  </Form.Item>
+                <Form.Item
+                  label={
+                    <Space>
+                      <FontAwesomeIcon icon={faUser} className='text-gray-400' />
+                      <span>Last Name</span>
+                    </Space>
+                  }
+                  name='last_name'
+                  rules={[
+                    { required: true, message: 'Please enter last name' },
+                    { min: 1, message: 'Last name must be at least 1 character' }
+                  ]}
+                >
+                  <Input placeholder='Smith' />
+                </Form.Item>
 
-                  <Form.Item
-                    label={
-                      <Space>
-                        <FontAwesomeIcon icon={faEnvelope} className='text-gray-400' />
-                        <span>Email Address</span>
-                      </Space>
-                    }
-                    name='email'
-                    rules={[
-                      { required: true, message: 'Please enter email address' },
-                      { type: 'email', message: 'Please enter a valid email address' }
-                    ]}
-                  >
-                    <Input placeholder='user@company.com' />
-                  </Form.Item>
-                </div>
+                <Form.Item
+                  label={
+                    <Space>
+                      <FontAwesomeIcon icon={faEnvelope} className='text-gray-400' />
+                      <span>Email Address</span>
+                    </Space>
+                  }
+                  name='email'
+                  rules={[
+                    { required: true, message: 'Please enter email address' },
+                    { type: 'email', message: 'Please enter a valid email address' }
+                  ]}
+                >
+                  <Input placeholder='user@company.com' />
+                </Form.Item>
+              </div>
 
-                {/* <Form.Item
+              {/* <Form.Item
                   label={
                     <Space size={8}>
                       <FontAwesomeIcon icon={faShieldAlt} className='text-gray-400' />
@@ -219,31 +219,30 @@ const InviteUserPage = React.memo(() => {
                   </Select>
                 </Form.Item> */}
 
-                {/* Form Actions */}
-                <div className='flex justify-end space-x-3 mt-6'>
-                  <Button type='default' size='large' onClick={handleCancel} className='form-btn-secondary'>
-                    <Space>
-                      <FontAwesomeIcon icon={faCancel} />
-                      <span>Cancel</span>
-                    </Space>
-                  </Button>
-                  <Button
-                    type='primary'
-                    size='large'
-                    loading={loading}
-                    onClick={() => form.submit()}
-                    className='form-btn-primary'
-                  >
-                    <Space>
-                      <FontAwesomeIcon icon={faEnvelope} />
-                      <span>Send Invitation</span>
-                    </Space>
-                  </Button>
-                </div>
-              </Form>
-            </Card>
-          </div>
-        </div>
+              {/* Form Actions */}
+              <div className='flex justify-end space-x-3 mt-6'>
+                <Button type='default' size='large' onClick={handleCancel} className='form-btn-secondary'>
+                  <Space>
+                    <FontAwesomeIcon icon={faCancel} />
+                    <span>Cancel</span>
+                  </Space>
+                </Button>
+                <Button
+                  type='primary'
+                  size='large'
+                  loading={loading}
+                  onClick={() => form.submit()}
+                  className='form-btn-primary'
+                >
+                  <Space>
+                    <FontAwesomeIcon icon={faEnvelope} />
+                    <span>Send Invitation</span>
+                  </Space>
+                </Button>
+              </div>
+            </Form>
+          </Card>
+        </ModuleContainer>
       </div>
     </div>
   )

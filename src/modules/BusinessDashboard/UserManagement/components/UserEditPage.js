@@ -3,20 +3,13 @@
 import React, { useState, useCallback, useEffect, useMemo } from 'react'
 import { Card, Form, Input, Select, Space, message } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {
-  faUser,
-  faEnvelope,
-  faSave,
-  faUndo,
-  faUserCheck,
-  faUserTimes,
-  faCancel
-} from '@fortawesome/free-solid-svg-icons'
+import { faUser, faEnvelope, faSave, faUserCheck, faUserTimes, faCancel } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useTheme } from '../../../../core/context/ThemeContext'
 import { Button } from '../../../../core/components'
 import { BRAND_COLORS, SEMANTIC_COLORS } from '../../../../core/theme/colors'
 import Toolbar from '../../../../core/components/Toolbar'
+import ModuleContainer from '../../../../core/components/layout/Container/ModuleContainer'
 
 /**
  * User Edit Page
@@ -145,7 +138,7 @@ const UserEditPage = React.memo(() => {
       <div className='flex-1 relative'>
         <Toolbar title='User Edit' description='Edit user information and permissions' />
         {/* Content Area */}
-        <div className='relative p-6 space-y-6'>
+        <ModuleContainer>
           <Form
             form={form}
             layout='vertical'
@@ -265,7 +258,7 @@ const UserEditPage = React.memo(() => {
               </div>
             </Card>
           </Form>
-        </div>
+        </ModuleContainer>
       </div>
 
       {/* Dark mode styles */}
