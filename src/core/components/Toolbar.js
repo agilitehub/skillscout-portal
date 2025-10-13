@@ -9,7 +9,7 @@ const Toolbar = ({ title, description, renderActions = () => null }) => {
 
   return (
     <div
-      className={`relative px-3 py-2 flex-shrink-0 shadow-lg rounded-lg ${
+      className={`relative px-3 py-2 flex-shrink-0 shadow-lg rounded-sm ${
         darkMode
           ? 'bg-gradient-to-r from-emerald-700 to-emerald-600 border-emerald-600'
           : 'bg-gradient-to-r from-emerald-600 to-emerald-500'
