@@ -469,6 +469,33 @@ const JobOpportunityForm = React.memo(() => {
         </Card>
         </div>
       </div>
+
+      {/* Dark mode dropdown styles */}
+      <style jsx global>{`
+        ${darkMode ? `
+          .job-opportunity-dark-dropdown {
+            background-color: #374151 !important;
+          }
+          
+          .job-opportunity-dark-dropdown .ant-select-item {
+            color: #F9FAFB !important;
+            background-color: #374151 !important;
+          }
+          
+          .job-opportunity-dark-dropdown .ant-select-item:hover {
+            background-color: #4B5563 !important;
+          }
+          
+          .job-opportunity-dark-dropdown .ant-select-item-option-selected {
+            background-color: #059669 !important;
+            color: #FFFFFF !important;
+          }
+          
+          .job-opportunity-dark-dropdown .ant-select-item-option-selected:hover {
+            background-color: #047857 !important;
+          }
+        ` : ''}
+      `}</style>
     </div>
   )
 })
