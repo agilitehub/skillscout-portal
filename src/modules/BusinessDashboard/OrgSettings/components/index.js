@@ -22,6 +22,7 @@ import AIProfileModal from './AIProfileModal'
 import BusinessSetupModal from './BusinessSetupModal'
 import OrganizationProfileForm from './OrganizationProfileForm'
 import Toolbar from '../../../../core/components/Toolbar'
+import ModuleContainer from '../../../../core/components/layout/Container/ModuleContainer'
 
 const { TabPane } = Tabs
 
@@ -278,7 +279,7 @@ const OrgSettings = React.memo(({ user }) => {
         />
 
         {/* Content Area */}
-        <div className='relative pl-2 pr-2 pt-2'>
+        <ModuleContainer>
           {loadingOrgData ? (
             <div className='flex justify-center items-center h-64'>
               <div className='text-center'>
@@ -518,7 +519,7 @@ const OrgSettings = React.memo(({ user }) => {
               </Card>
             </Form>
           )}
-        </div>
+        </ModuleContainer>
       </div>
 
       {/* AI Profile Modal */}

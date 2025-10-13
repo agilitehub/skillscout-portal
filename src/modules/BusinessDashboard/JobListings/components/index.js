@@ -19,6 +19,7 @@ import { getAllJobOpportunities, deleteJobOpportunity, updateJobOpportunityStatu
 import TableView from '../../../../core/components/view-components/table-view/TableView'
 import TableActions from '../../../../core/components/view-components/table-view/TableActions'
 import Toolbar from '../../../../core/components/Toolbar'
+import ModuleContainer from '../../../../core/components/layout/Container/ModuleContainer'
 
 /**
  * Job Listings component for Recruiters and Employers
@@ -338,7 +339,7 @@ const JobListings = React.memo(({ user }) => {
         )}
       />
 
-      <div className='pl-5 pr-5 pt-2 relative z-10'>
+      <ModuleContainer>
         <TableView
           dataSource={jobOpportunities}
           columns={columns}
@@ -355,7 +356,7 @@ const JobListings = React.memo(({ user }) => {
           rowKey='id'
           scroll={{ x: 1200 }}
         />
-      </div>
+      </ModuleContainer>
 
       {/* Dashboard Button Styles */}
       <style jsx global>{`

@@ -13,6 +13,7 @@ import TableActions from '../../../../core/components/view-components/table-view
 // Import controller functions
 import { getAllQuestionnaires, deleteQuestionnaire, searchQuestionnaires } from '../utils/controller'
 import Toolbar from '../../../../core/components/Toolbar'
+import ModuleContainer from '../../../../core/components/layout/Container/ModuleContainer'
 
 const { Option } = Select
 
@@ -343,7 +344,7 @@ const Questionnaires = React.memo(({ user }) => {
             />
           )}
 
-          <div className='pl-5 pr-5 pt-2'>
+          <ModuleContainer>
             {/* Questionnaire Data Table */}
             <Spin
               spinning={loading}
@@ -374,7 +375,7 @@ const Questionnaires = React.memo(({ user }) => {
                 }
               />
             </Spin>
-          </div>
+          </ModuleContainer>
         </div>
 
         {/* Dashboard Button Styles */}

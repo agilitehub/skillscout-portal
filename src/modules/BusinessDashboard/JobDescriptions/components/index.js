@@ -11,6 +11,7 @@ import { getAllJobDescriptions, deleteJobDescription } from '../utils/controller
 import TableView from '../../../../core/components/view-components/table-view/TableView'
 import TableActions from '../../../../core/components/view-components/table-view/TableActions'
 import Toolbar from '../../../../core/components/Toolbar'
+import ModuleContainer from '../../../../core/components/layout/Container/ModuleContainer'
 
 /**
  * Job Descriptions page for managing detailed job descriptions
@@ -281,7 +282,7 @@ const JobDescriptions = React.memo(({ user }) => {
           </div>
         )}
 
-        <div className='pl-5 pr-5 pt-2 relative z-10'>
+        <ModuleContainer>
           {/* Job Descriptions Table */}
           <TableView
             columns={columns}
@@ -307,7 +308,7 @@ const JobDescriptions = React.memo(({ user }) => {
             }}
             emptyText='No job descriptions found'
           />
-        </div>
+        </ModuleContainer>
 
         {/* Dashboard Button Styles */}
         <style jsx global>{`

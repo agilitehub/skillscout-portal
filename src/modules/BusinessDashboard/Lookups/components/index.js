@@ -4,13 +4,14 @@ import React, { useState, useCallback, useMemo, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTheme } from '../../../../core/context/ThemeContext'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faList, faPlus, faFilter, faSpinner, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons'
+import { faPlus, faFilter, faSpinner, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { Select, message, Spin } from 'antd'
 import { Button } from '../../../../core/components'
 import TableView from '../../../../core/components/view-components/table-view/TableView'
 import TableActions from '../../../../core/components/view-components/table-view/TableActions'
 import { getAllLookups, deleteLookup } from '../utils/controller'
 import Toolbar from '../../../../core/components/Toolbar'
+import ModuleContainer from '../../../../core/components/layout/Container/ModuleContainer'
 
 const { Option } = Select
 
@@ -331,7 +332,7 @@ const Lookups = React.memo(({ user }) => {
           }}
         />
 
-        <div className='pl-2 pr-2 pt-2 relative z-10'>
+        <ModuleContainer>
           <Spin spinning={loading} indicator={<FontAwesomeIcon icon={faSpinner} spin />}>
             <TableView
               columns={columns}
@@ -361,7 +362,7 @@ const Lookups = React.memo(({ user }) => {
               emptyText='No lookup categories found'
             />
           </Spin>
-        </div>
+        </ModuleContainer>
       </div>
     </>
   )

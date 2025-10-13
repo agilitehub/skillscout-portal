@@ -8,7 +8,6 @@ import {
   faEnvelope,
   faUserCheck,
   faUserTimes,
-  faCheckCircle,
   faUserSlash,
   faTrash
 } from '@fortawesome/free-solid-svg-icons'
@@ -21,6 +20,7 @@ import userManagementController from '../utils/controller'
 import TableActions from '../../../../core/components/view-components/table-view/TableActions'
 import Toolbar from '../../../../core/components/Toolbar'
 import dayjs from 'dayjs'
+import ModuleContainer from '../../../../core/components/layout/Container/ModuleContainer'
 
 /**
  * User Management Page
@@ -492,7 +492,7 @@ const UserManagement = React.memo(({ user }) => {
         />
 
         {/* Content Area */}
-        <div className='relative pl-2 pr-2 pt-2'>
+        <ModuleContainer>
           {error && (
             <div className='flex justify-center items-center py-12'>
               <div className={`text-center ${darkMode ? 'text-red-400' : 'text-red-600'}`}>
@@ -532,7 +532,7 @@ const UserManagement = React.memo(({ user }) => {
               className: darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
             }}
           />
-        </div>
+        </ModuleContainer>
       </div>
 
       {/* Dashboard Button Styles */}
