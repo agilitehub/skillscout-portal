@@ -322,11 +322,20 @@ const JobOpportunityForm = React.memo(() => {
               <Row gutter={16}>
                 <Col xs={24} lg={12}>
                   {loadingOptions ? (
-                    <center>
-                      <Spin spinning={loadingOptions} size='small' tip='Loading job descriptions...'>
-                        <div className='h-10 w-10' />
-                      </Spin>
-                    </center>
+                    <div className={`p-4 rounded-lg border ${darkMode ? 'bg-gray-800 border-gray-600' : 'bg-gray-50 border-gray-200'}`}>
+                      <div className='flex flex-col items-center justify-center py-8'>
+                        <div className='flex flex-col items-center space-y-3'>
+                          <Spin 
+                            spinning={loadingOptions} 
+                            size='default'
+                            style={{ backgroundColor: 'transparent' }}
+                          />
+                          <span className={`whitespace-nowrap text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                            Loading job descriptions...
+                          </span>
+                        </div>
+                      </div>
+                    </div>
                   ) : (
                     <Form.Item
                       label='Job Description'
@@ -354,11 +363,20 @@ const JobOpportunityForm = React.memo(() => {
                 </Col>
                 <Col xs={24} lg={12}>
                   {loadingOptions ? (
-                    <center>
-                      <Spin spinning={loadingOptions} size='small' tip='Loading questionnaires...'>
-                        <div className='h-10 w-10' />
-                      </Spin>
-                    </center>
+                    <div className={`p-4 rounded-lg border ${darkMode ? 'bg-gray-800 border-gray-600' : 'bg-gray-50 border-gray-200'}`}>
+                      <div className='flex flex-col items-center justify-center py-8'>
+                        <div className='flex flex-col items-center space-y-3'>
+                          <Spin 
+                            spinning={loadingOptions} 
+                            size='default'
+                            style={{ backgroundColor: 'transparent' }}
+                          />
+                          <span className={`whitespace-nowrap text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                            Loading questionnaires...
+                          </span>
+                        </div>
+                      </div>
+                    </div>
                   ) : (
                     <Form.Item label='Questionnaires (Optional)' name='questionnaires'>
                       <Select

@@ -76,7 +76,7 @@ const CreateQuestionnaire = React.memo(({ user }) => {
             description='Create a new questionnaire with title, category, and other details'
           />
 
-          <div className='px-6 pb-6'>
+          <div className='px-6 pt-6 pb-6'>
             <div className='max-w-5xl mx-auto'>
               {/* Form */}
               <Form
@@ -120,7 +120,11 @@ const CreateQuestionnaire = React.memo(({ user }) => {
                         name='status'
                         rules={[{ required: true, message: 'Please select a status' }]}
                       >
-                        <Select placeholder='Select status' style={{ fontWeight: '500' }}>
+                        <Select 
+                          placeholder='Select status' 
+                          style={{ fontWeight: '500' }}
+                          dropdownClassName={darkMode ? 'dark-select-dropdown' : ''}
+                        >
                           <Option value='Draft'>Draft</Option>
                           <Option value='Active'>Active</Option>
                           <Option value='Inactive'>Inactive</Option>
@@ -129,7 +133,11 @@ const CreateQuestionnaire = React.memo(({ user }) => {
                       </Form.Item>
 
                       <Form.Item label='Category' name='category'>
-                        <Select placeholder='Select category' style={{ fontWeight: '500' }}>
+                        <Select 
+                          placeholder='Select category' 
+                          style={{ fontWeight: '500' }}
+                          dropdownClassName={darkMode ? 'dark-select-dropdown' : ''}
+                        >
                           <Option value='Technical'>Technical</Option>
                           <Option value='Behavioral'>Behavioral</Option>
                           <Option value='Cognitive'>Cognitive</Option>
@@ -145,6 +153,7 @@ const CreateQuestionnaire = React.memo(({ user }) => {
                         placeholder='Add tags (press Enter to add)'
                         className='w-full'
                         style={{ fontWeight: '500' }}
+                        dropdownClassName={darkMode ? 'dark-select-dropdown' : ''}
                       />
                     </Form.Item>
 
@@ -178,6 +187,31 @@ const CreateQuestionnaire = React.memo(({ user }) => {
           </div>
         </div>
       </div>
+
+      {/* Dark mode dropdown styles */}
+      <style jsx global>{`
+        .dark-select-dropdown {
+          background-color: ${darkMode ? '#374151' : '#ffffff'} !important;
+        }
+        
+        .dark-select-dropdown .ant-select-item {
+          color: ${darkMode ? '#F9FAFB' : '#374151'} !important;
+          background-color: ${darkMode ? '#374151' : '#ffffff'} !important;
+        }
+        
+        .dark-select-dropdown .ant-select-item:hover {
+          background-color: ${darkMode ? '#4B5563' : '#F3F4F6'} !important;
+        }
+        
+        .dark-select-dropdown .ant-select-item-option-selected {
+          background-color: ${darkMode ? '#059669' : '#10B981'} !important;
+          color: #FFFFFF !important;
+        }
+        
+        .dark-select-dropdown .ant-select-item-option-selected:hover {
+          background-color: ${darkMode ? '#047857' : '#059669'} !important;
+        }
+      `}</style>
     </>
   )
 })
