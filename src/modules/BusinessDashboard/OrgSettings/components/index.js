@@ -1,13 +1,13 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
 import React, { useState, useCallback, useEffect } from 'react'
-import { Card, Form, message, Tabs, Modal } from 'antd'
+import { Card, Form, message, Tabs, Modal, Space } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faBuilding,
-  faRobot,
+  // faRobot,
   faGlobe,
-  faFileAlt,
+  // faFileAlt,
   faSave,
   faCog,
   faIndustry,
@@ -84,7 +84,8 @@ const OrgSettings = React.memo(({ user }) => {
     }
 
     loadOrganizationData()
-  }, [user?.id, form])
+    // eslint-disable-next-line
+  }, [])
 
   // Update form values when organization data changes
   useEffect(() => {
@@ -128,10 +129,10 @@ const OrgSettings = React.memo(({ user }) => {
     [organizationId, user?.id]
   )
 
-  // Handle AI profile interaction
-  const handleAiProfileUpdate = useCallback(() => {
-    setAiModalVisible(true)
-  }, [])
+  // // Handle AI profile interaction
+  // const handleAiProfileUpdate = useCallback(() => {
+  //   setAiModalVisible(true)
+  // }, [])
 
   // Tab change handler
   const handleTabChange = useCallback((key) => {
@@ -261,8 +262,6 @@ const OrgSettings = React.memo(({ user }) => {
             <div className='flex space-x-3'>
               <Button
                 danger
-                size='middle'
-                icon={<FontAwesomeIcon icon={faSignOutAlt} style={{ fontSize: '11px', marginRight: '4px' }} />}
                 onClick={handleLeaveOrganization}
                 loading={leavingOrganization}
                 disabled={leavingOrganization}
@@ -278,35 +277,17 @@ const OrgSettings = React.memo(({ user }) => {
                 }}
                 title='Leave this organization'
               >
-                <span>Leave Organization</span>
-              </Button>
-
-              <Button
-                type='primary'
-                size='middle'
-                icon={<FontAwesomeIcon icon={faSave} style={{ fontSize: '11px', marginRight: '4px' }} />}
-                onClick={() => form.submit()}
-                loading={loading}
-                disabled={!hasChanges}
-                className='org-settings-save-btn'
-                style={{
-                  backgroundColor: hasChanges ? BRAND_COLORS.emeraldPrimary : darkMode ? '#4B5563' : '#E5E7EB',
-                  borderColor: hasChanges ? BRAND_COLORS.emeraldPrimary : darkMode ? '#4B5563' : '#E5E7EB',
-                  color: hasChanges ? '#FFFFFF' : darkMode ? '#9CA3AF' : '#6B7280',
-                  fontSize: '13px',
-                  height: '32px',
-                  paddingLeft: '12px',
-                  paddingRight: '12px'
-                }}
-              >
-                <span>Save Changes</span>
+                <Space>
+                  <FontAwesomeIcon icon={faSignOutAlt} />
+                  <span>Leave Organization</span>
+                </Space>
               </Button>
             </div>
           )}
         />
 
         {/* Content Area */}
-        <div className='relative p-6'>
+        <div className='relative pl-2 pr-2 pt-2'>
           {loadingOrgData ? (
             <div className='flex justify-center items-center h-64'>
               <div className='text-center'>
@@ -343,178 +324,105 @@ const OrgSettings = React.memo(({ user }) => {
               layout='vertical'
               onFinish={handleSubmit}
               onValuesChange={handleValuesChange}
-              className={`${darkMode ? 'org-settings-form' : ''}`}
+              className='global-form'
             >
-              <Tabs
-                activeKey={activeTab}
-                onChange={handleTabChange}
-                type='card'
-                size='large'
-                className={`org-settings-tabs ${darkMode ? 'org-settings-tabs-dark' : ''}`}
+              <Card
+                className={darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}
+                styles={{
+                  head: {
+                    backgroundColor: darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white,
+                    borderBottom: `1px solid ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.borderGray}`,
+                    color: darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray
+                  },
+                  body: {
+                    backgroundColor: darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white,
+                    color: darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray,
+                    padding: 0
+                  }
+                }}
               >
-                {/* General Tab */}
-                <TabPane
-                  tab={
-                    <span className='flex items-center space-x-2'>
-                      <FontAwesomeIcon icon={faCog} />
-                      <span>General</span>
-                    </span>
-                  }
-                  key='general'
+                <Tabs
+                  activeKey={activeTab}
+                  onChange={handleTabChange}
+                  type='card'
+                  size='middle'
+                  className={`org-settings-tabs ${darkMode ? 'org-settings-tabs-dark' : ''}`}
                 >
-                  <div className='space-y-6'>
-                    {/* Organization Profile and Work Arrangement - Using Shared Form */}
-                    <Card
-                      title={
-                        <div className='flex items-center space-x-3'>
-                          <FontAwesomeIcon icon={faBuilding} className='text-emerald-600' />
-                          <span>Organization Profile</span>
-                        </div>
-                      }
-                      className={darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}
-                      headStyle={{
-                        backgroundColor: darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white,
-                        borderBottom: `1px solid ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.borderGray}`,
-                        color: darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray
-                      }}
-                      bodyStyle={{
-                        backgroundColor: darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white,
-                        color: darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray
-                      }}
-                      extra={
-                        <div className='flex space-x-2'>
-                          <Button
-                            type='text'
-                            icon={<FontAwesomeIcon icon={faRobot} />}
-                            onClick={handleAiProfileUpdate}
-                            className={`${darkMode ? 'text-emerald-400 hover:text-emerald-300' : 'text-emerald-600 hover:text-emerald-700'}`}
-                            title='Re-interact with AI'
-                          >
-                            AI Update
-                          </Button>
-                        </div>
-                      }
-                    >
-                      <OrganizationProfileForm
-                        fieldNameFormat='camelCase'
-                        showSections={{
-                          organizationProfile: true,
-                          workArrangement: true,
-                          regionalPreferences: false,
-                          industryTags: false,
-                          timezone: false
-                        }}
-                        darkMode={darkMode}
-                        dropdownClassName={darkMode ? 'org-settings-dark-dropdown' : ''}
-                        cardWrapper={false}
-                      />
-
-                      {/* Removed AI Profile Alert since aiProfileEnabled is not in the database schema */}
-                    </Card>
-
-                    {/* Future Features Preview */}
-                    <Card
-                      title={
-                        <div className='flex items-center space-x-3'>
-                          <FontAwesomeIcon icon={faFileAlt} className='text-gray-400' />
-                          <span className='text-gray-400'>Future Features</span>
-                        </div>
-                      }
-                      className={`${darkMode ? 'bg-gray-800 border-gray-700 future-features-section' : 'bg-white border-gray-200'} opacity-60`}
-                      headStyle={{
-                        backgroundColor: darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white,
-                        borderBottom: `1px solid ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.borderGray}`,
-                        color: darkMode ? BRAND_COLORS.lightGray : BRAND_COLORS.mediumGray
-                      }}
-                      bodyStyle={{
-                        backgroundColor: darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white,
-                        color: darkMode ? BRAND_COLORS.lightGray : BRAND_COLORS.mediumGray
-                      }}
-                    >
-                      <div
-                        className={`p-4 rounded-lg border-2 border-dashed ${
-                          darkMode
-                            ? 'border-gray-600 bg-gray-700/50 future-features-content'
-                            : 'border-gray-300 bg-gray-50/50'
-                        }`}
-                      >
-                        <h4 className={`font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                          🚀 Coming Soon
-                        </h4>
-                        <div className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                          • <strong>Default Job Description Templates:</strong> Create and manage template settings for
-                          consistent job postings
-                          <br />• <strong>Email Templates:</strong> Customize notification and communication templates
-                          <br />• <strong>Integration Settings:</strong> Connect with external HR tools and platforms
-                          <br />• <strong>Compliance Settings:</strong> Configure GDPR, EEOC, and other regulatory
-                          requirements
-                        </div>
-                      </div>
-                    </Card>
-                  </div>
-                </TabPane>
-
-                {/* Regional Preferences Tab */}
-                <TabPane
-                  tab={
-                    <span className='flex items-center space-x-2'>
-                      <FontAwesomeIcon icon={faGlobe} />
-                      <span>Regional Preferences</span>
-                    </span>
-                  }
-                  key='regional'
-                >
-                  <Card
-                    title={
-                      <div className='flex items-center space-x-3'>
-                        <FontAwesomeIcon icon={faGlobe} className='text-emerald-600' />
-                        <span>Regional Preferences</span>
-                      </div>
+                  {/* General Tab */}
+                  <TabPane
+                    tab={
+                      <span className='flex items-center space-x-2'>
+                        <FontAwesomeIcon icon={faCog} />
+                        <span>General</span>
+                      </span>
                     }
-                    className={darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}
-                    headStyle={{
-                      backgroundColor: darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white,
-                      borderBottom: `1px solid ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.borderGray}`,
-                      color: darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray
-                    }}
-                    bodyStyle={{
-                      backgroundColor: darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white,
-                      color: darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray
-                    }}
+                    key='general'
                   >
-                    <OrganizationProfileForm
-                      fieldNameFormat='camelCase'
-                      showSections={{
-                        organizationProfile: false,
-                        workArrangement: false,
-                        regionalPreferences: true,
-                        industryTags: false,
-                        timezone: false
-                      }}
-                      darkMode={darkMode}
-                      dropdownClassName={darkMode ? 'org-settings-dark-dropdown' : ''}
-                      cardWrapper={false}
-                    />
-                  </Card>
-                </TabPane>
+                    <div className='space-y-6'>
+                      {/* Organization Profile and Work Arrangement - Using Shared Form */}
+                      <Card
+                        title={
+                          <div className='flex items-center space-x-3'>
+                            <FontAwesomeIcon icon={faBuilding} className='text-emerald-600' />
+                            <span>Organization Profile</span>
+                          </div>
+                        }
+                        className={darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}
+                        headStyle={{
+                          backgroundColor: darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white,
+                          borderBottom: `1px solid ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.borderGray}`,
+                          color: darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray
+                        }}
+                        bodyStyle={{
+                          backgroundColor: darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white,
+                          color: darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray
+                        }}
+                        // extra={
+                        //   <div className='flex space-x-2'>
+                        //     <Button
+                        //       type='text'
+                        //       icon={<FontAwesomeIcon icon={faRobot} />}
+                        //       onClick={handleAiProfileUpdate}
+                        //       className={`${darkMode ? 'text-emerald-400 hover:text-emerald-300' : 'text-emerald-600 hover:text-emerald-700'}`}
+                        //       title='Re-interact with AI'
+                        //     >
+                        //       AI Update
+                        //     </Button>
+                        //   </div>
+                        // }
+                      >
+                        <OrganizationProfileForm
+                          fieldNameFormat='camelCase'
+                          showSections={{
+                            organizationProfile: true,
+                            workArrangement: true,
+                            regionalPreferences: false,
+                            industryTags: false,
+                            timezone: false
+                          }}
+                          darkMode={darkMode}
+                          dropdownClassName={darkMode ? 'org-settings-dark-dropdown' : ''}
+                          cardWrapper={false}
+                        />
+                      </Card>
+                    </div>
+                  </TabPane>
 
-                {/* Industry & Classifications Tab */}
-                <TabPane
-                  tab={
-                    <span className='flex items-center space-x-2'>
-                      <FontAwesomeIcon icon={faIndustry} />
-                      <span>Industry & Classifications</span>
-                    </span>
-                  }
-                  key='industry'
-                >
-                  <div className='space-y-6'>
-                    {/* Industry Selection */}
+                  {/* Regional Preferences Tab */}
+                  <TabPane
+                    tab={
+                      <span className='flex items-center space-x-2'>
+                        <FontAwesomeIcon icon={faGlobe} />
+                        <span>Regional Preferences</span>
+                      </span>
+                    }
+                    key='regional'
+                  >
                     <Card
                       title={
                         <div className='flex items-center space-x-3'>
-                          <FontAwesomeIcon icon={faIndustry} className='text-emerald-600' />
-                          <span>Industry</span>
+                          <FontAwesomeIcon icon={faGlobe} className='text-emerald-600' />
+                          <span>Regional Preferences</span>
                         </div>
                       }
                       className={darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}
@@ -533,8 +441,8 @@ const OrgSettings = React.memo(({ user }) => {
                         showSections={{
                           organizationProfile: false,
                           workArrangement: false,
-                          regionalPreferences: false,
-                          industryTags: true,
+                          regionalPreferences: true,
+                          industryTags: false,
                           timezone: false
                         }}
                         darkMode={darkMode}
@@ -542,9 +450,81 @@ const OrgSettings = React.memo(({ user }) => {
                         cardWrapper={false}
                       />
                     </Card>
-                  </div>
-                </TabPane>
-              </Tabs>
+                  </TabPane>
+
+                  {/* Industry & Classifications Tab */}
+                  <TabPane
+                    tab={
+                      <span className='flex items-center space-x-2'>
+                        <FontAwesomeIcon icon={faIndustry} />
+                        <span>Industry & Classifications</span>
+                      </span>
+                    }
+                    key='industry'
+                  >
+                    <div className='space-y-6'>
+                      {/* Industry Selection */}
+                      <Card
+                        title={
+                          <div className='flex items-center space-x-3'>
+                            <FontAwesomeIcon icon={faIndustry} className='text-emerald-600' />
+                            <span>Industry</span>
+                          </div>
+                        }
+                        className={darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}
+                        headStyle={{
+                          backgroundColor: darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white,
+                          borderBottom: `1px solid ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.borderGray}`,
+                          color: darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray
+                        }}
+                        bodyStyle={{
+                          backgroundColor: darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white,
+                          color: darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray
+                        }}
+                      >
+                        <OrganizationProfileForm
+                          fieldNameFormat='camelCase'
+                          showSections={{
+                            organizationProfile: false,
+                            workArrangement: false,
+                            regionalPreferences: false,
+                            industryTags: true,
+                            timezone: false
+                          }}
+                          darkMode={darkMode}
+                          dropdownClassName={darkMode ? 'org-settings-dark-dropdown' : ''}
+                          cardWrapper={false}
+                        />
+                      </Card>
+                    </div>
+                  </TabPane>
+                </Tabs>
+                <div className='flex justify-end space-x-3 mt-1'>
+                  <Button
+                    type='primary'
+                    size='middle'
+                    icon={<FontAwesomeIcon icon={faSave} style={{ fontSize: '11px', marginRight: '4px' }} />}
+                    onClick={() => form.submit()}
+                    loading={loading}
+                    disabled={!hasChanges}
+                    className='form-btn-primary'
+                    style={{
+                      backgroundColor: hasChanges ? BRAND_COLORS.emeraldPrimary : darkMode ? '#4B5563' : '#E5E7EB',
+                      borderColor: hasChanges ? BRAND_COLORS.emeraldPrimary : darkMode ? '#4B5563' : '#E5E7EB',
+                      color: hasChanges ? '#FFFFFF' : darkMode ? '#9CA3AF' : '#6B7280',
+                      fontSize: '13px',
+                      height: '32px',
+                      paddingLeft: '12px',
+                      paddingRight: '12px',
+                      marginTop: '5px',
+                      marginBottom: '10px',
+                      marginRight: '5px'
+                    }}
+                  >
+                    <span>Save Changes</span>
+                  </Button>
+                </div>
+              </Card>
             </Form>
           )}
         </div>
@@ -788,6 +768,11 @@ const OrgSettings = React.memo(({ user }) => {
             background-color: #059669 !important;
             border-color: #059669 !important;
           }
+
+          .org-settings-tabs {
+            background-color: #ffffff !important;
+            border-color: #d1d5db !important;
+          }
           
           .org-settings-tabs .ant-tabs-tab-active .ant-tabs-tab-btn {
             color: #FFFFFF !important;
@@ -880,7 +865,8 @@ const OrgSettings = React.memo(({ user }) => {
 
         /* Tab content spacing */
         .ant-tabs-tabpane {
-          padding-top: 16px !important;
+          padding-top: 0px !important;
+          margin-top: -15px !important;
         }
       `}</style>
     </div>
