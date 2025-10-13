@@ -54,12 +54,17 @@ class UserManagementController {
       // Get current user's organization ID (with built-in validation)
       const orgId = await this.getCurrentUserOrgId()
 
+      // const currentUser = await getCurrentUser()
+      // const currentUserId = currentUser.user.id
+
       // Fetch all users in the organization with additional validation
       const { data: users, error } = await supabase
         .from('users')
-        .select('id, first_name, last_name, email, org_id, created_at')
+        .select('id, first_name, last_name, email, org_id, created_at, status')
         .eq('org_id', orgId)
+        // .neq('id', currentUserId) // Do not show the current user
         .not('org_id', 'is', null) // Ensure org_id is not null
+        .neq('trashed', true) // Exclude trashed users
         .order('created_at', { ascending: false })
 
       if (error) {
@@ -82,7 +87,7 @@ class UserManagementController {
         name: `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.email?.split('@')[0] || 'Unknown',
         email: user.email,
         role: 'viewer', // Default role, TODO: add role field to schema later
-        status: 'active', // Default status, TODO: add status field to schema later
+        status: user.status || 'active', // Use database status or default to 'active'
         lastLogin: null, // TODO: implement last login tracking
         invitedDate: user.created_at,
         permissions: this.getDefaultPermissions('viewer')
@@ -126,6 +131,7 @@ class UserManagementController {
         .eq('id', userId)
         .eq('org_id', orgId)
         .not('org_id', 'is', null) // Ensure org_id is not null
+        .neq('trashed', true) // Exclude trashed users
         .single()
 
       if (error) {
@@ -158,7 +164,7 @@ class UserManagementController {
         name: `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.email?.split('@')[0] || 'Unknown',
         email: user.email,
         role: 'viewer', // Default role, TODO: add role field to schema later
-        status: 'active', // Default status, TODO: add status field to schema later
+        status: user.status || 'active', // Use database status or default to 'active'
         lastLogin: null, // TODO: implement last login tracking
         invitedDate: user.created_at,
         permissions: this.getDefaultPermissions('viewer')
@@ -212,7 +218,8 @@ class UserManagementController {
           email: invitationData.email,
           first_name: invitationData.first_name,
           last_name: invitationData.last_name,
-          org_id: orgId
+          org_id: orgId,
+          status: 'pending' // Set status to pending for new invitations
         })
         .select()
         .single()
@@ -230,7 +237,7 @@ class UserManagementController {
         name: `${newUser.first_name} ${newUser.last_name}`,
         email: newUser.email,
         role: 'viewer', // Default role
-        status: 'pending', // User is pending until they complete signup
+        status: newUser.status || 'pending', // User is pending until they complete signup
         lastLogin: null,
         invitedDate: newUser.created_at,
         permissions: this.getDefaultPermissions('viewer')
@@ -304,6 +311,7 @@ class UserManagementController {
         .update(updateData)
         .eq('id', userId)
         .eq('org_id', orgId)
+        .neq('trashed', true) // Exclude trashed users
         .select('id, first_name, last_name, email, created_at')
         .single()
 
@@ -327,7 +335,7 @@ class UserManagementController {
           'Unknown',
         email: updatedUser.email,
         role: 'viewer', // Default role, TODO: add role field to schema later
-        status: 'active', // Default status, TODO: add status field to schema later
+        status: updatedUser.status || 'active', // Use database status or default to 'active'
         lastLogin: null, // TODO: implement last login tracking
         invitedDate: updatedUser.created_at,
         permissions: this.getDefaultPermissions('viewer')
@@ -430,6 +438,40 @@ class UserManagementController {
   }
 
   /**
+   * Deactivate user (set status to inactive)
+   * @param {string} userId - User ID
+   * @returns {Promise} Success result
+   */
+  async deactivateUser(userId) {
+    try {
+      if (!userId || typeof userId !== 'string') {
+        throw new Error('Valid user ID is required')
+      }
+
+      // Update user status to inactive
+      const { error: updateError } = await supabase.from('users').update({ status: 'inactive' }).eq('id', userId)
+
+      if (updateError) {
+        console.error('Error deactivating user:', updateError)
+        throw new Error('Failed to deactivate user in database')
+      }
+
+      console.log('here3')
+
+      return {
+        success: true,
+        message: 'User deactivated successfully'
+      }
+    } catch (error) {
+      console.error('Error deactivating user:', error)
+      return {
+        success: false,
+        error: error.message || 'Failed to deactivate user'
+      }
+    }
+  }
+
+  /**
    * Remove user from organization (only users in the same org_id)
    * @param {string} userId - User ID
    * @returns {Promise} Success result
@@ -440,53 +482,9 @@ class UserManagementController {
         throw new Error('Valid user ID is required')
       }
 
-      // Get current user info and organization ID
-      const currentUser = await getCurrentUser()
-      if (!currentUser.success || !currentUser.user) {
-        throw new Error('User not authenticated')
-      }
-
-      // Prevent users from deleting themselves
-      if (currentUser.user.id === userId) {
-        throw new Error('You cannot remove yourself from the organization')
-      }
-
-      // Get current user's organization ID (with built-in validation)
-      const orgId = await this.getCurrentUserOrgId()
-
-      // First, verify the user exists and belongs to the same organization
-      const { data: userToDelete, error: fetchError } = await supabase
-        .from('users')
-        .select('id, first_name, last_name, email, org_id')
-        .eq('id', userId)
-        .eq('org_id', orgId)
-        .single()
-
-      if (fetchError) {
-        console.error('Error fetching user to delete:', fetchError)
-        if (fetchError.message === 'JSON object requested, multiple (or no) rows returned') {
-          throw new Error('User not found in your organization')
-        }
-        throw new Error('Failed to verify user before deletion')
-      }
-
-      if (!userToDelete) {
-        throw new Error('User not found in your organization')
-      }
-
-      // Additional security check: verify user belongs to the same organization
-      if (userToDelete.org_id !== orgId) {
-        console.error('Security violation: Attempted to delete user from different organization:', {
-          targetUserId: userId,
-          userOrgId: userToDelete.org_id,
-          currentOrgId: orgId
-        })
-        throw new Error('Access denied: User not in your organization')
-      }
-
-      // Remove the user from the organization by deleting their record
-      // Note: This is a hard delete. In production, you might want to soft delete
-      const { error: deleteError } = await supabase.from('users').delete().eq('id', userId).eq('org_id', orgId)
+      // Soft delete the user by setting trashed to true
+      // This preserves the user record for audit purposes while removing them from active queries
+      const { error: deleteError } = await supabase.from('users').update({ trashed: true }).eq('id', userId)
 
       if (deleteError) {
         console.error('Error removing user:', deleteError)
@@ -495,15 +493,7 @@ class UserManagementController {
 
       return {
         success: true,
-        message: 'User removed successfully',
-        meta: {
-          deletedUser: {
-            id: userToDelete.id,
-            name: `${userToDelete.first_name} ${userToDelete.last_name}`,
-            email: userToDelete.email
-          },
-          organizationId: orgId
-        }
+        message: 'User removed successfully'
       }
     } catch (error) {
       console.error('Error removing user:', error)
@@ -539,6 +529,7 @@ class UserManagementController {
         .select('id, first_name, last_name, email, org_id, created_at')
         .eq('org_id', orgId)
         .not('org_id', 'is', null) // Ensure org_id is not null
+        .neq('trashed', true) // Exclude trashed users
         .or(`first_name.ilike.${searchPattern},last_name.ilike.${searchPattern},email.ilike.${searchPattern}`)
         .order('created_at', { ascending: false })
 
@@ -562,7 +553,7 @@ class UserManagementController {
         name: `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.email?.split('@')[0] || 'Unknown',
         email: user.email,
         role: 'viewer', // Default role, TODO: add role field to schema later
-        status: 'active', // Default status, TODO: add status field to schema later
+        status: user.status || 'active', // Use database status or default to 'active'
         lastLogin: null, // TODO: implement last login tracking
         invitedDate: user.created_at,
         permissions: this.getDefaultPermissions('viewer')

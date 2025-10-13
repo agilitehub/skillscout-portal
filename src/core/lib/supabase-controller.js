@@ -355,11 +355,12 @@ export const ensureUserRecord = async (userId) => {
     }
 
     if (existingUser) {
+      let trashed = existingUser.trashed
       // User record exists with this email
-      if (existingUser.id !== userId) {
+      if (existingUser.id !== userId || trashed) {
         // Different ID - delete old record and create new one with auth user ID
-        console.log('Supabase Controller: Found existing user by email, transferring to auth user ID')
-
+        // OR
+        // User record exists with this email but is trashed
         await supabase.from('users').delete().eq('id', existingUser.id)
 
         const { error: insertError } = await supabase.from('users').insert([
@@ -368,8 +369,9 @@ export const ensureUserRecord = async (userId) => {
             email: existingUser.email,
             first_name: existingUser.first_name,
             last_name: existingUser.last_name,
-            org_id: existingUser.org_id,
-            avatar_url: existingUser.avatar_url
+            org_id: trashed ? null : existingUser.org_id,
+            avatar_url: existingUser.avatar_url,
+            trashed: false
           }
         ])
 
@@ -386,6 +388,47 @@ export const ensureUserRecord = async (userId) => {
     }
   } catch (error) {
     console.error('Supabase Controller: ensureUserRecord error:', error)
+    return false
+  }
+}
+
+/**
+ * Activate user by setting their status to 'active' after successful login
+ * @param {string} userId - The user's unique id
+ * @returns {Promise<boolean>} True if successful, false otherwise
+ */
+export const activateUserOnLogin = async (userId) => {
+  try {
+    if (!supabase) throw new Error('Supabase client not initialized')
+    if (!userId) throw new Error('User ID is required')
+
+    // Get current user status
+    const { data: currentUser, error: fetchError } = await supabase
+      .from('users')
+      .select('status')
+      .eq('id', userId)
+      .single()
+
+    if (fetchError) {
+      console.error('Supabase Controller: Error fetching user status:', fetchError)
+      return false
+    }
+
+    // Only update if status is not already 'active'
+    if (currentUser?.status !== 'active') {
+      const { error: updateError } = await supabase.from('users').update({ status: 'active' }).eq('id', userId)
+
+      if (updateError) {
+        console.error('Supabase Controller: Error activating user:', updateError)
+        return false
+      }
+
+      console.log('Supabase Controller: User status updated to active for user:', userId)
+    }
+
+    return true
+  } catch (error) {
+    console.error('Supabase Controller: activateUserOnLogin error:', error)
     return false
   }
 }
@@ -1434,6 +1477,7 @@ export const getUserProfile = async (userId) => {
           .from('users')
           .select('id, first_name, last_name, avatar_url, created_at')
           .eq('id', userId)
+          .neq('trashed', true) // Exclude trashed users
           .single()
 
         if (fetchError) {

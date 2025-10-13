@@ -1,14 +1,16 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
 import React, { useState, useCallback, useMemo, useEffect } from 'react'
-import { message, Tag, Space, Modal, Select, Switch, Spin } from 'antd'
+import { message, Tag, Space } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faUserPlus,
   faEnvelope,
   faUserCheck,
   faUserTimes,
-  faExclamationTriangle
+  faCheckCircle,
+  faUserSlash,
+  faTrash
 } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from 'react-router-dom'
 import { useTheme } from '../../../../core/context/ThemeContext'
@@ -18,6 +20,7 @@ import { BRAND_COLORS, SEMANTIC_COLORS } from '../../../../core/theme/colors'
 import userManagementController from '../utils/controller'
 import TableActions from '../../../../core/components/view-components/table-view/TableActions'
 import Toolbar from '../../../../core/components/Toolbar'
+import dayjs from 'dayjs'
 
 /**
  * User Management Page
@@ -33,27 +36,27 @@ const UserManagement = React.memo(({ user }) => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
-  // Role definitions
-  const roles = useMemo(
-    () => ({
-      admin: {
-        label: 'Admin',
-        color: SEMANTIC_COLORS.error,
-        description: 'Full access to all features'
-      },
-      recruiter: {
-        label: 'Recruiter',
-        color: BRAND_COLORS.emeraldPrimary,
-        description: 'Can manage candidates and job postings'
-      },
-      viewer: {
-        label: 'Viewer',
-        color: BRAND_COLORS.shakespeare,
-        description: 'Read-only access to candidates and reports'
-      }
-    }),
-    []
-  )
+  // Role definitions (currently unused but kept for future use)
+  // const roles = useMemo(
+  //   () => ({
+  //     admin: {
+  //       label: 'Admin',
+  //       color: SEMANTIC_COLORS.error,
+  //       description: 'Full access to all features'
+  //     },
+  //     recruiter: {
+  //       label: 'Recruiter',
+  //       color: BRAND_COLORS.emeraldPrimary,
+  //       description: 'Can manage candidates and job postings'
+  //     },
+  //     viewer: {
+  //       label: 'Viewer',
+  //       color: BRAND_COLORS.shakespeare,
+  //       description: 'Read-only access to candidates and reports'
+  //     }
+  //   }),
+  //   []
+  // )
 
   // Status definitions
   const statusConfig = useMemo(
@@ -65,40 +68,40 @@ const UserManagement = React.memo(({ user }) => {
     []
   )
 
-  // Get default permissions for role
-  const getDefaultPermissions = useCallback((role) => {
-    switch (role) {
-      case 'admin':
-        return {
-          publishListings: true,
-          editOrgProfile: true,
-          manageQuestionnaires: true,
-          viewCandidates: true,
-          manageCandidates: true,
-          viewReports: true
-        }
-      case 'recruiter':
-        return {
-          publishListings: true,
-          editOrgProfile: false,
-          manageQuestionnaires: false,
-          viewCandidates: true,
-          manageCandidates: true,
-          viewReports: true
-        }
-      case 'viewer':
-        return {
-          publishListings: false,
-          editOrgProfile: false,
-          manageQuestionnaires: false,
-          viewCandidates: true,
-          manageCandidates: false,
-          viewReports: true
-        }
-      default:
-        return {}
-    }
-  }, [])
+  // Get default permissions for role (currently unused but kept for future use)
+  // const getDefaultPermissions = useCallback((role) => {
+  //   switch (role) {
+  //     case 'admin':
+  //       return {
+  //         publishListings: true,
+  //         editOrgProfile: true,
+  //         manageQuestionnaires: true,
+  //         viewCandidates: true,
+  //         manageCandidates: true,
+  //         viewReports: true
+  //       }
+  //     case 'recruiter':
+  //       return {
+  //         publishListings: true,
+  //         editOrgProfile: false,
+  //         manageQuestionnaires: false,
+  //         viewCandidates: true,
+  //         manageCandidates: true,
+  //         viewReports: true
+  //       }
+  //     case 'viewer':
+  //       return {
+  //         publishListings: false,
+  //         editOrgProfile: false,
+  //         manageQuestionnaires: false,
+  //         viewCandidates: true,
+  //         manageCandidates: false,
+  //         viewReports: true
+  //       }
+  //     default:
+  //       return {}
+  //   }
+  // }, [])
 
   // Load users when component mounts
   useEffect(() => {
@@ -126,42 +129,72 @@ const UserManagement = React.memo(({ user }) => {
     loadUsers()
   }, [])
 
-  // Handle role change
-  const handleRoleChange = useCallback(
-    (userId, newRole) => {
-      setUsers((prevUsers) =>
-        prevUsers.map((user) =>
-          user.id === userId
-            ? {
-                ...user,
-                role: newRole,
-                // Update permissions based on role
-                permissions: getDefaultPermissions(newRole)
-              }
-            : user
-        )
-      )
-      message.success(`Role updated successfully`)
-    },
-    [getDefaultPermissions]
-  )
+  // Handle role change (currently unused but kept for future use)
+  // const handleRoleChange = useCallback(
+  //   (userId, newRole) => {
+  //     setUsers((prevUsers) =>
+  //       prevUsers.map((user) =>
+  //         user.id === userId
+  //           ? {
+  //               ...user,
+  //               role: newRole,
+  //               // Update permissions based on role
+  //               permissions: getDefaultPermissions(newRole)
+  //             }
+  //           : user
+  //       )
+  //     )
+  //     message.success(`Role updated successfully`)
+  //   },
+  //   [getDefaultPermissions]
+  // )
 
-  // Handle status toggle
-  const handleStatusToggle = useCallback(
-    (userId) => {
-      setUsers((prevUsers) =>
-        prevUsers.map((user) =>
-          user.id === userId
-            ? {
-                ...user,
-                status: user.status === 'active' ? 'inactive' : 'active'
-              }
-            : user
-        )
-      )
+  // Handle status toggle (currently unused but kept for future use)
+  // const handleStatusToggle = useCallback(
+  //   (userId) => {
+  //     setUsers((prevUsers) =>
+  //       prevUsers.map((user) =>
+  //         user.id === userId
+  //           ? {
+  //               ...user,
+  //               status: user.status === 'active' ? 'inactive' : 'active'
+  //             }
+  //           : user
+  //       )
+  //     )
+  //     const user = users.find((u) => u.id === userId)
+  //     const newStatus = user?.status === 'active' ? 'inactive' : 'active'
+  //     message.success(`User ${newStatus === 'active' ? 'activated' : 'deactivated'} successfully`)
+  //   },
+  //   [users]
+  // )
+
+  // Handle user deactivation
+  const handleDeactivateUser = useCallback(
+    async (userId) => {
       const user = users.find((u) => u.id === userId)
-      const newStatus = user?.status === 'active' ? 'inactive' : 'active'
-      message.success(`User ${newStatus === 'active' ? 'activated' : 'deactivated'} successfully`)
+      try {
+        const result = await userManagementController.deactivateUser(userId)
+
+        if (result.success) {
+          setUsers((prevUsers) =>
+            prevUsers.map((u) =>
+              u.id === userId
+                ? {
+                    ...u,
+                    status: 'inactive'
+                  }
+                : u
+            )
+          )
+          message.success(`${user?.name} has been deactivated`)
+        } else {
+          message.error(result.error || 'Failed to deactivate user')
+        }
+      } catch (error) {
+        console.error('Error deactivating user:', error)
+        message.error('An unexpected error occurred while deactivating user')
+      }
     },
     [users]
   )
@@ -170,29 +203,19 @@ const UserManagement = React.memo(({ user }) => {
   const handleDeleteUser = useCallback(
     async (userId) => {
       const user = users.find((u) => u.id === userId)
-      Modal.confirm({
-        title: 'Delete User',
-        content: `Are you sure you want to remove ${user?.name} from the organization? This action cannot be undone.`,
-        okText: 'Delete',
-        okType: 'danger',
-        cancelText: 'Cancel',
-        icon: <FontAwesomeIcon icon={faExclamationTriangle} className='text-red-500' />,
-        onOk: async () => {
-          try {
-            const result = await userManagementController.removeUser(userId)
+      try {
+        const result = await userManagementController.removeUser(userId)
 
-            if (result.success) {
-              setUsers((prevUsers) => prevUsers.filter((u) => u.id !== userId))
-              message.success(`${user?.name} has been removed from the organization`)
-            } else {
-              message.error(result.error || 'Failed to remove user')
-            }
-          } catch (error) {
-            console.error('Error removing user:', error)
-            message.error('An unexpected error occurred while removing user')
-          }
+        if (result.success) {
+          setUsers((prevUsers) => prevUsers.filter((u) => u.id !== userId))
+          message.success(`${user?.name} has been removed from the organization`)
+        } else {
+          message.error(result.error || 'Failed to remove user')
         }
-      })
+      } catch (error) {
+        console.error('Error removing user:', error)
+        message.error('An unexpected error occurred while removing user')
+      }
     },
     [users]
   )
@@ -264,118 +287,172 @@ const UserManagement = React.memo(({ user }) => {
   const tableColumns = useMemo(
     () => [
       {
-        title: 'User',
-        dataIndex: 'name',
-        key: 'name',
-        width: 200,
-        sorter: (a, b) => a.name.localeCompare(b.name),
-        render: (text, record) => (
-          <div>
-            <div
-              className='font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 cursor-pointer transition-colors duration-200'
-              onClick={() => handleEditUser(record)}
-            >
-              {text}
-            </div>
-            <div className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-500'}`}>{record.email}</div>
-          </div>
-        )
-      },
-      {
-        title: 'Role',
-        dataIndex: 'role',
-        key: 'role',
-        width: 150,
-        sorter: (a, b) => a.role.localeCompare(b.role),
-        render: (role, record) => (
-          <Select
-            value={role}
-            onChange={(newRole) => handleRoleChange(record.id, newRole)}
-            style={{ width: 120 }}
-            size='small'
-            className='role-select'
-            dropdownClassName={darkMode ? 'user-mgmt-dark-dropdown' : ''}
-          >
-            {Object.entries(roles).map(([key, config]) => (
-              <Select.Option key={key} value={key}>
-                <Space>
-                  <div className='w-2 h-2 rounded-full' style={{ backgroundColor: config.color }} />
-                  {config.label}
-                </Space>
-              </Select.Option>
-            ))}
-          </Select>
-        )
-      },
-      {
-        title: 'Status',
-        dataIndex: 'status',
-        key: 'status',
-        width: 120,
-        sorter: (a, b) => a.status.localeCompare(b.status),
-        render: (status) => {
-          const config = statusConfig[status]
+        title: 'First Name',
+        dataIndex: 'first_name',
+        key: 'first_name',
+        width: '20%',
+        sorter: (a, b) => a.first_name.localeCompare(b.first_name),
+        render: (text, record) => {
           return (
-            <Tag color={config.color} style={{ fontWeight: '500' }}>
-              <Space size={4}>
-                <FontAwesomeIcon icon={config.icon} />
-                <span>{config.label}</span>
-              </Space>
-            </Tag>
+            <div>
+              <div
+                className='font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 cursor-pointer transition-colors duration-200'
+                onClick={() => handleEditUser(record)}
+              >
+                {record.first_name}
+              </div>
+            </div>
           )
         }
       },
       {
-        title: 'Last Login',
-        dataIndex: 'lastLogin',
-        key: 'lastLogin',
-        width: 140,
-        sorter: (a, b) => {
-          if (!a.lastLogin && !b.lastLogin) return 0
-          if (!a.lastLogin) return 1
-          if (!b.lastLogin) return -1
-          return new Date(a.lastLogin) - new Date(b.lastLogin)
-        },
-        render: (lastLogin) => (
-          <div className={darkMode ? 'text-gray-300' : 'text-gray-600'}>
-            {lastLogin ? new Date(lastLogin).toLocaleDateString() : <span className='italic'>Never</span>}
-          </div>
-        )
+        title: 'Last Name',
+        dataIndex: 'last_name',
+        key: 'last_name',
+        width: '20%',
+        sorter: (a, b) => a.last_name.localeCompare(b.last_name),
+        render: (text, record) => {
+          return (
+            <div>
+              <div>{record.last_name}</div>
+            </div>
+          )
+        }
       },
       {
-        title: 'Invited',
+        title: 'Email',
+        dataIndex: 'email',
+        key: 'email',
+        width: '20%',
+        sorter: (a, b) => a.email.localeCompare(b.email),
+        render: (text, record) => {
+          return (
+            <div>
+              <div>{record.email}</div>
+            </div>
+          )
+        }
+      },
+      // {
+      //   title: 'Role',
+      //   dataIndex: 'role',
+      //   key: 'role',
+      //   width: 150,
+      //   sorter: (a, b) => a.role.localeCompare(b.role),
+      //   render: (role, record) => (
+      //     <Select
+      //       value={role}
+      //       onChange={(newRole) => handleRoleChange(record.id, newRole)}
+      //       style={{ width: 120 }}
+      //       size='small'
+      //       className='role-select'
+      //       dropdownClassName={darkMode ? 'user-mgmt-dark-dropdown' : ''}
+      //     >
+      //       {Object.entries(roles).map(([key, config]) => (
+      //         <Select.Option key={key} value={key}>
+      //           <Space>
+      //             <div className='w-2 h-2 rounded-full' style={{ backgroundColor: config.color }} />
+      //             {config.label}
+      //           </Space>
+      //         </Select.Option>
+      //       ))}
+      //     </Select>
+      //   )
+      // },
+      {
+        title: 'Status',
+        dataIndex: 'status',
+        key: 'status',
+        width: '10%',
+        sorter: (a, b) => a.status.localeCompare(b.status),
+        render: (status, record) => {
+          const config = statusConfig[status]
+          return (
+            <div className='flex items-center justify-center'>
+              <Tag color={config.color} style={{ fontWeight: '500' }}>
+                <Space size={4}>
+                  <FontAwesomeIcon icon={config.icon} />
+                  <span>{config.label}</span>
+                </Space>
+              </Tag>
+            </div>
+          )
+        }
+      },
+      // {
+      //   title: 'Last Login',
+      //   dataIndex: 'lastLogin',
+      //   key: 'lastLogin',
+      //   width: 140,
+      //   sorter: (a, b) => {
+      //     if (!a.lastLogin && !b.lastLogin) return 0
+      //     if (!a.lastLogin) return 1
+      //     if (!b.lastLogin) return -1
+      //     return new Date(a.lastLogin) - new Date(b.lastLogin)
+      //   },
+      //   render: (lastLogin) => (
+      //     <div className={darkMode ? 'text-gray-300' : 'text-gray-600'}>
+      //       {lastLogin ? new Date(lastLogin).toLocaleDateString() : <span className='italic'>Never</span>}
+      //     </div>
+      //   )
+      // },
+      {
+        title: 'Invitation Date',
         dataIndex: 'invitedDate',
         key: 'invitedDate',
-        width: 120,
+        width: '10%',
         sorter: (a, b) => new Date(a.invitedDate) - new Date(b.invitedDate),
-        render: (date) => new Date(date).toLocaleDateString()
-      },
-      {
-        title: 'Active',
-        key: 'active',
-        width: 80,
-        render: (_, record) => (
-          <Switch
-            checked={record.status === 'active'}
-            onChange={() => handleStatusToggle(record.id)}
-            disabled={record.status === 'pending'}
-            size='small'
-          />
-        )
+        render: (date) => {
+          return <div className='text-center'>{dayjs(new Date(date)).format('YYYY-MM-DD')}</div>
+        }
       },
       {
         title: 'Actions',
         key: 'actions',
-        width: 80,
-        render: (_, record) => (
-          <TableActions
-            record={record}
-            actions={[{ key: 'delete', tooltip: 'Remove User', onClick: (record) => handleDeleteUser(record.id) }]}
-          />
-        )
+        width: '5%',
+        render: (_, record) => {
+          // Show different actions based on user status
+          const actions = []
+
+          if (record.status === 'active') {
+            // For active users, show deactivate action
+            actions.push({
+              key: 'deactivate',
+              icon: faUserSlash,
+              tooltip: 'Deactivate User',
+              color: 'text-orange-500 hover:text-orange-400',
+              onClick: (record) => handleDeactivateUser(record.id),
+              confirm: {
+                title: 'Deactivate User',
+                description: `Are you sure you want to deactivate ${record.email}?`,
+                okText: 'Yes',
+                cancelText: 'Cancel',
+                okType: 'danger'
+              }
+            })
+          } else if (record.status === 'inactive' || record.status === 'pending') {
+            // For inactive users, show delete action
+            actions.push({
+              key: 'delete',
+              icon: faTrash,
+              tooltip: 'Remove User',
+              color: 'text-red-500 hover:text-red-400',
+              onClick: (record) => handleDeleteUser(record.id),
+              confirm: {
+                title: 'Remove User',
+                description: `Are you sure you want to permanently remove ${record.email} from the organization?`,
+                okText: 'Remove',
+                cancelText: 'Cancel',
+                okType: 'danger'
+              }
+            })
+          }
+
+          return <TableActions record={record} actions={actions} />
+        }
       }
     ],
-    [darkMode, roles, statusConfig, handleRoleChange, handleStatusToggle, handleDeleteUser, handleEditUser]
+    [statusConfig, handleDeleteUser, handleDeactivateUser, handleEditUser]
   )
 
   return (
