@@ -1,93 +1,46 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
 import React, { useState, useCallback } from 'react'
-import { Form, Input, Select, Space, Row, Col, Card, message } from 'antd'
+import { Form, Input, Space, Card, message } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faUserPlus, faEnvelope, faShieldAlt, faArrowLeft, faUser } from '@fortawesome/free-solid-svg-icons'
+import { faCancel, faEnvelope, faUser } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from 'react-router-dom'
 import { Button } from '../../../../core/components'
 import { useTheme } from '../../../../core/context/ThemeContext'
-import { BRAND_COLORS, SEMANTIC_COLORS } from '../../../../core/theme/colors'
 import userManagementController from '../utils/controller'
-
-const { TextArea } = Input
+import Toolbar from '../../../../core/components/Toolbar'
 
 /**
  * Invite User Page Component
  * Standalone page for sending user invitations with email and role assignment
  */
-const InviteUserPage = React.memo(({ user }) => {
+const InviteUserPage = React.memo(() => {
   const { darkMode } = useTheme()
   const navigate = useNavigate()
   const [form] = Form.useForm()
   const [loading, setLoading] = useState(false)
 
   // Role options
-  const roleOptions = [
-    {
-      value: 'admin',
-      label: 'Admin',
-      color: SEMANTIC_COLORS.error,
-      description: 'Full access to all features and settings'
-    },
-    {
-      value: 'recruiter',
-      label: 'Recruiter',
-      color: BRAND_COLORS.emeraldPrimary,
-      description: 'Can manage candidates, job postings, and questionnaires'
-    },
-    {
-      value: 'viewer',
-      label: 'Viewer',
-      color: BRAND_COLORS.shakespeare,
-      description: 'Read-only access to candidates and reports'
-    }
-  ]
-
-  // Get default permissions for role
-  const getDefaultPermissions = useCallback((role) => {
-    switch (role) {
-      case 'admin':
-        return {
-          publishListings: true,
-          editOrgProfile: true,
-          manageQuestionnaires: true,
-          viewCandidates: true,
-          manageCandidates: true,
-          viewReports: true
-        }
-      case 'recruiter':
-        return {
-          publishListings: true,
-          editOrgProfile: false,
-          manageQuestionnaires: false,
-          viewCandidates: true,
-          manageCandidates: true,
-          viewReports: true
-        }
-      case 'viewer':
-        return {
-          publishListings: false,
-          editOrgProfile: false,
-          manageQuestionnaires: false,
-          viewCandidates: true,
-          manageCandidates: false,
-          viewReports: true
-        }
-      default:
-        return {}
-    }
-  }, [])
-
-  // Permission labels mapping
-  const permissionLabels = {
-    publishListings: 'Publish Listings',
-    editOrgProfile: 'Edit Org Profile',
-    manageQuestionnaires: 'Manage Questionnaires',
-    viewCandidates: 'View Candidates',
-    manageCandidates: 'Manage Candidates',
-    viewReports: 'View Reports'
-  }
+  // const roleOptions = [
+  //   {
+  //     value: 'admin',
+  //     label: 'Admin',
+  //     color: SEMANTIC_COLORS.error,
+  //     description: 'Full access to all features and settings'
+  //   },
+  //   {
+  //     value: 'recruiter',
+  //     label: 'Recruiter',
+  //     color: BRAND_COLORS.emeraldPrimary,
+  //     description: 'Can manage candidates, job postings, and questionnaires'
+  //   },
+  //   {
+  //     value: 'viewer',
+  //     label: 'Viewer',
+  //     color: BRAND_COLORS.shakespeare,
+  //     description: 'Read-only access to candidates and reports'
+  //   }
+  // ]
 
   // Handle form submission
   const handleSubmit = useCallback(
@@ -156,43 +109,11 @@ const InviteUserPage = React.memo(({ user }) => {
       {/* Main Content */}
       <div className='flex-1 relative'>
         {/* Header */}
-        <div
-          className={`relative border-b flex-shrink-0 shadow-lg ${
-            darkMode
-              ? 'bg-gradient-to-r from-emerald-700 to-emerald-600 border border-emerald-600'
-              : 'bg-gradient-to-r from-emerald-500 to-emerald-600'
-          }`}
-        >
-          <div className='pl-8 pr-8 py-6'>
-            <div className='flex items-center'>
-              <div className='flex items-center space-x-4'>
-                <Button
-                  type='text'
-                  icon={<FontAwesomeIcon icon={faArrowLeft} />}
-                  onClick={handleCancel}
-                  className='text-white hover:text-emerald-100 hover:bg-emerald-600/50'
-                  size='large'
-                />
-                <div className='flex items-center space-x-6'>
-                  <div
-                    className='w-10 h-10 rounded-lg flex items-center justify-center'
-                    style={{ backgroundColor: 'rgba(255, 255, 255, 0.2)' }}
-                  >
-                    <FontAwesomeIcon icon={faUserPlus} className='text-white text-lg' />
-                  </div>
-                  <div>
-                    <h1 className='text-2xl font-bold text-white'>Invite New User</h1>
-                    <p className='text-emerald-100 text-sm'>Send an invitation to join your organization</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <Toolbar title='Invite New User' description='Send an invitation to a new user to join your organization' />
 
         {/* Content Area */}
         <div className='relative'>
-          <div className='pl-8 pr-8 py-8'>
+          <div className='p-6'>
             <Card
               className={`shadow-xl ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}
               style={{
@@ -209,92 +130,57 @@ const InviteUserPage = React.memo(({ user }) => {
                 }}
                 className='global-form'
               >
-                <Form.Item
-                  label={
-                    <Space size={8}>
-                      <FontAwesomeIcon icon={faEnvelope} className='text-gray-400' />
-                      <span>Email Address</span>
-                    </Space>
-                  }
-                  name='email'
-                  rules={[
-                    { required: true, message: 'Please enter email address' },
-                    { type: 'email', message: 'Please enter a valid email address' }
-                  ]}
-                >
-                  <Input placeholder='user@company.com' style={{ fontWeight: '500' }} size='large' />
-                </Form.Item>
+                <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+                  <Form.Item
+                    label={
+                      <Space>
+                        <FontAwesomeIcon icon={faUser} className='text-gray-400' />
+                        <span>First Name</span>
+                      </Space>
+                    }
+                    name='first_name'
+                    rules={[
+                      { required: true, message: 'Please enter first name' },
+                      { min: 1, message: 'First name must be at least 1 character' }
+                    ]}
+                  >
+                    <Input placeholder='John' />
+                  </Form.Item>
 
-                <Row gutter={24}>
-                  <Col xs={24} lg={12}>
-                    <Form.Item
-                      label={
-                        <Space size={8}>
-                          <FontAwesomeIcon icon={faUser} className='text-gray-400' />
-                          <span>First Name</span>
-                        </Space>
-                      }
-                      name='first_name'
-                      rules={[
-                        { required: true, message: 'Please enter first name' },
-                        { min: 1, message: 'First name must be at least 1 character' }
-                      ]}
-                    >
-                      <Input placeholder='John' style={{ fontWeight: '500' }} size='large' />
-                    </Form.Item>
-                  </Col>
+                  <Form.Item
+                    label={
+                      <Space>
+                        <FontAwesomeIcon icon={faUser} className='text-gray-400' />
+                        <span>Last Name</span>
+                      </Space>
+                    }
+                    name='last_name'
+                    rules={[
+                      { required: true, message: 'Please enter last name' },
+                      { min: 1, message: 'Last name must be at least 1 character' }
+                    ]}
+                  >
+                    <Input placeholder='Smith' />
+                  </Form.Item>
 
-                  <Col xs={24} lg={12}>
-                    <Form.Item
-                      label={
-                        <Space size={8}>
-                          <FontAwesomeIcon icon={faUser} className='text-gray-400' />
-                          <span>Last Name</span>
-                        </Space>
-                      }
-                      name='last_name'
-                      rules={[
-                        { required: true, message: 'Please enter last name' },
-                        { min: 1, message: 'Last name must be at least 1 character' }
-                      ]}
-                    >
-                      <Input placeholder='Smith' style={{ fontWeight: '500' }} size='large' />
-                    </Form.Item>
-                  </Col>
-                </Row>
+                  <Form.Item
+                    label={
+                      <Space>
+                        <FontAwesomeIcon icon={faEnvelope} className='text-gray-400' />
+                        <span>Email Address</span>
+                      </Space>
+                    }
+                    name='email'
+                    rules={[
+                      { required: true, message: 'Please enter email address' },
+                      { type: 'email', message: 'Please enter a valid email address' }
+                    ]}
+                  >
+                    <Input placeholder='user@company.com' />
+                  </Form.Item>
+                </div>
 
-                {/* Dummy fields - these will be shown in UI but not submitted to database */}
-                <Row gutter={24}>
-                  <Col xs={24} lg={12}>
-                    <Form.Item
-                      label='Department (Coming Soon)'
-                      name='department'
-                      extra={
-                        <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
-                          This field will be available in a future update
-                        </span>
-                      }
-                    >
-                      <Input placeholder='Engineering' style={{ fontWeight: '500' }} size='large' disabled />
-                    </Form.Item>
-                  </Col>
-
-                  <Col xs={24} lg={12}>
-                    <Form.Item
-                      label='Job Title (Coming Soon)'
-                      name='job_title'
-                      extra={
-                        <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
-                          This field will be available in a future update
-                        </span>
-                      }
-                    >
-                      <Input placeholder='Software Engineer' style={{ fontWeight: '500' }} size='large' disabled />
-                    </Form.Item>
-                  </Col>
-                </Row>
-
-                <Form.Item
+                {/* <Form.Item
                   label={
                     <Space size={8}>
                       <FontAwesomeIcon icon={faShieldAlt} className='text-gray-400' />
@@ -340,82 +226,15 @@ const InviteUserPage = React.memo(({ user }) => {
                       </Select.Option>
                     ))}
                   </Select>
-                </Form.Item>
-
-                <Form.Item
-                  label='Personal Message (Optional)'
-                  name='message'
-                  extra={
-                    <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
-                      Add a personal note to include with the invitation email
-                    </span>
-                  }
-                >
-                  <TextArea
-                    placeholder="Hi! I'd like to invite you to join our recruitment team. Looking forward to working with you!"
-                    rows={4}
-                    style={{ fontWeight: '500' }}
-                    showCount
-                    maxLength={500}
-                  />
-                </Form.Item>
-
-                {/* Role Permissions Preview */}
-                <Form.Item
-                  label='Role Permissions Preview'
-                  extra={
-                    <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
-                      These permissions will be applied based on the selected role
-                    </span>
-                  }
-                >
-                  <Form.Item
-                    noStyle
-                    shouldUpdate={(prevValues, currentValues) => prevValues.role !== currentValues.role}
-                  >
-                    {({ getFieldValue }) => {
-                      const selectedRole = getFieldValue('role')
-                      const permissions = getDefaultPermissions(selectedRole)
-
-                      return (
-                        <div
-                          className={`p-6 rounded-lg border ${
-                            darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'
-                          }`}
-                        >
-                          <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                            {Object.entries(permissions).map(([key, value]) => (
-                              <div key={key} className='flex items-center justify-between'>
-                                <span className={`text-sm font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                                  {permissionLabels[key]}
-                                </span>
-                                <div className='flex items-center space-x-2'>
-                                  <div className={`w-3 h-3 rounded-full ${value ? 'bg-green-500' : 'bg-red-500'}`} />
-                                  <span
-                                    className={`text-xs font-medium ${
-                                      value ? 'text-green-600' : darkMode ? 'text-red-400' : 'text-red-600'
-                                    }`}
-                                  >
-                                    {value ? 'Allowed' : 'Denied'}
-                                  </span>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      )
-                    }}
-                  </Form.Item>
-                </Form.Item>
+                </Form.Item> */}
 
                 {/* Form Actions */}
-                <div
-                  className={`flex justify-end space-x-4 pt-6 mt-6 border-t ${
-                    darkMode ? 'border-gray-600' : 'border-gray-200'
-                  }`}
-                >
+                <div className='flex justify-end space-x-3 mt-6'>
                   <Button type='default' size='large' onClick={handleCancel} className='form-btn-secondary'>
-                    Cancel
+                    <Space>
+                      <FontAwesomeIcon icon={faCancel} />
+                      <span>Cancel</span>
+                    </Space>
                   </Button>
                   <Button
                     type='primary'
@@ -424,7 +243,10 @@ const InviteUserPage = React.memo(({ user }) => {
                     onClick={() => form.submit()}
                     className='form-btn-primary'
                   >
-                    Send Invitation
+                    <Space>
+                      <FontAwesomeIcon icon={faEnvelope} />
+                      <span>Send Invitation</span>
+                    </Space>
                   </Button>
                 </div>
               </Form>

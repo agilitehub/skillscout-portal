@@ -1,29 +1,28 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
 import React, { useState, useCallback, useEffect, useMemo } from 'react'
-import { Card, Form, Input, Select, Switch, Space, message } from 'antd'
+import { Card, Form, Input, Select, Space, message } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faUser,
   faEnvelope,
-  faShieldAlt,
-  faArrowLeft,
   faSave,
   faUndo,
   faUserCheck,
   faUserTimes,
-  faCheckCircle
+  faCancel
 } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useTheme } from '../../../../core/context/ThemeContext'
 import { Button } from '../../../../core/components'
 import { BRAND_COLORS, SEMANTIC_COLORS } from '../../../../core/theme/colors'
+import Toolbar from '../../../../core/components/Toolbar'
 
 /**
  * User Edit Page
  * Full page component for editing user details and permissions
  */
-const UserEditPage = React.memo(({ user: currentUser }) => {
+const UserEditPage = React.memo(() => {
   const { darkMode } = useTheme()
   const navigate = useNavigate()
   const location = useLocation()
@@ -35,26 +34,26 @@ const UserEditPage = React.memo(({ user: currentUser }) => {
   const userToEdit = location.state?.user
 
   // Role definitions
-  const roles = useMemo(
-    () => ({
-      admin: {
-        label: 'Admin',
-        color: SEMANTIC_COLORS.error,
-        description: 'Full access to all features'
-      },
-      recruiter: {
-        label: 'Recruiter',
-        color: BRAND_COLORS.emeraldPrimary,
-        description: 'Can manage candidates and job postings'
-      },
-      viewer: {
-        label: 'Viewer',
-        color: BRAND_COLORS.shakespeare,
-        description: 'Read-only access to candidates and reports'
-      }
-    }),
-    []
-  )
+  // const roles = useMemo(
+  //   () => ({
+  //     admin: {
+  //       label: 'Admin',
+  //       color: SEMANTIC_COLORS.error,
+  //       description: 'Full access to all features'
+  //     },
+  //     recruiter: {
+  //       label: 'Recruiter',
+  //       color: BRAND_COLORS.emeraldPrimary,
+  //       description: 'Can manage candidates and job postings'
+  //     },
+  //     viewer: {
+  //       label: 'Viewer',
+  //       color: BRAND_COLORS.shakespeare,
+  //       description: 'Read-only access to candidates and reports'
+  //     }
+  //   }),
+  //   []
+  // )
 
   // Status definitions
   const statusConfig = useMemo(
@@ -66,48 +65,12 @@ const UserEditPage = React.memo(({ user: currentUser }) => {
     []
   )
 
-  // Permission definitions
-  const permissionLabels = useMemo(
-    () => ({
-      publishListings: {
-        label: 'Publish Listings',
-        description: 'Create and manage job listings',
-        icon: faCheckCircle
-      },
-      editOrgProfile: {
-        label: 'Edit Organization Profile',
-        description: 'Modify company information and settings',
-        icon: faCheckCircle
-      },
-      manageQuestionnaires: {
-        label: 'Manage Questionnaires',
-        description: 'Create and edit assessment questionnaires',
-        icon: faCheckCircle
-      },
-      viewCandidates: {
-        label: 'View Candidates',
-        description: 'Access candidate profiles and applications',
-        icon: faCheckCircle
-      },
-      manageCandidates: {
-        label: 'Manage Candidates',
-        description: 'Edit candidate information and status',
-        icon: faCheckCircle
-      },
-      viewReports: {
-        label: 'View Reports',
-        description: 'Access analytics and reporting features',
-        icon: faCheckCircle
-      }
-    }),
-    []
-  )
-
   // Set initial form values
   useEffect(() => {
     if (userToEdit) {
       form.setFieldsValue({
-        name: userToEdit.name,
+        first_name: userToEdit.first_name,
+        last_name: userToEdit.last_name,
         email: userToEdit.email,
         role: userToEdit.role,
         status: userToEdit.status,
@@ -159,29 +122,10 @@ const UserEditPage = React.memo(({ user: currentUser }) => {
   )
 
   // Handle reset
-  const handleReset = useCallback(() => {
-    if (userToEdit) {
-      form.setFieldsValue({
-        name: userToEdit.name,
-        email: userToEdit.email,
-        role: userToEdit.role,
-        status: userToEdit.status,
-        ...userToEdit.permissions
-      })
-      setHasChanges(false)
-      message.info('Changes have been reset')
-    }
-  }, [form, userToEdit])
-
-  // Handle back navigation
-  const handleBack = useCallback(() => {
-    if (hasChanges) {
-      // Show confirmation if there are unsaved changes
-      const confirmed = window.confirm('You have unsaved changes. Are you sure you want to leave?')
-      if (!confirmed) return
-    }
+  const handleCancel = useCallback(() => {
+    // Navigate back to user management
     navigate('/business-dashboard/user-management')
-  }, [navigate, hasChanges])
+  }, [navigate])
 
   // If no user data, redirect back
   if (!userToEdit) {
@@ -208,65 +152,7 @@ const UserEditPage = React.memo(({ user: currentUser }) => {
 
       {/* Main Content */}
       <div className='flex-1 relative'>
-        {/* Header */}
-        <div
-          className={`relative px-8 py-4 border-b flex-shrink-0 shadow-lg ${
-            darkMode
-              ? 'bg-gradient-to-r from-emerald-700 to-emerald-600 border border-emerald-600'
-              : 'bg-gradient-to-r from-emerald-500 to-emerald-600'
-          }`}
-        >
-          <div className='flex items-center justify-between'>
-            <div className='flex items-center space-x-4'>
-              <Button
-                type='text'
-                icon={<FontAwesomeIcon icon={faArrowLeft} />}
-                onClick={handleBack}
-                className='text-white hover:text-emerald-100'
-              >
-                Back
-              </Button>
-              <div>
-                <h1 className='text-2xl font-bold text-white'>Edit User - {userToEdit.name}</h1>
-                <p className='text-emerald-100 text-sm'>Update user details and permissions</p>
-              </div>
-            </div>
-
-            <div className='flex space-x-3'>
-              {hasChanges && (
-                <Button
-                  icon={<FontAwesomeIcon icon={faUndo} />}
-                  onClick={handleReset}
-                  className={`shadow-md hover:shadow-lg transition-all duration-200`}
-                  style={{
-                    backgroundColor: darkMode ? '#6B7280' : '#9CA3AF',
-                    borderColor: darkMode ? '#6B7280' : '#9CA3AF',
-                    color: '#FFFFFF'
-                  }}
-                >
-                  Reset
-                </Button>
-              )}
-
-              <Button
-                type='primary'
-                icon={<FontAwesomeIcon icon={faSave} />}
-                onClick={() => form.submit()}
-                loading={loading}
-                disabled={!hasChanges}
-                className={`shadow-md hover:shadow-lg transition-all duration-200`}
-                style={{
-                  backgroundColor: hasChanges ? BRAND_COLORS.emeraldPrimary : darkMode ? '#4B5563' : '#E5E7EB',
-                  borderColor: hasChanges ? BRAND_COLORS.emeraldPrimary : darkMode ? '#4B5563' : '#E5E7EB',
-                  color: hasChanges ? '#FFFFFF' : darkMode ? '#9CA3AF' : '#6B7280'
-                }}
-              >
-                Save Changes
-              </Button>
-            </div>
-          </div>
-        </div>
-
+        <Toolbar title='User Edit' description='Edit user information and permissions' />
         {/* Content Area */}
         <div className='relative p-6 space-y-6'>
           <Form
@@ -278,12 +164,6 @@ const UserEditPage = React.memo(({ user: currentUser }) => {
           >
             {/* User Information */}
             <Card
-              title={
-                <div className='flex items-center space-x-3'>
-                  <FontAwesomeIcon icon={faUser} className='text-emerald-600' />
-                  <span>User Information</span>
-                </div>
-              }
               className={darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}
               headStyle={{
                 backgroundColor: darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white,
@@ -297,18 +177,44 @@ const UserEditPage = React.memo(({ user: currentUser }) => {
             >
               <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
                 <Form.Item
-                  label='Full Name'
-                  name='name'
+                  label={
+                    <Space>
+                      <FontAwesomeIcon icon={faUser} className='text-gray-400' />
+                      <span>First Name</span>
+                    </Space>
+                  }
+                  name='first_name'
                   rules={[
-                    { required: true, message: "Please enter the user's name" },
-                    { min: 2, message: 'Name must be at least 2 characters' }
+                    { required: true, message: "Please enter the user's first name" },
+                    { min: 2, message: 'First name must be at least 2 characters' }
                   ]}
                 >
-                  <Input placeholder='Enter full name' />
+                  <Input placeholder='Enter first name' />
                 </Form.Item>
 
                 <Form.Item
-                  label='Email Address'
+                  label={
+                    <Space>
+                      <FontAwesomeIcon icon={faUser} className='text-gray-400' />
+                      <span>Last Name</span>
+                    </Space>
+                  }
+                  name='last_name'
+                  rules={[
+                    { required: true, message: "Please enter the user's last name" },
+                    { min: 2, message: 'Last name must be at least 2 characters' }
+                  ]}
+                >
+                  <Input placeholder='Enter last name' />
+                </Form.Item>
+
+                <Form.Item
+                  label={
+                    <Space>
+                      <FontAwesomeIcon icon={faEnvelope} className='text-gray-400' />
+                      <span>Email Address</span>
+                    </Space>
+                  }
                   name='email'
                   rules={[
                     { required: true, message: 'Please enter email address' },
@@ -318,7 +224,7 @@ const UserEditPage = React.memo(({ user: currentUser }) => {
                   <Input placeholder='Enter email address' />
                 </Form.Item>
 
-                <Form.Item label='Role' name='role' rules={[{ required: true, message: 'Please select a role' }]}>
+                {/* <Form.Item label='Role' name='role' rules={[{ required: true, message: 'Please select a role' }]}>
                   <Select placeholder='Select role' dropdownClassName={darkMode ? 'user-edit-dark-dropdown' : ''}>
                     {Object.entries(roles).map(([key, config]) => (
                       <Select.Option key={key} value={key}>
@@ -329,7 +235,7 @@ const UserEditPage = React.memo(({ user: currentUser }) => {
                       </Select.Option>
                     ))}
                   </Select>
-                </Form.Item>
+                </Form.Item> */}
 
                 <Form.Item label='Status' name='status' rules={[{ required: true, message: 'Please select status' }]}>
                   <Select placeholder='Select status' dropdownClassName={darkMode ? 'user-edit-dark-dropdown' : ''}>
@@ -344,45 +250,27 @@ const UserEditPage = React.memo(({ user: currentUser }) => {
                   </Select>
                 </Form.Item>
               </div>
-            </Card>
 
-            {/* Permissions */}
-            <Card
-              title={
-                <div className='flex items-center space-x-3'>
-                  <FontAwesomeIcon icon={faShieldAlt} className='text-emerald-600' />
-                  <span>Permissions</span>
-                </div>
-              }
-              className={darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}
-              headStyle={{
-                backgroundColor: darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white,
-                borderBottom: `1px solid ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.borderGray}`,
-                color: darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray
-              }}
-              bodyStyle={{
-                backgroundColor: darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white,
-                color: darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray
-              }}
-            >
-              <div className='space-y-4'>
-                {Object.entries(permissionLabels).map(([key, config]) => (
-                  <div
-                    key={key}
-                    className='flex items-center justify-between p-4 rounded-lg border border-gray-200 dark:border-gray-600'
-                  >
-                    <div className='flex items-center space-x-3'>
-                      <FontAwesomeIcon icon={config.icon} className='text-emerald-600' />
-                      <div>
-                        <div className='font-medium text-gray-900 dark:text-white'>{config.label}</div>
-                        <div className='text-sm text-gray-500 dark:text-gray-400'>{config.description}</div>
-                      </div>
-                    </div>
-                    <Form.Item name={key} valuePropName='checked' noStyle>
-                      <Switch />
-                    </Form.Item>
-                  </div>
-                ))}
+              <div className='flex justify-end space-x-3 mt-6'>
+                <Button onClick={handleCancel} className='form-btn-secondary'>
+                  <Space>
+                    <FontAwesomeIcon icon={faCancel} />
+                    <span>Cancel</span>
+                  </Space>
+                </Button>
+
+                <Button
+                  type='primary'
+                  onClick={() => form.submit()}
+                  loading={loading}
+                  disabled={!hasChanges}
+                  className='form-btn-primary'
+                >
+                  <Space>
+                    <FontAwesomeIcon icon={faSave} />
+                    <span>Save Changes</span>
+                  </Space>
+                </Button>
               </div>
             </Card>
           </Form>
