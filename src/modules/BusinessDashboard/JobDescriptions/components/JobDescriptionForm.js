@@ -13,7 +13,6 @@ import {
   faBuilding,
   faTasks,
   faClipboardList,
-  faEdit,
   faGraduationCap,
   faCode,
   faUsers,
@@ -23,6 +22,7 @@ import {
   faCheckCircle
 } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../../core/context/ThemeContext'
+import Toolbar from '../../../../core/components/Toolbar'
 import {
   createJobDescription,
   updateJobDescription,
@@ -507,39 +507,20 @@ const CreateJobDescription = React.memo(({ user }) => {
       ></div>
 
       {/* Main Content */}
-      <div className='p-6 relative z-10'>
-        <div className='max-w-7xl mx-auto'>
-          {/* Toolbar */}
-          <div
-            className={`rounded-lg mb-6 px-6 py-4 shadow-lg ${darkMode ? 'bg-gray-800 border border-gray-700' : ''}`}
-            style={{
-              background: darkMode
-                ? 'linear-gradient(135deg, #065f46 0%, #047857 50%, #059669 100%)'
-                : 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
-            }}
-          >
-            <div className='flex items-center'>
-              {/* Title and Description */}
-              <div className='flex items-center'>
-                <FontAwesomeIcon
-                  icon={isEditMode ? faEdit : faFileText}
-                  className={`text-lg mr-3 ${darkMode ? 'text-emerald-400' : 'text-white'}`}
-                />
-                <div>
-                  <h1 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-white'}`}>
-                    {isEditMode ? 'Edit Job Description' : 'Create New Job Description'}
-                  </h1>
-                  <p className={`text-sm mt-1 ${darkMode ? 'text-gray-300' : 'text-white/90'}`}>
-                    {isEditMode
-                      ? 'Update the job description details below'
-                      : 'Create a comprehensive job description to attract the right candidates'}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
+      <div className='relative z-10'>
+        {/* Toolbar */}
+        <Toolbar
+          title={isEditMode ? 'Edit Job Description' : 'Create New Job Description'}
+          description={
+            isEditMode
+              ? 'Update the job description details below'
+              : 'Create a comprehensive job description to attract the right candidates'
+          }
+        />
 
-          <Card
+        <div className='p-6'>
+          <div className='max-w-7xl mx-auto'>
+            <Card
             className={`shadow-xl ${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-200'}`}
             style={{
               backgroundColor: darkMode ? '#374151' : '#ffffff',
@@ -1097,6 +1078,7 @@ const CreateJobDescription = React.memo(({ user }) => {
               </div>
             </Modal>
           </Card>
+          </div>
         </div>
       </div>
     </div>

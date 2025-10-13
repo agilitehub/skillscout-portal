@@ -8,6 +8,7 @@ import { faSave, faTimes, faBriefcase, faGift } from '@fortawesome/free-solid-sv
 import { useTheme } from '../../../../core/context/ThemeContext'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { Button } from '../../../../core/components'
+import Toolbar from '../../../../core/components/Toolbar'
 import {
   createJobOpportunity,
   updateJobOpportunity,
@@ -207,30 +208,15 @@ const JobOpportunityForm = React.memo(() => {
         } pointer-events-none`}
       ></div>
 
-      <div className='p-4 md:p-6 relative z-10'>
-        {/* Header */}
-        <div
-          className={`rounded-lg mb-6 px-6 py-4 shadow-lg ${
-            darkMode
-              ? 'bg-gradient-to-r from-emerald-700 to-emerald-600 border border-emerald-600'
-              : 'bg-gradient-to-r from-emerald-500 to-emerald-600'
-          }`}
-        >
-          <div className='flex items-center'>
-            <FontAwesomeIcon
-              icon={faBriefcase}
-              className={`text-lg mr-3 ${darkMode ? 'text-emerald-100' : 'text-white'}`}
-            />
-            <div>
-              <h1 className='text-xl font-bold text-white'>{isEditMode ? 'Edit Job Listing' : 'Create Job Listing'}</h1>
-              <p className={`text-sm mt-1 ${darkMode ? 'text-gray-300' : 'text-white/90'}`}>
-                {isEditMode ? 'Update your job listing details' : 'Create a new job listing for your organization'}
-              </p>
-            </div>
-          </div>
-        </div>
+      <div className='relative z-10'>
+        {/* Toolbar */}
+        <Toolbar
+          title={isEditMode ? 'Edit Job Listing' : 'Create Job Listing'}
+          description={isEditMode ? 'Update your job listing details' : 'Create a new job listing for your organization'}
+        />
 
         {/* Form Card */}
+        <div className='p-4 md:p-6'>
         <Card className={`${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white'} shadow-lg`}>
           <Form
             form={form}
@@ -463,6 +449,7 @@ const JobOpportunityForm = React.memo(() => {
             </div>
           </Form>
         </Card>
+        </div>
       </div>
     </div>
   )
