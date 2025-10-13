@@ -59,12 +59,12 @@ const BusinessSidebar = React.memo(() => {
       label: 'Dashboard',
       exact: true
     },
-    {
-      path: '/business-dashboard/candidates',
-      icon: faColumns,
-      label: 'Candidates',
-      exact: false
-    },
+    // {
+    //   path: '/business-dashboard/candidates',
+    //   icon: faColumns,
+    //   label: 'Candidates',
+    //   exact: false
+    // },
     {
       path: '/business-dashboard/job-listings',
       icon: faBriefcase,
@@ -97,24 +97,24 @@ const BusinessSidebar = React.memo(() => {
         label: 'User Management',
         exact: false
       },
-      {
-        path: '/business-dashboard/branch-management',
-        icon: faBuilding,
-        label: 'Branch Management',
-        exact: false
-      },
+      // {
+      //   path: '/business-dashboard/branch-management',
+      //   icon: faBuilding,
+      //   label: 'Branch Management',
+      //   exact: false
+      // },
       {
         path: '/business-dashboard/org-settings',
         icon: faSliders,
         label: 'Organization Settings',
         exact: false
       },
-      {
-        path: '/business-dashboard/billing',
-        icon: faCreditCard,
-        label: 'Billing & Subscription',
-        exact: false
-      },
+      // {
+      //   path: '/business-dashboard/billing',
+      //   icon: faCreditCard,
+      //   label: 'Billing & Subscription',
+      //   exact: false
+      // },
       {
         path: '/business-dashboard/lookups',
         icon: faList,
