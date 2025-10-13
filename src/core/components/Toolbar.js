@@ -9,10 +9,10 @@ const Toolbar = ({ title, description, renderActions = () => null }) => {
 
   return (
     <div
-      className={`relative px-3 py-1.5 border-b flex-shrink-0 shadow-lg ${
+      className={`relative px-3 py-2 flex-shrink-0 shadow-lg rounded-lg ${
         darkMode
-          ? 'bg-gradient-to-r from-emerald-700 to-emerald-600 border border-emerald-600'
-          : 'bg-gradient-to-r from-emerald-500 to-emerald-600'
+          ? 'bg-gradient-to-r from-emerald-700 to-emerald-600 border-emerald-600'
+          : 'bg-gradient-to-r from-emerald-600 to-emerald-500'
       }`}
     >
       <div className='flex items-center justify-between gap-4'>

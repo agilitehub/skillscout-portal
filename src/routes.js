@@ -24,21 +24,12 @@ import CandidateForm from './modules/BusinessDashboard/Candidates/components/Can
 import Header from './core/components/layout/Header'
 import BusinessSidebar from './modules/BusinessDashboard/components/BusinessSidebar'
 import { useAuth } from './core/context/AuthContext'
-import { useTheme } from './core/context/ThemeContext'
 import { Col, Row } from 'antd'
 
 // Layout components
 export const DashboardLayout = ({ children, user }) => {
-  const { darkMode } = useTheme()
-
   return (
-    <Row
-      className={`flex flex-col min-h-screen w-full ${
-        darkMode
-          ? 'bg-gradient-to-br from-slate-700 via-slate-600 to-slate-500'
-          : 'bg-gradient-to-br from-sky-100 via-gray-50 to-emerald-100'
-      }`}
-    >
+    <Row className={`flex flex-col min-h-screen w-full `}>
       <Col span={24} className='flex-shrink-0'>
         <Header user={user} />
       </Col>
