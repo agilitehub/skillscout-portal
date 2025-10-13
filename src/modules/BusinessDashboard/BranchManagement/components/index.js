@@ -577,14 +577,6 @@ const BranchManagement = React.memo(({ user }) => {
         `
           : ''}
       `}</style>
-      {/* Background overlay */}
-      <div
-        className={`fixed inset-0 ${
-          darkMode
-            ? 'bg-gradient-to-b from-transparent via-slate-700/30 to-emerald-800/40'
-            : 'bg-gradient-to-b from-transparent via-sky-100/40 to-emerald-100/50'
-        } pointer-events-none`}
-      />
 
       {/* Main Content */}
       <div className='flex-1 relative'>

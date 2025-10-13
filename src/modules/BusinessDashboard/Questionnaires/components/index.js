@@ -288,15 +288,6 @@ const Questionnaires = React.memo(({ user }) => {
             : 'bg-gradient-to-br from-sky-100 via-gray-50 to-emerald-100'
         }`}
       >
-        {/* Background overlay for full coverage */}
-        <div
-          className={`fixed inset-0 ${
-            darkMode
-              ? 'bg-gradient-to-b from-transparent via-slate-700/30 to-emerald-800/40'
-              : 'bg-gradient-to-b from-transparent via-sky-100/40 to-emerald-100/50'
-          } pointer-events-none`}
-        ></div>
-
         <div className='relative z-10'>
           <Toolbar
             title='Questionnaires'
@@ -354,13 +345,9 @@ const Questionnaires = React.memo(({ user }) => {
 
           <div className='pl-5 pr-5 pt-2'>
             {/* Questionnaire Data Table */}
-            <Spin 
-              spinning={loading} 
-              tip={
-                <span className={darkMode ? 'text-gray-200' : 'text-gray-700'}>
-                  Loading questionnaires...
-                </span>
-              }
+            <Spin
+              spinning={loading}
+              tip={<span className={darkMode ? 'text-gray-200' : 'text-gray-700'}>Loading questionnaires...</span>}
             >
               <TableView
                 columns={questionnaireColumns}
@@ -376,9 +363,7 @@ const Questionnaires = React.memo(({ user }) => {
                 }}
                 emptyText={
                   <div className='text-center py-8'>
-                    <div className={`text-4xl mb-4 ${darkMode ? 'text-gray-400' : 'text-gray-300'}`}>
-                      📋
-                    </div>
+                    <div className={`text-4xl mb-4 ${darkMode ? 'text-gray-400' : 'text-gray-300'}`}>📋</div>
                     <p className={`text-lg font-medium ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
                       No questionnaires found
                     </p>

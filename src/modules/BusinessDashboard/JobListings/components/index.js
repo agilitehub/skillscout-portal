@@ -312,15 +312,6 @@ const JobListings = React.memo(({ user }) => {
           : 'bg-gradient-to-br from-sky-100 via-gray-50 to-emerald-100'
       }`}
     >
-      {/* Background overlay for full coverage */}
-      <div
-        className={`fixed inset-0 ${
-          darkMode
-            ? 'bg-gradient-to-b from-transparent via-slate-700/30 to-emerald-800/40'
-            : 'bg-gradient-to-b from-transparent via-sky-100/40 to-emerald-100/50'
-        } pointer-events-none`}
-      ></div>
-
       <Toolbar
         title='Job Listings'
         description='Manage and track your job listings'

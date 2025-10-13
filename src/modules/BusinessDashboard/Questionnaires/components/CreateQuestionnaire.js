@@ -60,15 +60,6 @@ const CreateQuestionnaire = React.memo(({ user }) => {
             : 'bg-gradient-to-br from-sky-100 via-gray-50 to-emerald-100'
         } relative overflow-hidden`}
       >
-        {/* Background overlay for full coverage */}
-        <div
-          className={`fixed inset-0 ${
-            darkMode
-              ? 'bg-gradient-to-b from-transparent via-slate-700/30 to-emerald-800/40'
-              : 'bg-gradient-to-b from-transparent via-sky-100/40 to-emerald-100/50'
-          } pointer-events-none`}
-        ></div>
-
         <div className='relative z-10'>
           {/* Toolbar */}
           <Toolbar
@@ -120,8 +111,8 @@ const CreateQuestionnaire = React.memo(({ user }) => {
                         name='status'
                         rules={[{ required: true, message: 'Please select a status' }]}
                       >
-                        <Select 
-                          placeholder='Select status' 
+                        <Select
+                          placeholder='Select status'
                           style={{ fontWeight: '500' }}
                           dropdownClassName={darkMode ? 'dark-select-dropdown' : ''}
                         >
@@ -133,8 +124,8 @@ const CreateQuestionnaire = React.memo(({ user }) => {
                       </Form.Item>
 
                       <Form.Item label='Category' name='category'>
-                        <Select 
-                          placeholder='Select category' 
+                        <Select
+                          placeholder='Select category'
                           style={{ fontWeight: '500' }}
                           dropdownClassName={darkMode ? 'dark-select-dropdown' : ''}
                         >
@@ -193,21 +184,21 @@ const CreateQuestionnaire = React.memo(({ user }) => {
         .dark-select-dropdown {
           background-color: ${darkMode ? '#374151' : '#ffffff'} !important;
         }
-        
+
         .dark-select-dropdown .ant-select-item {
           color: ${darkMode ? '#F9FAFB' : '#374151'} !important;
           background-color: ${darkMode ? '#374151' : '#ffffff'} !important;
         }
-        
+
         .dark-select-dropdown .ant-select-item:hover {
           background-color: ${darkMode ? '#4B5563' : '#F3F4F6'} !important;
         }
-        
+
         .dark-select-dropdown .ant-select-item-option-selected {
           background-color: ${darkMode ? '#059669' : '#10B981'} !important;
-          color: #FFFFFF !important;
+          color: #ffffff !important;
         }
-        
+
         .dark-select-dropdown .ant-select-item-option-selected:hover {
           background-color: ${darkMode ? '#047857' : '#059669'} !important;
         }

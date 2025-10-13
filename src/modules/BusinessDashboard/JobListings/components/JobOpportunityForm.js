@@ -199,280 +199,281 @@ const JobOpportunityForm = React.memo(() => {
           : 'bg-gradient-to-br from-sky-100 via-gray-50 to-emerald-100'
       }`}
     >
-      {/* Background overlay for full coverage */}
-      <div
-        className={`fixed inset-0 ${
-          darkMode
-            ? 'bg-gradient-to-b from-transparent via-slate-700/30 to-emerald-800/40'
-            : 'bg-gradient-to-b from-transparent via-sky-100/40 to-emerald-100/50'
-        } pointer-events-none`}
-      ></div>
-
       <div className='relative z-10'>
         {/* Toolbar */}
         <Toolbar
           title={isEditMode ? 'Edit Job Listing' : 'Create Job Listing'}
-          description={isEditMode ? 'Update your job listing details' : 'Create a new job listing for your organization'}
+          description={
+            isEditMode ? 'Update your job listing details' : 'Create a new job listing for your organization'
+          }
         />
 
         {/* Form Card */}
         <div className='p-4 md:p-6'>
-        <Card className={`${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white'} shadow-lg`}>
-          <Form
-            form={form}
-            layout='vertical'
-            onFinish={handleFormSubmit}
-            className='global-form'
-            preserve={false}
-            initialValues={formInitialValues}
-            loading={loadingData || loadingOptions}
-          >
-            <div className='space-y-4'>
-              <Row gutter={16}>
-                <Col xs={24} lg={12}>
-                  <Form.Item
-                    label='Job Title'
-                    name='title'
-                    rules={[
-                      { required: true, message: 'Job title is required' },
-                      { max: 255, message: 'Job title must be 255 characters or less' }
-                    ]}
-                  >
-                    <Input placeholder='e.g. Senior Software Engineer' />
-                  </Form.Item>
-                </Col>
-                <Col xs={24} lg={12}>
-                  <Form.Item
-                    label='Location'
-                    name='location'
-                    rules={[
-                      { required: true, message: 'Location is required' },
-                      { max: 255, message: 'Location must be 255 characters or less' }
-                    ]}
-                  >
-                    <Input placeholder='e.g. New York, NY' />
-                  </Form.Item>
-                </Col>
-              </Row>
-
-              <Row gutter={16}>
-                <Col xs={24} lg={12}>
-                  <Form.Item label='Job Type' name='type' rules={[{ required: true, message: 'Job type is required' }]}>
-                    <Select
-                      placeholder='Select job type'
-                      dropdownClassName={darkMode ? 'job-opportunity-dark-dropdown' : ''}
-                    >
-                      {dropdownOptions.type.map((option) => (
-                        <Option key={option.value} value={option.value}>
-                          {option.label}
-                        </Option>
-                      ))}
-                    </Select>
-                  </Form.Item>
-                </Col>
-                <Col xs={24} lg={12}>
-                  <Form.Item
-                    label='Work Arrangement'
-                    name='workArrangement'
-                    rules={[{ required: true, message: 'Work arrangement is required' }]}
-                  >
-                    <Select
-                      placeholder='Select work arrangement'
-                      dropdownClassName={darkMode ? 'job-opportunity-dark-dropdown' : ''}
-                    >
-                      {dropdownOptions.workArrangement.map((option) => (
-                        <Option key={option.value} value={option.value}>
-                          {option.label}
-                        </Option>
-                      ))}
-                    </Select>
-                  </Form.Item>
-                </Col>
-              </Row>
-
-              <Row gutter={16}>
-                <Col xs={24} lg={12}>
-                  <Form.Item
-                    label='Salary Range'
-                    name='salary'
-                    rules={[
-                      { required: true, message: 'Salary range is required' },
-                      { max: 100, message: 'Salary must be 100 characters or less' }
-                    ]}
-                  >
-                    <Input placeholder='e.g. $80,000 - $120,000' />
-                  </Form.Item>
-                </Col>
-                <Col xs={24} lg={12}>
-                  <Form.Item label='Status' name='status'>
-                    <Select
-                      placeholder='Select status'
-                      dropdownClassName={darkMode ? 'job-opportunity-dark-dropdown' : ''}
-                    >
-                      {dropdownOptions.status.map((option) => (
-                        <Option key={option.value} value={option.value}>
-                          {option.label}
-                        </Option>
-                      ))}
-                    </Select>
-                  </Form.Item>
-                </Col>
-              </Row>
-
-              <Row gutter={16}>
-                <Col xs={24} lg={12}>
-                  {loadingOptions ? (
-                    <div className={`p-4 rounded-lg border ${darkMode ? 'bg-gray-800 border-gray-600' : 'bg-gray-50 border-gray-200'}`}>
-                      <div className='flex flex-col items-center justify-center py-8'>
-                        <div className='flex flex-col items-center space-y-3'>
-                          <Spin 
-                            spinning={loadingOptions} 
-                            size='default'
-                            style={{ backgroundColor: 'transparent' }}
-                          />
-                          <span className={`whitespace-nowrap text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                            Loading job descriptions...
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
+          <Card className={`${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white'} shadow-lg`}>
+            <Form
+              form={form}
+              layout='vertical'
+              onFinish={handleFormSubmit}
+              className='global-form'
+              preserve={false}
+              initialValues={formInitialValues}
+              loading={loadingData || loadingOptions}
+            >
+              <div className='space-y-4'>
+                <Row gutter={16}>
+                  <Col xs={24} lg={12}>
                     <Form.Item
-                      label='Job Description'
-                      name='jobDescription'
-                      rules={[{ required: true, message: 'Job description is required' }]}
+                      label='Job Title'
+                      name='title'
+                      rules={[
+                        { required: true, message: 'Job title is required' },
+                        { max: 255, message: 'Job title must be 255 characters or less' }
+                      ]}
+                    >
+                      <Input placeholder='e.g. Senior Software Engineer' />
+                    </Form.Item>
+                  </Col>
+                  <Col xs={24} lg={12}>
+                    <Form.Item
+                      label='Location'
+                      name='location'
+                      rules={[
+                        { required: true, message: 'Location is required' },
+                        { max: 255, message: 'Location must be 255 characters or less' }
+                      ]}
+                    >
+                      <Input placeholder='e.g. New York, NY' />
+                    </Form.Item>
+                  </Col>
+                </Row>
+
+                <Row gutter={16}>
+                  <Col xs={24} lg={12}>
+                    <Form.Item
+                      label='Job Type'
+                      name='type'
+                      rules={[{ required: true, message: 'Job type is required' }]}
                     >
                       <Select
-                        placeholder='Select a job description'
-                        loading={loadingOptions}
-                        showSearch
+                        placeholder='Select job type'
                         dropdownClassName={darkMode ? 'job-opportunity-dark-dropdown' : ''}
-                        filterOption={(input, option) =>
-                          option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                        }
-                        onChange={handleJobDescriptionChange}
                       >
-                        {jobDescriptions.map((jobDesc) => (
-                          <Option key={jobDesc.id} value={jobDesc.id}>
-                            {jobDesc.title}
+                        {dropdownOptions.type.map((option) => (
+                          <Option key={option.value} value={option.value}>
+                            {option.label}
                           </Option>
                         ))}
                       </Select>
                     </Form.Item>
-                  )}
-                </Col>
-                <Col xs={24} lg={12}>
-                  {loadingOptions ? (
-                    <div className={`p-4 rounded-lg border ${darkMode ? 'bg-gray-800 border-gray-600' : 'bg-gray-50 border-gray-200'}`}>
-                      <div className='flex flex-col items-center justify-center py-8'>
-                        <div className='flex flex-col items-center space-y-3'>
-                          <Spin 
-                            spinning={loadingOptions} 
-                            size='default'
-                            style={{ backgroundColor: 'transparent' }}
-                          />
-                          <span className={`whitespace-nowrap text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                            Loading questionnaires...
-                          </span>
+                  </Col>
+                  <Col xs={24} lg={12}>
+                    <Form.Item
+                      label='Work Arrangement'
+                      name='workArrangement'
+                      rules={[{ required: true, message: 'Work arrangement is required' }]}
+                    >
+                      <Select
+                        placeholder='Select work arrangement'
+                        dropdownClassName={darkMode ? 'job-opportunity-dark-dropdown' : ''}
+                      >
+                        {dropdownOptions.workArrangement.map((option) => (
+                          <Option key={option.value} value={option.value}>
+                            {option.label}
+                          </Option>
+                        ))}
+                      </Select>
+                    </Form.Item>
+                  </Col>
+                </Row>
+
+                <Row gutter={16}>
+                  <Col xs={24} lg={12}>
+                    <Form.Item
+                      label='Salary Range'
+                      name='salary'
+                      rules={[
+                        { required: true, message: 'Salary range is required' },
+                        { max: 100, message: 'Salary must be 100 characters or less' }
+                      ]}
+                    >
+                      <Input placeholder='e.g. $80,000 - $120,000' />
+                    </Form.Item>
+                  </Col>
+                  <Col xs={24} lg={12}>
+                    <Form.Item label='Status' name='status'>
+                      <Select
+                        placeholder='Select status'
+                        dropdownClassName={darkMode ? 'job-opportunity-dark-dropdown' : ''}
+                      >
+                        {dropdownOptions.status.map((option) => (
+                          <Option key={option.value} value={option.value}>
+                            {option.label}
+                          </Option>
+                        ))}
+                      </Select>
+                    </Form.Item>
+                  </Col>
+                </Row>
+
+                <Row gutter={16}>
+                  <Col xs={24} lg={12}>
+                    {loadingOptions ? (
+                      <div
+                        className={`p-4 rounded-lg border ${darkMode ? 'bg-gray-800 border-gray-600' : 'bg-gray-50 border-gray-200'}`}
+                      >
+                        <div className='flex flex-col items-center justify-center py-8'>
+                          <div className='flex flex-col items-center space-y-3'>
+                            <Spin spinning={loadingOptions} size='default' style={{ backgroundColor: 'transparent' }} />
+                            <span
+                              className={`whitespace-nowrap text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}
+                            >
+                              Loading job descriptions...
+                            </span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ) : (
-                    <Form.Item label='Questionnaires (Optional)' name='questionnaires'>
-                      <Select
-                        mode='multiple'
-                        placeholder='Select questionnaires (optional)'
-                        loading={loadingOptions}
-                        showSearch
-                        dropdownClassName={darkMode ? 'job-opportunity-dark-dropdown' : ''}
-                        filterOption={(input, option) =>
-                          option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                        }
+                    ) : (
+                      <Form.Item
+                        label='Job Description'
+                        name='jobDescription'
+                        rules={[{ required: true, message: 'Job description is required' }]}
                       >
-                        {questionnaires.map((questionnaire) => (
-                          <Option key={questionnaire.id} value={questionnaire.id}>
-                            {questionnaire.title}
-                          </Option>
-                        ))}
-                      </Select>
-                    </Form.Item>
-                  )}
-                </Col>
-              </Row>
+                        <Select
+                          placeholder='Select a job description'
+                          loading={loadingOptions}
+                          showSearch
+                          dropdownClassName={darkMode ? 'job-opportunity-dark-dropdown' : ''}
+                          filterOption={(input, option) =>
+                            option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                          }
+                          onChange={handleJobDescriptionChange}
+                        >
+                          {jobDescriptions.map((jobDesc) => (
+                            <Option key={jobDesc.id} value={jobDesc.id}>
+                              {jobDesc.title}
+                            </Option>
+                          ))}
+                        </Select>
+                      </Form.Item>
+                    )}
+                  </Col>
+                  <Col xs={24} lg={12}>
+                    {loadingOptions ? (
+                      <div
+                        className={`p-4 rounded-lg border ${darkMode ? 'bg-gray-800 border-gray-600' : 'bg-gray-50 border-gray-200'}`}
+                      >
+                        <div className='flex flex-col items-center justify-center py-8'>
+                          <div className='flex flex-col items-center space-y-3'>
+                            <Spin spinning={loadingOptions} size='default' style={{ backgroundColor: 'transparent' }} />
+                            <span
+                              className={`whitespace-nowrap text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}
+                            >
+                              Loading questionnaires...
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <Form.Item label='Questionnaires (Optional)' name='questionnaires'>
+                        <Select
+                          mode='multiple'
+                          placeholder='Select questionnaires (optional)'
+                          loading={loadingOptions}
+                          showSearch
+                          dropdownClassName={darkMode ? 'job-opportunity-dark-dropdown' : ''}
+                          filterOption={(input, option) =>
+                            option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                          }
+                        >
+                          {questionnaires.map((questionnaire) => (
+                            <Option key={questionnaire.id} value={questionnaire.id}>
+                              {questionnaire.title}
+                            </Option>
+                          ))}
+                        </Select>
+                      </Form.Item>
+                    )}
+                  </Col>
+                </Row>
 
-              {/* Job Description Preview */}
-              <JobDescriptionPreview jobDescriptionId={selectedJobDescriptionId} visible={!!selectedJobDescriptionId} />
-
-              <Form.Item
-                label='Overview'
-                name='description'
-                rules={[{ required: true, message: 'Job overview is required' }]}
-              >
-                <TextArea
-                  placeholder='Detailed overview of the role, responsibilities, and what makes this opportunity unique...'
-                  rows={4}
+                {/* Job Description Preview */}
+                <JobDescriptionPreview
+                  jobDescriptionId={selectedJobDescriptionId}
+                  visible={!!selectedJobDescriptionId}
                 />
-              </Form.Item>
 
-              {/* Benefits */}
-              <Form.Item
-                label={
-                  <Space>
-                    <span>Benefits</span>
-                    <FontAwesomeIcon icon={faGift} className='text-gray-400' />
-                  </Space>
-                }
-                name='benefits'
-                rules={[{ required: true, message: 'Please enter job benefits' }]}
-                extra={
-                  <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
-                    List the benefits and perks offered with this position
-                  </span>
-                }
-              >
-                <TextArea
-                  placeholder={`• Competitive salary and equity package
+                <Form.Item
+                  label='Overview'
+                  name='description'
+                  rules={[{ required: true, message: 'Job overview is required' }]}
+                >
+                  <TextArea
+                    placeholder='Detailed overview of the role, responsibilities, and what makes this opportunity unique...'
+                    rows={4}
+                  />
+                </Form.Item>
+
+                {/* Benefits */}
+                <Form.Item
+                  label={
+                    <Space>
+                      <span>Benefits</span>
+                      <FontAwesomeIcon icon={faGift} className='text-gray-400' />
+                    </Space>
+                  }
+                  name='benefits'
+                  rules={[{ required: true, message: 'Please enter job benefits' }]}
+                  extra={
+                    <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
+                      List the benefits and perks offered with this position
+                    </span>
+                  }
+                >
+                  <TextArea
+                    placeholder={`• Competitive salary and equity package
 • Comprehensive health, dental, and vision insurance
 • Flexible PTO and work-from-home options
 • Professional development budget`}
-                  rows={8}
-                  showCount={true}
-                  style={{ fontWeight: '500' }}
-                />
-              </Form.Item>
-            </div>
+                    rows={8}
+                    showCount={true}
+                    style={{ fontWeight: '500' }}
+                  />
+                </Form.Item>
+              </div>
 
-            {/* Form Actions */}
-            <div className='flex justify-end space-x-4 mt-8 pt-6 border-t border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 -mx-6 -mb-6 px-6 pb-6 rounded-b-lg'>
-              <Button
-                type='default'
-                icon={<FontAwesomeIcon icon={faTimes} />}
-                onClick={handleCancel}
-                disabled={loading}
-                size='large'
-                className='form-btn-secondary'
-              >
-                Cancel
-              </Button>
-              <Button
-                type='primary'
-                icon={<FontAwesomeIcon icon={faSave} />}
-                onClick={() => form.submit()}
-                loading={loading}
-                size='large'
-                className='form-btn-primary'
-              >
-                {isEditMode ? 'Update Job Listing' : 'Create Job Listing'}
-              </Button>
-            </div>
-          </Form>
-        </Card>
+              {/* Form Actions */}
+              <div className='flex justify-end space-x-4 mt-8 pt-6 border-t border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 -mx-6 -mb-6 px-6 pb-6 rounded-b-lg'>
+                <Button
+                  type='default'
+                  icon={<FontAwesomeIcon icon={faTimes} />}
+                  onClick={handleCancel}
+                  disabled={loading}
+                  size='large'
+                  className='form-btn-secondary'
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type='primary'
+                  icon={<FontAwesomeIcon icon={faSave} />}
+                  onClick={() => form.submit()}
+                  loading={loading}
+                  size='large'
+                  className='form-btn-primary'
+                >
+                  {isEditMode ? 'Update Job Listing' : 'Create Job Listing'}
+                </Button>
+              </div>
+            </Form>
+          </Card>
         </div>
       </div>
 
       {/* Dark mode dropdown styles */}
       <style jsx global>{`
-        ${darkMode ? `
+        ${darkMode
+          ? `
           .job-opportunity-dark-dropdown {
             background-color: #374151 !important;
           }
@@ -494,7 +495,8 @@ const JobOpportunityForm = React.memo(() => {
           .job-opportunity-dark-dropdown .ant-select-item-option-selected:hover {
             background-color: #047857 !important;
           }
-        ` : ''}
+        `
+          : ''}
       `}</style>
     </div>
   )
