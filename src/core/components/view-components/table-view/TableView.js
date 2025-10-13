@@ -188,13 +188,24 @@ const TableView = React.memo(
         expandedRowRender,
         expandRowByClick: false,
         expandIcon: ({ expanded, onExpand, record }) => (
-          <Button
-            type='text'
-            size='small'
-            icon={<FontAwesomeIcon icon={expanded ? faMinus : faPlus} />}
+          <button
+            type='button'
             onClick={(e) => onExpand(record, e)}
-            className={`${darkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`}
-          />
+            className={`inline-flex items-center justify-center w-6 h-6 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 ${
+              darkMode ? 'text-gray-400 hover:text-white' : 'text-black hover:text-gray-700'
+            }`}
+            style={{
+              backgroundColor: 'transparent',
+              border: 'none',
+              outline: 'none',
+              cursor: 'pointer'
+            }}
+          >
+            <FontAwesomeIcon 
+              icon={expanded ? faMinus : faPlus} 
+              className="text-sm"
+            />
+          </button>
         )
       }
     }, [expandedRowRender, darkMode])

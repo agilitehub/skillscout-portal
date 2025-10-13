@@ -184,7 +184,7 @@ const Lookups = React.memo(({ user }) => {
       dataIndex: 'totalItems',
       key: 'totalItems',
       render: (count) => <span className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>{count}</span>,
-      width: 80
+      width: 100
     },
     {
       title: 'ACTIONS',
@@ -293,43 +293,27 @@ const Lookups = React.memo(({ user }) => {
         <Toolbar
           title='Lookups'
           description='Manage your lookups'
-          renderActions={() => {
-            return (
-              <div className='flex items-center justify-between'>
-                <div className='flex items-center space-x-4'>
-                  <div className='flex items-center space-x-2'>
-                    <FontAwesomeIcon
-                      icon={faFilter}
-                      className={`text-sm ${darkMode ? 'text-emerald-400' : 'text-white'}`}
-                    />
-                    <span className={`text-sm font-medium ${darkMode ? 'text-white' : 'text-white'}`}>
-                      Group Filter:
-                    </span>
-                  </div>
-
-                  <Select
-                    value={selectedGroup}
-                    onChange={setSelectedGroup}
-                    className={`w-48 ${darkMode ? 'dark-select' : 'light-select'}`}
-                    placeholder='Filter by group'
-                    style={{
-                      backgroundColor: darkMode ? '#4b5563' : 'rgba(255, 255, 255, 0.9)'
-                    }}
-                    dropdownStyle={{
-                      backgroundColor: darkMode ? '#374151' : '#ffffff'
-                    }}
-                  >
-                    <Option value='all'>All Groups</Option>
-                    {groupNames.map((group) => (
-                      <Option key={group} value={group}>
-                        {group}
-                      </Option>
-                    ))}
-                  </Select>
-                </div>
-              </div>
-            )
-          }}
+          renderActions={() => (
+            <Button
+              type='default'
+              size='middle'
+              className='dashboard-button'
+              style={{
+                backgroundColor: '#ffffff',
+                borderColor: '#ffffff',
+                color: '#059669',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                fontSize: '13px',
+                height: '32px',
+                paddingLeft: '12px',
+                paddingRight: '12px'
+              }}
+              onClick={handleAdd}
+            >
+              <FontAwesomeIcon icon={faPlus} style={{ fontSize: '11px', marginRight: '4px' }} />
+              <span>Create New</span>
+            </Button>
+          )}
         />
 
         <ModuleContainer>
@@ -342,18 +326,6 @@ const Lookups = React.memo(({ user }) => {
               searchTerm={searchTerm}
               onSearch={setSearchTerm}
               searchPlaceholder='Search lookups...'
-              toolbarActions={[
-                <Button
-                  key='create'
-                  type='default'
-                  size='large'
-                  icon={<FontAwesomeIcon icon={faPlus} />}
-                  onClick={handleAdd}
-                  className='form-btn-primary'
-                >
-                  Create New
-                </Button>
-              ]}
               pagination={{
                 total: groupedData.length,
                 pageSize: 10,
@@ -364,6 +336,53 @@ const Lookups = React.memo(({ user }) => {
           </Spin>
         </ModuleContainer>
       </div>
+
+      {/* Dashboard Button Styles */}
+      <style jsx global>{`
+        .dashboard-button,
+        .dashboard-button.ant-btn,
+        button.dashboard-button {
+          background: #ffffff !important;
+          background-color: #ffffff !important;
+          color: #059669 !important;
+          border: 1px solid #ffffff !important;
+          opacity: 1 !important;
+          visibility: visible !important;
+        }
+
+        .dashboard-button:hover,
+        .dashboard-button.ant-btn:hover,
+        button.dashboard-button:hover {
+          background: #f8f9fa !important;
+          background-color: #f8f9fa !important;
+          color: #047857 !important;
+          border: 1px solid #f8f9fa !important;
+          transform: translateY(-1px) !important;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15) !important;
+        }
+
+        ${darkMode
+          ? `
+          .dashboard-button,
+          .dashboard-button.ant-btn,
+          button.dashboard-button {
+            background: #ffffff !important;
+            background-color: #ffffff !important;
+            color: #059669 !important;
+            border: 1px solid #ffffff !important;
+          }
+          
+          .dashboard-button:hover,
+          .dashboard-button.ant-btn:hover,
+          button.dashboard-button:hover {
+            background: #f8f9fa !important;
+            background-color: #f8f9fa !important;
+            color: #047857 !important;
+            border: 1px solid #f8f9fa !important;
+          }
+        `
+          : ''}
+      `}</style>
     </>
   )
 })
