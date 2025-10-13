@@ -250,9 +250,11 @@ const BusinessSetupModal = ({ isOpen, onClose, onSubmit, form }) => {
           {/* Footer Actions */}
           <div className='flex justify-end space-x-3 pt-4 border-t border-gray-200 dark:border-gray-600 mt-6'>
             <Button
+              type='default'
               onClick={handleClose}
               disabled={loading}
-              className={darkMode ? 'border-gray-600 text-gray-300 hover:border-gray-500' : ''}
+              size='large'
+              className='form-btn-secondary'
             >
               Cancel
             </Button>
@@ -260,10 +262,8 @@ const BusinessSetupModal = ({ isOpen, onClose, onSubmit, form }) => {
               type='primary'
               onClick={() => handleSubmit()}
               loading={loading}
-              style={{
-                backgroundColor: darkMode ? '#059669' : '#10b981',
-                borderColor: darkMode ? '#059669' : '#10b981'
-              }}
+              size='large'
+              className='form-btn-primary'
             >
               Setup Organization Profile
             </Button>
