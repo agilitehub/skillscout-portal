@@ -501,7 +501,7 @@ const UserManagement = React.memo(({ user }) => {
         />
 
         {/* Content Area */}
-        <div className='relative pl-5 pr-5 pt-2'>
+        <div className='relative pl-2 pr-2 pt-2'>
           {error && (
             <div className='flex justify-center items-center py-12'>
               <div className={`text-center ${darkMode ? 'text-red-400' : 'text-red-600'}`}>

@@ -340,7 +340,7 @@ const Lookups = React.memo(({ user }) => {
           }}
         />
 
-        <div className='pl-5 pr-5 pt-2 relative z-10'>
+        <div className='pl-2 pr-2 pt-2 relative z-10'>
           <Spin spinning={loading} indicator={<FontAwesomeIcon icon={faSpinner} spin />}>
             <TableView
               columns={columns}
