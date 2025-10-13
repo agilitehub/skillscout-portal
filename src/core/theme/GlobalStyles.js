@@ -22,13 +22,13 @@ const GlobalStyles = () => {
 
     // Apply theme-specific classes
     if (darkMode) {
-      const darkClasses = ['bg-gradient-to-br', 'from-slate-700', 'via-slate-600', 'to-emerald-800', 'text-white']
+      const darkClasses = ['text-white']
       body.classList.add(...baseClasses, ...darkClasses)
 
       // Clear any existing background image
       body.style.backgroundImage = ''
     } else {
-      const lightClasses = ['bg-gradient-to-br', 'from-sky-100', 'via-gray-50', 'to-emerald-100', 'text-gray-900']
+      const lightClasses = ['text-gray-900']
       body.classList.add(...baseClasses, ...lightClasses)
 
       // Clear any existing background image

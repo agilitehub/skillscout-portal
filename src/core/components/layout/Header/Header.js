@@ -718,7 +718,7 @@ const Header = ({ user }) => {
 
   return (
     <header
-      className='sticky top-0 z-10 shadow-sm border-b transition-all duration-300 hover:shadow-lg'
+      className='sticky top-0 z-10 shadow-sm transition-all duration-300 hover:shadow-lg'
       style={{
         background: headerGradient,
         borderColor: darkMode ? '#374151' : '#e5e7eb',
