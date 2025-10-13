@@ -5,9 +5,8 @@ import React, { useState, useCallback } from 'react'
 import { Card, Form, message, Input, Select, Switch } from 'antd'
 import { Button } from '../../../../core/components'
 import { useNavigate } from 'react-router-dom'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faClipboardCheck } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../../core/context/ThemeContext'
+import Toolbar from '../../../../core/components/Toolbar'
 import { createQuestionnaire } from '../utils/controller'
 import { parseTags } from '../utils/data-model'
 
@@ -71,30 +70,14 @@ const CreateQuestionnaire = React.memo(({ user }) => {
         ></div>
 
         <div className='relative z-10'>
+          {/* Toolbar */}
+          <Toolbar
+            title='Create New Questionnaire'
+            description='Create a new questionnaire with title, category, and other details'
+          />
+
           <div className='px-6 pb-6'>
             <div className='max-w-5xl mx-auto'>
-              {/* Toolbar with Title */}
-              <div
-                className={`rounded-lg mb-6 px-6 py-4 shadow-lg ${
-                  darkMode
-                    ? 'bg-gradient-to-r from-emerald-700 to-emerald-600 border border-emerald-600'
-                    : 'bg-gradient-to-r from-emerald-500 to-emerald-600'
-                }`}
-              >
-                <div className='flex items-center'>
-                  <FontAwesomeIcon
-                    icon={faClipboardCheck}
-                    className={`text-lg mr-3 ${darkMode ? 'text-emerald-100' : 'text-white'}`}
-                  />
-                  <div>
-                    <h1 className='text-xl font-bold text-white'>Create New Questionnaire</h1>
-                    <p className='text-emerald-100 text-sm mt-1'>
-                      Create a new questionnaire with title, category, and other details
-                    </p>
-                  </div>
-                </div>
-              </div>
-
               {/* Form */}
               <Form
                 form={form}

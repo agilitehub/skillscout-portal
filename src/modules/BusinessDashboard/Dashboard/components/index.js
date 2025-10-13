@@ -171,15 +171,6 @@ const Dashboard = React.memo(() => {
         stats: { value: 4, label: 'Admin Tools' },
         action: () => navigate('/business-dashboard/user-management'),
         buttonText: 'Manage'
-      },
-      {
-        title: 'Journey Tracker',
-        description: 'Candidate pipeline and recruitment progress',
-        icon: faRoute,
-        color: BRAND_COLORS.tealGreen, // Teal green for tracking/progress
-        stats: { value: dashboardStats.listingCount, label: 'Active Candidates' },
-        action: () => navigate('/business-dashboard/candidates'),
-        buttonText: 'Track'
       }
     ],
     [navigate, dashboardStats, dispatch]
@@ -214,12 +205,6 @@ const Dashboard = React.memo(() => {
             label: 'Manage Listing',
             icon: <FontAwesomeIcon icon={faEdit} />,
             onClick: () => navigate('/business-dashboard/job-listings')
-          },
-          {
-            key: 'review-candidates',
-            label: 'Review Candidates',
-            icon: <FontAwesomeIcon icon={faEye} />,
-            onClick: () => navigate('/business-dashboard/candidates')
           },
           {
             key: 'scouting-search',
@@ -318,8 +303,8 @@ const Dashboard = React.memo(() => {
                   </Button>
                 </Dropdown>
 
-                {/* Alerts Bell */}
-                <Badge
+                {/* Alerts Bell - Hidden for now */}
+                {/* <Badge
                   count={alertsData.filter((alert) => !alert.read).length}
                   size='small'
                   style={{
@@ -364,7 +349,7 @@ const Dashboard = React.memo(() => {
                       🔔
                     </span>
                   </Button>
-                </Badge>
+                </Badge> */}
 
                 {/* Refresh Button */}
                 <Button
@@ -409,21 +394,27 @@ const Dashboard = React.memo(() => {
 
             <Row gutter={[16, 16]}>
               {workspaceCards.map((card, index) => (
-                <Col xs={24} lg={index < 3 ? 8 : 12} key={index}>
+                <Col xs={24} lg={8} key={index} className='flex'>
                   <Card
                     hoverable
-                    className='transition-all duration-300 hover:shadow-lg'
+                    className='transition-all duration-300 hover:shadow-lg w-full'
                     style={{
                       backgroundColor: darkMode ? DARK_THEME.background.secondary : LIGHT_THEME.background.primary,
-                      borderColor: darkMode ? DARK_THEME.border.primary : LIGHT_THEME.border.primary
+                      borderColor: darkMode ? DARK_THEME.border.primary : LIGHT_THEME.border.primary,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      height: '100%'
                     }}
                     bodyStyle={{
                       padding: '16px',
-                      backgroundColor: darkMode ? DARK_THEME.background.secondary : LIGHT_THEME.background.primary
+                      backgroundColor: darkMode ? DARK_THEME.background.secondary : LIGHT_THEME.background.primary,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      flex: 1
                     }}
                   >
-                    <div className='flex'>
-                      <div className='flex-1'>
+                    <div className='flex flex-col h-full'>
+                      <div className='flex-1 flex flex-col'>
                         <div className='flex items-center mb-3'>
                           <div
                             className='w-10 h-10 rounded-lg flex items-center justify-center mr-3'
@@ -457,7 +448,7 @@ const Dashboard = React.memo(() => {
                           {card.description}
                         </Text>
 
-                        <div className={`flex items-center ${card.stats ? 'justify-between' : 'justify-end'}`}>
+                        <div className={`flex items-center ${card.stats ? 'justify-between' : 'justify-end'} mt-auto`}>
                           {card.stats && (
                             <div>
                               <Text
