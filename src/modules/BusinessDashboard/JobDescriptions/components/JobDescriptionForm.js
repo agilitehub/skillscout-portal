@@ -936,18 +936,10 @@ const CreateJobDescription = React.memo(({ user }) => {
                     className={`flex justify-end space-x-3 pt-6 mt-6 border-t ${darkMode ? 'border-gray-600' : 'border-gray-200'}`}
                   >
                     <Button
-                      icon={<FontAwesomeIcon icon={faTimes} className='mr-2' />}
+                      type='default'
                       onClick={() => navigate('/business-dashboard/job-descriptions')}
                       size='large'
-                      style={{
-                        backgroundColor: darkMode ? '#dc2626' : '#6b7280',
-                        borderColor: darkMode ? '#dc2626' : '#6b7280',
-                        color: '#ffffff',
-                        fontWeight: '500'
-                      }}
-                      className={
-                        darkMode ? 'hover:bg-red-700 hover:border-red-700' : 'hover:bg-gray-600 hover:border-gray-600'
-                      }
+                      className='form-btn-secondary'
                     >
                       Cancel
                     </Button>
