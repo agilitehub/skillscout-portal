@@ -61,12 +61,12 @@ const JobListings = React.memo(({ user }) => {
 
   // Handle navigation operations
   const handleCreateJobOpportunity = useCallback(() => {
-    navigate('/business-dashboard/create-job-listing')
+    navigate('/business-dashboard/job-listings/create')
   }, [navigate])
 
   const handleEditJob = useCallback(
     (job) => {
-      navigate('/business-dashboard/edit-job-listing', {
+      navigate(`/business-dashboard/job-listings/${job.id}/edit`, {
         state: {
           editId: job.id,
           initialData: job

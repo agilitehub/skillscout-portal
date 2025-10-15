@@ -131,7 +131,7 @@ const BranchManagement = React.memo(({ user }) => {
   // Handle edit branch
   const handleEdit = useCallback(
     (branch) => {
-      navigate('/business-dashboard/branch-management/edit', {
+      navigate(`/business-dashboard/branch-management/${branch.id}/edit`, {
         state: {
           branch: branch,
           isEdit: true

@@ -62,7 +62,7 @@ const JobDescriptions = React.memo(({ user }) => {
 
   const handleEditDescription = useCallback(
     (description) => {
-      navigate('/business-dashboard/job-descriptions/create', {
+      navigate(`/business-dashboard/job-descriptions/${description.id}/edit`, {
         state: {
           jobDescription: description,
           isEdit: true,

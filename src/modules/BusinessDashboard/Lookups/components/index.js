@@ -90,7 +90,7 @@ const Lookups = React.memo(({ user }) => {
   // Handle edit existing profile
   const handleEdit = useCallback(
     (profile) => {
-      navigate('/business-dashboard/lookups/edit', {
+      navigate(`/business-dashboard/lookups/${profile.id}/edit`, {
         state: {
           editId: profile.id,
           initialData: profile

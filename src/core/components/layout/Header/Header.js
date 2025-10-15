@@ -364,13 +364,13 @@ const Header = ({ user }) => {
         if (item.sourceTable) {
           switch (item.sourceTable) {
             case 'questionnaires':
-              navigate(`/business-dashboard/questionnaires/${item.id}`)
+              navigate(`/business-dashboard/questionnaires/${item.id}/edit`)
               break
             case 'job_descriptions':
-              navigate(`/business-dashboard/job-descriptions/${item.id}`)
+              navigate(`/business-dashboard/job-descriptions/${item.id}/edit`)
               break
             case 'job_opportunities':
-              navigate(`/business-dashboard/job-listings/${item.id}`)
+              navigate(`/business-dashboard/job-listings/${item.id}/edit`)
               break
             default:
               console.log('Unknown source table:', item.sourceTable)

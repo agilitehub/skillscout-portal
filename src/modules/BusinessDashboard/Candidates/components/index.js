@@ -187,7 +187,7 @@ const Candidates = React.memo(({ user }) => {
   // Handle edit candidate
   const handleEdit = useCallback(
     (candidate) => {
-      navigate('/business-dashboard/candidates/edit', {
+      navigate(`/business-dashboard/candidates/${candidate.id}/edit`, {
         state: {
           editId: candidate.id,
           initialData: candidate

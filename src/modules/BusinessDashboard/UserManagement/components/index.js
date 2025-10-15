@@ -228,7 +228,7 @@ const UserManagement = React.memo(({ user }) => {
   // Handle edit user (click on name)
   const handleEditUser = useCallback(
     (userToEdit) => {
-      navigate('/business-dashboard/user-management/edit', {
+      navigate(`/business-dashboard/user-management/${userToEdit.id}/edit`, {
         state: {
           user: userToEdit,
           isEdit: true

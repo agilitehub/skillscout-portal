@@ -144,7 +144,7 @@ const Questionnaires = React.memo(({ user }) => {
   // Handle edit existing questionnaire
   const handleEdit = useCallback(
     (questionnaire) => {
-      navigate('/business-dashboard/questionnaires/edit', {
+      navigate(`/business-dashboard/questionnaires/${questionnaire.id}/edit`, {
         state: {
           editId: questionnaire.id,
           initialData: questionnaire
