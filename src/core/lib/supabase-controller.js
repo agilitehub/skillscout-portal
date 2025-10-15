@@ -34,7 +34,6 @@ const createSupabaseClient = () => {
       auth: {
         persistSession: true,
         autoRefreshToken: true,
-        flowType: 'pkce', // recommended
         detectSessionInUrl: false, // we handle the callback ourselves
         multiTab: false // disable BroadcastChannel (can hang in some envs)
       }

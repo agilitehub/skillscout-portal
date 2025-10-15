@@ -30,7 +30,6 @@ import AuthCallback from './AuthCallback'
 // Protect routes with an element wrapper
 function Protected() {
   const { isAuthenticated } = useAuth()
-  console.log('isAuthenticated', isAuthenticated)
   const location = useLocation()
   if (!isAuthenticated) {
     return <Navigate to='/login' replace state={{ from: location }} />
