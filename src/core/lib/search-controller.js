@@ -1,5 +1,5 @@
 // Global Instructions Rule Applied!
-import { createClient } from '@supabase/supabase-js'
+import { supabase } from './supabase-controller'
 
 /**
  * Search Controller for Vector Search Functionality
@@ -23,33 +23,6 @@ if (!SUPABASE_ANON_KEY) {
 if (!OPENAI_API_KEY) {
   console.error('Search Controller: REACT_APP_OPENAI_API_KEY is not configured')
 }
-
-/**
- * Create Supabase client with error handling
- * @returns {Object|null} Supabase client instance or null if configuration is invalid
- */
-const createSupabaseClient = () => {
-  try {
-    if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-      console.error('Search Controller: Missing required environment variables')
-      return null
-    }
-
-    return createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-      auth: {
-        autoRefreshToken: true,
-        persistSession: true,
-        detectSessionInUrl: true
-      }
-    })
-  } catch (error) {
-    console.error('Search Controller: Error creating client:', error)
-    return null
-  }
-}
-
-// Initialize Supabase client
-const supabase = createSupabaseClient()
 
 /**
  * Generate embedding for text using OpenAI API

@@ -1,23 +1,11 @@
 // Global Instructions Rule Applied!
-import { createClient } from '@supabase/supabase-js'
+import { supabase } from '../../../../core/lib/supabase-controller'
 import { transformToDatabase, transformFromDatabase, validateQuestionnaire } from './data-model'
 
 /**
  * Enhanced Questionnaires Controller
  * Handles all CRUD operations for questionnaires with multiple questions support
  */
-
-// Initialize Supabase client
-const SUPABASE_URL = process.env.REACT_APP_SUPABASE_URL
-const SUPABASE_ANON_KEY = process.env.REACT_APP_SUPABASE_ANON_KEY
-
-let supabase = null
-
-if (SUPABASE_URL && SUPABASE_ANON_KEY) {
-  supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
-} else {
-  console.error('Questionnaires Controller: Supabase credentials not configured')
-}
 
 /**
  * Get all questionnaires with optional filtering (includes question count)

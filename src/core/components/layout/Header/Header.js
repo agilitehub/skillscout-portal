@@ -118,23 +118,20 @@ const Header = ({ user }) => {
   // Actual logout function using Supabase
   const handleLogout = useCallback(async () => {
     try {
-      const result = await logout()
-      setIsLogoutConfirmOpen(false)
-
-      if (result.success) {
-        navigate('/')
-      } else {
-        console.error('Logout failed:', result.error)
-        // Still navigate to login page even if logout failed
-        navigate('/')
+      const { success, error } = await logout('local') // or 'global'
+      if (!success) {
+        console.error('Logout failed:', error)
+        // still proceed to login
       }
-    } catch (error) {
-      console.error('Logout error:', error)
+      // Avoid '/' to prevent redirect races; replace history so Back won't return
+      navigate('/login', { replace: true })
+    } catch (e) {
+      console.error('Logout error:', e)
+      navigate('/login', { replace: true })
+    } finally {
       setIsLogoutConfirmOpen(false)
-      // Still navigate to login page even if logout failed
-      navigate('/')
     }
-  }, [navigate, logout])
+  }, [logout, navigate])
 
   // Legacy function kept for reference - now using Supabase organization check directly
 

@@ -8,6 +8,7 @@ import { BrowserRouter as Router } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify'
 import { store } from './core/store'
 import 'react-toastify/dist/ReactToastify.css'
+import Diagnostics from './Diagnostics'
 
 import 'antd/dist/reset.css'
 
@@ -18,6 +19,7 @@ const App = () => {
   return (
     <Provider store={store}>
       <AuthProvider>
+        <Diagnostics />
         <ThemeProvider>
           <GlobalStyles />
           <Router>

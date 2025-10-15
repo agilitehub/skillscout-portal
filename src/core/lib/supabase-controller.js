@@ -32,9 +32,11 @@ const createSupabaseClient = () => {
 
     return createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
       auth: {
-        autoRefreshToken: true,
         persistSession: true,
-        detectSessionInUrl: true
+        autoRefreshToken: true,
+        flowType: 'pkce', // recommended
+        detectSessionInUrl: false, // we handle the callback ourselves
+        multiTab: false // disable BroadcastChannel (can hang in some envs)
       }
     })
   } catch (error) {
@@ -80,7 +82,7 @@ export const sendMagicLink = async (email, redirectTo = window.location.origin) 
     const { data, error } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: redirectTo
+        emailRedirectTo: `${redirectTo}/auth/callback`
       }
     })
 
@@ -153,7 +155,7 @@ export const getCurrentUser = async () => {
  * Sign out current user
  * @returns {Promise<Object>} Result object with success status
  */
-export const signOut = async () => {
+export const signOut = async (scope = 'global') => {
   try {
     if (!supabase) {
       return {
@@ -162,7 +164,7 @@ export const signOut = async () => {
       }
     }
 
-    const { error } = await supabase.auth.signOut()
+    const { error } = await supabase.auth.signOut({ scope })
 
     if (error) {
       console.error('Supabase Controller: Sign out error:', error)

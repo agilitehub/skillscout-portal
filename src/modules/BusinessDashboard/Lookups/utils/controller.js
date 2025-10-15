@@ -1,23 +1,11 @@
 // Global Instructions Rule Applied!
-import { createClient } from '@supabase/supabase-js'
+import { supabase } from '../../../../core/lib/supabase-controller'
 import { validateLookup, sanitizeLookup } from './data-model'
 
 /**
  * Lookups Controller
  * Handles all CRUD operations for lookup headers and details
  */
-
-// Initialize Supabase client
-const SUPABASE_URL = process.env.REACT_APP_SUPABASE_URL
-const SUPABASE_ANON_KEY = process.env.REACT_APP_SUPABASE_ANON_KEY
-
-let supabase = null
-
-if (SUPABASE_URL && SUPABASE_ANON_KEY) {
-  supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
-} else {
-  console.error('Lookups Controller: Supabase credentials not configured')
-}
 
 /**
  * Transform database data to UI format

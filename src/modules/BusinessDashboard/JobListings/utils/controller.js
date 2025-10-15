@@ -1,27 +1,13 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
 
-import { createClient } from '@supabase/supabase-js'
+import { supabase } from '../../../../core/lib/supabase-controller'
 import { transformToDatabase, transformFromDatabase, validateJobOpportunity } from './data-model'
 
 /**
  * Job Listings Controller
  * Handles all CRUD operations for job listings
  */
-
-// Initialize Supabase client
-const SUPABASE_URL = process.env.REACT_APP_SUPABASE_URL
-const SUPABASE_ANON_KEY = process.env.REACT_APP_SUPABASE_ANON_KEY
-
-let supabase = null
-
-if (SUPABASE_URL && SUPABASE_ANON_KEY) {
-  supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
-} else {
-  console.error('Job Listings Controller: Supabase credentials not configured')
-  console.error('REACT_APP_SUPABASE_URL:', SUPABASE_URL ? 'Set' : 'Missing')
-  console.error('REACT_APP_SUPABASE_ANON_KEY:', SUPABASE_ANON_KEY ? 'Set' : 'Missing')
-}
 
 /**
  * Get all job listings

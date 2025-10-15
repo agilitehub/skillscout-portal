@@ -1,5 +1,5 @@
 // Global Instructions Rule Applied!
-import { createClient } from '@supabase/supabase-js'
+import { supabase } from '../../../../core/lib/supabase-controller'
 import { transformToDatabase, transformFromDatabase, validateJobDescription } from './data-model'
 
 /**
@@ -7,18 +7,6 @@ import { transformToDatabase, transformFromDatabase, validateJobDescription } fr
  * Handles all CRUD operations for job descriptions
  * Updated for new Supabase schema with lookup table references
  */
-
-// Initialize Supabase client
-const SUPABASE_URL = process.env.REACT_APP_SUPABASE_URL
-const SUPABASE_ANON_KEY = process.env.REACT_APP_SUPABASE_ANON_KEY
-
-let supabase = null
-
-if (SUPABASE_URL && SUPABASE_ANON_KEY) {
-  supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
-} else {
-  console.error('Job Descriptions Controller: Supabase credentials not configured')
-}
 
 /**
  * Get all job descriptions with optional filters

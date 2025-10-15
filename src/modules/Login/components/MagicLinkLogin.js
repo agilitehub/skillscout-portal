@@ -1,7 +1,7 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
 import React, { useState, useCallback } from 'react'
-import { Form, Input, message, Alert } from 'antd'
+import { Form, Input, message, Alert, Space } from 'antd'
 import { Button } from '../../../core/components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEnvelope, faCheckCircle, faSpinner } from '@fortawesome/free-solid-svg-icons'
@@ -110,7 +110,7 @@ const MagicLinkLogin = React.memo(({ onLogin, loading }) => {
             <FontAwesomeIcon
               icon={faCheckCircle}
               className='text-4xl mb-4'
-              style={{ color: BRAND_COLORS.emeraldPrimary }}
+              style={{ color: BRAND_COLORS.emeraldBright }}
             />
             <h3 className={`text-lg font-semibold mb-2 ${darkMode ? 'text-white' : 'text-gray-800'}`}>
               Check Your Email
@@ -170,7 +170,7 @@ const MagicLinkLogin = React.memo(({ onLogin, loading }) => {
         form={form}
         onFinish={handleSubmit}
         layout='vertical'
-        className={`p-4 rounded-lg border ${
+        className={`global-form p-4 rounded-lg border ${
           darkMode ? 'bg-white/10 backdrop-blur-md border-white/20' : 'bg-white shadow-lg border-gray-200'
         }`}
       >
@@ -189,14 +189,20 @@ const MagicLinkLogin = React.memo(({ onLogin, loading }) => {
 
         <Form.Item
           name='email'
-          label={<span className={darkMode ? 'text-white/90' : 'text-gray-700'}>Email Address</span>}
+          label={
+            <span className={darkMode ? 'text-white/90' : 'text-gray-700'}>
+              <Space>
+                <FontAwesomeIcon icon={faEnvelope} className='text-gray-400' />
+                <span>Email Address</span>
+              </Space>
+            </span>
+          }
           rules={emailRules}
           className='mb-4'
         >
           <Input
             size='default'
             placeholder='Enter your email address'
-            prefix={<FontAwesomeIcon icon={faEnvelope} className='text-gray-400' />}
             className={darkMode ? 'bg-white/20 border-white/30 text-white placeholder-white/50' : ''}
             disabled={loading}
           />

@@ -44,75 +44,49 @@ export const AuthProvider = ({ children }) => {
 
   // Initialize authentication state
   useEffect(() => {
-    const initializeAuth = async () => {
-      try {
-        setLoading(true)
-        setAuthError(null)
+    let mounted = true
+    setLoading(true)
+    setAuthError(null)
 
-        // Check for existing session
-        const sessionResult = await getSession()
-        if (sessionResult.success && sessionResult.session) {
-          setCurrentUser(sessionResult.session.user)
-
-          // Activate user status on session restore (in case they were pending)
-          if (sessionResult.session.user?.id) {
-            await activateUserOnLogin(sessionResult.session.user.id)
-          }
-
-          // Load user profile when session is restored
-          if (sessionResult.session.user?.id) {
-            dispatch(fetchUserProfile(sessionResult.session.user.id))
-          }
-        } else if (sessionResult.error) {
-          console.warn('AuthContext: Session check error:', sessionResult.error)
-        }
-
-        // Set up auth state listener
-        const unsubscribe = onAuthStateChange(async (event, session) => {
+    getSession().then(({ data, error }) => {
+      if (!mounted) return
+      if (error) console.warn('getSession error', error)
+      if (data?.session?.user) {
+        setCurrentUser(data.session.user)
+        // optional side-effects; do them after state so they don't block
+        queueMicrotask(async () => {
           try {
-            if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session) {
-              setCurrentUser(session.user)
-              setAuthError(null)
-
-              // Activate user status on successful login
-              if (session.user?.id) {
-                await activateUserOnLogin(session.user.id)
-              }
-
-              // Load user profile when user signs in (only if not already loaded from session restore)
-              if (session.user?.id && !currentUser) {
-                dispatch(fetchUserProfile(session.user.id))
-              }
-            } else if (event === 'SIGNED_OUT') {
-              setCurrentUser(null)
-              setAuthError(null)
-              // Clear profile data when user signs out
-              dispatch(clearProfile())
-            } else if (event === 'TOKEN_REFRESHED' && session) {
-              setCurrentUser(session.user)
+            if (data.session.user.id) {
+              await activateUserOnLogin(data.session.user.id)
+              dispatch(fetchUserProfile(data.session.user.id))
             }
-          } catch (error) {
-            console.error('AuthContext: Error handling auth state change:', error)
-            setAuthError('Authentication state change error')
-          }
+          } catch {}
         })
-
-        return unsubscribe
-      } catch (error) {
-        console.error('AuthContext: Error initializing auth:', error)
-        setAuthError('Failed to initialize authentication')
-      } finally {
-        setLoading(false)
       }
-    }
+      setLoading(false)
+    })
 
-    const unsubscribe = initializeAuth()
+    const { data: sub } = onAuthStateChange((evt, session) => {
+      setCurrentUser(session?.user ?? null)
+      // non-blocking follow-ups
+      queueMicrotask(async () => {
+        try {
+          if (evt === 'SIGNED_IN' && session?.user?.id) {
+            await activateUserOnLogin(session.user.id)
+            dispatch(fetchUserProfile(session.user.id))
+          }
+          if (evt === 'SIGNED_OUT') {
+            dispatch(clearProfile())
+          }
+        } catch {}
+      })
+    })
+
     return () => {
-      if (typeof unsubscribe === 'function') {
-        unsubscribe()
-      }
+      mounted = false
+      sub?.subscription?.unsubscribe?.()
     }
-    // eslint-disable-next-line
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch])
 
   // Magic Link login function
@@ -156,40 +130,43 @@ export const AuthProvider = ({ children }) => {
   }, [])
 
   // Logout function
-  const logout = useCallback(async () => {
-    try {
-      setLoading(true)
-      setAuthError(null)
+  const logout = useCallback(
+    async (scope = 'global') => {
+      try {
+        setLoading(true)
+        setAuthError(null)
 
-      const result = await signOut()
+        const result = await signOut(scope)
 
-      if (result.success) {
-        setCurrentUser(null)
-        // Clear profile data on logout
-        dispatch(clearProfile())
-        return {
-          success: true,
-          message: result.message
+        if (result.success) {
+          setCurrentUser(null)
+          // Clear profile data on logout
+          dispatch(clearProfile())
+          return {
+            success: true,
+            message: result.message
+          }
+        } else {
+          setAuthError(result.error)
+          return {
+            success: false,
+            error: result.error
+          }
         }
-      } else {
-        setAuthError(result.error)
+      } catch (error) {
+        console.error('AuthContext: Logout error:', error)
+        const errorMessage = 'An unexpected error occurred during logout'
+        setAuthError(errorMessage)
         return {
           success: false,
-          error: result.error
+          error: errorMessage
         }
+      } finally {
+        setLoading(false)
       }
-    } catch (error) {
-      console.error('AuthContext: Logout error:', error)
-      const errorMessage = 'An unexpected error occurred during logout'
-      setAuthError(errorMessage)
-      return {
-        success: false,
-        error: errorMessage
-      }
-    } finally {
-      setLoading(false)
-    }
-  }, [dispatch])
+    },
+    [dispatch]
+  )
 
   // Check if user is authenticated
   const checkAuthStatus = useCallback(async () => {

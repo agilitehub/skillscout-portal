@@ -1,7 +1,11 @@
-import React, { useEffect, useState } from 'react'
-import { Route, Navigate, Routes, useLocation } from 'react-router-dom'
+import React from 'react'
+
+import { Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom'
+import { useAuth } from './core/context/AuthContext'
+import { DefaultLayout } from './core/components/layout/DefaultLayout'
+import { DashboardLayout } from './core/components/layout/DashboardLayout'
+
 import Login from './modules/Login'
-// import Dashboard from './modules/Dashboard'
 import BusinessDashboard from './modules/BusinessDashboard/Dashboard/components'
 import JobListings from './modules/BusinessDashboard/JobListings/components'
 import JobDescriptions from './modules/BusinessDashboard/JobDescriptions/components'
@@ -21,433 +25,113 @@ import OrgSettings from './modules/BusinessDashboard/OrgSettings/components'
 import Billing from './modules/BusinessDashboard/Billing/components'
 import Candidates from './modules/BusinessDashboard/Candidates/components'
 import CandidateForm from './modules/BusinessDashboard/Candidates/components/CandidateForm'
-import Header from './core/components/layout/Header'
-import BusinessSidebar from './modules/BusinessDashboard/components/BusinessSidebar'
-import { useAuth } from './core/context/AuthContext'
-import { Col, Row } from 'antd'
+import AuthCallback from './AuthCallback'
 
-// Layout components
-export const DashboardLayout = ({ children, user }) => {
-  return (
-    <Row className={`flex flex-col min-h-screen w-full `}>
-      <Col span={24} className='flex-shrink-0'>
-        <Header user={user} />
-      </Col>
-      <Col span={24} className='flex-1 flex'>
-        <Col flex='260px' className='min-w-[260px] max-w-[280px] flex-shrink-0'>
-          <BusinessSidebar />
-        </Col>
-        <Col flex='1' className='w-full overflow-y-auto'>
-          {children}
-        </Col>
-      </Col>
-    </Row>
-  )
-}
-
-export const DefaultLayout = ({ children }) => {
-  return (
-    <div className='flex flex-col min-h-screen'>
-      <Header />
-      <main className='flex-grow container-padded py-8'>{children}</main>
-    </div>
-  )
-}
-
-/**
- * AppRoutes component containing all application routes
- * @returns {React.ReactElement} Routes component with all application routes
- */
-const AppRoutes = () => {
-  const { currentUser, isAuthenticated } = useAuth()
-  const [user, setUser] = useState(null)
+// Protect routes with an element wrapper
+function Protected() {
+  const { isAuthenticated } = useAuth()
+  console.log('isAuthenticated', isAuthenticated)
   const location = useLocation()
+  if (!isAuthenticated) {
+    return <Navigate to='/login' replace state={{ from: location }} />
+  }
+  return <Outlet />
+}
 
-  useEffect(() => {
-    if (currentUser && isAuthenticated) {
-      // Transform Supabase user to match expected format
-      const transformedUser = {
-        id: currentUser.id,
-        email: currentUser.email,
-        name: currentUser.user_metadata?.full_name || currentUser.email?.split('@')[0] || 'User',
-        avatar: currentUser.user_metadata?.avatar_url || null
-      }
+// Optional: compute a thin user object once
+function useViewUser() {
+  const { currentUser, isAuthenticated } = useAuth()
 
-      setUser(transformedUser)
-    } else {
-      setUser(null)
-    }
-  }, [currentUser, isAuthenticated])
+  if (!isAuthenticated || !currentUser) return null
 
-  // Track page views
-  useEffect(() => {
-    // Analytics tracking would go here
-  }, [location])
+  return {
+    id: currentUser.id,
+    email: currentUser.email,
+    name: currentUser.user_metadata?.full_name || currentUser.email?.split('@')[0] || 'User',
+    avatar: currentUser.user_metadata?.avatar_url || null
+  }
+}
+
+export default function AppRoutes() {
+  const user = useViewUser()
 
   return (
     <Routes>
-      {/* Auth routes */}
+      {/* Auth */}
+      <Route path='/auth/callback' element={<AuthCallback />} />
+
+      {/* Public layout */}
+      <Route element={<DefaultLayout />}>
+        <Route path='/login' element={user ? <Navigate to='/business-dashboard' replace /> : <Login />} />
+      </Route>
+
+      {/* Default redirect */}
       <Route
         path='/'
-        element={
-          user ? (
-            (() => {
-              // Check for saved dashboard preference
-              // const savedDashboard = localStorage.getItem('skillscout_dashboard_type')
-              // const targetPath = savedDashboard === 'business' ? '/business-dashboard' : '/dashboard'
-              return <Navigate to='/business-dashboard' replace user={user} />
-            })()
-          ) : (
-            <DefaultLayout>
-              <Login />
-            </DefaultLayout>
-          )
-        }
+        element={user ? <Navigate to='/business-dashboard' replace /> : <Navigate to='/login' replace />}
       />
 
-      {/* Protected routes */}
-      {/* <Route
-        path='/dashboard'
-        element={
-          user ? (
-            <DashboardLayout user={user}>
-              <Dashboard user={user} />
-            </DashboardLayout>
-          ) : (
-            <Navigate to='/' replace state={{ from: location }} />
-          )
-        }
-      /> */}
+      {/* Protected area */}
+      <Route element={<Protected />}>
+        <Route path='/business-dashboard' element={<DashboardLayout user={user} />}>
+          {/* Index route = Dashboard home */}
+          <Route index element={<BusinessDashboard user={user} />} />
 
-      <Route
-        path='/business-dashboard'
-        element={
-          user ? (
-            <DashboardLayout user={user}>
-              <BusinessDashboard user={user} />
-            </DashboardLayout>
-          ) : (
-            <Navigate to='/' replace state={{ from: location }} />
-          )
-        }
-      />
+          {/* Candidates */}
+          <Route path='candidates'>
+            <Route index element={<Candidates user={user} />} />
+            <Route path='create' element={<CandidateForm user={user} />} />
+            <Route path=':id/edit' element={<CandidateForm user={user} />} />
+          </Route>
 
-      <Route
-        path='/business-dashboard/candidates'
-        element={
-          user ? (
-            <DashboardLayout user={user}>
-              <Candidates user={user} />
-            </DashboardLayout>
-          ) : (
-            <Navigate to='/' replace state={{ from: location }} />
-          )
-        }
-      />
+          {/* Job Listings */}
+          <Route path='job-listings'>
+            <Route index element={<JobListings user={user} />} />
+            <Route path='create' element={<JobOpportunityForm user={user} />} />
+            <Route path=':id/edit' element={<JobOpportunityForm user={user} />} />
+          </Route>
 
-      <Route
-        path='/business-dashboard/candidates/create'
-        element={
-          user ? (
-            <DashboardLayout user={user}>
-              <CandidateForm user={user} />
-            </DashboardLayout>
-          ) : (
-            <Navigate to='/' replace state={{ from: location }} />
-          )
-        }
-      />
+          {/* Job Descriptions */}
+          <Route path='job-descriptions'>
+            <Route index element={<JobDescriptions user={user} />} />
+            <Route path='create' element={<JobDescriptionForm user={user} />} />
+            <Route path=':id/edit' element={<JobDescriptionForm user={user} />} />
+          </Route>
 
-      <Route
-        path='/business-dashboard/candidates/edit'
-        element={
-          user ? (
-            <DashboardLayout user={user}>
-              <CandidateForm user={user} />
-            </DashboardLayout>
-          ) : (
-            <Navigate to='/' replace state={{ from: location }} />
-          )
-        }
-      />
+          {/* Questionnaires */}
+          <Route path='questionnaires'>
+            <Route index element={<Questionnaires user={user} />} />
+            <Route path='create' element={<CreateQuestionnaire user={user} />} />
+            <Route path=':id/edit' element={<QuestionnaireForm user={user} />} />
+          </Route>
 
-      <Route
-        path='/business-dashboard/job-listings'
-        element={
-          user ? (
-            <DashboardLayout user={user}>
-              <JobListings user={user} />
-            </DashboardLayout>
-          ) : (
-            <Navigate to='/' replace state={{ from: location }} />
-          )
-        }
-      />
+          {/* User Management */}
+          <Route path='user-management'>
+            <Route index element={<UserManagement user={user} />} />
+            <Route path='invite' element={<InviteUserPage user={user} />} />
+            <Route path=':id/edit' element={<UserEditPage user={user} />} />
+          </Route>
 
-      <Route
-        path='/business-dashboard/job-listings/create'
-        element={
-          user ? (
-            <DashboardLayout user={user}>
-              <JobOpportunityForm user={user} />
-            </DashboardLayout>
-          ) : (
-            <Navigate to='/' replace state={{ from: location }} />
-          )
-        }
-      />
+          {/* Branches */}
+          <Route path='branch-management'>
+            <Route index element={<BranchManagement user={user} />} />
+            <Route path='create' element={<BranchEditPage user={user} />} />
+            <Route path=':id/edit' element={<BranchEditPage user={user} />} />
+          </Route>
 
-      <Route
-        path='/business-dashboard/job-descriptions'
-        element={
-          user ? (
-            <DashboardLayout user={user}>
-              <JobDescriptions user={user} />
-            </DashboardLayout>
-          ) : (
-            <Navigate to='/' replace state={{ from: location }} />
-          )
-        }
-      />
+          {/* Org */}
+          <Route path='org-settings' element={<OrgSettings user={user} />} />
+          <Route path='billing' element={<Billing user={user} />} />
+          <Route path='lookups'>
+            <Route index element={<Lookups user={user} />} />
+            <Route path='create' element={<LookupForm user={user} />} />
+            <Route path=':id/edit' element={<LookupForm user={user} />} />
+          </Route>
+        </Route>
+      </Route>
 
-      <Route
-        path='/business-dashboard/job-descriptions/create'
-        element={
-          user ? (
-            <DashboardLayout user={user}>
-              <JobDescriptionForm user={user} />
-            </DashboardLayout>
-          ) : (
-            <Navigate to='/' replace state={{ from: location }} />
-          )
-        }
-      />
-
-      <Route
-        path='/business-dashboard/job-descriptions/edit'
-        element={
-          user ? (
-            <DashboardLayout user={user}>
-              <JobDescriptionForm user={user} />
-            </DashboardLayout>
-          ) : (
-            <Navigate to='/' replace state={{ from: location }} />
-          )
-        }
-      />
-
-      <Route
-        path='/business-dashboard/questionnaires'
-        element={
-          user ? (
-            <DashboardLayout user={user}>
-              <Questionnaires user={user} />
-            </DashboardLayout>
-          ) : (
-            <Navigate to='/' replace state={{ from: location }} />
-          )
-        }
-      />
-
-      <Route
-        path='/business-dashboard/questionnaires/create'
-        element={
-          user ? (
-            <DashboardLayout user={user}>
-              <CreateQuestionnaire user={user} />
-            </DashboardLayout>
-          ) : (
-            <Navigate to='/' replace state={{ from: location }} />
-          )
-        }
-      />
-
-      <Route
-        path='/business-dashboard/questionnaires/edit'
-        element={
-          user ? (
-            <DashboardLayout user={user}>
-              <QuestionnaireForm user={user} />
-            </DashboardLayout>
-          ) : (
-            <Navigate to='/' replace state={{ from: location }} />
-          )
-        }
-      />
-
-      <Route
-        path='/business-dashboard/create-job-listing'
-        element={
-          user ? (
-            <DashboardLayout user={user}>
-              <JobOpportunityForm user={user} />
-            </DashboardLayout>
-          ) : (
-            <Navigate to='/' replace state={{ from: location }} />
-          )
-        }
-      />
-
-      <Route
-        path='/business-dashboard/edit-job-listing'
-        element={
-          user ? (
-            <DashboardLayout user={user}>
-              <JobOpportunityForm user={user} />
-            </DashboardLayout>
-          ) : (
-            <Navigate to='/' replace state={{ from: location }} />
-          )
-        }
-      />
-
-      <Route
-        path='/business-dashboard/user-management'
-        element={
-          user ? (
-            <DashboardLayout user={user}>
-              <UserManagement user={user} />
-            </DashboardLayout>
-          ) : (
-            <Navigate to='/' replace state={{ from: location }} />
-          )
-        }
-      />
-
-      <Route
-        path='/business-dashboard/user-management/invite'
-        element={
-          user ? (
-            <DashboardLayout user={user}>
-              <InviteUserPage user={user} />
-            </DashboardLayout>
-          ) : (
-            <Navigate to='/' replace state={{ from: location }} />
-          )
-        }
-      />
-
-      <Route
-        path='/business-dashboard/user-management/edit'
-        element={
-          user ? (
-            <DashboardLayout user={user}>
-              <UserEditPage user={user} />
-            </DashboardLayout>
-          ) : (
-            <Navigate to='/' replace state={{ from: location }} />
-          )
-        }
-      />
-
-      <Route
-        path='/business-dashboard/branch-management'
-        element={
-          user ? (
-            <DashboardLayout user={user}>
-              <BranchManagement user={user} />
-            </DashboardLayout>
-          ) : (
-            <Navigate to='/' replace state={{ from: location }} />
-          )
-        }
-      />
-
-      <Route
-        path='/business-dashboard/branch-management/edit'
-        element={
-          user ? (
-            <DashboardLayout user={user}>
-              <BranchEditPage user={user} />
-            </DashboardLayout>
-          ) : (
-            <Navigate to='/' replace state={{ from: location }} />
-          )
-        }
-      />
-
-      <Route
-        path='/business-dashboard/branch-management/create'
-        element={
-          user ? (
-            <DashboardLayout user={user}>
-              <BranchEditPage user={user} />
-            </DashboardLayout>
-          ) : (
-            <Navigate to='/' replace state={{ from: location }} />
-          )
-        }
-      />
-
-      <Route
-        path='/business-dashboard/org-settings'
-        element={
-          user ? (
-            <DashboardLayout user={user}>
-              <OrgSettings user={user} />
-            </DashboardLayout>
-          ) : (
-            <Navigate to='/' replace state={{ from: location }} />
-          )
-        }
-      />
-
-      <Route
-        path='/business-dashboard/billing'
-        element={
-          user ? (
-            <DashboardLayout user={user}>
-              <Billing user={user} />
-            </DashboardLayout>
-          ) : (
-            <Navigate to='/' replace state={{ from: location }} />
-          )
-        }
-      />
-
-      <Route
-        path='/business-dashboard/lookups'
-        element={
-          user ? (
-            <DashboardLayout user={user}>
-              <Lookups user={user} />
-            </DashboardLayout>
-          ) : (
-            <Navigate to='/' replace state={{ from: location }} />
-          )
-        }
-      />
-
-      <Route
-        path='/business-dashboard/lookups/create'
-        element={
-          user ? (
-            <DashboardLayout user={user}>
-              <LookupForm user={user} />
-            </DashboardLayout>
-          ) : (
-            <Navigate to='/' replace state={{ from: location }} />
-          )
-        }
-      />
-
-      <Route
-        path='/business-dashboard/lookups/edit'
-        element={
-          user ? (
-            <DashboardLayout user={user}>
-              <LookupForm user={user} />
-            </DashboardLayout>
-          ) : (
-            <Navigate to='/' replace state={{ from: location }} />
-          )
-        }
-      />
-
-      {/* Fallback - redirect to dashboard if logged in, otherwise to login */}
-      <Route path='*' element={user ? <Navigate to='/business-dashboard' replace /> : <Navigate to='/' replace />} />
+      {/* Fallback */}
+      <Route path='*' element={<Navigate to={user ? '/business-dashboard' : '/login'} replace />} />
     </Routes>
   )
 }
-
-export default AppRoutes
