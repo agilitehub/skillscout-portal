@@ -222,10 +222,7 @@ const InviteUserPage = React.memo(() => {
               {/* Form Actions */}
               <div className='flex justify-end space-x-3 mt-6'>
                 <Button type='default' size='large' onClick={handleCancel} className='form-btn-secondary'>
-                  <Space>
-                    <FontAwesomeIcon icon={faCancel} />
-                    <span>Cancel</span>
-                  </Space>
+                  Cancel
                 </Button>
                 <Button
                   type='primary'

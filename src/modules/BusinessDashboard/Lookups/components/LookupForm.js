@@ -6,8 +6,9 @@ import { Card, Form, message, Row, Col, Input, Switch } from 'antd'
 import { Button } from '../../../../core/components'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSave, faTimes, faList, faPlus } from '@fortawesome/free-solid-svg-icons'
+import { faSave, faTimes, faPlus } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../../core/context/ThemeContext'
+import Toolbar from '../../../../core/components/Toolbar'
 import { createLookup, updateLookup, getLookupById } from '../utils/controller'
 
 /**
@@ -162,33 +163,19 @@ const LookupForm = React.memo(({ user }) => {
           : 'bg-gradient-to-br from-sky-100 via-gray-50 to-emerald-100'
       }`}
     >
-      <div className='p-4 md:p-6 relative z-10'>
-        <div className='max-w-7xl mx-auto'>
-          {/* Header */}
-          <div
-            className={`rounded-lg mb-6 px-6 py-4 shadow-lg ${
-              darkMode
-                ? 'bg-gradient-to-r from-emerald-700 to-emerald-600 border border-emerald-600'
-                : 'bg-gradient-to-r from-emerald-500 to-emerald-600'
-            }`}
-          >
-            <div className='flex items-center'>
-              <FontAwesomeIcon
-                icon={faList}
-                className={`text-lg mr-3 ${darkMode ? 'text-emerald-100' : 'text-white'}`}
-              />
-              <div>
-                <h1 className='text-xl font-bold text-white'>
-                  {isEditMode ? 'Edit Lookup Profile' : 'Create New Lookup Profile'}
-                </h1>
-                <p className={`text-sm mt-1 ${darkMode ? 'text-gray-300' : 'text-white/90'}`}>
-                  {isEditMode
-                    ? 'Update your lookup profile details'
-                    : 'Create a new lookup profile for your organization'}
-                </p>
-              </div>
-            </div>
-          </div>
+      <div className='relative z-10'>
+        {/* Toolbar */}
+        <Toolbar
+          title={isEditMode ? 'Edit Lookup Profile' : 'Create New Lookup Profile'}
+          description={
+            isEditMode
+              ? 'Update your lookup profile details'
+              : 'Create a new lookup profile for your organization'
+          }
+        />
+
+        <div className='p-4 md:p-6'>
+          <div className='max-w-7xl mx-auto'>
 
           {/* Form Card */}
           <Card className={`${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white'} shadow-lg lookups-card`}>
@@ -323,8 +310,7 @@ const LookupForm = React.memo(({ user }) => {
                 }`}
               >
                 <Button
-                  variant='secondary'
-                  icon={<FontAwesomeIcon icon={faTimes} className='mr-2' />}
+                  type='default'
                   onClick={handleCancel}
                   disabled={loading}
                   size='large'
@@ -345,6 +331,7 @@ const LookupForm = React.memo(({ user }) => {
               </div>
             </Form>
           </Card>
+          </div>
         </div>
       </div>
     </div>
