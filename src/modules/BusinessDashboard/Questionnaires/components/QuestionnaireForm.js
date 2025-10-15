@@ -6,8 +6,9 @@ import { Card, Form, message, Row, Col, Select, Input, Switch, Divider, Spin } f
 import { Button } from '../../../../core/components'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSave, faTimes, faClipboardCheck, faQuestion, faTrash } from '@fortawesome/free-solid-svg-icons'
+import { faSave, faTimes, faQuestion, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../../core/context/ThemeContext'
+import Toolbar from '../../../../core/components/Toolbar'
 import TableView from '../../../../core/components/view-components/table-view/TableView'
 import TableActions from '../../../../core/components/view-components/table-view/TableActions'
 import { updateQuestionnaire, getQuestionnaireById } from '../utils/controller'
@@ -299,29 +300,15 @@ const QuestionnaireForm = React.memo(({ user }) => {
             : 'bg-gradient-to-br from-sky-100 via-gray-50 to-emerald-100'
         }`}
       >
-        <div className='p-4 md:p-6 relative z-10'>
-          <div className='max-w-7xl mx-auto'>
-            {/* Header */}
-            <div
-              className={`rounded-lg mb-6 px-6 py-4 shadow-lg ${
-                darkMode
-                  ? 'bg-gradient-to-r from-emerald-700 to-emerald-600 border border-emerald-600'
-                  : 'bg-gradient-to-r from-emerald-500 to-emerald-600'
-              }`}
-            >
-              <div className='flex items-center'>
-                <FontAwesomeIcon
-                  icon={faClipboardCheck}
-                  className={`text-lg mr-3 ${darkMode ? 'text-emerald-100' : 'text-white'}`}
-                />
-                <div>
-                  <h1 className='text-xl font-bold text-white'>Edit Questionnaire</h1>
-                  <p className={`text-sm mt-1 ${darkMode ? 'text-gray-300' : 'text-white/90'}`}>
-                    Update your questionnaire details and questions
-                  </p>
-                </div>
-              </div>
-            </div>
+        <div className='relative z-10'>
+          {/* Toolbar */}
+          <Toolbar
+            title='Edit Questionnaire'
+            description='Update your questionnaire details and questions'
+          />
+
+          <div className='p-4 md:p-6'>
+            <div className='max-w-7xl mx-auto'>
 
             {/* Form Card */}
             <Card className={`${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white'} shadow-lg`}>
@@ -458,6 +445,7 @@ const QuestionnaireForm = React.memo(({ user }) => {
                 </div>
               </Form>
             </Card>
+            </div>
           </div>
         </div>
 

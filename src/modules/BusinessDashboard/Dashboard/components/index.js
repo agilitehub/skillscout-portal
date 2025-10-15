@@ -137,7 +137,7 @@ const Dashboard = React.memo(() => {
         buttonText: 'Update'
       },
       {
-        title: 'JobListings',
+        title: 'Job Listings',
         description: 'Job postings and requirements',
         icon: faBriefcase,
         color: BRAND_COLORS.pictonBlue, // Picton blue for job-related features
