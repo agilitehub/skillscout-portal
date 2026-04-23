@@ -3,28 +3,16 @@
 import React, { useState, useEffect } from 'react'
 import { NavLink } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {
-  faBriefcase,
-  faFileText,
-  faClipboardCheck,
-  faCogs,
-  faList,
-  faUsers,
-  faSliders,
-  faHome,
-  faChevronDown,
-  faChevronRight
-} from '@fortawesome/free-solid-svg-icons'
-import { useTheme } from '../../../core/context/ThemeContext'
+import { faBriefcase, faChevronDown, faChevronRight } from '@fortawesome/free-solid-svg-icons'
+import { useTheme } from '../../context/ThemeContext'
+import { BUSINESS_SIDEBAR_MAIN_ITEMS, BUSINESS_SIDEBAR_SETTINGS_CATEGORY } from '../../config/navigation'
 
 /**
- * Business Dashboard Sidebar Navigation
- * Provides categorized navigation for job management, descriptions, and questionnaires
+ * Business dashboard left sidebar — core shell navigation for authenticated business routes.
  */
 const BusinessSidebar = React.memo(() => {
   const { darkMode } = useTheme()
 
-  // Initialize settings expanded state from localStorage, default to false
   const [isSettingsExpanded, setIsSettingsExpanded] = useState(() => {
     try {
       const savedState = localStorage.getItem('businessSidebar_settingsExpanded')
@@ -35,7 +23,6 @@ const BusinessSidebar = React.memo(() => {
     }
   })
 
-  // Save settings expanded state to localStorage whenever it changes
   useEffect(() => {
     try {
       localStorage.setItem('businessSidebar_settingsExpanded', JSON.stringify(isSettingsExpanded))
@@ -48,78 +35,8 @@ const BusinessSidebar = React.memo(() => {
     setIsSettingsExpanded(!isSettingsExpanded)
   }
 
-  // Main navigation items (without operations header)
-  const mainNavigationItems = [
-    {
-      path: '/business-dashboard',
-      icon: faHome,
-      label: 'Dashboard',
-      exact: true
-    },
-    // {
-    //   path: '/business-dashboard/candidates',
-    //   icon: faColumns,
-    //   label: 'Candidates',
-    //   exact: false
-    // },
-    {
-      path: '/business-dashboard/job-listings',
-      icon: faBriefcase,
-      label: 'Job Listings',
-      exact: false
-    },
-    {
-      path: '/business-dashboard/questionnaires',
-      icon: faClipboardCheck,
-      label: 'Questionnaires',
-      exact: false
-    },
-    {
-      path: '/business-dashboard/job-descriptions',
-      icon: faFileText,
-      label: 'Job Descriptions',
-      exact: false
-    }
-  ]
-
-  // Settings category (collapsible)
-  const settingsCategory = {
-    key: 'settings',
-    label: 'Settings',
-    icon: faCogs,
-    items: [
-      {
-        path: '/business-dashboard/user-management',
-        icon: faUsers,
-        label: 'User Management',
-        exact: false
-      },
-      // {
-      //   path: '/business-dashboard/branch-management',
-      //   icon: faBuilding,
-      //   label: 'Branch Management',
-      //   exact: false
-      // },
-      {
-        path: '/business-dashboard/org-settings',
-        icon: faSliders,
-        label: 'Organization Settings',
-        exact: false
-      },
-      // {
-      //   path: '/business-dashboard/billing',
-      //   icon: faCreditCard,
-      //   label: 'Billing & Subscription',
-      //   exact: false
-      // },
-      {
-        path: '/business-dashboard/lookups',
-        icon: faList,
-        label: 'Lookups',
-        exact: false
-      }
-    ]
-  }
+  const mainNavigationItems = BUSINESS_SIDEBAR_MAIN_ITEMS
+  const settingsCategory = BUSINESS_SIDEBAR_SETTINGS_CATEGORY
 
   return (
     <div
@@ -132,7 +49,6 @@ const BusinessSidebar = React.memo(() => {
           : 'linear-gradient(180deg, #ffffff 0%, #f9fafb 100%)'
       }}
     >
-      {/* Sidebar Header */}
       <div className={`pl-4 pt-4 border-b ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
         <div className='flex items-center'>
           <div
@@ -152,9 +68,7 @@ const BusinessSidebar = React.memo(() => {
         </div>
       </div>
 
-      {/* Navigation Menu */}
       <nav className='p-4 space-y-2'>
-        {/* Main Navigation Items */}
         <div className='space-y-1'>
           {mainNavigationItems.map((item) => (
             <NavLink
@@ -207,9 +121,7 @@ const BusinessSidebar = React.memo(() => {
           ))}
         </div>
 
-        {/* Settings Category */}
         <div className='space-y-1'>
-          {/* Settings Header */}
           <div
             className={`w-full flex items-center px-2 py-2 rounded-lg text-sm font-bold transition-all duration-200 cursor-pointer ${
               darkMode
@@ -230,7 +142,6 @@ const BusinessSidebar = React.memo(() => {
             </div>
             <span className='flex-1 text-left'>{settingsCategory.label}</span>
 
-            {/* Collapsible chevron */}
             <div className='ml-2'>
               <FontAwesomeIcon
                 icon={isSettingsExpanded ? faChevronDown : faChevronRight}
@@ -239,7 +150,6 @@ const BusinessSidebar = React.memo(() => {
             </div>
           </div>
 
-          {/* Settings Items */}
           <div
             className={`ml-4 space-y-1 overflow-hidden transition-all duration-300 ease-in-out ${
               !isSettingsExpanded ? 'max-h-0 opacity-0' : 'max-h-96 opacity-100'

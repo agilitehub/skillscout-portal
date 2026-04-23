@@ -21,7 +21,7 @@ import {
   faCheckCircle
 } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../../core/context/ThemeContext'
-import Toolbar from '../../../../core/components/Toolbar'
+import { Toolbar } from '../../../../core/components'
 import {
   createJobDescription,
   updateJobDescription,

@@ -10,7 +10,7 @@ import { useTheme } from '../../../../core/context/ThemeContext'
 import { getAllJobDescriptions, deleteJobDescription } from '../utils/controller'
 import TableView from '../../../../core/components/view-components/table-view/TableView'
 import TableActions from '../../../../core/components/view-components/table-view/TableActions'
-import Toolbar from '../../../../core/components/Toolbar'
+import { Toolbar } from '../../../../core/components'
 import ModuleContainer from '../../../../core/components/layout/Container/ModuleContainer'
 
 /**

@@ -2,7 +2,7 @@
 // Frontend Instructions Rule Applied!
 import React, { memo } from 'react'
 import PropTypes from 'prop-types'
-import { useTheme } from '../context/ThemeContext'
+import { useTheme } from '../../context/ThemeContext'
 
 /**
  * Logo component that automatically switches between light and dark mode versions

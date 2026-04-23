@@ -21,7 +21,7 @@ import orgSettingsController from '../utils/controller'
 import AIProfileModal from './AIProfileModal'
 import BusinessSetupModal from './BusinessSetupModal'
 import OrganizationProfileForm from './OrganizationProfileForm'
-import Toolbar from '../../../../core/components/Toolbar'
+import { Toolbar } from '../../../../core/components'
 import ModuleContainer from '../../../../core/components/layout/Container/ModuleContainer'
 
 const { TabPane } = Tabs

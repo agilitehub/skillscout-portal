@@ -1,6 +1,6 @@
 import { Col, Row } from 'antd'
 import Header from './Header'
-import BusinessSidebar from '../../../modules/BusinessDashboard/components/BusinessSidebar'
+import BusinessSidebar from './BusinessSidebar'
 import { Outlet } from 'react-router-dom'
 
 // Layout components

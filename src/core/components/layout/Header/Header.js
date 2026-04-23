@@ -2,7 +2,7 @@
 // Frontend Instructions Rule Applied!
 import React, { useState, useCallback, useEffect, useRef } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
-import Logo from '../../Logo'
+import { Logo } from '../../index'
 import ThemeToggle from '../../../theme/components/ThemeToggle'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {

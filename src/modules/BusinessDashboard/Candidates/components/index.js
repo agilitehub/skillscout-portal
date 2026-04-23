@@ -12,7 +12,7 @@ import { Button } from '../../../../core/components'
 import TableView from '../../../../core/components/view-components/table-view/TableView'
 import KanbanBoard from './KanbanBoard'
 import { BRAND_COLORS, SEMANTIC_COLORS } from '../../../../core/theme/colors'
-import Toolbar from '../../../../core/components/Toolbar'
+import { Toolbar } from '../../../../core/components'
 
 /**
  * Candidates Management Page

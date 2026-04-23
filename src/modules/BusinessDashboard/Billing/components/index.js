@@ -19,7 +19,7 @@ import { BRAND_COLORS } from '../../../../core/theme/colors'
 import PlanUpgradeModal from './PlanUpgradeModal'
 import PaymentMethodModal from './PaymentMethodModal'
 import InvoiceDetailsModal from './InvoiceDetailsModal'
-import Toolbar from '../../../../core/components/Toolbar'
+import { Toolbar } from '../../../../core/components'
 
 const { Title, Text } = Typography
 

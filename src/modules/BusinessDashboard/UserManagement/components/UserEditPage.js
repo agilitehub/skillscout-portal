@@ -8,7 +8,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { useTheme } from '../../../../core/context/ThemeContext'
 import { Button } from '../../../../core/components'
 import { BRAND_COLORS, SEMANTIC_COLORS } from '../../../../core/theme/colors'
-import Toolbar from '../../../../core/components/Toolbar'
+import { Toolbar } from '../../../../core/components'
 import ModuleContainer from '../../../../core/components/layout/Container/ModuleContainer'
 
 /**

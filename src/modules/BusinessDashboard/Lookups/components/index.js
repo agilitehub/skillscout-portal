@@ -10,7 +10,7 @@ import { Button } from '../../../../core/components'
 import TableView from '../../../../core/components/view-components/table-view/TableView'
 import TableActions from '../../../../core/components/view-components/table-view/TableActions'
 import { getAllLookups, deleteLookup } from '../utils/controller'
-import Toolbar from '../../../../core/components/Toolbar'
+import { Toolbar } from '../../../../core/components'
 import ModuleContainer from '../../../../core/components/layout/Container/ModuleContainer'
 
 /**

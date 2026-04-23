@@ -12,7 +12,7 @@ import TableActions from '../../../../core/components/view-components/table-view
 
 // Import controller functions
 import { getAllQuestionnaires, deleteQuestionnaire, searchQuestionnaires } from '../utils/controller'
-import Toolbar from '../../../../core/components/Toolbar'
+import { Toolbar } from '../../../../core/components'
 import ModuleContainer from '../../../../core/components/layout/Container/ModuleContainer'
 
 const { Option } = Select

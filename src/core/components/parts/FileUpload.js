@@ -1,7 +1,7 @@
 // Global Instructions Rule Applied!
 import React, { useState, useRef, useCallback } from 'react'
 import { message, Progress, Card, List, Tag, Tooltip } from 'antd'
-import { Button } from './index'
+import Button from './Button'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faCloudUploadAlt,
@@ -16,8 +16,8 @@ import {
   faCheckCircle,
   faExclamationCircle
 } from '@fortawesome/free-solid-svg-icons'
-import { useTheme } from '../context/ThemeContext'
-import { uploadMultipleFiles, deleteFileFromStorage, getFileDownloadUrl } from '../lib/supabase-controller'
+import { useTheme } from '../../context/ThemeContext'
+import { uploadMultipleFiles, deleteFileFromStorage, getFileDownloadUrl } from '../../lib/supabase-controller'
 
 /**
  * FileUpload component - Reusable file upload component with Supabase storage integration

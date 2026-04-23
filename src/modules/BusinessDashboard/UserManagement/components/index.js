@@ -18,7 +18,7 @@ import TableView from '../../../../core/components/view-components/table-view/Ta
 import { BRAND_COLORS, SEMANTIC_COLORS } from '../../../../core/theme/colors'
 import userManagementController from '../utils/controller'
 import TableActions from '../../../../core/components/view-components/table-view/TableActions'
-import Toolbar from '../../../../core/components/Toolbar'
+import { Toolbar } from '../../../../core/components'
 import dayjs from 'dayjs'
 import ModuleContainer from '../../../../core/components/layout/Container/ModuleContainer'
 

@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom'
 import { Button } from '../../../../core/components'
 import { useTheme } from '../../../../core/context/ThemeContext'
 import userManagementController from '../utils/controller'
-import Toolbar from '../../../../core/components/Toolbar'
+import { Toolbar } from '../../../../core/components'
 import ModuleContainer from '../../../../core/components/layout/Container/ModuleContainer'
 
 /**

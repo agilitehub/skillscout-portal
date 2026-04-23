@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faLightbulb } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../core/context/ThemeContext'
 import { BRAND_COLORS } from '../../../core/theme/colors'
-import Logo from '../../../core/components/Logo'
+import { Logo } from '../../../core/components'
 import MagicLinkLogin from './MagicLinkLogin'
 
 const { Title } = Typography

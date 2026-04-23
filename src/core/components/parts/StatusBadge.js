@@ -12,8 +12,8 @@ import {
   faUser,
   faBuilding
 } from '@fortawesome/free-solid-svg-icons'
-import { useTheme } from '../context/ThemeContext'
-import { SEMANTIC_COLORS, BRAND_COLORS } from '../theme/colors'
+import { useTheme } from '../../context/ThemeContext'
+import { SEMANTIC_COLORS, BRAND_COLORS } from '../../theme/colors'
 
 /**
  * Enhanced Status Badge Component

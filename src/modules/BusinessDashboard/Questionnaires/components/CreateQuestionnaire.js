@@ -6,7 +6,7 @@ import { Card, Form, message, Input, Select, Switch } from 'antd'
 import { Button } from '../../../../core/components'
 import { useNavigate } from 'react-router-dom'
 import { useTheme } from '../../../../core/context/ThemeContext'
-import Toolbar from '../../../../core/components/Toolbar'
+import { Toolbar } from '../../../../core/components'
 import { createQuestionnaire } from '../utils/controller'
 import { parseTags } from '../utils/data-model'
 

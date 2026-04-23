@@ -22,7 +22,7 @@ import {
 import { useNavigate } from 'react-router-dom'
 import { useTheme } from '../../../../core/context/ThemeContext'
 import { Button } from '../../../../core/components'
-import Toolbar from '../../../../core/components/Toolbar'
+import { Toolbar } from '../../../../core/components'
 import { BRAND_COLORS, SEMANTIC_COLORS, LIGHT_THEME, DARK_THEME } from '../../../../core/theme/colors'
 import { setUserProfileOpen } from '../../../../core/components/profile/store/profileSlice'
 import { useDispatch } from 'react-redux'
