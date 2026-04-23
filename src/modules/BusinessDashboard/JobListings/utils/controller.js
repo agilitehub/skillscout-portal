@@ -2,6 +2,7 @@
 // Frontend Instructions Rule Applied!
 
 import { supabase } from '../../../../core/lib/supabase-controller'
+import { JOB_LISTING_STATUS, JOB_LISTING_STATUS_LIST } from '../../../../utils/globals'
 import { transformToDatabase, transformFromDatabase, validateJobOpportunity } from './data-model'
 
 /**
@@ -299,10 +300,10 @@ export const updateJobOpportunityStatus = async (id, status) => {
       }
     }
 
-    if (!['Active', 'Paused', 'Closed'].includes(status)) {
+    if (!JOB_LISTING_STATUS_LIST.includes(status)) {
       return {
         success: false,
-        error: 'Invalid status. Must be Active, Paused, or Closed',
+        error: `Invalid status. Must be ${JOB_LISTING_STATUS_LIST.join(', ')}`,
         data: null
       }
     }
@@ -367,9 +368,9 @@ export const getJobOpportunitiesStats = async (filters = {}) => {
     // Calculate statistics
     const stats = {
       total: data.length,
-      active: data.filter((job) => job.status === 'Active').length,
-      paused: data.filter((job) => job.status === 'Paused').length,
-      closed: data.filter((job) => job.status === 'Closed').length,
+      active: data.filter((job) => job.status === JOB_LISTING_STATUS.ACTIVE).length,
+      paused: data.filter((job) => job.status === JOB_LISTING_STATUS.PAUSED).length,
+      closed: data.filter((job) => job.status === JOB_LISTING_STATUS.CLOSED).length,
       totalApplicants: data.reduce((sum, job) => sum + (job.applicants || 0), 0),
       byType: {},
       byWorkArrangement: {}
@@ -496,7 +497,7 @@ export const duplicateJobOpportunity = async (id, overrides = {}) => {
       title: overrides.title || `${originalResult.data.title} (Copy)`,
       applicants: 0,
       datePosted: null,
-      status: 'Active'
+      status: JOB_LISTING_STATUS.ACTIVE
     }
 
     // Remove ID and audit fields that should be auto-generated

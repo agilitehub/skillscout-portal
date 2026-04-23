@@ -10,6 +10,7 @@ import {
   getUserFiles,
   deleteFileFromStorage
 } from '../../../core/lib/supabase-controller'
+import { DEFAULT_SUPABASE_STORAGE_BUCKET } from '../../../utils/globals'
 
 /**
  * Custom hook for chat functionality with AI integration, Supabase file storage, and streaming support
@@ -387,7 +388,7 @@ export const useChat = (user = null) => {
 
       try {
         // Upload files to Supabase storage
-        const uploadResult = await uploadMultipleFiles(files, user.id, 'file-uploads')
+        const uploadResult = await uploadMultipleFiles(files, user.id, DEFAULT_SUPABASE_STORAGE_BUCKET)
 
         if (uploadResult.success) {
           const newFiles = uploadResult.data.successful.map((fileData) => ({
@@ -441,7 +442,7 @@ export const useChat = (user = null) => {
 
         if (fileToRemove) {
           // Delete from Supabase storage
-          const deleteResult = await deleteFileFromStorage(fileToRemove.path, 'file-uploads')
+          const deleteResult = await deleteFileFromStorage(fileToRemove.path, DEFAULT_SUPABASE_STORAGE_BUCKET)
 
           if (deleteResult.success) {
             setUploadedFiles((prev) => prev.filter((file) => file.id !== fileId))
@@ -463,7 +464,7 @@ export const useChat = (user = null) => {
     if (!user?.id) return
 
     try {
-      const result = await getUserFiles(user.id, 'file-uploads')
+      const result = await getUserFiles(user.id, DEFAULT_SUPABASE_STORAGE_BUCKET)
 
       if (result.success) {
         const filesWithMetadata = result.files.map((file) => ({

@@ -11,6 +11,7 @@ import {
   faSliders,
   faUsers
 } from '@fortawesome/free-solid-svg-icons'
+import { buildBusinessDashboardPath } from '../../utils/globals'
 
 /**
  * Application navigation configuration.
@@ -41,25 +42,25 @@ export const getHeaderNavItems = (isAuthenticated = false) =>
 /** Main (non-collapsible) items in the business dashboard left sidebar. */
 export const BUSINESS_SIDEBAR_MAIN_ITEMS = [
   {
-    path: '/business-dashboard',
+    path: buildBusinessDashboardPath(),
     icon: faHome,
     label: 'Dashboard',
     exact: true
   },
   {
-    path: '/business-dashboard/job-listings',
+    path: buildBusinessDashboardPath('job-listings'),
     icon: faBriefcase,
     label: 'Job Listings',
     exact: false
   },
   {
-    path: '/business-dashboard/questionnaires',
+    path: buildBusinessDashboardPath('questionnaires'),
     icon: faClipboardCheck,
     label: 'Questionnaires',
     exact: false
   },
   {
-    path: '/business-dashboard/job-descriptions',
+    path: buildBusinessDashboardPath('job-descriptions'),
     icon: faFileText,
     label: 'Job Descriptions',
     exact: false
@@ -73,19 +74,19 @@ export const BUSINESS_SIDEBAR_SETTINGS_CATEGORY = {
   icon: faCogs,
   items: [
     {
-      path: '/business-dashboard/user-management',
+      path: buildBusinessDashboardPath('user-management'),
       icon: faUsers,
       label: 'User Management',
       exact: false
     },
     {
-      path: '/business-dashboard/org-settings',
+      path: buildBusinessDashboardPath('org-settings'),
       icon: faSliders,
       label: 'Organization Settings',
       exact: false
     },
     {
-      path: '/business-dashboard/lookups',
+      path: buildBusinessDashboardPath('lookups'),
       icon: faList,
       label: 'Lookups',
       exact: false

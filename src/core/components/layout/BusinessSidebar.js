@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBriefcase, faChevronDown, faChevronRight } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../context/ThemeContext'
 import { BUSINESS_SIDEBAR_MAIN_ITEMS, BUSINESS_SIDEBAR_SETTINGS_CATEGORY } from '../../config/navigation'
+import { LOCAL_STORAGE_KEYS } from '../../../utils/globals'
 
 /**
  * Business dashboard left sidebar — core shell navigation for authenticated business routes.
@@ -15,7 +16,7 @@ const BusinessSidebar = React.memo(() => {
 
   const [isSettingsExpanded, setIsSettingsExpanded] = useState(() => {
     try {
-      const savedState = localStorage.getItem('businessSidebar_settingsExpanded')
+      const savedState = localStorage.getItem(LOCAL_STORAGE_KEYS.BUSINESS_SIDEBAR_SETTINGS_EXPANDED)
       return savedState ? JSON.parse(savedState) : false
     } catch (error) {
       console.warn('Error reading sidebar state from localStorage:', error)
@@ -25,7 +26,7 @@ const BusinessSidebar = React.memo(() => {
 
   useEffect(() => {
     try {
-      localStorage.setItem('businessSidebar_settingsExpanded', JSON.stringify(isSettingsExpanded))
+      localStorage.setItem(LOCAL_STORAGE_KEYS.BUSINESS_SIDEBAR_SETTINGS_EXPANDED, JSON.stringify(isSettingsExpanded))
     } catch (error) {
       console.warn('Error saving sidebar state to localStorage:', error)
     }

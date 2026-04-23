@@ -18,6 +18,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../context/ThemeContext'
 import { uploadMultipleFiles, deleteFileFromStorage, getFileDownloadUrl } from '../../lib/supabase-controller'
+import { DEFAULT_SUPABASE_STORAGE_BUCKET } from '../../../utils/globals'
 
 /**
  * FileUpload component - Reusable file upload component with Supabase storage integration
@@ -26,7 +27,7 @@ import { uploadMultipleFiles, deleteFileFromStorage, getFileDownloadUrl } from '
 const FileUpload = React.memo(
   ({
     userId,
-    bucketName = 'file-uploads',
+    bucketName = DEFAULT_SUPABASE_STORAGE_BUCKET,
     maxFiles = 10,
     maxFileSize = 50 * 1024 * 1024, // 50MB
     allowedTypes = [

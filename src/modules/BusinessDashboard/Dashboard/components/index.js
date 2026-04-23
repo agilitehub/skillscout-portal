@@ -27,6 +27,7 @@ import { BRAND_COLORS, SEMANTIC_COLORS, LIGHT_THEME, DARK_THEME } from '../../..
 import { setUserProfileOpen } from '../../../../core/components/profile/store/profileSlice'
 import { useDispatch } from 'react-redux'
 import { getDashboardStats } from '../utils/controller'
+import { DASHBOARD_ALERT_TYPE, buildBusinessDashboardPath } from '../../../../utils/globals'
 
 const { Title, Text } = Typography
 
@@ -84,7 +85,7 @@ const Dashboard = React.memo(() => {
     () => [
       {
         id: 1,
-        type: 'candidate_submission',
+        type: DASHBOARD_ALERT_TYPE.CANDIDATE_SUBMISSION,
         title: 'New Candidate Application',
         message: 'John Smith applied for Senior React Developer position',
         timestamp: '2 minutes ago',
@@ -93,7 +94,7 @@ const Dashboard = React.memo(() => {
       },
       {
         id: 2,
-        type: 'match_found',
+        type: DASHBOARD_ALERT_TYPE.MATCH_FOUND,
         title: 'Candidate Match Found',
         message: 'Sarah Johnson matches 92% with UX Designer role',
         timestamp: '15 minutes ago',
@@ -102,7 +103,7 @@ const Dashboard = React.memo(() => {
       },
       {
         id: 3,
-        type: 'interview_scheduled',
+        type: DASHBOARD_ALERT_TYPE.INTERVIEW_SCHEDULED,
         title: 'Interview Scheduled',
         message: 'Technical interview with Mike Chen scheduled for tomorrow',
         timestamp: '1 hour ago',
@@ -122,7 +123,7 @@ const Dashboard = React.memo(() => {
         icon: faBuilding,
         color: SEMANTIC_COLORS.primary, // Shakespeare blue - primary brand color
         stats: null, // No stats needed - user has one organization
-        action: () => navigate('/business-dashboard/org-settings'),
+        action: () => navigate(buildBusinessDashboardPath('org-settings')),
         buttonText: 'Manage'
       },
       {
@@ -140,7 +141,7 @@ const Dashboard = React.memo(() => {
         icon: faBriefcase,
         color: BRAND_COLORS.pictonBlue, // Picton blue for job-related features
         stats: { value: dashboardStats.listingCount, label: 'Active Listings' },
-        action: () => navigate('/business-dashboard/job-listings'),
+        action: () => navigate(buildBusinessDashboardPath('job-listings')),
         buttonText: 'View All'
       },
       {
@@ -149,7 +150,7 @@ const Dashboard = React.memo(() => {
         icon: faFileAlt,
         color: BRAND_COLORS.pictonBlue, // Picton blue for job-related features
         stats: { value: dashboardStats.descriptionCount, label: 'Active Listings' },
-        action: () => navigate('/business-dashboard/job-descriptions'),
+        action: () => navigate(buildBusinessDashboardPath('job-descriptions')),
         buttonText: 'View All'
       },
       {
@@ -158,7 +159,7 @@ const Dashboard = React.memo(() => {
         icon: faQuestion,
         color: BRAND_COLORS.pictonBlue, // Picton blue for job-related features
         stats: { value: dashboardStats.questionnaireCount, label: 'Active Listings' },
-        action: () => navigate('/business-dashboard/questionnaires'),
+        action: () => navigate(buildBusinessDashboardPath('questionnaires')),
         buttonText: 'View All'
       },
       {
@@ -167,7 +168,7 @@ const Dashboard = React.memo(() => {
         icon: faSliders,
         color: SEMANTIC_COLORS.warning, // Warning orange for admin/settings
         stats: { value: 4, label: 'Admin Tools' },
-        action: () => navigate('/business-dashboard/user-management'),
+        action: () => navigate(buildBusinessDashboardPath('user-management')),
         buttonText: 'Manage'
       }
     ],
@@ -184,25 +185,25 @@ const Dashboard = React.memo(() => {
             key: 'create-listing',
             label: 'Create Listing',
             icon: <FontAwesomeIcon icon={faPlus} />,
-            onClick: () => navigate('/business-dashboard/job-listings/create')
+            onClick: () => navigate(buildBusinessDashboardPath('job-listings/create'))
           },
           {
             key: 'update-org-profile',
             label: 'Update Organization Profile',
             icon: <FontAwesomeIcon icon={faEdit} />,
-            onClick: () => navigate('/business-dashboard/org-settings')
+            onClick: () => navigate(buildBusinessDashboardPath('org-settings'))
           },
           {
             key: 'update-user-profile',
             label: 'Update User Profile',
             icon: <FontAwesomeIcon icon={faUserPlus} />,
-            onClick: () => navigate('/business-dashboard/user-management')
+            onClick: () => navigate(buildBusinessDashboardPath('user-management'))
           },
           {
             key: 'manage-listing',
             label: 'Manage Listing',
             icon: <FontAwesomeIcon icon={faEdit} />,
-            onClick: () => navigate('/business-dashboard/job-listings')
+            onClick: () => navigate(buildBusinessDashboardPath('job-listings'))
           }
         ]}
       />
@@ -217,11 +218,11 @@ const Dashboard = React.memo(() => {
   // Get alert icon based on type
   const getAlertIcon = useCallback((type) => {
     switch (type) {
-      case 'candidate_submission':
+      case DASHBOARD_ALERT_TYPE.CANDIDATE_SUBMISSION:
         return faUserPlus
-      case 'match_found':
+      case DASHBOARD_ALERT_TYPE.MATCH_FOUND:
         return faSearch
-      case 'interview_scheduled':
+      case DASHBOARD_ALERT_TYPE.INTERVIEW_SCHEDULED:
         return faChartLine
       default:
         return faBell
@@ -231,11 +232,11 @@ const Dashboard = React.memo(() => {
   // Get alert color based on type
   const getAlertColor = useCallback((type) => {
     switch (type) {
-      case 'candidate_submission':
+      case DASHBOARD_ALERT_TYPE.CANDIDATE_SUBMISSION:
         return SEMANTIC_COLORS.success
-      case 'match_found':
+      case DASHBOARD_ALERT_TYPE.MATCH_FOUND:
         return SEMANTIC_COLORS.primary
-      case 'interview_scheduled':
+      case DASHBOARD_ALERT_TYPE.INTERVIEW_SCHEDULED:
         return SEMANTIC_COLORS.warning
       default:
         return SEMANTIC_COLORS.info

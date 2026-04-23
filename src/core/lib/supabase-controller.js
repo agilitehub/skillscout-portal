@@ -1,6 +1,7 @@
 // Global Instructions Rule Applied!
 import { supabase } from '../auth/client'
 import { ensureUserRecord } from '../auth/userLifecycle'
+import { DEFAULT_SUPABASE_STORAGE_BUCKET } from '../../utils/globals'
 
 export { supabase } from '../auth/client'
 
@@ -54,7 +55,7 @@ export const setUserThreadId = async (userId, threadId) => {
  * @param {string} bucketName - Storage bucket name (default: 'file-uploads')
  * @returns {Promise<Object>} Result object with success status and file data
  */
-export const uploadFileToStorage = async (file, userId, bucketName = 'file-uploads') => {
+export const uploadFileToStorage = async (file, userId, bucketName = DEFAULT_SUPABASE_STORAGE_BUCKET) => {
   try {
     if (!supabase) {
       return {
@@ -160,7 +161,7 @@ export const uploadFileToStorage = async (file, userId, bucketName = 'file-uploa
  * @param {string} bucketName - Storage bucket name (default: 'file-uploads')
  * @returns {Promise<Object>} Result object with success status and uploaded files data
  */
-export const uploadMultipleFiles = async (files, userId, bucketName = 'file-uploads') => {
+export const uploadMultipleFiles = async (files, userId, bucketName = DEFAULT_SUPABASE_STORAGE_BUCKET) => {
   try {
     if (!Array.isArray(files) || files.length === 0) {
       return {
@@ -209,7 +210,7 @@ export const uploadMultipleFiles = async (files, userId, bucketName = 'file-uplo
  * @param {string} bucketName - Storage bucket name (default: 'file-uploads')
  * @returns {Promise<Object>} Result object with user's files
  */
-export const getUserFiles = async (userId, bucketName = 'file-uploads') => {
+export const getUserFiles = async (userId, bucketName = DEFAULT_SUPABASE_STORAGE_BUCKET) => {
   try {
     if (!supabase) {
       return {
@@ -279,7 +280,7 @@ export const getUserFiles = async (userId, bucketName = 'file-uploads') => {
  * @param {string} bucketName - Storage bucket name (default: 'file-uploads')
  * @returns {Promise<Object>} Result object with success status
  */
-export const deleteFileFromStorage = async (filePath, bucketName = 'file-uploads') => {
+export const deleteFileFromStorage = async (filePath, bucketName = DEFAULT_SUPABASE_STORAGE_BUCKET) => {
   try {
     if (!supabase) {
       return {
@@ -325,7 +326,7 @@ export const deleteFileFromStorage = async (filePath, bucketName = 'file-uploads
  * @param {number} expiresIn - URL expiration time in seconds (default: 3600)
  * @returns {Promise<Object>} Result object with download URL
  */
-export const getFileDownloadUrl = async (filePath, bucketName = 'file-uploads', expiresIn = 3600) => {
+export const getFileDownloadUrl = async (filePath, bucketName = DEFAULT_SUPABASE_STORAGE_BUCKET, expiresIn = 3600) => {
   try {
     if (!supabase) {
       return {
@@ -376,7 +377,7 @@ export const getFileDownloadUrl = async (filePath, bucketName = 'file-uploads', 
  * @param {string} bucketName - Storage bucket name (default: 'file-uploads')
  * @returns {Promise<Object>} Result object with success status
  */
-export const updateFileMetadata = async (filePath, metadata, bucketName = 'file-uploads') => {
+export const updateFileMetadata = async (filePath, metadata, bucketName = DEFAULT_SUPABASE_STORAGE_BUCKET) => {
   try {
     if (!supabase) {
       return {

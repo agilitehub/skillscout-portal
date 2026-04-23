@@ -1,5 +1,6 @@
 // Global Instructions Rule Applied!
 import { supabase } from '../../../../core/lib/supabase-controller'
+import { QUESTIONNAIRE_STATUS, QUESTIONNAIRE_STATUS_LIST } from '../../../../utils/globals'
 import { transformToDatabase, transformFromDatabase, validateQuestionnaire } from './data-model'
 
 /**
@@ -306,11 +307,10 @@ export const updateQuestionnaireStatus = async (id, status) => {
       }
     }
 
-    const validStatuses = ['Draft', 'Active', 'Inactive', 'Archived']
-    if (!validStatuses.includes(status)) {
+    if (!QUESTIONNAIRE_STATUS_LIST.includes(status)) {
       return {
         success: false,
-        error: `Status must be one of: ${validStatuses.join(', ')}`,
+        error: `Status must be one of: ${QUESTIONNAIRE_STATUS_LIST.join(', ')}`,
         data: null
       }
     }
@@ -538,7 +538,7 @@ export const duplicateQuestionnaire = async (id, overrides = {}) => {
       ...originalData,
       ...overrides,
       title: overrides.title || `${originalData.title} (Copy)`,
-      status: 'Draft' // Always set copies to draft
+      status: QUESTIONNAIRE_STATUS.DRAFT // Always set copies to draft
     }
 
     // Remove fields that shouldn't be copied
