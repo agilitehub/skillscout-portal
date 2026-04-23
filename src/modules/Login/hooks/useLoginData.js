@@ -2,7 +2,7 @@
 // Frontend Instructions Rule Applied!
 import { useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../../../core/context/AuthContext'
+import { useAuth } from '../../../core/auth'
 import { useTheme } from '../../../core/context/ThemeContext'
 
 /**

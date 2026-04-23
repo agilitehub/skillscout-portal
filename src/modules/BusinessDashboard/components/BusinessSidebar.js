@@ -9,11 +9,8 @@ import {
   faClipboardCheck,
   faCogs,
   faList,
-  faColumns,
   faUsers,
-  faBuilding,
   faSliders,
-  faCreditCard,
   faHome,
   faChevronDown,
   faChevronRight

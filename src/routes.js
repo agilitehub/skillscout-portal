@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom'
-import { useAuth } from './core/context/AuthContext'
+import { useAuth, AuthCallback } from './core/auth'
 import { DefaultLayout } from './core/components/layout/DefaultLayout'
 import { DashboardLayout } from './core/components/layout/DashboardLayout'
 
@@ -25,8 +25,6 @@ import OrgSettings from './modules/BusinessDashboard/OrgSettings/components'
 import Billing from './modules/BusinessDashboard/Billing/components'
 import Candidates from './modules/BusinessDashboard/Candidates/components'
 import CandidateForm from './modules/BusinessDashboard/Candidates/components/CandidateForm'
-import AuthCallback from './AuthCallback'
-
 // Protect routes with an element wrapper
 function Protected() {
   const { isAuthenticated } = useAuth()

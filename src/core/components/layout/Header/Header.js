@@ -19,7 +19,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { Dropdown, Modal, Form, message } from 'antd'
 import { useTheme } from '../../../context/ThemeContext'
-import { useAuth } from '../../../context/AuthContext'
+import { useAuth } from '../../../auth'
 import { BRAND_COLORS } from '../../../theme/colors'
 import { BusinessSetupModal } from '../../../../modules/BusinessDashboard/OrgSettings/components'
 import {

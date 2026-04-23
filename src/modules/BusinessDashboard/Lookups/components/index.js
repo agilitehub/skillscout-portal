@@ -4,16 +4,14 @@ import React, { useState, useCallback, useMemo, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTheme } from '../../../../core/context/ThemeContext'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlus, faFilter, faSpinner, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons'
-import { Select, message, Spin } from 'antd'
+import { faPlus, faSpinner, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons'
+import { message, Spin } from 'antd'
 import { Button } from '../../../../core/components'
 import TableView from '../../../../core/components/view-components/table-view/TableView'
 import TableActions from '../../../../core/components/view-components/table-view/TableActions'
 import { getAllLookups, deleteLookup } from '../utils/controller'
 import Toolbar from '../../../../core/components/Toolbar'
 import ModuleContainer from '../../../../core/components/layout/Container/ModuleContainer'
-
-const { Option } = Select
 
 /**
  * Lookups Management Page
@@ -25,7 +23,7 @@ const Lookups = React.memo(({ user }) => {
 
   // State management
   const [searchTerm, setSearchTerm] = useState('')
-  const [selectedGroup, setSelectedGroup] = useState('all')
+  const [selectedGroup] = useState('all')
   const [profileData, setProfileData] = useState([])
   const [loading, setLoading] = useState(false)
 
@@ -72,9 +70,6 @@ const Lookups = React.memo(({ user }) => {
         )
     )
   }, [profileData, searchTerm])
-
-  // Get unique group names for filter
-  const groupNames = [...new Set(profileData.map((p) => p.groupName).filter(Boolean))]
 
   // Filter data based on search and group
   const filteredData = filteredProfileData.filter((profile) => {

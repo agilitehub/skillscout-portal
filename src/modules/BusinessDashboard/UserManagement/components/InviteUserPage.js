@@ -3,7 +3,7 @@
 import React, { useState, useCallback } from 'react'
 import { Form, Input, Space, Card, message } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCancel, faEnvelope, faUser } from '@fortawesome/free-solid-svg-icons'
+import { faEnvelope, faUser } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from 'react-router-dom'
 import { Button } from '../../../../core/components'
 import { useTheme } from '../../../../core/context/ThemeContext'

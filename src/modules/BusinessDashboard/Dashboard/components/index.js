@@ -10,9 +10,7 @@ import {
   faChartLine,
   faPlus,
   faSearch,
-  faEye,
   faSliders,
-  faRoute,
   faEdit,
   faBell,
   faUserPlus,
@@ -212,11 +210,6 @@ const Dashboard = React.memo(() => {
     [navigate, darkMode]
   )
 
-  // Handle alerts modal
-  const handleShowAlerts = useCallback(() => {
-    setAlertsVisible(true)
-  }, [])
-
   const handleCloseAlerts = useCallback(() => {
     setAlertsVisible(false)
   }, [])
@@ -320,7 +313,7 @@ const Dashboard = React.memo(() => {
                       e.currentTarget.style.transform = 'translateY(0)'
                       e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)'
                     }}
-                    onClick={handleShowAlerts}
+                    onClick={() => setAlertsVisible(true)}
                   >
                     <span
                       style={{

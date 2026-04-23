@@ -8,22 +8,13 @@ import {
   signOut,
   onAuthStateChange,
   getSession,
-  isAuthenticated,
-  activateUserOnLogin
-} from '../../core/lib/supabase-controller'
+  isAuthenticated
+} from './session'
+import { activateUserOnLogin } from './userLifecycle'
 import { fetchUserProfile, clearProfile } from '../components/profile'
 
-/**
- * Authentication context for Supabase Magic Link authentication
- * Implements passwordless email authentication with comprehensive error handling
- * Follows module-driven development principles with proper validation
- */
 const AuthContext = createContext()
 
-/**
- * Custom hook to use authentication context
- * @returns {Object} Authentication state and methods
- */
 export const useAuth = () => {
   const context = useContext(AuthContext)
   if (!context) {
@@ -32,33 +23,28 @@ export const useAuth = () => {
   return context
 }
 
-/**
- * Authentication provider component
- * Manages user authentication state for Supabase Magic Link login
- */
 export const AuthProvider = ({ children }) => {
   const dispatch = useDispatch()
   const [currentUser, setCurrentUser] = useState(null)
   const [loading, setLoading] = useState(true)
   const [authError, setAuthError] = useState(null)
 
-  // Initialize authentication state
   useEffect(() => {
     let mounted = true
     setLoading(true)
     setAuthError(null)
 
-    getSession().then(({ data, error }) => {
+    getSession().then((result) => {
       if (!mounted) return
-      if (error) console.warn('getSession error', error)
-      if (data?.session?.user) {
-        setCurrentUser(data.session.user)
-        // optional side-effects; do them after state so they don't block
+      if (result.error) console.warn('getSession error', result.error)
+      const sessionUser = result.session?.user
+      if (sessionUser) {
+        setCurrentUser(sessionUser)
         queueMicrotask(async () => {
           try {
-            if (data.session.user.id) {
-              await activateUserOnLogin(data.session.user.id)
-              dispatch(fetchUserProfile(data.session.user.id))
+            if (sessionUser.id) {
+              await activateUserOnLogin(sessionUser.id)
+              dispatch(fetchUserProfile(sessionUser.id))
             }
           } catch {}
         })
@@ -66,9 +52,8 @@ export const AuthProvider = ({ children }) => {
       setLoading(false)
     })
 
-    const { data: sub } = onAuthStateChange((evt, session) => {
+    const unsubscribe = onAuthStateChange((evt, session) => {
       setCurrentUser(session?.user ?? null)
-      // non-blocking follow-ups
       queueMicrotask(async () => {
         try {
           if (evt === 'SIGNED_IN' && session?.user?.id) {
@@ -84,12 +69,11 @@ export const AuthProvider = ({ children }) => {
 
     return () => {
       mounted = false
-      sub?.subscription?.unsubscribe?.()
+      unsubscribe()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch])
 
-  // Magic Link login function
   const login = useCallback(async (email) => {
     try {
       if (!email || typeof email !== 'string') {
@@ -129,7 +113,6 @@ export const AuthProvider = ({ children }) => {
     }
   }, [])
 
-  // Logout function
   const logout = useCallback(
     async (scope = 'global') => {
       try {
@@ -140,7 +123,6 @@ export const AuthProvider = ({ children }) => {
 
         if (result.success) {
           setCurrentUser(null)
-          // Clear profile data on logout
           dispatch(clearProfile())
           return {
             success: true,
@@ -168,7 +150,6 @@ export const AuthProvider = ({ children }) => {
     [dispatch]
   )
 
-  // Check if user is authenticated
   const checkAuthStatus = useCallback(async () => {
     try {
       const authenticated = await isAuthenticated()
@@ -179,7 +160,6 @@ export const AuthProvider = ({ children }) => {
     }
   }, [])
 
-  // Get current user data
   const getUser = useCallback(async () => {
     try {
       const result = await getCurrentUser()

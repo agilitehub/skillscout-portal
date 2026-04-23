@@ -1,13 +1,12 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
 import React, { useState, useEffect, useMemo, useCallback } from 'react'
-import { Tag, Card, Statistic, message } from 'antd'
+import { Tag, message } from 'antd'
 import { Button } from '../../../../core/components'
 import { useNavigate } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faPlus,
-  faBriefcase,
   faUsers,
   faMapMarkerAlt,
   faDollarSign,
@@ -290,20 +289,6 @@ const JobListings = React.memo(({ user }) => {
     ],
     [handleEditJob, handleDeleteJob, handleStatusChange, darkMode]
   )
-
-  // Statistics calculations
-  const stats = useMemo(() => {
-    const activeJobs = jobOpportunities.filter((job) => job.status === 'Active').length
-    const totalApplicants = jobOpportunities.reduce((sum, job) => sum + (job.applicants || 0), 0)
-    const avgApplicants = jobOpportunities.length > 0 ? Math.round(totalApplicants / jobOpportunities.length) : 0
-
-    return {
-      totalJobs: jobOpportunities.length,
-      activeJobs,
-      totalApplicants,
-      avgApplicants
-    }
-  }, [jobOpportunities])
 
   return (
     <div

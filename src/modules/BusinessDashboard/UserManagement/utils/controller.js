@@ -8,8 +8,8 @@
 
 // Import validation functions if needed in the future
 // import { validateUser, validateInvitation, validatePermissions } from './data-model'
-import { supabase } from '../../../../core/lib/supabase-controller'
-import { getCurrentUser, getUserOrganization } from '../../../../core/lib/supabase-controller'
+import { getCurrentUser } from '../../../../core/auth'
+import { supabase, getUserOrganization } from '../../../../core/lib/supabase-controller'
 
 class UserManagementController {
   constructor() {

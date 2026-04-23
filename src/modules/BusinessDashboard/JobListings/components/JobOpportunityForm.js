@@ -4,7 +4,7 @@
 import React, { useState, useCallback, useEffect, useMemo } from 'react'
 import { Form, Row, Col, message, Input, Select, Card, Space, Spin } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSave, faTimes, faBriefcase, faGift } from '@fortawesome/free-solid-svg-icons'
+import { faSave, faTimes, faGift } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../../core/context/ThemeContext'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { Button } from '../../../../core/components'

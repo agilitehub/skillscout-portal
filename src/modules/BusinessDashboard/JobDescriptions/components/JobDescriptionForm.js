@@ -8,7 +8,6 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faSave,
-  faTimes,
   faFileText,
   faBuilding,
   faTasks,
