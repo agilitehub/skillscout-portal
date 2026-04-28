@@ -22,6 +22,8 @@ import {
 import { Button } from '../../../../core/components'
 import { BRAND_COLORS, SEMANTIC_COLORS } from '../../../../core/theme/colors'
 
+import '../styles/branch-management.css'
+
 /**
  * View Branch Modal Component
  * Displays comprehensive branch information in a read-only format
@@ -54,49 +56,6 @@ const ViewBranchModal = React.memo(({ visible, branch, onCancel, darkMode }) => 
 
   return (
     <>
-      {/* Modal Styles */}
-      <style jsx global>{`
-        .view-branch-modal .ant-modal-content {
-          background-color: ${darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white} !important;
-          color: ${darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray} !important;
-          border: 1px solid ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.borderGray} !important;
-        }
-        
-        .view-branch-modal .ant-modal-header {
-          background-color: ${darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white} !important;
-          border-bottom: 1px solid ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.borderGray} !important;
-        }
-        
-        .view-branch-modal .ant-modal-close {
-          color: ${darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray} !important;
-        }
-        
-        .view-branch-modal .ant-modal-close:hover {
-          color: ${BRAND_COLORS.emeraldLight} !important;
-        }
-        
-        .view-branch-descriptions .ant-descriptions-item-label {
-          background-color: ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.offWhite} !important;
-          color: ${darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray} !important;
-          border-color: ${darkMode ? BRAND_COLORS.darkSlate : BRAND_COLORS.borderGray} !important;
-          font-weight: 500 !important;
-        }
-        
-        .view-branch-descriptions .ant-descriptions-item-content {
-          background-color: ${darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white} !important;
-          color: ${darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray} !important;
-          border-color: ${darkMode ? BRAND_COLORS.darkSlate : BRAND_COLORS.borderGray} !important;
-        }
-        
-        .view-branch-descriptions .ant-descriptions-bordered .ant-descriptions-item {
-          border-bottom: 1px solid ${darkMode ? BRAND_COLORS.darkSlate : BRAND_COLORS.borderGray} !important;
-        }
-        
-        .view-branch-descriptions .ant-descriptions-bordered .ant-descriptions-row {
-          border-bottom: 1px solid ${darkMode ? BRAND_COLORS.darkSlate : BRAND_COLORS.borderGray} !important;
-        }
-      `}</style>
-
       <Modal
         title={
           <div className='flex items-center space-x-3'>

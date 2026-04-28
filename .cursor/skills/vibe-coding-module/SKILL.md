@@ -24,6 +24,7 @@ Under `src/modules/BusinessDashboard/<FeatureName>/` use:
 | Folder | Purpose |
 |--------|---------|
 | **`components/`** | React pages, modals, forms, and presentational pieces for this feature. |
+| **`styles/`** | **Module-scoped global CSS** for Ant Design overrides, modal shells, and feature-specific selectors. One primary file per feature is typical (e.g. `styles/org-settings.css`). Import the stylesheet from any `components/` file that needs those rules. Do **not** use `<style jsx global>` in JSX; keep theme splits on `html.dark` / defaults (see `ThemeContext`). |
 | **`utils/`** | Data shaping, API/Supabase controllers, mappers, validation, non-UI helpers. The repo often uses `controller.js` and `data-model.js` — copy patterns from a neighboring feature. |
 | **`hooks/`** | Custom hooks (`use*`) for state, effects, and glue between `utils` and the UI. Add when hook logic is large enough to keep out of `components/`. |
 
@@ -53,10 +54,14 @@ Under `src/modules/BusinessDashboard/<FeatureName>/` use:
 - Use project wrappers from `core/components` when the codebase already does (e.g. `Button`).
 - **Icons:** in-page iconography is often Font Awesome in existing modules; stay consistent with the file you are editing, or with Ant Design icons if that file already uses them.
 
-## Styling: Tailwind + AntD
+## Styling: Tailwind + AntD + module `styles/`
 
 - Use **Tailwind** `className` for spacing, color, flex/grid, typography, and responsive layout on wrappers and custom regions.
-- Pass `className` / `rootClassName` to AntD components when needed. Avoid new global CSS in `core` for feature work; keep styling local via Tailwind + AntD unless the app already uses a specific pattern (e.g. sidebar gradients).
+- Pass `className` / `rootClassName` to AntD components when needed.
+- **Ant Design overrides** (`.ant-*` classes, modal shells, dropdown panels) belong in **`styles/<feature>.css`** under the same feature folder, not inline in components. Use **`html.dark`** for dark-theme rules (the app sets `document.documentElement.classList` to `dark` via `ThemeContext`).
+- **`src/modules/BusinessDashboard/styles/dashboard-toolbar-buttons.css`** holds the shared white toolbar action button pattern used across several list pages; import it where `dashboard-button` styling is needed.
+- **`src/core/components/view-components/table-view/styles/table-view.css`** styles the shared `TableView` (`.enhanced-table`, `.dark-table`, etc.).
+- Avoid adding new global CSS under `src/core` for routine feature work unless promoting a shared widget (see below).
 
 ## Reusable building blocks → `src/core/components`
 

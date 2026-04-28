@@ -31,6 +31,8 @@ import {
 } from '../utils/controller'
 import { parseKeywords } from '../utils/data-model'
 
+import '../styles/job-description-form.css'
+
 const { TextArea } = Input
 const { Option } = Select
 
@@ -1070,90 +1072,6 @@ const CreateJobDescription = React.memo(({ user }) => {
         </div>
       </div>
 
-      {/* Dark mode tab styles */}
-      <style jsx global>{`
-        ${darkMode
-          ? `
-          .dark-tabs .ant-tabs-tab {
-            color: #E5E7EB !important;
-          }
-          
-          .dark-tabs .ant-tabs-tab:hover {
-            color: #F9FAFB !important;
-          }
-          
-          .dark-tabs .ant-tabs-tab.ant-tabs-tab-active {
-            color: #059669 !important;
-          }
-          
-          .dark-tabs .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
-            color: #059669 !important;
-          }
-          
-          .dark-tabs .ant-tabs-ink-bar {
-            background-color: #059669 !important;
-          }
-          
-          .dark-tabs .ant-tabs-nav::before {
-            border-bottom-color: #4B5563 !important;
-          }
-          
-          .dark-select-dropdown {
-            background-color: #374151 !important;
-          }
-          
-          .dark-select-dropdown .ant-select-item {
-            color: #F9FAFB !important;
-            background-color: #374151 !important;
-          }
-          
-          .dark-select-dropdown .ant-select-item:hover {
-            background-color: #4B5563 !important;
-          }
-          
-          .dark-select-dropdown .ant-select-item-option-selected {
-            background-color: #059669 !important;
-            color: #FFFFFF !important;
-          }
-          
-          .dark-select-dropdown .ant-select-item-option-selected:hover {
-            background-color: #047857 !important;
-          }
-          
-          .dark-modal .ant-modal-content {
-            background-color: #374151 !important;
-            color: #F9FAFB !important;
-          }
-          
-          .dark-modal .ant-modal-header {
-            background-color: #374151 !important;
-            border-bottom-color: #4B5563 !important;
-          }
-          
-          .dark-modal .ant-modal-title {
-            color: #F9FAFB !important;
-          }
-          
-          .dark-modal .ant-modal-body {
-            background-color: #374151 !important;
-            color: #F9FAFB !important;
-          }
-          
-          .dark-modal .ant-modal-footer {
-            background-color: #374151 !important;
-            border-top-color: #4B5563 !important;
-          }
-          
-          .dark-modal .ant-modal-close {
-            color: #F9FAFB !important;
-          }
-          
-          .dark-modal .ant-modal-close:hover {
-            color: #FFFFFF !important;
-          }
-        `
-          : ''}
-      `}</style>
     </div>
   )
 })

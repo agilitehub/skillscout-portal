@@ -11,6 +11,7 @@ import { getAllJobDescriptions, deleteJobDescription } from '../utils/controller
 import TableView from '../../../../core/components/view-components/table-view/TableView'
 import TableActions from '../../../../core/components/view-components/table-view/TableActions'
 import { Toolbar } from '../../../../core/components'
+import '../../styles/dashboard-toolbar-buttons.css'
 import ModuleContainer from '../../../../core/components/layout/Container/ModuleContainer'
 
 /**
@@ -310,52 +311,6 @@ const JobDescriptions = React.memo(({ user }) => {
           />
         </ModuleContainer>
 
-        {/* Dashboard Button Styles */}
-        <style jsx global>{`
-          .dashboard-button,
-          .dashboard-button.ant-btn,
-          button.dashboard-button {
-            background: #ffffff !important;
-            background-color: #ffffff !important;
-            color: #059669 !important;
-            border: 1px solid #ffffff !important;
-            opacity: 1 !important;
-            visibility: visible !important;
-          }
-
-          .dashboard-button:hover,
-          .dashboard-button.ant-btn:hover,
-          button.dashboard-button:hover {
-            background: #f8f9fa !important;
-            background-color: #f8f9fa !important;
-            color: #047857 !important;
-            border: 1px solid #f8f9fa !important;
-            transform: translateY(-1px) !important;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15) !important;
-          }
-
-          ${darkMode
-            ? `
-            .dashboard-button,
-            .dashboard-button.ant-btn,
-            button.dashboard-button {
-              background: #ffffff !important;
-              background-color: #ffffff !important;
-              color: #059669 !important;
-              border: 1px solid #ffffff !important;
-            }
-            
-            .dashboard-button:hover,
-            .dashboard-button.ant-btn:hover,
-            button.dashboard-button:hover {
-              background: #f8f9fa !important;
-              background-color: #f8f9fa !important;
-              color: #047857 !important;
-              border: 1px solid #f8f9fa !important;
-            }
-          `
-            : ''}
-        `}</style>
       </div>
     </>
   )

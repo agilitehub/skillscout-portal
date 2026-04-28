@@ -16,6 +16,8 @@ import {
 import { Button } from '../../../../core/components'
 import { BRAND_COLORS, SEMANTIC_COLORS } from '../../../../core/theme/colors'
 
+import '../styles/user-management.css'
+
 /**
  * Edit Permissions Modal Component
  * Handles individual permission management for users
@@ -144,95 +146,6 @@ const EditPermissionsModal = React.memo(({ visible, user, onCancel, onSuccess, d
 
   return (
     <>
-      {/* Modal Styles */}
-      <style jsx global>{`
-        .permissions-modal .ant-modal-content {
-          background-color: ${darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white} !important;
-          color: ${darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray} !important;
-          border: 1px solid ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.borderGray} !important;
-        }
-
-        .permissions-modal .ant-modal-header {
-          background-color: ${darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white} !important;
-          border-bottom: 1px solid ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.borderGray} !important;
-        }
-
-        .permissions-modal .ant-modal-close {
-          color: ${darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray} !important;
-        }
-
-        .permissions-modal .ant-modal-close:hover {
-          color: ${BRAND_COLORS.emeraldLight} !important;
-        }
-
-        .permissions-modal .ant-form-item-label > label {
-          color: ${darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray} !important;
-          font-weight: 500 !important;
-        }
-
-        .permissions-modal .ant-switch-checked {
-          background-color: ${BRAND_COLORS.emeraldPrimary} !important;
-        }
-
-        .permissions-modal .ant-alert {
-          background-color: ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.lightGray} !important;
-          border-color: ${darkMode ? BRAND_COLORS.darkSlate : BRAND_COLORS.borderGray} !important;
-        }
-
-        .permissions-modal .ant-alert-message {
-          color: ${darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray} !important;
-        }
-
-        .permissions-modal .ant-alert-description {
-          color: ${darkMode ? BRAND_COLORS.lightGray : BRAND_COLORS.mediumGray} !important;
-        }
-
-        .permission-category {
-          background-color: ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.offWhite} !important;
-          border: 1px solid ${darkMode ? BRAND_COLORS.darkSlate : BRAND_COLORS.lightBorderGray} !important;
-          border-radius: 8px;
-          padding: 16px;
-          margin-bottom: 16px;
-        }
-
-        .permission-category-title {
-          color: ${darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray} !important;
-          font-weight: 600;
-          font-size: 14px;
-          margin-bottom: 12px;
-        }
-
-        .permission-item {
-          display: flex;
-          align-items: flex-start;
-          justify-content: space-between;
-          padding: 12px 0;
-          border-bottom: 1px solid ${darkMode ? BRAND_COLORS.darkSlate : BRAND_COLORS.lightBorderGray};
-        }
-
-        .permission-item:last-child {
-          border-bottom: none;
-        }
-
-        .permission-info {
-          flex: 1;
-          margin-right: 16px;
-        }
-
-        .permission-label {
-          color: ${darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray} !important;
-          font-weight: 500;
-          font-size: 14px;
-          margin-bottom: 4px;
-        }
-
-        .permission-description {
-          color: ${darkMode ? BRAND_COLORS.lightGray : BRAND_COLORS.mediumGray} !important;
-          font-size: 12px;
-          line-height: 1.4;
-        }
-      `}</style>
-
       <Modal
         title={
           <div className='flex items-center space-x-3'>

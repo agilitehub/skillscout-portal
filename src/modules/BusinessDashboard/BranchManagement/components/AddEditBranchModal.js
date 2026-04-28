@@ -19,6 +19,8 @@ import {
 import { Button } from '../../../../core/components'
 import { BRAND_COLORS, SEMANTIC_COLORS } from '../../../../core/theme/colors'
 
+import '../styles/branch-management.css'
+
 const { TextArea } = Input
 const { Option } = Select
 
@@ -167,124 +169,6 @@ const AddEditBranchModal = React.memo(({ visible, mode, branch, onCancel, onSucc
 
   return (
     <>
-      {/* Modal Styles */}
-      <style jsx global>{`
-        .branch-modal .ant-modal-content {
-          background-color: ${darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white} !important;
-          color: ${darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray} !important;
-          border: 1px solid ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.borderGray} !important;
-        }
-        
-        .branch-modal .ant-modal-header {
-          background-color: ${darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white} !important;
-          border-bottom: 1px solid ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.borderGray} !important;
-        }
-        
-        .branch-modal .ant-modal-close {
-          color: ${darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray} !important;
-        }
-        
-        .branch-modal .ant-modal-close:hover {
-          color: ${BRAND_COLORS.emeraldLight} !important;
-        }
-        
-        .branch-modal .ant-form-item-label > label {
-          color: ${darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray} !important;
-        }
-        
-        .branch-modal .ant-input {
-          background-color: ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.white} !important;
-          border-color: ${darkMode ? BRAND_COLORS.darkSlate : BRAND_COLORS.borderGray} !important;
-          color: ${darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray} !important;
-        }
-        
-        .branch-modal .ant-input:focus,
-        .branch-modal .ant-input-focused {
-          border-color: ${BRAND_COLORS.emeraldPrimary} !important;
-          box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2) !important;
-        }
-        
-        .branch-modal .ant-select-selector {
-          background-color: ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.white} !important;
-          border-color: ${darkMode ? BRAND_COLORS.darkSlate : BRAND_COLORS.borderGray} !important;
-          color: ${darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray} !important;
-        }
-        
-        .branch-modal .ant-select-arrow {
-          color: ${darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray} !important;
-        }
-        
-        .branch-modal .ant-select:not(.ant-select-disabled):hover .ant-select-selector {
-          border-color: ${BRAND_COLORS.emeraldPrimary} !important;
-        }
-        
-        .branch-modal .ant-select-focused .ant-select-selector {
-          border-color: ${BRAND_COLORS.emeraldPrimary} !important;
-          box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2) !important;
-        }
-        
-        .branch-modal .ant-select-selection-item {
-          background-color: ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.white} !important;
-          color: ${darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray} !important;
-        }
-        
-        .branch-modal .ant-select-selection-placeholder {
-          color: ${darkMode ? BRAND_COLORS.lightGray : BRAND_COLORS.mediumGray} !important;
-        }
-        
-        .branch-modal textarea.ant-input {
-          background-color: ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.white} !important;
-          border-color: ${darkMode ? BRAND_COLORS.darkSlate : BRAND_COLORS.borderGray} !important;
-          color: ${darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray} !important;
-        }
-        
-        .branch-modal textarea.ant-input:focus {
-          border-color: ${BRAND_COLORS.emeraldPrimary} !important;
-          box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2) !important;
-        }
-        
-        .branch-modal textarea.ant-input::placeholder {
-          color: ${darkMode ? BRAND_COLORS.lightGray : BRAND_COLORS.mediumGray} !important;
-        }
-        
-        .branch-modal .ant-input-data-count {
-          color: ${darkMode ? BRAND_COLORS.lightGray : BRAND_COLORS.mediumGray} !important;
-        }
-        
-        .branch-modal .ant-switch {
-          background-color: ${darkMode ? BRAND_COLORS.darkSlate : BRAND_COLORS.lightGray} !important;
-        }
-        
-        .branch-modal .ant-switch-checked {
-          background-color: ${BRAND_COLORS.emeraldPrimary} !important;
-        }
-        
-        .branch-modal .ant-form-item-extra {
-          color: ${darkMode ? BRAND_COLORS.lightGray : BRAND_COLORS.mediumGray} !important;
-        }
-        
-        .branch-modal .ant-input::placeholder {
-          color: ${darkMode ? BRAND_COLORS.lightGray : BRAND_COLORS.mediumGray} !important;
-        }
-        
-        .branch-mgmt-dark-dropdown {
-          background-color: ${BRAND_COLORS.darkSlateAlt} !important;
-        }
-        
-        .branch-mgmt-dark-dropdown .ant-select-item {
-          color: ${BRAND_COLORS.white} !important;
-        }
-        
-        .branch-mgmt-dark-dropdown .ant-select-item:hover {
-          background-color: ${BRAND_COLORS.mediumSlate} !important;
-        }
-        
-        .branch-mgmt-dark-dropdown .ant-select-item-option-selected {
-          background-color: ${BRAND_COLORS.emeraldPrimary} !important;
-          color: ${BRAND_COLORS.white} !important;
-        }
-      `}</style>
-
       <Modal
         title={
           <div className='flex items-center space-x-3'>

@@ -14,6 +14,8 @@ import KanbanBoard from './KanbanBoard'
 import { BRAND_COLORS, SEMANTIC_COLORS } from '../../../../core/theme/colors'
 import { Toolbar } from '../../../../core/components'
 
+import '../styles/candidates.css'
+
 /**
  * Candidates Management Page
  * Kanban-style board for managing job application candidates with drag and drop
@@ -732,113 +734,6 @@ const Candidates = React.memo(({ user }) => {
             backgroundColor: darkMode ? 'rgba(0, 0, 0, 0.7)' : 'rgba(0, 0, 0, 0.45)'
           }}
         >
-          {/* Dark Mode Styles for Modal and Components */}
-          <style jsx global>{`
-            /* Dropdown Container Styles */
-            .ant-select-dropdown {
-              background-color: ${darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white} !important;
-              border: 1px solid ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.borderGray} !important;
-              border-radius: 6px !important;
-              box-shadow: 0 4px 12px rgba(0, 0, 0, ${darkMode ? '0.3' : '0.15'}) !important;
-            }
-
-            /* Dropdown Options Styles */
-            .ant-select-dropdown .ant-select-item-option {
-              color: ${darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray} !important;
-              background-color: transparent !important;
-              padding: 8px 12px !important;
-              border-radius: 4px !important;
-              margin: 2px 4px !important;
-            }
-
-            .ant-select-dropdown .ant-select-item-option:hover {
-              background-color: ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.lightGray} !important;
-            }
-
-            .ant-select-dropdown .ant-select-item-option-selected {
-              background-color: ${BRAND_COLORS.emeraldPrimary} !important;
-              color: white !important;
-              font-weight: 500 !important;
-            }
-
-            .ant-select-dropdown .ant-select-item-option-selected:hover {
-              background-color: ${BRAND_COLORS.emeraldLight} !important;
-            }
-
-            ${darkMode
-              ? `
-              /* Dark Mode Modal Styles */
-              .dark-modal .ant-modal-content {
-                background-color: ${BRAND_COLORS.darkSlateAlt} !important;
-                color: ${BRAND_COLORS.white} !important;
-                border: 1px solid ${BRAND_COLORS.mediumSlate} !important;
-              }
-              .dark-modal .ant-modal-header {
-                background-color: ${BRAND_COLORS.darkSlateAlt} !important;
-                border-bottom: 1px solid ${BRAND_COLORS.mediumSlate} !important;
-              }
-              .dark-modal .ant-modal-close {
-                color: ${BRAND_COLORS.white} !important;
-              }
-              .dark-modal .ant-modal-close:hover {
-                color: ${BRAND_COLORS.emeraldLight} !important;
-              }
-              .dark-descriptions .ant-descriptions-item-label {
-                background-color: ${BRAND_COLORS.mediumSlate} !important;
-                color: ${BRAND_COLORS.white} !important;
-                border-color: ${BRAND_COLORS.darkSlate} !important;
-              }
-              .dark-descriptions .ant-descriptions-item-content {
-                background-color: ${BRAND_COLORS.darkSlateAlt} !important;
-                color: ${BRAND_COLORS.white} !important;
-                border-color: ${BRAND_COLORS.darkSlate} !important;
-              }
-              .dark-descriptions .ant-descriptions-bordered .ant-descriptions-item {
-                border-bottom: 1px solid ${BRAND_COLORS.darkSlate} !important;
-              }
-              .dark-descriptions .ant-descriptions-bordered .ant-descriptions-row {
-                border-bottom: 1px solid ${BRAND_COLORS.darkSlate} !important;
-              }
-            `
-              : ''}
-
-            /* Force Add Candidate Button Visibility */
-            .add-candidate-visible,
-            .add-candidate-visible.ant-btn,
-            button.add-candidate-visible {
-              background: #ffffff !important;
-              background-color: #ffffff !important;
-              color: #059669 !important;
-              border: 1px solid #ffffff !important;
-              opacity: 1 !important;
-              visibility: visible !important;
-              height: 28px !important;
-              font-size: 13px !important;
-              padding: 2px 10px !important;
-            }
-
-            .add-candidate-visible:hover,
-            .add-candidate-visible.ant-btn:hover,
-            button.add-candidate-visible:hover {
-              background: #f8f9fa !important;
-              background-color: #f8f9fa !important;
-              color: #047857 !important;
-              border: 1px solid #f8f9fa !important;
-              transform: translateY(-1px) !important;
-              box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15) !important;
-            }
-
-            /* Ensure icons and text have proper spacing */
-            .add-candidate-visible svg,
-            .add-candidate-visible .anticon {
-              margin-right: 4px !important;
-            }
-
-            .add-candidate-visible span {
-              margin-left: 4px !important;
-            }
-          `}</style>
-
           {selectedCandidate && (
             <div className='space-y-6'>
               {/* Basic Information */}

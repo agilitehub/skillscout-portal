@@ -1,0 +1,220 @@
+/* Candidates list + candidate form — global Ant overrides use html.dark + .candidate-form-page where needed */
+
+.candidate-form-cancel-btn,
+.candidate-form-submit-btn,
+.candidate-form-cancel-btn.ant-btn,
+.candidate-form-submit-btn.ant-btn,
+button.candidate-form-cancel-btn,
+button.candidate-form-submit-btn {
+  background-color: #059669 !important;
+  border-color: #059669 !important;
+  color: #ffffff !important;
+  font-weight: 500 !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+  transition: all 0.2s ease !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.candidate-form-cancel-btn:hover,
+.candidate-form-submit-btn:hover,
+.candidate-form-cancel-btn.ant-btn:hover,
+.candidate-form-submit-btn.ant-btn:hover,
+button.candidate-form-cancel-btn:hover,
+button.candidate-form-submit-btn:hover {
+  background-color: #047857 !important;
+  border-color: #047857 !important;
+  color: #ffffff !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+.candidate-form-cancel-btn:focus,
+.candidate-form-submit-btn:focus,
+.candidate-form-cancel-btn.ant-btn:focus,
+.candidate-form-submit-btn.ant-btn:focus {
+  background-color: #059669 !important;
+  border-color: #059669 !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
+}
+
+.candidate-form-cancel-btn span,
+.candidate-form-submit-btn span,
+.candidate-form-cancel-btn .anticon,
+.candidate-form-submit-btn .anticon {
+  color: #ffffff !important;
+  border: none !important;
+  outline: none !important;
+  text-shadow: none !important;
+}
+
+html.dark .candidate-form-page .ant-form-item-label > label,
+html.dark .candidate-form-page .ant-form-item-extra {
+  color: #d1d5db !important;
+}
+
+html.dark .candidate-form-page .ant-input,
+html.dark .candidate-form-page .ant-input:focus,
+html.dark .candidate-form-page .ant-input-focused,
+html.dark .candidate-form-page .ant-select-selector,
+html.dark .candidate-form-page .ant-select-focused .ant-select-selector,
+html.dark .candidate-form-page .ant-select:not(.ant-select-disabled):hover .ant-select-selector {
+  background-color: #374151 !important;
+  border-color: #4b5563 !important;
+  color: #f9fafb !important;
+}
+
+html.dark .candidate-form-page .ant-input::placeholder,
+html.dark .candidate-form-page .ant-select-selection-placeholder {
+  color: #9ca3af !important;
+}
+
+html.dark .candidate-form-page .ant-select-dropdown {
+  background-color: #374151 !important;
+  border-color: #4b5563 !important;
+}
+
+html.dark .candidate-form-page .ant-select-item {
+  color: #f9fafb !important;
+}
+
+html.dark .candidate-form-page .ant-select-item:hover {
+  background-color: #4b5563 !important;
+}
+
+html.dark .candidate-form-page .ant-select-item-option-selected {
+  background-color: #059669 !important;
+}
+
+html.dark .candidate-form-page .ant-form-item-has-error .ant-input,
+html.dark .candidate-form-page .ant-form-item-has-error .ant-select-selector {
+  border-color: #ef4444 !important;
+}
+
+html.dark .candidate-form-page .ant-form-item-explain-error {
+  color: #fca5a5 !important;
+}
+
+html.dark .candidate-form-page .ant-select-selection-item-remove {
+  color: #9ca3af !important;
+}
+
+html.dark .candidate-form-page .ant-select-selection-item-remove:hover {
+  color: #f9fafb !important;
+  background-color: #ef4444 !important;
+}
+
+/* Candidates table / modal dropdowns */
+.ant-select-dropdown {
+  background-color: #ffffff !important;
+  border: 1px solid #d9d9d9 !important;
+  border-radius: 6px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+html.dark .ant-select-dropdown {
+  background-color: #1f2937 !important;
+  border: 1px solid #4b5563 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+}
+
+.ant-select-dropdown .ant-select-item-option {
+  color: #333333 !important;
+  background-color: transparent !important;
+  padding: 8px 12px !important;
+  border-radius: 4px !important;
+  margin: 2px 4px !important;
+}
+
+html.dark .ant-select-dropdown .ant-select-item-option {
+  color: #ffffff !important;
+}
+
+.ant-select-dropdown .ant-select-item-option:hover {
+  background-color: #e0e0e0 !important;
+}
+
+html.dark .ant-select-dropdown .ant-select-item-option:hover {
+  background-color: #4b5563 !important;
+}
+
+.ant-select-dropdown .ant-select-item-option-selected {
+  background-color: #059669 !important;
+  color: white !important;
+  font-weight: 500 !important;
+}
+
+.ant-select-dropdown .ant-select-item-option-selected:hover {
+  background-color: #10b981 !important;
+}
+
+.dark-modal .ant-modal-content {
+  background-color: #1f2937 !important;
+  color: #ffffff !important;
+  border: 1px solid #4b5563 !important;
+}
+
+.dark-modal .ant-modal-header {
+  background-color: #1f2937 !important;
+  border-bottom: 1px solid #4b5563 !important;
+}
+
+.dark-modal .ant-modal-close {
+  color: #ffffff !important;
+}
+
+.dark-modal .ant-modal-close:hover {
+  color: #10b981 !important;
+}
+
+.dark-descriptions .ant-descriptions-item-label {
+  background-color: #4b5563 !important;
+  color: #ffffff !important;
+  border-color: #6b7280 !important;
+}
+
+.dark-descriptions .ant-descriptions-item-content {
+  background-color: #1f2937 !important;
+  color: #ffffff !important;
+  border-color: #6b7280 !important;
+}
+
+.dark-descriptions .ant-descriptions-bordered .ant-descriptions-item,
+.dark-descriptions .ant-descriptions-bordered .ant-descriptions-row {
+  border-bottom: 1px solid #6b7280 !important;
+}
+
+.add-candidate-visible,
+.add-candidate-visible.ant-btn,
+button.add-candidate-visible {
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  color: #059669 !important;
+  border: 1px solid #ffffff !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  height: 28px !important;
+  font-size: 13px !important;
+  padding: 2px 10px !important;
+}
+
+.add-candidate-visible:hover,
+.add-candidate-visible.ant-btn:hover,
+button.add-candidate-visible:hover {
+  background: #f8f9fa !important;
+  background-color: #f8f9fa !important;
+  color: #047857 !important;
+  border: 1px solid #f8f9fa !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15) !important;
+}
+
+.add-candidate-visible svg,
+.add-candidate-visible .anticon {
+  margin-right: 4px !important;
+}
+
+.add-candidate-visible span {
+  margin-left: 4px !important;
+}

@@ -15,6 +15,8 @@ import {
 import { Button } from '../../../../core/components'
 import { BRAND_COLORS } from '../../../../core/theme/colors'
 
+import '../styles/billing.css'
+
 const { Title, Text } = Typography
 
 /**
@@ -65,58 +67,6 @@ const InvoiceDetailsModal = React.memo(({ visible, onCancel, darkMode, invoice }
 
   return (
     <>
-      {/* Modal Styles */}
-      <style jsx global>{`
-        .invoice-details-modal .ant-modal-content {
-          background-color: ${darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white} !important;
-          color: ${darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray} !important;
-          border: 1px solid ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.borderGray} !important;
-        }
-        
-        .invoice-details-modal .ant-modal-header {
-          background-color: ${darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white} !important;
-          border-bottom: 1px solid ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.borderGray} !important;
-        }
-        
-        .invoice-details-modal .ant-modal-close {
-          color: ${darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray} !important;
-        }
-        
-        .invoice-details-modal .ant-modal-close:hover {
-          color: ${BRAND_COLORS.emeraldLight} !important;
-        }
-        
-        .invoice-details-modal .ant-descriptions-item-label {
-          color: ${darkMode ? BRAND_COLORS.lightGray : BRAND_COLORS.mediumGray} !important;
-        }
-        
-        .invoice-details-modal .ant-descriptions-item-content {
-          color: ${darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray} !important;
-        }
-        
-        .invoice-header {
-          background: ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.lightGray};
-          padding: 20px;
-          border-radius: 8px;
-          margin-bottom: 24px;
-        }
-        
-        .invoice-table th {
-          background: ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.lightGray} !important;
-          color: ${darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray} !important;
-          font-weight: 600;
-          padding: 12px;
-          border: 1px solid ${darkMode ? BRAND_COLORS.darkSlate : BRAND_COLORS.borderGray};
-        }
-        
-        .invoice-table td {
-          background: ${darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white} !important;
-          color: ${darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray} !important;
-          padding: 12px;
-          border: 1px solid ${darkMode ? BRAND_COLORS.darkSlate : BRAND_COLORS.borderGray};
-        }
-      `}</style>
-
       <Modal
         title={
           <div className='flex items-center space-x-3'>

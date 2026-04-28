@@ -8,6 +8,8 @@ import { faUser, faEnvelope, faPhone, faFlag, faTags, faStickyNote } from '@fort
 import { useTheme } from '../../../../core/context/ThemeContext'
 import { Button } from '../../../../core/components'
 
+import '../styles/candidates.css'
+
 const { Option } = Select
 const { TextArea } = Input
 
@@ -172,7 +174,7 @@ const CandidateForm = React.memo(({ user }) => {
 
   return (
     <div
-      className={`min-h-screen ${
+      className={`candidate-form-page min-h-screen ${
         darkMode
           ? 'bg-gradient-to-br from-slate-700 via-slate-600 to-emerald-800'
           : 'bg-gradient-to-br from-sky-100 via-gray-50 to-emerald-100'
@@ -423,108 +425,6 @@ const CandidateForm = React.memo(({ user }) => {
           </Card>
         </div>
 
-        {/* Form element styles */}
-        <style jsx global>{`
-          /* Button Styles */
-          .candidate-form-cancel-btn,
-          .candidate-form-submit-btn,
-          .candidate-form-cancel-btn.ant-btn,
-          .candidate-form-submit-btn.ant-btn,
-          button.candidate-form-cancel-btn,
-          button.candidate-form-submit-btn {
-            background-color: #059669 !important;
-            border-color: #059669 !important;
-            color: #ffffff !important;
-            font-weight: 500 !important;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
-            transition: all 0.2s ease !important;
-            opacity: 1 !important;
-            visibility: visible !important;
-          }
-
-          .candidate-form-cancel-btn:hover,
-          .candidate-form-submit-btn:hover,
-          .candidate-form-cancel-btn.ant-btn:hover,
-          .candidate-form-submit-btn.ant-btn:hover,
-          button.candidate-form-cancel-btn:hover,
-          button.candidate-form-submit-btn:hover {
-            background-color: #047857 !important;
-            border-color: #047857 !important;
-            color: #ffffff !important;
-            transform: translateY(-1px) !important;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
-          }
-
-          .candidate-form-cancel-btn:focus,
-          .candidate-form-submit-btn:focus,
-          .candidate-form-cancel-btn.ant-btn:focus,
-          .candidate-form-submit-btn.ant-btn:focus {
-            background-color: #059669 !important;
-            border-color: #059669 !important;
-            color: #ffffff !important;
-            box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
-          }
-
-          .candidate-form-cancel-btn span,
-          .candidate-form-submit-btn span,
-          .candidate-form-cancel-btn .anticon,
-          .candidate-form-submit-btn .anticon {
-            color: #ffffff !important;
-            border: none !important;
-            outline: none !important;
-            text-shadow: none !important;
-          }
-
-          ${darkMode
-            ? `
-            .ant-form-item-label > label,
-            .ant-form-item-extra {
-              color: #d1d5db !important;
-            }
-            .ant-input,
-            .ant-input:focus,
-            .ant-input-focused,
-            .ant-select-selector,
-            .ant-select-focused .ant-select-selector,
-            .ant-select:not(.ant-select-disabled):hover .ant-select-selector {
-              background-color: #374151 !important;
-              border-color: #4b5563 !important;
-              color: #f9fafb !important;
-            }
-            .ant-input::placeholder,
-            .ant-select-selection-placeholder {
-              color: #9ca3af !important;
-            }
-            .ant-select-dropdown {
-              background-color: #374151 !important;
-              border-color: #4b5563 !important;
-            }
-            .ant-select-item {
-              color: #f9fafb !important;
-            }
-            .ant-select-item:hover {
-              background-color: #4b5563 !important;
-            }
-            .ant-select-item-option-selected {
-              background-color: #059669 !important;
-            }
-            .ant-form-item-has-error .ant-input,
-            .ant-form-item-has-error .ant-select-selector {
-              border-color: #ef4444 !important;
-            }
-            .ant-form-item-explain-error {
-              color: #fca5a5 !important;
-            }
-            .ant-select-selection-item-remove {
-              color: #9CA3AF !important;
-            }
-            .ant-select-selection-item-remove:hover {
-              color: #F9FAFB !important;
-              background-color: #EF4444 !important;
-            }
-          `
-            : ''}
-        `}</style>
       </div>
     </div>
   )

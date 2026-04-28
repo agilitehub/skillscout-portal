@@ -29,6 +29,9 @@ import { useDispatch } from 'react-redux'
 import { getDashboardStats } from '../utils/controller'
 import { DASHBOARD_ALERT_TYPE, buildBusinessDashboardPath } from '../../../../utils/globals'
 
+import '../../styles/dashboard-toolbar-buttons.css'
+import '../styles/dashboard.css'
+
 const { Title, Text } = Typography
 
 /**
@@ -630,93 +633,6 @@ const Dashboard = React.memo(() => {
           )}
         </div>
       </Modal>
-
-      {/* Dashboard Button Styles */}
-      <style jsx global>{`
-        /* Force Dashboard buttons to have white backgrounds */
-        .dashboard-button,
-        .dashboard-button.ant-btn,
-        button.dashboard-button {
-          background: #ffffff !important;
-          background-color: #ffffff !important;
-          color: #059669 !important;
-          border: 1px solid #ffffff !important;
-          opacity: 1 !important;
-          visibility: visible !important;
-        }
-
-        .dashboard-button:hover,
-        .dashboard-button.ant-btn:hover,
-        button.dashboard-button:hover {
-          background: #f8f9fa !important;
-          background-color: #f8f9fa !important;
-          color: #047857 !important;
-          border: 1px solid #f8f9fa !important;
-          transform: translateY(-1px) !important;
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15) !important;
-        }
-
-        /* Bell button specific styles */
-        .bell-button,
-        .bell-button.ant-btn,
-        button.bell-button {
-          background: #ffffff !important;
-          background-color: #ffffff !important;
-          color: #059669 !important;
-          border: 1px solid #ffffff !important;
-        }
-
-        .bell-button:hover,
-        .bell-button.ant-btn:hover,
-        button.bell-button:hover {
-          background: #f8f9fa !important;
-          background-color: #f8f9fa !important;
-          color: #047857 !important;
-          border: 1px solid #f8f9fa !important;
-        }
-
-        /* Ensure icons and text have proper spacing */
-        .dashboard-button .anticon,
-        .dashboard-button svg {
-          margin-right: 4px !important;
-        }
-
-        .dashboard-button span {
-          margin-left: 4px !important;
-        }
-
-        /* Dark mode overrides */
-        ${darkMode
-          ? `
-          .dashboard-button,
-          .dashboard-button.ant-btn,
-          button.dashboard-button {
-            background: #ffffff !important;
-            background-color: #ffffff !important;
-            color: #059669 !important;
-            border: 1px solid #ffffff !important;
-          }
-          
-          .dashboard-button:hover,
-          .dashboard-button.ant-btn:hover,
-          button.dashboard-button:hover {
-            background: #f8f9fa !important;
-            background-color: #f8f9fa !important;
-            color: #047857 !important;
-            border: 1px solid #f8f9fa !important;
-          }
-
-          .bell-button,
-          .bell-button.ant-btn,
-          button.bell-button {
-            background: #ffffff !important;
-            background-color: #ffffff !important;
-            color: #059669 !important;
-            border: 1px solid #ffffff !important;
-          }
-        `
-          : ''}
-      `}</style>
     </div>
   )
 })

@@ -11,6 +11,8 @@ import { BRAND_COLORS, SEMANTIC_COLORS } from '../../../../core/theme/colors'
 import { Toolbar } from '../../../../core/components'
 import ModuleContainer from '../../../../core/components/layout/Container/ModuleContainer'
 
+import '../styles/user-management.css'
+
 /**
  * User Edit Page
  * Full page component for editing user details and permissions
@@ -261,87 +263,6 @@ const UserEditPage = React.memo(() => {
         </ModuleContainer>
       </div>
 
-      {/* Dark mode styles */}
-      <style jsx global>{`
-        /* Dark Mode Form Styling */
-        ${darkMode
-          ? `
-          .user-edit-form .ant-form-item-label > label {
-            color: #E5E7EB !important;
-          }
-          .user-edit-form .ant-form-item-extra {
-            color: #9CA3AF !important;
-          }
-          .user-edit-form .ant-input,
-          .user-edit-form input.ant-input,
-          .user-edit-form input[type="text"],
-          .user-edit-form input {
-            background-color: #4B5563 !important;
-            border-color: #6B7280 !important;
-            color: #F9FAFB !important;
-          }
-          .user-edit-form .ant-input:focus,
-          .user-edit-form input.ant-input:focus,
-          .user-edit-form input[type="text"]:focus,
-          .user-edit-form input:focus {
-            border-color: #059669 !important;
-            box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
-            background-color: #4B5563 !important;
-            color: #F9FAFB !important;
-          }
-          .user-edit-form .ant-input::placeholder,
-          .user-edit-form input::placeholder {
-            color: #D1D5DB !important;
-          }
-          .user-edit-form .ant-select,
-          .user-edit-form .ant-select-selector,
-          .user-edit-form .ant-select-single .ant-select-selector {
-            background-color: #4B5563 !important;
-            border-color: #6B7280 !important;
-            color: #F9FAFB !important;
-          }
-          .user-edit-form .ant-select-focused .ant-select-selector,
-          .user-edit-form .ant-select:focus .ant-select-selector {
-            border-color: #059669 !important;
-            box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
-            background-color: #4B5563 !important;
-          }
-          .user-edit-form .ant-select-selection-placeholder {
-            color: #D1D5DB !important;
-          }
-          .user-edit-form .ant-select-selection-item {
-            color: #F9FAFB !important;
-            background-color: transparent !important;
-          }
-          .user-edit-form .ant-select-arrow {
-            color: #9CA3AF !important;
-          }
-          
-          /* Form validation messages */
-          .user-edit-form .ant-form-item-explain-error {
-            color: #F87171 !important;
-          }
-        `
-          : ''}
-
-        /* Dark mode dropdown options */
-        .user-edit-dark-dropdown {
-          background-color: #374151 !important;
-        }
-
-        .user-edit-dark-dropdown .ant-select-item {
-          color: #f9fafb !important;
-        }
-
-        .user-edit-dark-dropdown .ant-select-item:hover {
-          background-color: #4b5563 !important;
-        }
-
-        .user-edit-dark-dropdown .ant-select-item-option-selected {
-          background-color: #059669 !important;
-          color: #ffffff !important;
-        }
-      `}</style>
     </div>
   )
 })

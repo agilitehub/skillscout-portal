@@ -12,6 +12,8 @@ import {
 import { Button } from '../../../../core/components'
 import { BRAND_COLORS } from '../../../../core/theme/colors'
 
+import '../styles/billing.css'
+
 const { Option } = Select
 
 /**
@@ -139,131 +141,6 @@ const PaymentMethodModal = React.memo(({
 
   return (
     <>
-      {/* Dark mode styles for PaymentMethodModal */}
-      <style jsx global>{`
-        ${darkMode ? `
-          .payment-method-modal .ant-modal-content {
-            background-color: #374151 !important;
-            color: #F9FAFB !important;
-          }
-          .payment-method-modal .ant-modal-header {
-            background-color: #374151 !important;
-            border-bottom-color: #4B5563 !important;
-          }
-          .payment-method-modal .ant-modal-title {
-            color: #F9FAFB !important;
-          }
-          .payment-method-modal .ant-modal-close-x {
-            color: #9CA3AF !important;
-          }
-          .payment-method-modal .ant-modal-close-x:hover {
-            color: #F9FAFB !important;
-          }
-          .payment-method-modal .ant-alert {
-            background-color: #4B5563 !important;
-            border-color: #6B7280 !important;
-          }
-          .payment-method-modal .ant-alert-message,
-          .payment-method-modal .ant-alert-description {
-            color: #F9FAFB !important;
-          }
-          .payment-method-modal .ant-card {
-            background-color: #4B5563 !important;
-            border-color: #6B7280 !important;
-          }
-          .payment-method-modal .ant-card-body * {
-            color: #F9FAFB !important;
-          }
-          .payment-method-modal span,
-          .payment-method-modal div,
-          .payment-method-modal p {
-            color: inherit !important;
-          }
-        ` : ''}
-      `}</style>
-      
-      {/* Modal Styles */}
-      <style jsx global>{`
-        .payment-method-modal .ant-modal-content {
-          background-color: ${darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white} !important;
-          color: ${darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray} !important;
-          border: 1px solid ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.borderGray} !important;
-        }
-        
-        .payment-method-modal .ant-modal-header {
-          background-color: ${darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white} !important;
-          border-bottom: 1px solid ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.borderGray} !important;
-        }
-        
-        .payment-method-modal .ant-modal-close {
-          color: ${darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray} !important;
-        }
-        
-        .payment-method-modal .ant-modal-close:hover {
-          color: ${BRAND_COLORS.emeraldLight} !important;
-        }
-        
-        .payment-method-modal .ant-form-item-label > label {
-          color: ${darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray} !important;
-        }
-        
-        .payment-method-modal .ant-input {
-          background-color: ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.white} !important;
-          border-color: ${darkMode ? BRAND_COLORS.darkSlate : BRAND_COLORS.borderGray} !important;
-          color: ${darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray} !important;
-        }
-        
-        .payment-method-modal .ant-input:focus,
-        .payment-method-modal .ant-input-focused {
-          border-color: ${BRAND_COLORS.emeraldPrimary} !important;
-          box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2) !important;
-        }
-        
-        .payment-method-modal .ant-select-selector {
-          background-color: ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.white} !important;
-          border-color: ${darkMode ? BRAND_COLORS.darkSlate : BRAND_COLORS.borderGray} !important;
-          color: ${darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray} !important;
-        }
-        
-        .card-preview {
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          border-radius: 12px;
-          padding: 20px;
-          color: white;
-          font-family: 'Courier New', monospace;
-          position: relative;
-          overflow: hidden;
-        }
-        
-        .card-preview::before {
-          content: '';
-          position: absolute;
-          top: -50%;
-          right: -50%;
-          width: 100%;
-          height: 100%;
-          background: rgba(255, 255, 255, 0.1);
-          border-radius: 50%;
-        }
-        
-        .payment-dark-dropdown {
-          background-color: #374151 !important;
-        }
-        
-        .payment-dark-dropdown .ant-select-item {
-          color: #F9FAFB !important;
-        }
-        
-        .payment-dark-dropdown .ant-select-item:hover {
-          background-color: #4B5563 !important;
-        }
-        
-        .payment-dark-dropdown .ant-select-item-option-selected {
-          background-color: #10B981 !important;
-          color: #FFFFFF !important;
-        }
-      `}</style>
-
       <Modal
         title={
           <div className='flex items-center space-x-3'>

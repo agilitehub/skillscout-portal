@@ -14,6 +14,8 @@ import {
 import { Button } from '../../../../core/components'
 import { BRAND_COLORS } from '../../../../core/theme/colors'
 
+import '../styles/org-settings.css'
+
 const { TextArea } = Input
 const { Step } = Steps
 
@@ -320,54 +322,6 @@ const AIProfileModal = React.memo(({ visible, onCancel, onSuccess, darkMode, cur
 
   return (
     <>
-      {/* Modal Styles */}
-      <style jsx global>{`
-        .ai-profile-modal .ant-modal-content {
-          background-color: ${darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white} !important;
-          color: ${darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray} !important;
-          border: 1px solid ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.borderGray} !important;
-        }
-        
-        .ai-profile-modal .ant-modal-header {
-          background-color: ${darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white} !important;
-          border-bottom: 1px solid ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.borderGray} !important;
-        }
-        
-        .ai-profile-modal .ant-modal-close {
-          color: ${darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray} !important;
-        }
-        
-        .ai-profile-modal .ant-modal-close:hover {
-          color: ${BRAND_COLORS.emeraldLight} !important;
-        }
-        
-        .ai-profile-modal .ant-form-item-label > label {
-          color: ${darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray} !important;
-        }
-        
-        .ai-profile-modal .ant-input {
-          background-color: ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.white} !important;
-          border-color: ${darkMode ? BRAND_COLORS.darkSlate : BRAND_COLORS.borderGray} !important;
-          color: ${darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray} !important;
-        }
-        
-        .ai-profile-modal .ant-input:focus,
-        .ai-profile-modal .ant-input-focused {
-          border-color: ${BRAND_COLORS.emeraldPrimary} !important;
-          box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2) !important;
-        }
-        
-        .ai-profile-modal .ant-steps-item-process .ant-steps-item-icon {
-          background-color: ${BRAND_COLORS.emeraldPrimary} !important;
-          border-color: ${BRAND_COLORS.emeraldPrimary} !important;
-        }
-        
-        .ai-profile-modal .ant-steps-item-finish .ant-steps-item-icon {
-          background-color: ${BRAND_COLORS.emeraldPrimary} !important;
-          border-color: ${BRAND_COLORS.emeraldPrimary} !important;
-        }
-      `}</style>
-
       <Modal
         title={
           <div className='flex items-center space-x-3'>

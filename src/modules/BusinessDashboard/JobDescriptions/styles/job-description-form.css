@@ -1,0 +1,77 @@
+.dark-tabs .ant-tabs-tab {
+  color: #e5e7eb !important;
+}
+
+.dark-tabs .ant-tabs-tab:hover {
+  color: #f9fafb !important;
+}
+
+.dark-tabs .ant-tabs-tab.ant-tabs-tab-active {
+  color: #059669 !important;
+}
+
+.dark-tabs .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: #059669 !important;
+}
+
+.dark-tabs .ant-tabs-ink-bar {
+  background-color: #059669 !important;
+}
+
+.dark-tabs .ant-tabs-nav::before {
+  border-bottom-color: #4b5563 !important;
+}
+
+.dark-select-dropdown {
+  background-color: #374151 !important;
+}
+
+.dark-select-dropdown .ant-select-item {
+  color: #f9fafb !important;
+  background-color: #374151 !important;
+}
+
+.dark-select-dropdown .ant-select-item:hover {
+  background-color: #4b5563 !important;
+}
+
+.dark-select-dropdown .ant-select-item-option-selected {
+  background-color: #059669 !important;
+  color: #ffffff !important;
+}
+
+.dark-select-dropdown .ant-select-item-option-selected:hover {
+  background-color: #047857 !important;
+}
+
+.dark-modal .ant-modal-content {
+  background-color: #374151 !important;
+  color: #f9fafb !important;
+}
+
+.dark-modal .ant-modal-header {
+  background-color: #374151 !important;
+  border-bottom-color: #4b5563 !important;
+}
+
+.dark-modal .ant-modal-title {
+  color: #f9fafb !important;
+}
+
+.dark-modal .ant-modal-body {
+  background-color: #374151 !important;
+  color: #f9fafb !important;
+}
+
+.dark-modal .ant-modal-footer {
+  background-color: #374151 !important;
+  border-top-color: #4b5563 !important;
+}
+
+.dark-modal .ant-modal-close {
+  color: #f9fafb !important;
+}
+
+.dark-modal .ant-modal-close:hover {
+  color: #ffffff !important;
+}

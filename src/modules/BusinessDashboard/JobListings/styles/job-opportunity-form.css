@@ -1,0 +1,21 @@
+.job-opportunity-dark-dropdown {
+  background-color: #374151 !important;
+}
+
+.job-opportunity-dark-dropdown .ant-select-item {
+  color: #f9fafb !important;
+  background-color: #374151 !important;
+}
+
+.job-opportunity-dark-dropdown .ant-select-item:hover {
+  background-color: #4b5563 !important;
+}
+
+.job-opportunity-dark-dropdown .ant-select-item-option-selected {
+  background-color: #059669 !important;
+  color: #ffffff !important;
+}
+
+.job-opportunity-dark-dropdown .ant-select-item-option-selected:hover {
+  background-color: #047857 !important;
+}

@@ -24,7 +24,7 @@ Use this skill when adding **pages**, **sidebar items**, or **feature areas** un
 ## One-minute overview
 
 - **New business sidebar item:** config in `src/core/config/navigation.js` + routes in `src/routes.js` + feature under `src/modules/BusinessDashboard/<Feature>/` — full steps in **vibe-coding-navigation**.
-- **Feature structure:** `components/`, `utils/`, `hooks/`; keep components mostly presentational; logic in `utils` / `hooks` — full rules in **vibe-coding-module**.
+- **Feature structure:** `components/`, `styles/` (module CSS for Ant overrides), `utils/`, `hooks/`; keep components mostly presentational; logic in `utils` / `hooks` — full rules in **vibe-coding-module**.
 - **UI stack:** Ant Design for components, Tailwind for `className` layout and styling.
 - **`src/core`:** avoid changes except (a) small **navigation** edits in `core/config/navigation.js`, and (b) **shared** pieces under `core/components` when a widget is reused across modules — see **vibe-coding-module**.
 

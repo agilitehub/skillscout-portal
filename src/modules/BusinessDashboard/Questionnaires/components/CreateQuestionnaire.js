@@ -10,6 +10,8 @@ import { Toolbar } from '../../../../core/components'
 import { createQuestionnaire } from '../utils/controller'
 import { parseTags } from '../utils/data-model'
 
+import '../styles/questionnaires.css'
+
 const { Option } = Select
 
 /**
@@ -179,30 +181,6 @@ const CreateQuestionnaire = React.memo(({ user }) => {
         </div>
       </div>
 
-      {/* Dark mode dropdown styles */}
-      <style jsx global>{`
-        .dark-select-dropdown {
-          background-color: ${darkMode ? '#374151' : '#ffffff'} !important;
-        }
-
-        .dark-select-dropdown .ant-select-item {
-          color: ${darkMode ? '#F9FAFB' : '#374151'} !important;
-          background-color: ${darkMode ? '#374151' : '#ffffff'} !important;
-        }
-
-        .dark-select-dropdown .ant-select-item:hover {
-          background-color: ${darkMode ? '#4B5563' : '#F3F4F6'} !important;
-        }
-
-        .dark-select-dropdown .ant-select-item-option-selected {
-          background-color: ${darkMode ? '#059669' : '#10B981'} !important;
-          color: #ffffff !important;
-        }
-
-        .dark-select-dropdown .ant-select-item-option-selected:hover {
-          background-color: ${darkMode ? '#047857' : '#059669'} !important;
-        }
-      `}</style>
     </>
   )
 })
