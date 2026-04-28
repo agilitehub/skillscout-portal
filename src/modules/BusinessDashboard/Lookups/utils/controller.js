@@ -1,4 +1,5 @@
 // Global Instructions Rule Applied!
+// Frontend Instructions Rule Applied!
 import { supabase } from '../../../../core/lib/supabase-controller'
 import { validateLookup, sanitizeLookup } from './data-model'
 

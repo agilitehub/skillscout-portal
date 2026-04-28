@@ -1,4 +1,5 @@
 // Global Instructions Rule Applied!
+// Frontend Instructions Rule Applied!
 
 /**
  * Data model for engaging job listings with storytelling formats

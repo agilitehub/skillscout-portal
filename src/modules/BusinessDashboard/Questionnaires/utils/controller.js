@@ -1,4 +1,5 @@
 // Global Instructions Rule Applied!
+// Frontend Instructions Rule Applied!
 import { supabase } from '../../../../core/lib/supabase-controller'
 import { QUESTIONNAIRE_STATUS, QUESTIONNAIRE_STATUS_LIST } from '../../../../utils/globals'
 import { transformToDatabase, transformFromDatabase, validateQuestionnaire } from './data-model'

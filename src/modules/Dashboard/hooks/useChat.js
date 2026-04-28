@@ -1,4 +1,5 @@
 // Global Instructions Rule Applied!
+// Frontend Instructions Rule Applied!
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react'
 import { message } from 'antd'
 import { useAIController, handleAIError, formatMessage } from '../../../lib/ai-controller'

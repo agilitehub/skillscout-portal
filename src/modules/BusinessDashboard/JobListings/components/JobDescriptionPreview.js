@@ -2,7 +2,7 @@
 // Frontend Instructions Rule Applied!
 
 import React, { useState, useEffect } from 'react'
-import { Card, Tag, Divider, Spin, Button } from 'antd'
+import { Card, Tag, Divider, Spin } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faBriefcase,
@@ -14,6 +14,7 @@ import {
   faChevronUp
 } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../../core/context/ThemeContext'
+import { Button } from '../../../../core/components'
 import { getJobDescriptionById } from '../../JobDescriptions/utils/controller'
 
 /**
@@ -139,7 +140,7 @@ const JobDescriptionPreview = React.memo(({ jobDescriptionId, visible = false })
               </div>
             </div>
             <Button
-              type='text'
+              variant='ghost'
               size='small'
               icon={<FontAwesomeIcon icon={faChevronDown} />}
               onClick={handleToggle}
@@ -248,7 +249,7 @@ const JobDescriptionPreview = React.memo(({ jobDescriptionId, visible = false })
               </div>
             )}
             <Button
-              type='text'
+              variant='ghost'
               size='small'
               icon={<FontAwesomeIcon icon={faChevronUp} />}
               onClick={handleToggle}

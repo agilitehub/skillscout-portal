@@ -1,7 +1,7 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
 import React, { useState, useCallback, useMemo } from 'react'
-import { Card, Row, Col, Tag, Space, Progress, message, Table, Typography, Divider, Statistic } from 'antd'
+import { Card, Row, Col, Tag, Space, Progress, message, Typography, Divider, Statistic } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faCreditCard,
@@ -20,6 +20,7 @@ import PlanUpgradeModal from './PlanUpgradeModal'
 import PaymentMethodModal from './PaymentMethodModal'
 import InvoiceDetailsModal from './InvoiceDetailsModal'
 import { Toolbar } from '../../../../core/components'
+import TableView from '../../../../core/components/view-components/table-view/TableView'
 
 import '../styles/billing.css'
 
@@ -558,15 +559,21 @@ const Billing = React.memo(({ user }) => {
               color: darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray
             }}
           >
-            <Table
+            <TableView
               columns={invoiceColumns}
               dataSource={billingData.invoices}
               rowKey='id'
-              pagination={{
-                pageSize: 10,
-                showSizeChanger: false
+              showSearch={false}
+              pagination={{ pageSize: 10, showSizeChanger: false }}
+              scroll={{ x: 'max-content' }}
+              cardProps={{
+                bordered: false,
+                className: '!shadow-none border-0 bg-transparent',
+                styles: { body: { padding: 0 } }
               }}
-              className={darkMode ? 'dark-table' : ''}
+              tableProps={{
+                className: darkMode ? 'dark-table' : ''
+              }}
             />
           </Card>
         </div>
