@@ -5,8 +5,8 @@ import { Avatar } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUser } from '@fortawesome/free-solid-svg-icons'
 import { useSelector } from 'react-redux'
-import { selectProfile } from '../store/profileSlice'
-import { getAvatarPublicUrl } from '../../../lib/supabase-controller'
+import { selectProfile } from '../../../store/slices/profileSlice'
+import { getAvatarPublicUrl } from '../../../infra/supabase-controller'
 
 /**
  * Profile Avatar Component

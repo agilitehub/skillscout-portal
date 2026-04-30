@@ -15,7 +15,7 @@ Use this skill when adding **pages**, **sidebar items**, or **feature areas** un
 | Topic | Skill | Path |
 |-------|--------|------|
 | Left sidebar, `navigation.js`, `routes.js`, `buildBusinessDashboardPath` | **vibe-coding-navigation** | `.cursor/skills/vibe-coding-navigation/SKILL.md` |
-| Module folders (`components` / `utils` / `hooks`), thin UI, AntD, Tailwind, `src/core` and shared components | **vibe-coding-module** | `.cursor/skills/vibe-coding-module/SKILL.md` |
+| Module folders (`components` / `controllers` / `model` / `hooks`), thin UI, AntD, Tailwind, `src/core` and shared components | **vibe-coding-module** | `.cursor/skills/vibe-coding-module/SKILL.md` |
 
 **When working on nav or route wiring:** read **vibe-coding-navigation** (and use **vibe-coding-module** for where the new page lives).
 
@@ -24,9 +24,9 @@ Use this skill when adding **pages**, **sidebar items**, or **feature areas** un
 ## One-minute overview
 
 - **New business sidebar item:** config in `src/core/config/navigation.js` + routes in `src/routes.js` + feature under `src/modules/BusinessDashboard/<Feature>/` — full steps in **vibe-coding-navigation**.
-- **Feature structure:** `components/`, `styles/` (module CSS for Ant overrides), `utils/`, `hooks/`; keep components mostly presentational; logic in `utils` / `hooks` — full rules in **vibe-coding-module**.
+- **Feature structure:** `components/`, `styles/` (module CSS for Ant overrides), `controllers/`, `model/`, `hooks/`; feature root `index.js` barrels for routes; keep components mostly presentational; logic in `controllers` / `model` / `hooks` — full rules in **vibe-coding-module**.
 - **UI stack:** Ant Design for components, Tailwind for `className` layout and styling.
-- **`src/core`:** avoid changes except (a) small **navigation** edits in `core/config/navigation.js`, and (b) **shared** pieces under `core/components` when a widget is reused across modules — see **vibe-coding-module**.
+- **`src/core`:** avoid changes except (a) small **navigation** edits in `core/config/navigation.js`, (b) **shared** pieces under `core/components` when a widget is reused across modules, and (c) **`core/infra`** / **`core/store`** only for app-wide infrastructure — see **vibe-coding-module**.
 
 ## Quick map
 

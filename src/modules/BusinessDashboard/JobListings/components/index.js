@@ -14,7 +14,7 @@ import {
   faTrash
 } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../../core/context/ThemeContext'
-import { getAllJobOpportunities, deleteJobOpportunity, updateJobOpportunityStatus } from '../utils/controller'
+import { getAllJobOpportunities, deleteJobOpportunity, updateJobOpportunityStatus } from '../controllers'
 import TableView from '../../../../core/components/view-components/table-view/TableView'
 import TableActions from '../../../../core/components/view-components/table-view/TableActions'
 import { Toolbar } from '../../../../core/components'

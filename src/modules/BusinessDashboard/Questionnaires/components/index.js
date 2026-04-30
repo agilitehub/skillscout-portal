@@ -11,7 +11,7 @@ import TableView from '../../../../core/components/view-components/table-view/Ta
 import TableActions from '../../../../core/components/view-components/table-view/TableActions'
 
 // Import controller functions
-import { getAllQuestionnaires, deleteQuestionnaire, searchQuestionnaires } from '../utils/controller'
+import { getAllQuestionnaires, deleteQuestionnaire, searchQuestionnaires } from '../controllers'
 import { Toolbar } from '../../../../core/components'
 import '../../styles/dashboard-toolbar-buttons.css'
 import ModuleContainer from '../../../../core/components/layout/Container/ModuleContainer'

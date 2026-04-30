@@ -1,7 +1,7 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
 import { configureStore } from '@reduxjs/toolkit'
-import profileReducer from '../components/profile/store/profileSlice'
+import profileReducer from './slices/profileSlice'
 
 /**
  * Redux store configuration with Redux Toolkit

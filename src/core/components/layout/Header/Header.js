@@ -21,18 +21,18 @@ import { Dropdown, Modal, Form, message } from 'antd'
 import { useTheme } from '../../../context/ThemeContext'
 import { useAuth } from '../../../auth'
 import { BRAND_COLORS } from '../../../theme/colors'
-import { BusinessSetupModal } from '../../../../modules/BusinessDashboard/OrgSettings/components'
+import { BusinessSetupModal } from '../../../../modules/BusinessDashboard/OrgSettings'
 import {
   searchWithFallback,
   getSearchSuggestions,
   saveToRecentSearches,
   clearRecentSearches,
   highlightText
-} from '../../../lib/search-controller'
-import { getUserOrganization, createOrganizationAndAssignToUser } from '../../../lib/supabase-controller'
+} from '../../../infra/search-controller'
+import { getUserOrganization, createOrganizationAndAssignToUser } from '../../../infra/supabase-controller'
 import { ProfileModal, ProfileAvatar, ProfileDisplay } from '../../profile'
 import { useDispatch, useSelector } from 'react-redux'
-import { setUserProfileOpen, selectUserProfileOpen } from '../../profile/store/profileSlice'
+import { setUserProfileOpen, selectUserProfileOpen } from '../../../store/slices/profileSlice'
 
 /**
  * Simplified Header component for the application

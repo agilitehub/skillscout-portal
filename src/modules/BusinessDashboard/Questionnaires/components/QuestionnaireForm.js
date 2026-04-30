@@ -11,13 +11,13 @@ import { useTheme } from '../../../../core/context/ThemeContext'
 import { Toolbar } from '../../../../core/components'
 import TableView from '../../../../core/components/view-components/table-view/TableView'
 import TableActions from '../../../../core/components/view-components/table-view/TableActions'
-import { updateQuestionnaire, getQuestionnaireById } from '../utils/controller'
+import { updateQuestionnaire, getQuestionnaireById } from '../controllers'
 import {
   getQuestionsByQuestionnaireId,
   createQuestionnaireQuestion,
   updateQuestionnaireQuestion,
   deleteQuestionnaireQuestion
-} from '../utils/questionnaire-questions-controller'
+} from '../controllers/questions'
 
 const { Option } = Select
 const { TextArea } = Input

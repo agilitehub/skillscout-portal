@@ -2,7 +2,7 @@
 // Frontend Instructions Rule Applied!
 import React from 'react'
 import { useSelector } from 'react-redux'
-import { selectProfile } from '../store/profileSlice'
+import { selectProfile } from '../../../store/slices/profileSlice'
 
 /**
  * Profile Display Component

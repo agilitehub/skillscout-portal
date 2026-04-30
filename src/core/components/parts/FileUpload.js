@@ -17,8 +17,8 @@ import {
   faExclamationCircle
 } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../context/ThemeContext'
-import { uploadMultipleFiles, deleteFileFromStorage, getFileDownloadUrl } from '../../lib/supabase-controller'
-import { DEFAULT_SUPABASE_STORAGE_BUCKET } from '../../../utils/globals'
+import { uploadMultipleFiles, deleteFileFromStorage, getFileDownloadUrl } from '../../infra/supabase-controller'
+import { DEFAULT_SUPABASE_STORAGE_BUCKET } from '../../../constants'
 
 /**
  * FileUpload component - Reusable file upload component with Supabase storage integration

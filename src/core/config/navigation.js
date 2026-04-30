@@ -11,7 +11,7 @@ import {
   faSliders,
   faUsers
 } from '@fortawesome/free-solid-svg-icons'
-import { buildBusinessDashboardPath } from '../../utils/globals'
+import { buildBusinessDashboardPath } from '../../constants'
 
 /**
  * Application navigation configuration.

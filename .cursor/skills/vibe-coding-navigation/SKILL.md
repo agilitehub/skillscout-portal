@@ -23,9 +23,9 @@ Use this when adding or changing the **left sidebar** or **business dashboard ro
 
 ## Paths: `buildBusinessDashboardPath`
 
-**File:** `src/utils/globals.js`
+**File:** `src/constants/paths.js` (or import `buildBusinessDashboardPath` from the `src/constants` barrel)
 
-Use `buildBusinessDashboardPath('your-segment')` so paths stay consistent (e.g. `buildBusinessDashboardPath('job-listings')` → `/business-dashboard/job-listings`). Import the helper at the top of `navigation.js` like the existing entries.
+Use `buildBusinessDashboardPath('your-segment')` so paths stay consistent (e.g. `buildBusinessDashboardPath('job-listings')` → `/business-dashboard/job-listings`). Import the helper at the top of `navigation.js` from `../../constants` like the existing entries.
 
 The URL **segment** must match the route you register in `src/routes.js` (nested under `/business-dashboard`).
 
@@ -40,7 +40,7 @@ This component reads `BUSINESS_SIDEBAR_MAIN_ITEMS` and `BUSINESS_SIDEBAR_SETTING
 **File:** `src/routes.js`
 
 - Add a **child** of `path='/business-dashboard'`.
-- **Import** the feature entry component from `src/modules/BusinessDashboard/<Feature>/components` (or the correct path).
+- **Import** the feature from `src/modules/BusinessDashboard/<Feature>` (default + named exports from the feature `index.js` barrel).
 - Use `<Route path='your-segment' element={...} />` or nested `<Route>` blocks matching existing features (e.g. index + `create` + `:id/edit`).
 
 **Parity rule:** the segment in the router, the argument to `buildBusinessDashboardPath`, and the feature folder name should align (e.g. `job-listings` ↔ `JobListings`).
@@ -55,13 +55,13 @@ This component reads `BUSINESS_SIDEBAR_MAIN_ITEMS` and `BUSINESS_SIDEBAR_SETTING
 
 **Minimal edits to `src/core/config/navigation.js`** are the designated way to add or adjust business sidebar items. Do not use that as an excuse to rewrite `BusinessSidebar.js` or other core layers unless the product requires it.
 
-For everything else in `src/core` (theme, `lib`, auth, layout internals), see the **vibe-coding-module** skill: default is hands off, with a separate exception for shared components.
+For everything else in `src/core` (theme, `infra`, auth, layout internals), see the **vibe-coding-module** skill: default is hands off, with a separate exception for shared components.
 
 ## Quick reference
 
 | What | Where |
 |------|--------|
 | Menu labels and links | `src/core/config/navigation.js` |
-| Path builder | `buildBusinessDashboardPath` in `src/utils/globals.js` |
+| Path builder | `buildBusinessDashboardPath` in `src/constants/paths.js` (or `src/constants/index.js`) |
 | Sidebar UI | `src/core/components/layout/BusinessSidebar.js` |
 | App routes | `src/routes.js` |

@@ -28,8 +28,8 @@ import {
   getJobDescriptionById,
   getDepartments,
   getExperienceLevels
-} from '../utils/controller'
-import { parseKeywords } from '../utils/data-model'
+} from '../controllers'
+import { parseKeywords } from '../model'
 
 import '../styles/job-description-form.css'
 

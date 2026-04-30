@@ -9,7 +9,7 @@ import { message, Spin } from 'antd'
 import { Button } from '../../../../core/components'
 import TableView from '../../../../core/components/view-components/table-view/TableView'
 import TableActions from '../../../../core/components/view-components/table-view/TableActions'
-import { getAllLookups, deleteLookup } from '../utils/controller'
+import { getAllLookups, deleteLookup } from '../controllers'
 import { Toolbar } from '../../../../core/components'
 
 import '../../styles/dashboard-toolbar-buttons.css'

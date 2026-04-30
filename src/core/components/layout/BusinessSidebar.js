@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBriefcase, faChevronDown, faChevronRight } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../context/ThemeContext'
 import { BUSINESS_SIDEBAR_MAIN_ITEMS, BUSINESS_SIDEBAR_SETTINGS_CATEGORY } from '../../config/navigation'
-import { LOCAL_STORAGE_KEYS } from '../../../utils/globals'
+import { LOCAL_STORAGE_KEYS } from '../../../constants'
 
 /**
  * Business dashboard left sidebar — core shell navigation for authenticated business routes.

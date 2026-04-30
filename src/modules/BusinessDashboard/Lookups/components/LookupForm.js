@@ -9,7 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSave, faTimes, faPlus } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../../core/context/ThemeContext'
 import { Toolbar } from '../../../../core/components'
-import { createLookup, updateLookup, getLookupById } from '../utils/controller'
+import { createLookup, updateLookup, getLookupById } from '../controllers'
 
 /**
  * Lookup Form Page Component

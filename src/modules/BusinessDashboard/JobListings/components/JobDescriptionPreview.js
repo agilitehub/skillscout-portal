@@ -15,7 +15,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../../core/context/ThemeContext'
 import { Button } from '../../../../core/components'
-import { getJobDescriptionById } from '../../JobDescriptions/utils/controller'
+import { getJobDescriptionById } from '../../JobDescriptions/controllers'
 
 /**
  * JobDescriptionPreview component

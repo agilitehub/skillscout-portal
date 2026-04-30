@@ -11,7 +11,7 @@ import {
   selectProfileUpdating,
   selectProfileError,
   selectLastUpdated
-} from '../store/profileSlice'
+} from '../../../store/slices/profileSlice'
 
 /**
  * Custom hook for profile management

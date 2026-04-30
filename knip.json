@@ -5,26 +5,24 @@
     "src/App.js",
     "craco.config.js",
     "postcss.config.js",
-    "src/core/lib/search-controller.test.js",
-    "src/modules/Dashboard/index.js"
+    "src/core/infra/search-controller.test.js",
+    "src/modules/CandidateAssessment/index.js"
   ],
   "project": ["src/**/*.{js,jsx}", "*.config.js"],
   "ignore": [
     "src/core/context/TabContext.js",
-    "src/core/lib/search-debug.js",
-    "src/modules/BusinessDashboard/Billing/utils/controller.js",
-    "src/modules/BusinessDashboard/Billing/utils/data-model.js",
+    "src/core/infra/search-debug.js",
+    "src/modules/BusinessDashboard/Billing/controllers/index.js",
+    "src/modules/BusinessDashboard/Billing/model/index.js",
     "src/modules/BusinessDashboard/BranchManagement/components/AddEditBranchModal.js",
     "src/modules/BusinessDashboard/BranchManagement/components/ViewBranchModal.js",
-    "src/modules/BusinessDashboard/BranchManagement/utils/controller.js",
-    "src/modules/BusinessDashboard/BranchManagement/utils/data-model.js",
-    "src/modules/BusinessDashboard/Candidates/utils/controller.js",
-    "src/modules/BusinessDashboard/Candidates/utils/data-model.js",
-    "src/modules/BusinessDashboard/JobListings/utils/listing-controller.js",
-    "src/modules/BusinessDashboard/JobListings/utils/listing-data-model.js",
+    "src/modules/BusinessDashboard/BranchManagement/controllers/index.js",
+    "src/modules/BusinessDashboard/BranchManagement/model/index.js",
+    "src/modules/BusinessDashboard/Candidates/controllers/index.js",
+    "src/modules/BusinessDashboard/Candidates/model/index.js",
     "src/modules/BusinessDashboard/UserManagement/components/EditPermissionsModal.js",
-    "src/modules/BusinessDashboard/UserManagement/utils/data-model.js",
-    "src/modules/Dashboard/components/BottomNavigation.js"
+    "src/modules/BusinessDashboard/UserManagement/model/index.js",
+    "src/modules/CandidateAssessment/components/BottomNavigation.js"
   ],
   "rules": {
     "exports": "off",

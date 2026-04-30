@@ -6,8 +6,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUpload, faUser } from '@fortawesome/free-solid-svg-icons'
 import { useSelector, useDispatch } from 'react-redux'
 import { useTheme } from '../../../context/ThemeContext'
-import { getAvatarPublicUrl } from '../../../lib/supabase-controller'
-import { fetchUserProfile, updateProfile, setError, clearError } from '../store/profileSlice'
+import { getAvatarPublicUrl } from '../../../infra/supabase-controller'
+import { fetchUserProfile, updateProfile, setError, clearError } from '../../../store/slices/profileSlice'
 
 /**
  * Profile Modal Component for editing user profile

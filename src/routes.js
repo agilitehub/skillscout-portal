@@ -1,3 +1,5 @@
+// Global Instructions Rule Applied!
+// Frontend Instructions Rule Applied!
 import React from 'react'
 
 import { Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom'
@@ -6,25 +8,17 @@ import { DefaultLayout } from './core/components/layout/DefaultLayout'
 import { DashboardLayout } from './core/components/layout/DashboardLayout'
 
 import Login from './modules/Login'
-import BusinessDashboard from './modules/BusinessDashboard/Dashboard/components'
-import JobListings from './modules/BusinessDashboard/JobListings/components'
-import JobDescriptions from './modules/BusinessDashboard/JobDescriptions/components'
-import JobDescriptionForm from './modules/BusinessDashboard/JobDescriptions/components/JobDescriptionForm'
-import Questionnaires from './modules/BusinessDashboard/Questionnaires/components'
-import CreateQuestionnaire from './modules/BusinessDashboard/Questionnaires/components/CreateQuestionnaire'
-import QuestionnaireForm from './modules/BusinessDashboard/Questionnaires/components/QuestionnaireForm'
-import JobOpportunityForm from './modules/BusinessDashboard/JobListings/components/JobOpportunityForm'
-import Lookups from './modules/BusinessDashboard/Lookups/components'
-import LookupForm from './modules/BusinessDashboard/Lookups/components/LookupForm'
-import UserManagement from './modules/BusinessDashboard/UserManagement/components'
-import InviteUserPage from './modules/BusinessDashboard/UserManagement/components/InviteUserPage'
-import UserEditPage from './modules/BusinessDashboard/UserManagement/components/UserEditPage'
-import BranchManagement from './modules/BusinessDashboard/BranchManagement/components'
-import BranchEditPage from './modules/BusinessDashboard/BranchManagement/components/BranchEditPage'
-import OrgSettings from './modules/BusinessDashboard/OrgSettings/components'
-import Billing from './modules/BusinessDashboard/Billing/components'
-import Candidates from './modules/BusinessDashboard/Candidates/components'
-import CandidateForm from './modules/BusinessDashboard/Candidates/components/CandidateForm'
+import BusinessDashboard from './modules/BusinessDashboard/Home'
+import JobListings, { JobOpportunityForm } from './modules/BusinessDashboard/JobListings'
+import JobDescriptions, { JobDescriptionForm } from './modules/BusinessDashboard/JobDescriptions'
+import Questionnaires, { CreateQuestionnaire, QuestionnaireForm } from './modules/BusinessDashboard/Questionnaires'
+import Lookups, { LookupForm } from './modules/BusinessDashboard/Lookups'
+import UserManagement, { InviteUserPage, UserEditPage } from './modules/BusinessDashboard/UserManagement'
+import BranchManagement, { BranchEditPage } from './modules/BusinessDashboard/BranchManagement'
+import OrgSettings from './modules/BusinessDashboard/OrgSettings'
+import Billing from './modules/BusinessDashboard/Billing'
+import Candidates, { CandidateForm } from './modules/BusinessDashboard/Candidates'
+
 // Protect routes with an element wrapper
 function Protected() {
   const { isAuthenticated } = useAuth()
@@ -71,7 +65,7 @@ export default function AppRoutes() {
       {/* Protected area */}
       <Route element={<Protected />}>
         <Route path='/business-dashboard' element={<DashboardLayout user={user} />}>
-          {/* Index route = Dashboard home */}
+          {/* Index route = business home */}
           <Route index element={<BusinessDashboard user={user} />} />
 
           {/* Candidates */}

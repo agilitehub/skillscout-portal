@@ -15,8 +15,8 @@ import {
   getJobOpportunityById,
   getJobDescriptionsForSelection,
   getQuestionnairesForSelection
-} from '../utils/controller'
-import { getDefaultJobOpportunityData, getDropdownOptions } from '../utils/data-model'
+} from '../controllers'
+import { getDefaultJobOpportunityData, getDropdownOptions } from '../model'
 import JobDescriptionPreview from './JobDescriptionPreview'
 
 import '../styles/job-opportunity-form.css'

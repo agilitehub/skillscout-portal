@@ -10,10 +10,10 @@ export { default as ProfileDisplay } from './components/ProfileDisplay'
 export { useProfile } from './hooks/useProfile'
 
 // Utilities
-export { getAvatarPublicUrl } from '../../lib/supabase-controller'
+export { getAvatarPublicUrl } from '../../infra/supabase-controller'
 
 // Store
-export { default as profileReducer } from './store/profileSlice'
+export { default as profileReducer } from '../../store/slices/profileSlice'
 export {
   fetchUserProfile,
   updateProfile,
@@ -27,4 +27,4 @@ export {
   selectProfileUpdating,
   selectProfileError,
   selectLastUpdated
-} from './store/profileSlice'
+} from '../../store/slices/profileSlice'
