@@ -103,7 +103,7 @@ class BranchManagementController {
       }
     } catch (error) {
       console.error('Error creating branch:', error)
-      throw new Error('Failed to create branch')
+      throw error instanceof Error ? error : new Error(String(error))
     }
   }
 
@@ -142,7 +142,7 @@ class BranchManagementController {
       }
     } catch (error) {
       console.error('Error updating branch:', error)
-      throw new Error('Failed to update branch')
+      throw error instanceof Error ? error : new Error(String(error))
     }
   }
 

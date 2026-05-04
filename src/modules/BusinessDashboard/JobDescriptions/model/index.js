@@ -232,3 +232,174 @@ export const prepareForExport = (data) => {
     lastUpdated: data.lastUpdated
   }
 }
+
+/** Form tabs — basic vs detailed required fields (create/edit UI) */
+export const JOB_DESC_BASIC_INFO_FIELD_NAMES = [
+  'title',
+  'department',
+  'reportsToRole',
+  'experienceLevel',
+  'keywords',
+  'overview'
+]
+
+export const JOB_DESC_DETAILED_INFO_FIELD_NAMES = [
+  'responsibilities',
+  'requirements',
+  'educationExperience',
+  'technicalSkills',
+  'softSkills'
+]
+
+export const JOB_DESC_FIELD_LABELS = {
+  title: 'Job Title',
+  department: 'Department',
+  reportsToRole: 'Reports To Role',
+  experienceLevel: 'Experience Level',
+  keywords: 'Keywords',
+  overview: 'Job Overview',
+  responsibilities: 'Responsibilities',
+  requirements: 'Requirements',
+  educationExperience: 'Education and Experience',
+  technicalSkills: 'Technical Skills',
+  softSkills: 'Soft Skills'
+}
+
+/** Ant Design scrollToField expects logical field name keys */
+export const JOB_DESC_LABEL_TO_FIELD_NAME = {
+  'Job Title': 'title',
+  Department: 'department',
+  'Reports To Role': 'reportsToRole',
+  'Experience Level': 'experienceLevel',
+  Keywords: 'keywords',
+  'Job Overview': 'overview',
+  Responsibilities: 'responsibilities',
+  Requirements: 'requirements',
+  'Education and Experience': 'educationExperience',
+  'Technical Skills': 'technicalSkills',
+  'Soft Skills': 'softSkills'
+}
+
+const BASIC_TOTAL = JOB_DESC_BASIC_INFO_FIELD_NAMES.length
+const DETAILED_TOTAL = JOB_DESC_DETAILED_INFO_FIELD_NAMES.length
+
+/**
+ * Completion counts for tab badges from raw form values
+ * @param {Object} values — Ant Design getFieldsValue()
+ */
+export const computeJobDescriptionFieldCompletion = (values) => {
+  const basicCompleted = JOB_DESC_BASIC_INFO_FIELD_NAMES.filter((field) => {
+    const value = values[field]
+    if (field === 'keywords') {
+      return Array.isArray(value) && value.length > 0
+    }
+    return value != null && String(value).trim().length > 0
+  }).length
+
+  const detailedCompleted = JOB_DESC_DETAILED_INFO_FIELD_NAMES.filter((field) => {
+    const value = values[field]
+    return value != null && String(value).trim().length > 0
+  }).length
+
+  return {
+    basicInfo: { completed: basicCompleted, total: BASIC_TOTAL },
+    detailedInfo: { completed: detailedCompleted, total: DETAILED_TOTAL }
+  }
+}
+
+/**
+ * Normalize validated form values for create/update API
+ */
+export const buildJobDescriptionSubmitPayload = (values, parseKeywordsFn) => ({
+  title: values.title?.trim(),
+  overview: values.overview?.trim(),
+  department: values.department,
+  reportsToRole: values.reportsToRole?.trim(),
+  experienceLevel: values.experienceLevel,
+  keywords: typeof values.keywords === 'string' ? parseKeywordsFn(values.keywords) : values.keywords || [],
+  responsibilities: values.responsibilities?.trim() || '',
+  requirements: values.requirements?.trim() || '',
+  educationExperience: values.educationExperience?.trim() || '',
+  technicalSkills: values.technicalSkills?.trim() || '',
+  softSkills: values.softSkills?.trim() || '',
+  preferredSkills: values.preferredSkills?.trim() || ''
+})
+
+/**
+ * Map loaded record into Ant Design form fields
+ */
+export const mapJobDescriptionRecordToFormValues = (data) => ({
+  title: data.title,
+  overview: data.overview,
+  department: data.department,
+  reportsToRole: data.reportsToRole,
+  experienceLevel: data.experienceLevel,
+  keywords: data.keywords || [],
+  responsibilities: data.responsibilities,
+  requirements: data.requirements,
+  educationExperience: data.educationExperience,
+  technicalSkills: data.technicalSkills,
+  softSkills: data.softSkills,
+  preferredSkills: data.preferredSkills
+})
+
+/**
+ * Turn Ant Design validateFields catch payload into modal rows + tab flags
+ */
+export const parseJobDescriptionValidationErrors = (errorInfo) => {
+  const basicInfoErrors =
+    errorInfo.errorFields?.filter((field) => JOB_DESC_BASIC_INFO_FIELD_NAMES.includes(field.name[0])) || []
+
+  const detailedInfoErrors =
+    errorInfo.errorFields?.filter((field) => JOB_DESC_DETAILED_INFO_FIELD_NAMES.includes(field.name[0])) || []
+
+  const errorList = []
+
+  basicInfoErrors.forEach((field) => {
+    errorList.push({
+      tab: 'Basic Information',
+      tabKey: '1',
+      field: JOB_DESC_FIELD_LABELS[field.name[0]] || field.name[0],
+      type: 'basic'
+    })
+  })
+
+  detailedInfoErrors.forEach((field) => {
+    errorList.push({
+      tab: 'Detailed Information',
+      tabKey: '2',
+      field: JOB_DESC_FIELD_LABELS[field.name[0]] || field.name[0],
+      type: 'detailed'
+    })
+  })
+
+  const suggestedActiveTab =
+    basicInfoErrors.length > 0 ? '1' : detailedInfoErrors.length > 0 ? '2' : undefined
+
+  return {
+    tabValidationErrors: {
+      basicInfo: basicInfoErrors.length > 0,
+      detailedInfo: detailedInfoErrors.length > 0
+    },
+    validationErrors: errorList,
+    suggestedActiveTab
+  }
+}
+
+/**
+ * Group validation errors by tab for modal list rendering
+ */
+export const groupJobDescriptionValidationErrorsByTab = (validationErrors) =>
+  validationErrors.reduce((acc, error) => {
+    const existingTab = acc.find((tab) => tab.tabKey === error.tabKey)
+    if (existingTab) {
+      existingTab.fields.push(error.field)
+    } else {
+      acc.push({
+        tabKey: error.tabKey,
+        tab: error.tab,
+        fields: [error.field]
+      })
+    }
+    return acc
+  }, [])

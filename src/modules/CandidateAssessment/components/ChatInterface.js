@@ -22,6 +22,7 @@ import { useTheme } from '../../../core/context/ThemeContext'
 import ChatMessages from './ChatMessages'
 import ChatInput from './ChatInput'
 import useChat from '../hooks/useChat'
+import { deriveResumePreviewFromChat } from '../model/deriveResumePreview'
 
 const { Title, Text } = Typography
 
@@ -32,110 +33,10 @@ const { Title, Text } = Typography
 const ResumePreviewPanel = React.memo(({ user, uploadedFiles, messages, darkMode, colors }) => {
   const [viewMode, setViewMode] = useState('preview') // 'preview' or 'metrics'
 
-  // Extract resume data from chat interactions and user info
-  const resumeData = useMemo(() => {
-    const userMessages = messages.filter((m) => m.type === 'user').map((m) => m.content.toLowerCase())
-    const chatContent = userMessages.join(' ')
-
-    // Extract information from chat
-    const extractedInfo = {
-      skills: [],
-      experience: [],
-      education: [],
-      achievements: []
-    }
-
-    // Simple keyword extraction (in real app, this would use NLP)
-    if (chatContent.includes('javascript') || chatContent.includes('js')) extractedInfo.skills.push('JavaScript')
-    if (chatContent.includes('react')) extractedInfo.skills.push('React')
-    if (chatContent.includes('python')) extractedInfo.skills.push('Python')
-    if (chatContent.includes('node')) extractedInfo.skills.push('Node.js')
-    if (chatContent.includes('sql') || chatContent.includes('database')) extractedInfo.skills.push('SQL')
-    if (chatContent.includes('aws') || chatContent.includes('cloud')) extractedInfo.skills.push('AWS')
-    if (chatContent.includes('git')) extractedInfo.skills.push('Git')
-
-    // Extract experience keywords
-    if (chatContent.includes('developer') || chatContent.includes('engineer')) {
-      extractedInfo.experience.push({
-        title: 'Software Developer',
-        company: 'Technology Company',
-        duration: 'Present',
-        description: 'Developing software applications and solutions'
-      })
-    }
-    if (chatContent.includes('manager') || chatContent.includes('lead')) {
-      extractedInfo.experience.push({
-        title: 'Team Lead',
-        company: 'Previous Company',
-        duration: '2+ years',
-        description: 'Leading development teams and projects'
-      })
-    }
-
-    // Extract education
-    if (
-      chatContent.includes('university') ||
-      chatContent.includes('degree') ||
-      chatContent.includes('bachelor') ||
-      chatContent.includes('master')
-    ) {
-      extractedInfo.education.push({
-        degree: "Bachelor's Degree",
-        field: 'Computer Science',
-        school: 'University',
-        year: '2020'
-      })
-    }
-
-    // Calculate completeness
-    const baseScore = 20
-    const fileScore = Math.min(uploadedFiles.length * 15, 30)
-    const chatScore = Math.min(userMessages.length * 8, 50)
-    const completeness = Math.min(baseScore + fileScore + chatScore, 100)
-
-    return {
-      basicInfo: {
-        name: user?.Username || 'Your Name',
-        email: user?.PublicKeyBase58Check ? 'demo@example.com' : 'your.email@example.com',
-        phone: '+1 (555) 123-4567',
-        location: 'City, State',
-        title: extractedInfo.experience.length > 0 ? extractedInfo.experience[0].title : 'Professional Title'
-      },
-      summary:
-        chatContent.length > 50
-          ? 'Experienced professional with expertise in software development and technology solutions. Passionate about creating innovative applications and leading successful projects.'
-          : 'Add a professional summary by sharing your background and career goals in the chat.',
-      skills: extractedInfo.skills.length > 0 ? extractedInfo.skills : ['Add skills by mentioning them in the chat'],
-      experience:
-        extractedInfo.experience.length > 0
-          ? extractedInfo.experience
-          : [
-              {
-                title: 'Share your work experience',
-                company: 'Tell me about your current or previous roles',
-                duration: '',
-                description: 'Describe your responsibilities and achievements'
-              }
-            ],
-      education:
-        extractedInfo.education.length > 0
-          ? extractedInfo.education
-          : [
-              {
-                degree: 'Your Education',
-                field: 'Field of Study',
-                school: 'Educational Institution',
-                year: 'Year'
-              }
-            ],
-      documents: uploadedFiles.map((file) => ({
-        name: file.name,
-        type: file.name.split('.').pop().toUpperCase(),
-        uploadedAt: new Date().toLocaleDateString()
-      })),
-      completeness
-    }
-  }, [user, uploadedFiles, messages])
+  const resumeData = useMemo(
+    () => deriveResumePreviewFromChat(user, uploadedFiles, messages),
+    [user, uploadedFiles, messages]
+  )
 
   return (
     <div className='hidden lg:flex lg:w-2/5 xl:w-1/2 bg-white dark:bg-gray-800 flex-col'>

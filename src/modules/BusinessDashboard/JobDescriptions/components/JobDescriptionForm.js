@@ -1,10 +1,10 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
 
-import React, { useState, useCallback, useEffect } from 'react'
-import { Card, Form, Space, message, Row, Col, Tabs, Spin, Input, Select, Modal } from 'antd'
+import React from 'react'
+import { Card, Form, Space, Row, Col, Tabs, Spin, Input, Select, Modal } from 'antd'
 import { Button } from '../../../../core/components'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faSave,
@@ -22,14 +22,8 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../../core/context/ThemeContext'
 import { Toolbar } from '../../../../core/components'
-import {
-  createJobDescription,
-  updateJobDescription,
-  getJobDescriptionById,
-  getDepartments,
-  getExperienceLevels
-} from '../controllers'
-import { parseKeywords } from '../model'
+import { useJobDescriptionForm } from '../hooks/useJobDescriptionForm'
+import { groupJobDescriptionValidationErrorsByTab } from '../model'
 
 import '../styles/job-description-form.css'
 
@@ -45,427 +39,26 @@ const { TabPane } = Tabs
 const CreateJobDescription = React.memo(({ user }) => {
   const { darkMode } = useTheme()
   const navigate = useNavigate()
-  const location = useLocation()
-  const [form] = Form.useForm()
-  const [loading, setLoading] = useState(false)
-  const [departments, setDepartments] = useState([])
-  const [experienceLevels, setExperienceLevels] = useState([])
-  const [lookupsLoading, setLookupsLoading] = useState(true)
-  const [initialDataLoading, setInitialDataLoading] = useState(false)
-  const [tabValidationErrors, setTabValidationErrors] = useState({
-    basicInfo: false,
-    detailedInfo: false
-  })
-  const [validationModalVisible, setValidationModalVisible] = useState(false)
-  const [validationErrors, setValidationErrors] = useState([])
-  const [activeTab, setActiveTab] = useState('1')
-  const [isFormReady, setIsFormReady] = useState(false)
-
-  const [fieldCompletionCounts, setFieldCompletionCounts] = useState({
-    basicInfo: { completed: 0, total: 6 },
-    detailedInfo: { completed: 0, total: 5 }
-  })
-
-  // Check if we're in edit mode
-  const isEditMode = location.state?.isEdit
-  const editId = location.state?.editId
-
-  // Calculate field completion counts
-  const calculateFieldCounts = useCallback(() => {
-    try {
-      const values = form.getFieldsValue()
-
-      // Debug log to see what values we're getting
-      console.log('Calculating field counts with values:', values)
-
-      // Basic Info required fields
-      const basicInfoFields = ['title', 'department', 'reportsToRole', 'experienceLevel', 'keywords', 'overview']
-      const basicInfoCompleted = basicInfoFields.filter((field) => {
-        const value = values[field]
-        if (field === 'keywords') {
-          return Array.isArray(value) && value.length > 0
-        }
-        return value && String(value).trim().length > 0
-      }).length
-
-      // Detailed Info required fields
-      const detailedInfoFields = [
-        'responsibilities',
-        'requirements',
-        'educationExperience',
-        'technicalSkills',
-        'softSkills'
-      ]
-      const detailedInfoCompleted = detailedInfoFields.filter((field) => {
-        const value = values[field]
-        return value && String(value).trim().length > 0
-      }).length
-
-      console.log('Field counts calculated:', {
-        basicInfo: { completed: basicInfoCompleted, total: 6 },
-        detailedInfo: { completed: detailedInfoCompleted, total: 5 }
-      })
-
-      setFieldCompletionCounts({
-        basicInfo: { completed: basicInfoCompleted, total: 6 },
-        detailedInfo: { completed: detailedInfoCompleted, total: 5 }
-      })
-    } catch (error) {
-      console.error('Error calculating field counts:', error)
-    }
-  }, [form])
-
-  // Load lookup data on component mount
-  useEffect(() => {
-    loadLookupData()
-    // For new forms (not edit mode), mark as ready after lookups load
-    if (!isEditMode) {
-      setTimeout(() => {
-        console.log('New form ready after lookups loaded')
-        setIsFormReady(true)
-      }, 1000)
-    }
-  }, [isEditMode]) // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Load existing data when in edit mode
-  useEffect(() => {
-    if (isEditMode && editId) {
-      loadExistingJobDescription(editId)
-    }
-  }, [isEditMode, editId]) // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Calculate initial field counts when component mounts and when lookups are loaded
-  useEffect(() => {
-    if (!lookupsLoading && !initialDataLoading) {
-      // Add a delay to ensure form values are properly set
-      setTimeout(() => {
-        calculateFieldCounts()
-      }, 200)
-    }
-    // eslint-disable-next-line
-  }, [lookupsLoading, initialDataLoading])
-
-  // Additional effect to recalculate when form gets populated (especially useful for edit mode)
-  useEffect(() => {
-    if (!lookupsLoading && !initialDataLoading) {
-      const formValues = form.getFieldsValue()
-      // Check if form has been populated with meaningful data
-      if (formValues.title || formValues.overview || formValues.responsibilities) {
-        setTimeout(() => {
-          calculateFieldCounts()
-        }, 100)
-      }
-    }
-  }, [form, lookupsLoading, initialDataLoading, calculateFieldCounts])
-
-  // Force recalculation when the component is fully mounted and form is ready
-  useEffect(() => {
-    if (!lookupsLoading && !initialDataLoading) {
-      // Use multiple attempts to ensure we catch the form when it's fully populated
-      const timeouts = [500, 1000, 1500] // Try at 500ms, 1s, and 1.5s
-
-      timeouts.forEach((delay) => {
-        setTimeout(() => {
-          const values = form.getFieldsValue()
-          if (Object.keys(values).length > 0) {
-            console.log('Force recalculating at', delay, 'ms with values:', values)
-            calculateFieldCounts()
-            setIsFormReady(true)
-          }
-        }, delay)
-      })
-    }
-  }, [lookupsLoading, initialDataLoading, form, calculateFieldCounts])
-
-  // Recalculate whenever the form becomes ready
-  useEffect(() => {
-    if (isFormReady) {
-      console.log('Form is ready, calculating field counts...')
-      calculateFieldCounts()
-    }
-  }, [isFormReady, calculateFieldCounts])
-
-  // Load existing job description data for editing
-  const loadExistingJobDescription = useCallback(
-    async (id) => {
-      try {
-        setInitialDataLoading(true)
-        const result = await getJobDescriptionById(id)
-
-        if (result.success && result.data) {
-          // Populate form with existing data
-          form.setFieldsValue({
-            title: result.data.title,
-            overview: result.data.overview,
-            department: result.data.department,
-            reportsToRole: result.data.reportsToRole,
-            experienceLevel: result.data.experienceLevel,
-            keywords: result.data.keywords || [],
-            responsibilities: result.data.responsibilities,
-            requirements: result.data.requirements,
-            educationExperience: result.data.educationExperience,
-            technicalSkills: result.data.technicalSkills,
-            softSkills: result.data.softSkills,
-            preferredSkills: result.data.preferredSkills
-          })
-
-          // Calculate field counts after loading data and mark form as ready
-          setTimeout(() => {
-            calculateFieldCounts()
-            setIsFormReady(true)
-          }, 300)
-        } else {
-          console.error('Error loading job description for edit:', result.error)
-          message.error('Failed to load job description data: ' + result.error)
-          // Navigate back to list if we can't load the data
-          navigate('/business-dashboard/job-descriptions')
-        }
-      } catch (error) {
-        console.error('Unexpected error loading job description for edit:', error)
-        message.error('An unexpected error occurred while loading the job description')
-        navigate('/business-dashboard/job-descriptions')
-      } finally {
-        setInitialDataLoading(false)
-      }
-    },
-    // eslint-disable-next-line
-    [form, navigate]
-  )
-
-  // Load departments and experience levels
-  const loadLookupData = useCallback(async () => {
-    try {
-      setLookupsLoading(true)
-
-      const [departmentsResult, experienceLevelsResult] = await Promise.all([getDepartments(), getExperienceLevels()])
-
-      if (departmentsResult.success) {
-        setDepartments(departmentsResult.data)
-      } else {
-        console.error('Error loading departments:', departmentsResult.error)
-        message.error('Failed to load departments')
-      }
-
-      if (experienceLevelsResult.success) {
-        setExperienceLevels(experienceLevelsResult.data)
-      } else {
-        console.error('Error loading experience levels:', experienceLevelsResult.error)
-        message.error('Failed to load experience levels')
-      }
-    } catch (error) {
-      console.error('Error loading lookup data:', error)
-      message.error('Failed to load lookup data')
-    } finally {
-      setLookupsLoading(false)
-    }
-  }, [])
-
-  // Handle form submission
-  const handleFormSubmit = useCallback(
-    async (values) => {
-      setLoading(true)
-      try {
-        const processedValues = {
-          title: values.title?.trim(),
-          overview: values.overview?.trim(),
-          department: values.department,
-          reportsToRole: values.reportsToRole?.trim(),
-          experienceLevel: values.experienceLevel,
-          keywords: typeof values.keywords === 'string' ? parseKeywords(values.keywords) : values.keywords || [],
-          responsibilities: values.responsibilities?.trim() || '',
-          requirements: values.requirements?.trim() || '',
-          educationExperience: values.educationExperience?.trim() || '',
-          technicalSkills: values.technicalSkills?.trim() || '',
-          softSkills: values.softSkills?.trim() || '',
-          preferredSkills: values.preferredSkills?.trim() || ''
-        }
-
-        // Clear validation errors on successful validation
-        setTabValidationErrors({
-          basicInfo: false,
-          detailedInfo: false
-        })
-
-        let result
-        if (isEditMode && editId) {
-          // Update existing job description
-          result = await updateJobDescription(editId, processedValues, user)
-          if (result.success) {
-            message.success('Job description updated successfully!')
-            navigate('/business-dashboard/job-descriptions')
-          } else {
-            console.error('Error updating job description:', result.error)
-            message.error('Failed to update job description: ' + result.error)
-          }
-        } else {
-          // Create new job description
-          result = await createJobDescription(processedValues, user)
-          if (result.success) {
-            message.success('Job description created successfully!')
-            navigate('/business-dashboard/job-descriptions')
-          } else {
-            console.error('Error creating job description:', result.error)
-            message.error('Failed to create job description: ' + result.error)
-          }
-        }
-      } catch (error) {
-        console.error('Unexpected error submitting job description:', error)
-        message.error('An unexpected error occurred while saving the job description')
-      } finally {
-        setLoading(false)
-      }
-    },
-    [user, navigate, isEditMode, editId]
-  )
-
-  // Handle form validation and submission
-  const handleSaveClick = useCallback(async () => {
-    try {
-      // Validate all fields first
-      const values = await form.validateFields()
-      await handleFormSubmit(values)
-    } catch (errorInfo) {
-      console.log('Validation failed:', errorInfo)
-
-      // Count errors by tab
-      const basicInfoFields = ['title', 'department', 'reportsToRole', 'experienceLevel', 'keywords', 'overview']
-      const detailedInfoFields = [
-        'responsibilities',
-        'requirements',
-        'educationExperience',
-        'technicalSkills',
-        'softSkills'
-      ]
-
-      const basicInfoErrors = errorInfo.errorFields?.filter((field) => basicInfoFields.includes(field.name[0])) || []
-
-      const detailedInfoErrors =
-        errorInfo.errorFields?.filter((field) => detailedInfoFields.includes(field.name[0])) || []
-
-      // Create structured error list for modal
-      const errorList = []
-      const fieldLabels = {
-        title: 'Job Title',
-        department: 'Department',
-        reportsToRole: 'Reports To Role',
-        experienceLevel: 'Experience Level',
-        keywords: 'Keywords',
-        overview: 'Job Overview',
-        responsibilities: 'Responsibilities',
-        requirements: 'Requirements',
-        educationExperience: 'Education and Experience',
-        technicalSkills: 'Technical Skills',
-        softSkills: 'Soft Skills'
-      }
-
-      if (basicInfoErrors.length > 0) {
-        basicInfoErrors.forEach((field) => {
-          errorList.push({
-            tab: 'Basic Information',
-            tabKey: '1',
-            field: fieldLabels[field.name[0]] || field.name[0],
-            type: 'basic'
-          })
-        })
-      }
-
-      if (detailedInfoErrors.length > 0) {
-        detailedInfoErrors.forEach((field) => {
-          errorList.push({
-            tab: 'Detailed Information',
-            tabKey: '2',
-            field: fieldLabels[field.name[0]] || field.name[0],
-            type: 'detailed'
-          })
-        })
-      }
-
-      // Update tab validation states
-      setTabValidationErrors({
-        basicInfo: basicInfoErrors.length > 0,
-        detailedInfo: detailedInfoErrors.length > 0
-      })
-
-      // Set validation errors and show modal
-      setValidationErrors(errorList)
-      setValidationModalVisible(true)
-
-      // Switch to the first tab with errors
-      if (basicInfoErrors.length > 0) {
-        setActiveTab('1')
-      } else if (detailedInfoErrors.length > 0) {
-        setActiveTab('2')
-      }
-    }
-  }, [form, handleFormSubmit])
-
-  // Handle validation modal close and navigate to field
-  const handleValidationModalOk = useCallback(() => {
-    setValidationModalVisible(false)
-
-    // Switch to first tab with errors and scroll to first error
-    const firstError = validationErrors[0]
-    if (firstError) {
-      setActiveTab(firstError.tabKey)
-
-      // Map field labels back to field names for scrolling
-      const fieldNameMap = {
-        'Job Title': 'title',
-        Department: 'department',
-        'Reports To Role': 'reportsToRole',
-        'Experience Level': 'experienceLevel',
-        Keywords: 'keywords',
-        'Job Overview': 'overview',
-        Responsibilities: 'responsibilities',
-        Requirements: 'requirements',
-        'Education and Experience': 'educationExperience',
-        'Technical Skills': 'technicalSkills',
-        'Soft Skills': 'softSkills'
-      }
-
-      const fieldName = fieldNameMap[firstError.field]
-
-      // Small delay to allow tab switch, then scroll to first error
-      setTimeout(() => {
-        if (fieldName) {
-          form.scrollToField(fieldName)
-        }
-      }, 300)
-    }
-  }, [validationErrors, form])
-
-  // Clear validation errors when form values change
-  const handleFormChange = useCallback(() => {
-    // Update field completion counts with multiple attempts to ensure accuracy
-    setTimeout(() => {
-      calculateFieldCounts()
-    }, 50)
-
-    setTimeout(() => {
-      calculateFieldCounts()
-    }, 200)
-
-    // Clear validation error indicators when user starts making changes
-    if (tabValidationErrors.basicInfo || tabValidationErrors.detailedInfo || validationModalVisible) {
-      setTabValidationErrors({
-        basicInfo: false,
-        detailedInfo: false
-      })
-      setValidationModalVisible(false)
-      setValidationErrors([])
-    }
-    // eslint-disable-next-line
-  }, [tabValidationErrors, validationModalVisible, calculateFieldCounts])
-
-  // Handle tab change and recalculate counts
-  const handleTabChange = useCallback((newActiveKey) => {
-    setActiveTab(newActiveKey)
-    // Recalculate field counts when switching tabs
-    setTimeout(() => {
-      calculateFieldCounts()
-    }, 50)
-    // eslint-disable-next-line
-  }, [])
+  const {
+    form,
+    loading,
+    departments,
+    experienceLevels,
+    lookupsLoading,
+    initialDataLoading,
+    tabValidationErrors,
+    validationModalVisible,
+    setValidationModalVisible,
+    validationErrors,
+    activeTab,
+    fieldCompletionCounts,
+    isEditMode,
+    handleFormSubmit,
+    handleSaveClick,
+    handleValidationModalOk,
+    handleFormChange,
+    handleTabChange
+  } = useJobDescriptionForm(user)
 
   // Completion Badge Component
   const CompletionBadge = ({ completed, total, darkMode }) => {
@@ -1008,21 +601,7 @@ const CreateJobDescription = React.memo(({ user }) => {
                   </p>
 
                   <div className='space-y-3'>
-                    {validationErrors
-                      .reduce((acc, error) => {
-                        const existingTab = acc.find((tab) => tab.tabKey === error.tabKey)
-                        if (existingTab) {
-                          existingTab.fields.push(error.field)
-                        } else {
-                          acc.push({
-                            tabKey: error.tabKey,
-                            tab: error.tab,
-                            fields: [error.field]
-                          })
-                        }
-                        return acc
-                      }, [])
-                      .map((tabGroup) => (
+                    {groupJobDescriptionValidationErrorsByTab(validationErrors).map((tabGroup) => (
                         <div
                           key={tabGroup.tabKey}
                           className={`p-3 rounded-lg border ${

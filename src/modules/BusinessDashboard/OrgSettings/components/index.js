@@ -1,13 +1,11 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
-import React, { useState, useCallback, useEffect } from 'react'
-import { Card, Form, message, Tabs, Modal, Space } from 'antd'
+import React from 'react'
+import { Card, Form, message, Tabs, Space } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faBuilding,
-  // faRobot,
   faGlobe,
-  // faFileAlt,
   faSave,
   faCog,
   faIndustry,
@@ -16,13 +14,12 @@ import {
 import { useTheme } from '../../../../core/context/ThemeContext'
 import { Button } from '../../../../core/components'
 import { BRAND_COLORS } from '../../../../core/theme/colors'
-import { clearUserOrganization, createOrganizationAndAssignToUser } from '../../../../core/infra/supabase-controller'
-import orgSettingsController from '../controllers'
 import AIProfileModal from './AIProfileModal'
 import BusinessSetupModal from './BusinessSetupModal'
 import OrganizationProfileForm from './OrganizationProfileForm'
 import { Toolbar } from '../../../../core/components'
 import ModuleContainer from '../../../../core/components/layout/Container/ModuleContainer'
+import { useOrgSettings } from '../hooks/useOrgSettings'
 
 import '../styles/org-settings.css'
 
@@ -34,208 +31,30 @@ const { TabPane } = Tabs
  */
 const OrgSettings = React.memo(({ user }) => {
   const { darkMode } = useTheme()
-  const [form] = Form.useForm()
-  const [businessSetupForm] = Form.useForm()
-  const [loading, setLoading] = useState(false)
-  const [hasChanges, setHasChanges] = useState(false)
-  const [aiModalVisible, setAiModalVisible] = useState(false)
-  const [businessSetupModalVisible, setBusinessSetupModalVisible] = useState(false)
-  const [leavingOrganization, setLeavingOrganization] = useState(false)
-  const [loadingOrgData, setLoadingOrgData] = useState(true)
-  const [organizationId, setOrganizationId] = useState(null)
-  const [hasOrganization, setHasOrganization] = useState(false)
-  const [activeTab, setActiveTab] = useState('general')
-  const [modal, contextHolder] = Modal.useModal()
 
-  // Organization data - loaded from API
-  const [orgSettings, setOrgSettings] = useState({})
-
-  // Load organization data on mount
-  useEffect(() => {
-    const loadOrganizationData = async () => {
-      if (!user?.id) {
-        setLoadingOrgData(false)
-        return
-      }
-
-      try {
-        setLoadingOrgData(true)
-        const result = await orgSettingsController.getOrgSettings(user.id)
-
-        if (result.success) {
-          if (result.hasOrganization && result.data) {
-            setOrgSettings(result.data)
-            setOrganizationId(result.data.id)
-            setHasOrganization(true)
-            form.setFieldsValue(result.data)
-          } else {
-            // User has no organization
-            setHasOrganization(false)
-            setOrgSettings({})
-            setOrganizationId(null)
-          }
-        } else {
-          console.error('Failed to load organization data:', result.error)
-          message.error(`Failed to load organization data: ${result.error}`)
-        }
-      } catch (error) {
-        console.error('Error loading organization data:', error)
-        message.error('An error occurred while loading organization data')
-      } finally {
-        setLoadingOrgData(false)
-      }
-    }
-
-    loadOrganizationData()
-    // eslint-disable-next-line
-  }, [])
-
-  // Update form values when organization data changes
-  useEffect(() => {
-    if (Object.keys(orgSettings).length > 0) {
-      form.setFieldsValue(orgSettings)
-    }
-  }, [orgSettings, form])
-
-  // Handle form values change
-  const handleValuesChange = useCallback(() => {
-    setHasChanges(true)
-  }, [])
-
-  // Handle form submission
-  const handleSubmit = useCallback(
-    async (values) => {
-      if (!organizationId || !user?.id) {
-        message.error('Unable to update organization settings: Missing organization or user information')
-        return
-      }
-
-      setLoading(true)
-      try {
-        const result = await orgSettingsController.updateOrgSettings(organizationId, values, user.id)
-
-        if (result.success) {
-          setOrgSettings(result.data)
-          setHasChanges(false)
-          message.success(result.message || 'Organization settings updated successfully!')
-        } else {
-          console.error('Error updating organization settings:', result.error)
-          message.error(`Failed to update organization settings: ${result.error}`)
-        }
-      } catch (error) {
-        console.error('Unexpected error updating organization settings:', error)
-        message.error('An unexpected error occurred while updating organization settings')
-      } finally {
-        setLoading(false)
-      }
-    },
-    [organizationId, user?.id]
-  )
-
-  // // Handle AI profile interaction
-  // const handleAiProfileUpdate = useCallback(() => {
-  //   setAiModalVisible(true)
-  // }, [])
-
-  // Tab change handler
-  const handleTabChange = useCallback((key) => {
-    setActiveTab(key)
-  }, [])
-
-  // Handle leave organization
-  const handleLeaveOrganization = useCallback(() => {
-    modal.confirm({
-      title: 'Leave Organization',
-      content: (
-        <div>
-          <p>
-            Are you sure you want to leave <strong>{orgSettings.organizationName}</strong>?
-          </p>
-          <p className='text-red-600 mt-2'>
-            <strong>Warning:</strong> This action will remove you from the organization and you will lose access to all
-            organization data.
-          </p>
-        </div>
-      ),
-      okText: 'Leave Organization',
-      okType: 'danger',
-      cancelText: 'Cancel',
-      okButtonProps: {
-        danger: true,
-        loading: leavingOrganization
-      },
-      onOk: async () => {
-        setLeavingOrganization(true)
-        try {
-          // Clear the user's org_id from the database
-          const result = await clearUserOrganization(user?.id)
-
-          if (result.success) {
-            // Clear local state and show setup modal
-            setOrgSettings({})
-            form.resetFields()
-            setBusinessSetupModalVisible(true)
-            message.success('You have successfully left the organization.')
-          } else {
-            console.error('Error leaving organization:', result.error)
-            message.error(`Failed to leave organization: ${result.error}`)
-          }
-        } catch (error) {
-          console.error('Unexpected error leaving organization:', error)
-          message.error('An unexpected error occurred while leaving the organization.')
-        } finally {
-          setLeavingOrganization(false)
-        }
-      },
-      className: darkMode ? 'ant-modal-dark' : ''
-    })
-  }, [orgSettings.organizationName, darkMode, leavingOrganization, user?.id, form, modal])
-
-  // Handle business setup modal close
-  const handleBusinessSetupModalClose = useCallback(() => {
-    setBusinessSetupModalVisible(false)
-  }, [])
-
-  // Handle business setup submission
-  const handleBusinessSetupSubmit = useCallback(
-    async (values) => {
-      let result = null
-      try {
-        // Prepare organization data
-        const organizationData = {
-          ...values,
-          // Transform founded_year to number if provided
-          founded_year: values.founded_year ? parseInt(values.founded_year, 10) : null
-        }
-
-        // Create organization and assign to user in Supabase
-        result = await createOrganizationAndAssignToUser(organizationData, user.id)
-
-        if (result.success) {
-          setBusinessSetupModalVisible(false)
-          message.success('Organization setup completed successfully!')
-        }
-
-        // Reload organization data
-        setLoadingOrgData(true)
-        result = await orgSettingsController.getOrgSettings(user?.id)
-
-        if (result.success && result.hasOrganization && result.data) {
-          setOrgSettings(result.data)
-          setOrganizationId(result.data.id || null)
-          setHasOrganization(true)
-          form.setFieldsValue(result.data)
-        }
-
-        setLoadingOrgData(false)
-      } catch (error) {
-        console.error('Error setting up organization:', error)
-        message.error('Failed to set up organization')
-        setLoadingOrgData(false)
-      }
-    },
-    [form, user?.id]
-  )
+  const {
+    form,
+    businessSetupForm,
+    loading,
+    hasChanges,
+    aiModalVisible,
+    setAiModalVisible,
+    businessSetupModalVisible,
+    setBusinessSetupModalVisible,
+    handleBusinessSetupModalClose,
+    leavingOrganization,
+    loadingOrgData,
+    hasOrganization,
+    activeTab,
+    contextHolder,
+    orgSettings,
+    setOrgSettings,
+    handleValuesChange,
+    handleSubmit,
+    handleTabChange,
+    handleLeaveOrganization,
+    handleBusinessSetupSubmit
+  } = useOrgSettings(user, darkMode)
 
   return (
     <div

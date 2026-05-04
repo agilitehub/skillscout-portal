@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPaperPlane, faPaperclip, faCloudUploadAlt, faSpinner } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../core/context/ThemeContext'
 import { BRAND_COLORS } from '../../../core/theme/colors'
+import { validateChatAttachmentBatch } from '../controllers/chatAttachments'
 
 const { TextArea } = Input
 
@@ -56,33 +57,7 @@ const ChatInput = React.memo(
 
     // Enhanced file validation function
     const validateFiles = useCallback((files) => {
-      const allowedTypes = [
-        'application/pdf',
-        'application/msword',
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        'text/plain',
-        'image/jpeg',
-        'image/png',
-        'image/gif',
-        'image/webp',
-        'application/vnd.ms-excel',
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        'text/csv'
-      ]
-
-      const errors = []
-      const validFiles = []
-      const MAX_FILE_SIZE = 50 * 1024 * 1024 // 50MB
-
-      Array.from(files).forEach((file) => {
-        if (!allowedTypes.includes(file.type)) {
-          errors.push(`${file.name}: Unsupported file type`)
-        } else if (file.size > MAX_FILE_SIZE) {
-          errors.push(`${file.name}: File too large (max 50MB)`)
-        } else {
-          validFiles.push(file)
-        }
-      })
+      const { validFiles, errors } = validateChatAttachmentBatch(files)
 
       if (errors.length > 0) {
         setDragError(errors.join(', '))

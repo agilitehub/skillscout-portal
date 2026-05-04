@@ -5,9 +5,23 @@
  * Candidates Controller
  * Handles candidates data operations and business logic
  */
+import { getInitialBoardState, MOCK_JOB_LISTINGS } from '../model/candidatesWorkspace'
+
 class CandidatesController {
   constructor() {
     this.apiEndpoint = '/api/candidates'
+  }
+
+  /**
+   * Workspace bundle for dashboard (persisted board + demo listings).
+   * Replace with API-backed loaders when endpoints exist.
+   */
+  async loadWorkspace() {
+    return {
+      success: true,
+      candidatesData: getInitialBoardState(),
+      jobListings: MOCK_JOB_LISTINGS
+    }
   }
 
   /**

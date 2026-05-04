@@ -23,6 +23,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { useTheme } from '../../../../core/context/ThemeContext'
 import { Button } from '../../../../core/components'
 import { BRAND_COLORS, SEMANTIC_COLORS } from '../../../../core/theme/colors'
+import branchManagementController from '../controllers'
 
 import '../styles/branch-management.css'
 
@@ -161,24 +162,24 @@ const BranchEditPage = React.memo(({ user: currentUser }) => {
           isHeadquarters: values.isHeadquarters || false
         }
 
-        // Simulate API delay
-        await new Promise((resolve) => setTimeout(resolve, 1000))
-
-        console.log('Saving branch:', branchData)
+        if (mode === 'edit' && branchToEdit?.id != null) {
+          await branchManagementController.updateBranch(branchToEdit.id, branchData)
+        } else {
+          await branchManagementController.createBranch(branchData)
+        }
 
         setHasChanges(false)
         message.success(`Branch ${mode === 'add' ? 'created' : 'updated'} successfully!`)
 
-        // Navigate back to branch management
         navigate('/business-dashboard/branch-management')
       } catch (error) {
         console.error('Error saving branch:', error)
-        message.error('Failed to save branch')
+        message.error(error.message || 'Failed to save branch')
       } finally {
         setLoading(false)
       }
     },
-    [mode, navigate]
+    [mode, navigate, branchToEdit]
   )
 
   // Handle reset

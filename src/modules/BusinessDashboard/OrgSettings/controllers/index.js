@@ -7,7 +7,7 @@
  */
 
 import { validateOrgSettings, transformToDatabase, transformFromDatabase } from '../model'
-import { getUserOrganization, updateOrganization } from '../../../../core/infra/supabase-controller'
+import { getUserOrganization, updateOrganization, clearUserOrganization, createOrganizationAndAssignToUser } from '../../../../core/infra/supabase-controller'
 
 class OrgSettingsController {
   constructor() {
@@ -111,6 +111,26 @@ class OrgSettingsController {
         error: 'Failed to update organization settings'
       }
     }
+  }
+
+  /**
+   * Leave organization: clear user's org membership via Supabase.
+   */
+  async leaveOrganization(userId) {
+    if (!userId) {
+      return { success: false, error: 'User ID is required' }
+    }
+    return clearUserOrganization(userId)
+  }
+
+  /**
+   * Create organization and assign current user (business setup onboarding).
+   */
+  async createOrganizationForUser(organizationData, userId) {
+    if (!organizationData || !userId) {
+      return { success: false, error: 'Organization data and user ID are required' }
+    }
+    return createOrganizationAndAssignToUser(organizationData, userId)
   }
 
   /**

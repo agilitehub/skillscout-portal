@@ -1,8 +1,7 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
-import React, { useState, useCallback, useMemo } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { message, Tag, Space, Modal, Descriptions } from 'antd'
+import React, { useMemo } from 'react'
+import { Modal, Tag, Space, Descriptions } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus, faEdit, faEye } from '@fortawesome/free-solid-svg-icons'
 import { DndProvider } from 'react-dnd'
@@ -13,6 +12,7 @@ import TableView from '../../../../core/components/view-components/table-view/Ta
 import KanbanBoard from './KanbanBoard'
 import { BRAND_COLORS, SEMANTIC_COLORS } from '../../../../core/theme/colors'
 import { Toolbar } from '../../../../core/components'
+import { useCandidatesWorkspace } from '../hooks/useCandidatesWorkspace'
 
 import '../styles/candidates.css'
 
@@ -22,211 +22,33 @@ import '../styles/candidates.css'
  */
 const Candidates = React.memo(({ user }) => {
   const { darkMode } = useTheme()
-  const navigate = useNavigate()
 
-  // State management
-  const [draggedCandidate, setDraggedCandidate] = useState(null)
-  const [lastDroppedCard, setLastDroppedCard] = useState(null)
-  const [viewMode, setViewMode] = useState('kanban') // 'kanban' or 'table'
-  const [searchTerm, setSearchTerm] = useState('')
-  const [viewModalVisible, setViewModalVisible] = useState(false)
-  const [selectedCandidate, setSelectedCandidate] = useState(null)
-  const [selectedJobListing, setSelectedJobListing] = useState(null) // Job listing filter
+  const {
+    draggedCandidate,
+    lastDroppedCard,
+    viewMode,
+    searchTerm,
+    viewModalVisible,
+    selectedCandidate,
+    selectedJobListing,
+    filteredCandidates,
+    filteredCandidatesData,
+    stages,
+    jobListings,
+    handleEdit,
+    handleView,
+    handleCloseViewModal,
+    handleAdd,
+    handleCandidateAction,
+    handleDragStart,
+    handleDragEnd,
+    handleDropOnStage,
+    handleViewToggle,
+    handleSearch,
+    handleJobListingChange,
+    getStageTitle
+  } = useCandidatesWorkspace(user)
 
-  // Load candidates data from localStorage or use default sample data
-  const getInitialCandidatesData = () => {
-    try {
-      const saved = localStorage.getItem('candidatesData')
-      if (saved) {
-        return JSON.parse(saved)
-      }
-    } catch (error) {
-      console.warn('Error loading candidates data from localStorage:', error)
-    }
-
-    // Default sample data
-    return {
-      'application-received': [
-        {
-          id: 1,
-          name: 'John Smith',
-          position: 'Senior React Developer',
-          jobListingId: 1,
-          email: 'john.smith@email.com',
-          phone: '+1 (555) 123-4567',
-          appliedDate: '2024-01-15',
-          priority: 'high',
-          tags: ['React', 'JavaScript', 'Senior'],
-          notes: 'Strong technical background with 5+ years experience'
-        },
-        {
-          id: 2,
-          name: 'Sarah Johnson',
-          position: 'UX Designer',
-          jobListingId: 2,
-          email: 'sarah.johnson@email.com',
-          phone: '+1 (555) 987-6543',
-          appliedDate: '2024-01-14',
-          priority: 'medium',
-          tags: ['UI/UX', 'Figma', 'Design'],
-          notes: 'Impressive portfolio with modern design approach'
-        }
-      ],
-      screening: [
-        {
-          id: 3,
-          name: 'Mike Chen',
-          position: 'Full Stack Developer',
-          jobListingId: 3,
-          email: 'mike.chen@email.com',
-          phone: '+1 (555) 456-7890',
-          appliedDate: '2024-01-10',
-          priority: 'high',
-          tags: ['Full Stack', 'Node.js', 'Python'],
-          notes: 'Passed initial screening, scheduling technical interview'
-        }
-      ],
-      assessment: [
-        {
-          id: 7,
-          name: 'Alex Rodriguez',
-          position: 'Backend Developer',
-          jobListingId: 5,
-          email: 'alex.rodriguez@email.com',
-          phone: '+1 (555) 678-9012',
-          appliedDate: '2024-01-12',
-          priority: 'medium',
-          tags: ['Backend', 'Java', 'Spring'],
-          notes: 'Completed coding assessment, results under review'
-        }
-      ],
-      'technical-interview': [
-        {
-          id: 4,
-          name: 'Emily Davis',
-          position: 'Frontend Developer',
-          jobListingId: 4,
-          email: 'emily.davis@email.com',
-          phone: '+1 (555) 234-5678',
-          appliedDate: '2024-01-08',
-          priority: 'medium',
-          tags: ['Vue.js', 'CSS', 'Frontend'],
-          notes: 'Technical interview scheduled for tomorrow'
-        }
-      ],
-      'final-interview': [
-        {
-          id: 5,
-          name: 'David Wilson',
-          position: 'DevOps Engineer',
-          jobListingId: 6,
-          email: 'david.wilson@email.com',
-          phone: '+1 (555) 345-6789',
-          appliedDate: '2024-01-05',
-          priority: 'high',
-          tags: ['AWS', 'Docker', 'Kubernetes'],
-          notes: 'Excellent technical skills, final interview with team lead'
-        }
-      ],
-      'offer-extended': [
-        {
-          id: 6,
-          name: 'Lisa Brown',
-          position: 'Product Manager',
-          jobListingId: 7,
-          email: 'lisa.brown@email.com',
-          phone: '+1 (555) 567-8901',
-          appliedDate: '2024-01-01',
-          priority: 'high',
-          tags: ['Product Management', 'Agile', 'Strategy'],
-          notes: 'Offer extended, awaiting response'
-        }
-      ]
-    }
-  }
-
-  const [candidatesData, setCandidatesData] = useState(getInitialCandidatesData)
-
-  // Save candidates data to localStorage whenever it changes
-  React.useEffect(() => {
-    try {
-      localStorage.setItem('candidatesData', JSON.stringify(candidatesData))
-    } catch (error) {
-      console.warn('Error saving candidates data to localStorage:', error)
-    }
-  }, [candidatesData])
-
-  // Sample job listings - in real app this would come from API
-  const jobListings = useMemo(
-    () => [
-      { id: 1, title: 'Senior React Developer', department: 'Engineering' },
-      { id: 2, title: 'UX Designer', department: 'Design' },
-      { id: 3, title: 'Full Stack Developer', department: 'Engineering' },
-      { id: 4, title: 'Frontend Developer', department: 'Engineering' },
-      { id: 5, title: 'Backend Developer', department: 'Engineering' },
-      { id: 6, title: 'DevOps Engineer', department: 'Engineering' },
-      { id: 7, title: 'Product Manager', department: 'Product' },
-      { id: 8, title: 'Data Scientist', department: 'Data' },
-      { id: 9, title: 'QA Engineer', department: 'Quality Assurance' },
-      { id: 10, title: 'Marketing Manager', department: 'Marketing' }
-    ],
-    []
-  )
-
-  // Helper function to get stage title
-  const getStageTitle = useCallback((stageKey) => {
-    const stageTitles = {
-      'application-received': 'Application Received',
-      screening: 'Screening',
-      assessment: 'Assessment',
-      'technical-interview': 'Technical Interview',
-      'final-interview': 'Final Interview',
-      'offer-extended': 'Offer Extended'
-    }
-    return stageTitles[stageKey] || stageKey
-  }, [])
-
-  // Handle edit candidate
-  const handleEdit = useCallback(
-    (candidate) => {
-      navigate(`/business-dashboard/candidates/${candidate.id}/edit`, {
-        state: {
-          editId: candidate.id,
-          initialData: candidate
-        }
-      })
-    },
-    [navigate]
-  )
-
-  // Handle view candidate details
-  const handleView = useCallback((candidate) => {
-    setSelectedCandidate(candidate)
-    setViewModalVisible(true)
-  }, [])
-
-  // Handle close view modal
-  const handleCloseViewModal = useCallback(() => {
-    setViewModalVisible(false)
-    setSelectedCandidate(null)
-  }, [])
-
-  // Transform candidates data for table view (flatten nested stages)
-  const flattenedCandidates = useMemo(() => {
-    const flattened = []
-    for (const [stageKey, candidates] of Object.entries(candidatesData)) {
-      candidates.forEach((candidate) => {
-        flattened.push({
-          ...candidate,
-          stage: stageKey,
-          stageTitle: getStageTitle(stageKey)
-        })
-      })
-    }
-    return flattened
-  }, [candidatesData, getStageTitle])
-
-  // Table columns configuration
   const tableColumns = useMemo(
     () => [
       {
@@ -364,245 +186,6 @@ const Candidates = React.memo(({ user }) => {
     [darkMode, handleView, handleEdit]
   )
 
-  // Candidates stages configuration
-  const stages = useMemo(
-    () => [
-      {
-        key: 'application-received',
-        title: 'Application Received',
-        color: 'teal',
-        count: candidatesData['application-received'].length
-      },
-      {
-        key: 'screening',
-        title: 'Screening',
-        color: 'emerald',
-        count: candidatesData['screening'].length
-      },
-      {
-        key: 'assessment',
-        title: 'Assessment',
-        color: 'blue',
-        count: candidatesData['assessment'].length
-      },
-      {
-        key: 'technical-interview',
-        title: 'Technical Interview',
-        color: 'emerald-light',
-        count: candidatesData['technical-interview'].length
-      },
-      {
-        key: 'final-interview',
-        title: 'Final Interview',
-        color: 'blue-light',
-        count: candidatesData['final-interview'].length
-      },
-      {
-        key: 'offer-extended',
-        title: 'Offer Extended',
-        color: 'emerald-success',
-        count: candidatesData['offer-extended'].length
-      }
-    ],
-    [candidatesData]
-  )
-
-  // Helper function to find candidate and its location
-  const findCandidateById = useCallback(
-    (candidateId) => {
-      const id = typeof candidateId === 'string' ? parseInt(candidateId) : candidateId
-
-      for (const [stageKey, candidates] of Object.entries(candidatesData)) {
-        const candidateIndex = candidates.findIndex((c) => c.id === id)
-        if (candidateIndex !== -1) {
-          return {
-            candidate: candidates[candidateIndex],
-            stageKey,
-            index: candidateIndex
-          }
-        }
-      }
-      return null
-    },
-    [candidatesData]
-  )
-
-  // Handle add new candidate
-  const handleAdd = useCallback(() => {
-    navigate('/business-dashboard/candidates/create')
-  }, [navigate])
-
-  // Handle candidate actions (non-drag actions)
-  const handleCandidateAction = useCallback(
-    (candidate, action) => {
-      const actionStageMap = {
-        'move-to-screening': 'screening',
-        'move-to-assessment': 'assessment',
-        'move-to-technical': 'technical-interview',
-        'move-to-final': 'final-interview',
-        'move-to-offer': 'offer-extended'
-      }
-
-      const targetStage = actionStageMap[action]
-      if (!targetStage) return
-
-      setCandidatesData((prev) => {
-        const newData = { ...prev }
-
-        // Find and remove candidate from current stage
-        for (const stageKey in newData) {
-          const candidateIndex = newData[stageKey].findIndex((c) => c.id === candidate.id)
-          if (candidateIndex !== -1) {
-            newData[stageKey] = newData[stageKey].filter((c) => c.id !== candidate.id)
-            break
-          }
-        }
-
-        // Add candidate to target stage
-        newData[targetStage] = [...newData[targetStage], candidate]
-
-        return newData
-      })
-
-      const targetStageTitle = stages.find((s) => s.key === targetStage)?.title
-      message.success(`Moved ${candidate.name} to ${targetStageTitle}`)
-    },
-    [stages]
-  )
-
-  // Handle drag start
-  const handleDragStart = useCallback((candidate) => {
-    setDraggedCandidate(candidate)
-  }, [])
-
-  // Handle drag end
-  const handleDragEnd = useCallback(() => {
-    setDraggedCandidate(null)
-  }, [])
-
-  // Handle drop on stage
-  const handleDropOnStage = useCallback(
-    (candidate, targetStage, position) => {
-      if (!candidate || !targetStage) return
-
-      const sourceInfo = findCandidateById(candidate.id)
-      if (!sourceInfo) return
-
-      const { stageKey: sourceStage } = sourceInfo
-
-      // Don't move if already in target stage at the same position
-      if (sourceStage === targetStage) {
-        const currentIndex = candidatesData[sourceStage].findIndex((c) => c.id === candidate.id)
-        if (currentIndex === position || (currentIndex === position - 1 && position > 0)) {
-          return // No change needed
-        }
-      }
-
-      setCandidatesData((prev) => {
-        const newData = { ...prev }
-
-        // Remove from source stage
-        newData[sourceStage] = newData[sourceStage].filter((c) => c.id !== candidate.id)
-
-        // Add to target stage at specified position
-        const targetCandidates = [...newData[targetStage]]
-
-        if (position >= targetCandidates.length) {
-          // Add to end
-          targetCandidates.push(candidate)
-        } else {
-          // Insert at specific position
-          targetCandidates.splice(position, 0, candidate)
-        }
-
-        newData[targetStage] = targetCandidates
-
-        return newData
-      })
-
-      // Set the dropped card for flash effect
-      setLastDroppedCard(candidate.id)
-
-      // Clear the flash effect after 2 seconds
-      setTimeout(() => {
-        setLastDroppedCard(null)
-      }, 2000)
-
-      // Show success message for cross-stage moves or reordering
-      if (sourceStage !== targetStage) {
-        const targetStageTitle = stages.find((s) => s.key === targetStage)?.title
-        message.success(`Moved ${candidate.name} to ${targetStageTitle}`)
-      } else {
-        message.success(`Reordered ${candidate.name}`)
-      }
-    },
-    [findCandidateById, candidatesData, stages]
-  )
-
-  // Handle view toggle
-  const handleViewToggle = useCallback((mode) => {
-    setViewMode(mode)
-  }, [])
-
-  // Handle search
-  const handleSearch = useCallback((value) => {
-    setSearchTerm(value)
-  }, [])
-
-  // Handle job listing filter change
-  const handleJobListingChange = useCallback((jobListingId) => {
-    setSelectedJobListing(jobListingId)
-  }, [])
-
-  // Filter candidates based on search term
-  const filteredCandidates = useMemo(() => {
-    if (!searchTerm) return flattenedCandidates
-
-    const searchLower = searchTerm.toLowerCase()
-    return flattenedCandidates.filter(
-      (candidate) =>
-        candidate.name.toLowerCase().includes(searchLower) ||
-        candidate.position.toLowerCase().includes(searchLower) ||
-        candidate.email.toLowerCase().includes(searchLower) ||
-        candidate.tags.some((tag) => tag.toLowerCase().includes(searchLower))
-    )
-  }, [flattenedCandidates, searchTerm])
-
-  // Filter candidates data for Kanban board (filters by job listing and search)
-  const filteredCandidatesData = useMemo(() => {
-    const filtered = {}
-
-    // Initialize all stages with empty arrays
-    Object.keys(candidatesData).forEach((stage) => {
-      filtered[stage] = []
-    })
-
-    // Filter each stage's candidates
-    Object.keys(candidatesData).forEach((stage) => {
-      const stageCandidates = candidatesData[stage] || []
-
-      filtered[stage] = stageCandidates.filter((candidate) => {
-        // Filter by job listing if selected
-        const jobListingMatch = !selectedJobListing || candidate.jobListingId === selectedJobListing
-
-        // Filter by search term if provided
-        let searchMatch = true
-        if (searchTerm) {
-          const searchLower = searchTerm.toLowerCase()
-          searchMatch =
-            candidate.name.toLowerCase().includes(searchLower) ||
-            candidate.position.toLowerCase().includes(searchLower) ||
-            candidate.email.toLowerCase().includes(searchLower) ||
-            candidate.tags.some((tag) => tag.toLowerCase().includes(searchLower))
-        }
-
-        return jobListingMatch && searchMatch
-      })
-    })
-
-    return filtered
-  }, [candidatesData, selectedJobListing, searchTerm])
-
   return (
     <DndProvider backend={HTML5Backend}>
       <div
@@ -614,12 +197,9 @@ const Candidates = React.memo(({ user }) => {
       >
         <Toolbar title='Candidates' description='Manage your recruitment pipeline' />
 
-        {/* Main Content */}
         <div className='flex-1 relative'>
-          {/* Content Area - Kanban Board or Table View */}
           <div className='relative pl-5 pr-5 pt-2'>
             {viewMode === 'kanban' ? (
-              /* Kanban Board with Drag and Drop */
               <KanbanBoard
                 candidatesData={filteredCandidatesData}
                 stages={stages}
@@ -642,9 +222,7 @@ const Candidates = React.memo(({ user }) => {
                 showViewToggle={true}
               />
             ) : (
-              /* Table View */
               <div>
-                {/* Use the same FilterBar component for consistency */}
                 <KanbanBoard.FilterBar
                   jobListings={jobListings}
                   selectedJobListing={selectedJobListing}
@@ -671,6 +249,7 @@ const Candidates = React.memo(({ user }) => {
                   emptyText='No candidates found'
                   toolbarActions={[
                     <Button
+                      key='add'
                       type='default'
                       size='small'
                       onClick={handleAdd}
@@ -702,7 +281,6 @@ const Candidates = React.memo(({ user }) => {
           </div>
         </div>
 
-        {/* Candidate Details Modal */}
         <Modal
           title={
             <div className='flex items-center space-x-3'>
@@ -736,7 +314,6 @@ const Candidates = React.memo(({ user }) => {
         >
           {selectedCandidate && (
             <div className='space-y-6'>
-              {/* Basic Information */}
               <div>
                 <h3 className={`text-lg font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                   Basic Information
@@ -803,7 +380,6 @@ const Candidates = React.memo(({ user }) => {
                 </Descriptions>
               </div>
 
-              {/* Skills & Tags */}
               <div>
                 <h3 className={`text-lg font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                   Skills & Expertise
@@ -827,7 +403,6 @@ const Candidates = React.memo(({ user }) => {
                 </div>
               </div>
 
-              {/* Notes */}
               {selectedCandidate.notes && (
                 <div>
                   <h3 className={`text-lg font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Notes</h3>

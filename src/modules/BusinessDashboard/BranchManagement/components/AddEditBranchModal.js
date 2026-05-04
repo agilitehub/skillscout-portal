@@ -1,7 +1,7 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
 import React, { useState, useCallback, useEffect } from 'react'
-import { Modal, Form, Input, Select, Space, Row, Col, Switch, Tag } from 'antd'
+import { Modal, Form, Input, Select, Space, Row, Col, Switch, Tag, message } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { 
   faBuilding, 
@@ -18,6 +18,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { Button } from '../../../../core/components'
 import { BRAND_COLORS, SEMANTIC_COLORS } from '../../../../core/theme/colors'
+import branchManagementController from '../controllers'
 
 import '../styles/branch-management.css'
 
@@ -135,17 +136,24 @@ const AddEditBranchModal = React.memo(({ visible, mode, branch, onCancel, onSucc
         isHeadquarters: values.isHeadquarters || false
       }
 
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      onSuccess(branchData)
+      let payload = branchData
+      if (mode === 'edit' && branch?.id != null) {
+        const result = await branchManagementController.updateBranch(branch.id, branchData)
+        payload = result.data
+      } else {
+        const result = await branchManagementController.createBranch(branchData)
+        payload = result.data
+      }
+
+      onSuccess(payload)
       form.resetFields()
     } catch (error) {
       console.error('Error saving branch:', error)
+      message.error(error.message || 'Failed to save branch')
     } finally {
       setLoading(false)
     }
-  }, [form, onSuccess])
+  }, [form, onSuccess, mode, branch])
 
   // Handle cancel
   const handleCancel = useCallback(() => {
