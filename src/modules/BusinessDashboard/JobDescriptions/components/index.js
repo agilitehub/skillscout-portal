@@ -2,7 +2,7 @@
 // Frontend Instructions Rule Applied!
 import React, { useState, useEffect, useMemo, useCallback } from 'react'
 import { Tag, message, Card } from 'antd'
-import { Button } from '../../../../core/components'
+import { BusinessDashboardPageShell, DashboardToolbarButton } from '../../../../core/components'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus, faUsers, faCalendarAlt, faClipboardCheck, faTrash } from '@fortawesome/free-solid-svg-icons'
@@ -230,36 +230,17 @@ const JobDescriptions = React.memo(({ user }) => {
 
   return (
     <>
-      <div
-        className={`min-h-screen relative overflow-hidden ${
-          darkMode
-            ? 'bg-gradient-to-br from-slate-700 via-slate-600 to-emerald-800'
-            : 'bg-gradient-to-br from-sky-100 via-gray-50 to-emerald-100'
-        }`}
-      >
+      <BusinessDashboardPageShell className='relative overflow-hidden'>
         <Toolbar
           title='Job Descriptions'
           description='Create and manage detailed job descriptions'
           renderActions={() => (
-            <Button
-              type='default'
-              size='middle'
-              className='dashboard-button'
-              style={{
-                backgroundColor: '#ffffff',
-                borderColor: '#ffffff',
-                color: '#059669',
-                boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-                fontSize: '13px',
-                height: '32px',
-                paddingLeft: '12px',
-                paddingRight: '12px'
-              }}
+            <DashboardToolbarButton
               onClick={handleCreateDescription}
+              icon={<FontAwesomeIcon icon={faPlus} className='text-[11px]' />}
             >
-              <FontAwesomeIcon icon={faPlus} style={{ fontSize: '11px', marginRight: '4px' }} />
               <span>Create Description</span>
-            </Button>
+            </DashboardToolbarButton>
           )}
         />
 
@@ -311,7 +292,7 @@ const JobDescriptions = React.memo(({ user }) => {
           />
         </ModuleContainer>
 
-      </div>
+      </BusinessDashboardPageShell>
     </>
   )
 })

@@ -7,8 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSave, faTimes, faGift } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../../core/context/ThemeContext'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { Button } from '../../../../core/components'
-import { Toolbar } from '../../../../core/components'
+import { Button, BusinessDashboardPageShell, Toolbar } from '../../../../core/components'
 import {
   createJobOpportunity,
   updateJobOpportunity,
@@ -194,13 +193,7 @@ const JobOpportunityForm = React.memo(() => {
   }, [form, navigate])
 
   return (
-    <div
-      className={`min-h-screen ${
-        darkMode
-          ? 'bg-gradient-to-br from-slate-700 via-slate-600 to-emerald-800'
-          : 'bg-gradient-to-br from-sky-100 via-gray-50 to-emerald-100'
-      }`}
-    >
+    <BusinessDashboardPageShell>
       <div className='relative z-10'>
         {/* Toolbar */}
         <Toolbar
@@ -472,7 +465,7 @@ const JobOpportunityForm = React.memo(() => {
         </div>
       </div>
 
-    </div>
+    </BusinessDashboardPageShell>
   )
 })
 

@@ -2,7 +2,7 @@
 // Frontend Instructions Rule Applied!
 import React, { useState, useEffect, useMemo, useCallback } from 'react'
 import { Tag, message } from 'antd'
-import { Button } from '../../../../core/components'
+import { BusinessDashboardPageShell, DashboardToolbarButton } from '../../../../core/components'
 import { useNavigate } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
@@ -293,36 +293,17 @@ const JobListings = React.memo(({ user }) => {
   )
 
   return (
-    <div
-      className={`min-h-screen ${
-        darkMode
-          ? 'bg-gradient-to-br from-slate-700 via-slate-600 to-emerald-800'
-          : 'bg-gradient-to-br from-sky-100 via-gray-50 to-emerald-100'
-      }`}
-    >
+    <BusinessDashboardPageShell>
       <Toolbar
         title='Job Listings'
         description='Manage and track your job listings'
         renderActions={() => (
-          <Button
-            type='default'
-            size='middle'
-            className='dashboard-button'
-            style={{
-              backgroundColor: '#ffffff',
-              borderColor: '#ffffff',
-              color: '#059669',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-              fontSize: '13px',
-              height: '32px',
-              paddingLeft: '12px',
-              paddingRight: '12px'
-            }}
+          <DashboardToolbarButton
             onClick={handleCreateJobOpportunity}
+            icon={<FontAwesomeIcon icon={faPlus} className='text-[11px]' />}
           >
-            <FontAwesomeIcon icon={faPlus} style={{ fontSize: '11px', marginRight: '4px' }} />
             <span>Create Job Listing</span>
-          </Button>
+          </DashboardToolbarButton>
         )}
       />
 
@@ -344,7 +325,7 @@ const JobListings = React.memo(({ user }) => {
           scroll={{ x: 1200 }}
         />
       </ModuleContainer>
-    </div>
+    </BusinessDashboardPageShell>
   )
 })
 

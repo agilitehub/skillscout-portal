@@ -13,7 +13,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from 'react-router-dom'
 import { useTheme } from '../../../../core/context/ThemeContext'
-import { Button } from '../../../../core/components'
+import { BusinessDashboardPageShell, Button, DashboardToolbarButton } from '../../../../core/components'
 import TableView from '../../../../core/components/view-components/table-view/TableView'
 import { BRAND_COLORS, SEMANTIC_COLORS } from '../../../../core/theme/colors'
 import userManagementController from '../controllers'
@@ -457,38 +457,19 @@ const UserManagement = React.memo(({ user }) => {
   )
 
   return (
-    <div
-      className={`min-h-screen ${
-        darkMode
-          ? 'bg-gradient-to-br from-slate-700 via-slate-600 to-emerald-800'
-          : 'bg-gradient-to-br from-sky-100 via-gray-50 to-emerald-100'
-      }`}
-    >
+    <BusinessDashboardPageShell>
       {/* Main Content */}
       <div className='flex-1 relative'>
         <Toolbar
           title='User Management'
           description='Manage your users and their roles'
           renderActions={() => (
-            <Button
-              type='default'
-              size='middle'
-              className='dashboard-button'
-              style={{
-                backgroundColor: '#ffffff',
-                borderColor: '#ffffff',
-                color: '#059669',
-                boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-                fontSize: '13px',
-                height: '32px',
-                paddingLeft: '12px',
-                paddingRight: '12px'
-              }}
+            <DashboardToolbarButton
               onClick={handleInviteUser}
+              icon={<FontAwesomeIcon icon={faUserPlus} className='text-[11px]' />}
             >
-              <FontAwesomeIcon icon={faUserPlus} style={{ fontSize: '11px', marginRight: '4px' }} />
               <span>Invite User</span>
-            </Button>
+            </DashboardToolbarButton>
           )}
         />
 
@@ -535,8 +516,7 @@ const UserManagement = React.memo(({ user }) => {
           />
         </ModuleContainer>
       </div>
-
-    </div>
+    </BusinessDashboardPageShell>
   )
 })
 

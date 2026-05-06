@@ -5,11 +5,10 @@ import { Form, Input, Space, Card, message } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEnvelope, faUser } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from 'react-router-dom'
-import { Button } from '../../../../core/components'
 import { useTheme } from '../../../../core/context/ThemeContext'
-import userManagementController from '../controllers'
-import { Toolbar } from '../../../../core/components'
+import { Button, BusinessDashboardPageShell, Toolbar } from '../../../../core/components'
 import ModuleContainer from '../../../../core/components/layout/Container/ModuleContainer'
+import userManagementController from '../controllers'
 
 /**
  * Invite User Page Component
@@ -91,13 +90,7 @@ const InviteUserPage = React.memo(() => {
   }, [navigate])
 
   return (
-    <div
-      className={`min-h-screen ${
-        darkMode
-          ? 'bg-gradient-to-br from-slate-700 via-slate-600 to-emerald-800'
-          : 'bg-gradient-to-br from-sky-100 via-gray-50 to-emerald-100'
-      }`}
-    >
+    <BusinessDashboardPageShell>
       {/* Main Content */}
       <div className='flex-1 relative'>
         {/* Header */}
@@ -241,7 +234,7 @@ const InviteUserPage = React.memo(() => {
           </Card>
         </ModuleContainer>
       </div>
-    </div>
+    </BusinessDashboardPageShell>
   )
 })
 

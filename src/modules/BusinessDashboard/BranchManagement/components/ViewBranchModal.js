@@ -1,7 +1,7 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
 import React from 'react'
-import { Modal, Descriptions, Tag, Space, Row, Col } from 'antd'
+import { Descriptions, Tag, Space, Row, Col } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { 
   faBuilding, 
@@ -19,7 +19,7 @@ import {
   faEye,
   faStar
 } from '@fortawesome/free-solid-svg-icons'
-import { Button } from '../../../../core/components'
+import { Button, ThemedModal } from '../../../../core/components'
 import { BRAND_COLORS, SEMANTIC_COLORS } from '../../../../core/theme/colors'
 
 import '../styles/branch-management.css'
@@ -56,7 +56,7 @@ const ViewBranchModal = React.memo(({ visible, branch, onCancel, darkMode }) => 
 
   return (
     <>
-      <Modal
+      <ThemedModal
         title={
           <div className='flex items-center space-x-3'>
             <div 
@@ -425,7 +425,7 @@ const ViewBranchModal = React.memo(({ visible, branch, onCancel, darkMode }) => 
             </div>
           )}
         </div>
-      </Modal>
+      </ThemedModal>
     </>
   )
 })

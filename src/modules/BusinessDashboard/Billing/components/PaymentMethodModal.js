@@ -1,7 +1,7 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
 import React, { useState, useCallback, useEffect } from 'react'
-import { Modal, Form, Input, Select, Row, Col, Alert, Card, Tag } from 'antd'
+import { Form, Input, Select, Row, Col, Alert, Card, Tag } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { 
   faCreditCard,
@@ -9,7 +9,7 @@ import {
   faShieldAlt,
   faCheck
 } from '@fortawesome/free-solid-svg-icons'
-import { Button } from '../../../../core/components'
+import { Button, ThemedModal } from '../../../../core/components'
 import { BRAND_COLORS } from '../../../../core/theme/colors'
 
 import '../styles/billing.css'
@@ -141,7 +141,7 @@ const PaymentMethodModal = React.memo(({
 
   return (
     <>
-      <Modal
+      <ThemedModal
         title={
           <div className='flex items-center space-x-3'>
             <div 
@@ -427,7 +427,7 @@ const PaymentMethodModal = React.memo(({
             </Col>
           </Row>
         </div>
-      </Modal>
+      </ThemedModal>
     </>
   )
 })

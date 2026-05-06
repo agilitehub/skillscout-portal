@@ -1,7 +1,7 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
 import React, { useState, useCallback, useEffect } from 'react'
-import { Modal, Form, Switch, Alert } from 'antd'
+import { Modal as AntdModal, Form, Switch, Alert } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faShieldAlt,
@@ -13,7 +13,7 @@ import {
   faBuilding,
   faExclamationCircle
 } from '@fortawesome/free-solid-svg-icons'
-import { Button } from '../../../../core/components'
+import { Button, ThemedModal } from '../../../../core/components'
 import { BRAND_COLORS, SEMANTIC_COLORS } from '../../../../core/theme/colors'
 
 import '../styles/user-management.css'
@@ -111,7 +111,7 @@ const EditPermissionsModal = React.memo(({ visible, user, onCancel, onSuccess, d
   // Handle cancel with unsaved changes check
   const handleCancel = useCallback(() => {
     if (hasChanges) {
-      Modal.confirm({
+      AntdModal.confirm({
         title: 'Unsaved Changes',
         content: 'You have unsaved changes. Are you sure you want to close without saving?',
         okText: 'Discard Changes',
@@ -146,7 +146,7 @@ const EditPermissionsModal = React.memo(({ visible, user, onCancel, onSuccess, d
 
   return (
     <>
-      <Modal
+      <ThemedModal
         title={
           <div className='flex items-center space-x-3'>
             <div
@@ -252,7 +252,7 @@ const EditPermissionsModal = React.memo(({ visible, user, onCancel, onSuccess, d
             />
           )}
         </Form>
-      </Modal>
+      </ThemedModal>
     </>
   )
 })

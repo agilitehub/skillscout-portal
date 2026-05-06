@@ -1,7 +1,7 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
 import React from 'react'
-import { Modal, Descriptions, Tag, Divider, Typography, Row, Col } from 'antd'
+import { Descriptions, Tag, Divider, Typography, Row, Col } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { 
   faReceipt,
@@ -12,7 +12,7 @@ import {
   faEnvelope,
   faMapMarkerAlt
 } from '@fortawesome/free-solid-svg-icons'
-import { Button } from '../../../../core/components'
+import { Button, ThemedModal } from '../../../../core/components'
 import { BRAND_COLORS } from '../../../../core/theme/colors'
 
 import '../styles/billing.css'
@@ -67,7 +67,7 @@ const InvoiceDetailsModal = React.memo(({ visible, onCancel, darkMode, invoice }
 
   return (
     <>
-      <Modal
+      <ThemedModal
         title={
           <div className='flex items-center space-x-3'>
             <div 
@@ -283,7 +283,7 @@ const InvoiceDetailsModal = React.memo(({ visible, onCancel, darkMode, invoice }
             </div>
           )}
         </div>
-      </Modal>
+      </ThemedModal>
     </>
   )
 })

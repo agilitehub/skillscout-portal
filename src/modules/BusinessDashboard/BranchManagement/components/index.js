@@ -14,10 +14,16 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from 'react-router-dom'
 import { useTheme } from '../../../../core/context/ThemeContext'
-import { Button } from '../../../../core/components'
-import TableView from '../../../../core/components/view-components/table-view/TableView'
-import { BRAND_COLORS, SEMANTIC_COLORS } from '../../../../core/theme/colors'
-import { Toolbar } from '../../../../core/components'
+import {
+  BusinessDashboardPageShell,
+  BRAND_COLORS,
+  Button,
+  DashboardToolbarButton,
+  SEMANTIC_COLORS,
+  TableView,
+  Toolbar
+} from '../../../../core/components'
+import ModuleContainer from '../../../../core/components/layout/Container/ModuleContainer'
 
 import '../styles/branch-management.css'
 
@@ -340,43 +346,24 @@ const BranchManagement = React.memo(({ user }) => {
   )
 
   return (
-    <div
-      className={`min-h-screen ${
-        darkMode
-          ? 'bg-gradient-to-br from-slate-700 via-slate-600 to-emerald-800'
-          : 'bg-gradient-to-br from-sky-100 via-gray-50 to-emerald-100'
-      }`}
-    >
+    <BusinessDashboardPageShell>
       {/* Main Content */}
       <div className='flex-1 relative'>
         <Toolbar
           title='Branch Management'
           description='Manage your branches'
           renderActions={() => (
-            <Button
-              type='default'
-              size='middle'
-              className='dashboard-button'
-              style={{
-                backgroundColor: '#ffffff',
-                borderColor: '#ffffff',
-                color: '#059669',
-                boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-                fontSize: '13px',
-                height: '32px',
-                paddingLeft: '12px',
-                paddingRight: '12px'
-              }}
+            <DashboardToolbarButton
               onClick={handleAdd}
+              icon={<FontAwesomeIcon icon={faPlus} className='text-[11px]' />}
             >
-              <FontAwesomeIcon icon={faPlus} style={{ fontSize: '11px', marginRight: '4px' }} />
               <span>Add Branch</span>
-            </Button>
+            </DashboardToolbarButton>
           )}
         />
 
         {/* Content Area */}
-        <div className='relative pl-5 pr-5 pt-2'>
+        <ModuleContainer variant='padded'>
           <TableView
             columns={tableColumns}
             dataSource={filteredBranches}
@@ -395,9 +382,9 @@ const BranchManagement = React.memo(({ user }) => {
               className: darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
             }}
           />
-        </div>
+        </ModuleContainer>
       </div>
-    </div>
+    </BusinessDashboardPageShell>
   )
 })
 

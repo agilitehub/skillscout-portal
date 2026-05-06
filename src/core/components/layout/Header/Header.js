@@ -2,7 +2,7 @@
 // Frontend Instructions Rule Applied!
 import React, { useState, useCallback, useEffect, useRef } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
-import { Logo } from '../../index'
+import { Logo, ConfirmModal } from '../../index'
 import ThemeToggle from '../../../theme/components/ThemeToggle'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
@@ -17,7 +17,7 @@ import {
   faFile,
   faSpinner
 } from '@fortawesome/free-solid-svg-icons'
-import { Dropdown, Modal, Form, message } from 'antd'
+import { Dropdown, Form, message } from 'antd'
 import { useTheme } from '../../../context/ThemeContext'
 import { useAuth } from '../../../auth'
 import { BRAND_COLORS } from '../../../theme/colors'
@@ -813,50 +813,19 @@ const Header = ({ user }) => {
       </div>
 
       {/* Logout Confirmation Modal */}
-      <Modal
-        title={<span style={{ color: darkMode ? '#ffffff' : '#000000' }}>Confirm Sign Out</span>}
+      <ConfirmModal
+        title={<span className={darkMode ? 'text-white' : 'text-gray-900'}>Confirm Sign Out</span>}
         open={isLogoutConfirmOpen}
         onOk={handleLogout}
         onCancel={() => setIsLogoutConfirmOpen(false)}
         okText='Sign Out'
         cancelText='Cancel'
         okButtonProps={{
-          style: {
-            backgroundColor: darkMode ? BRAND_COLORS.emeraldAccent : BRAND_COLORS.seaGreen,
-            borderColor: darkMode ? BRAND_COLORS.emeraldAccent : BRAND_COLORS.seaGreen,
-            color: '#ffffff'
-          },
           danger: true
         }}
-        cancelButtonProps={{
-          style: {
-            backgroundColor: darkMode ? '#374151' : '#ffffff',
-            borderColor: darkMode ? '#6b7280' : '#d1d5db',
-            color: darkMode ? '#ffffff' : '#374151'
-          }
-        }}
-        className={darkMode ? 'ant-modal-dark' : ''}
-        styles={{
-          content: {
-            backgroundColor: darkMode ? '#1f2937' : '#ffffff',
-            color: darkMode ? '#ffffff' : '#000000'
-          },
-          body: {
-            backgroundColor: darkMode ? '#1f2937' : '#ffffff',
-            color: darkMode ? '#ffffff' : '#000000'
-          },
-          header: {
-            backgroundColor: darkMode ? '#1f2937' : '#ffffff',
-            borderBottom: darkMode ? '1px solid #374151' : '1px solid #e5e7eb'
-          },
-          footer: {
-            backgroundColor: darkMode ? '#1f2937' : '#ffffff',
-            borderTop: darkMode ? '1px solid #374151' : '1px solid #e5e7eb'
-          }
-        }}
       >
-        <p style={{ color: darkMode ? '#e5e7eb' : '#374151', margin: 0 }}>Are you sure you want to sign out?</p>
-      </Modal>
+        <p className={`m-0 ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>Are you sure you want to sign out?</p>
+      </ConfirmModal>
 
       {/* Business Setup Modal */}
       <BusinessSetupModal

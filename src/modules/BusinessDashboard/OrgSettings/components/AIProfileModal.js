@@ -1,7 +1,7 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
 import React, { useState, useCallback, useEffect } from 'react'
-import { Modal, Form, Input, Steps, Alert, Spin } from 'antd'
+import { Form, Input, Steps, Alert, Spin } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { 
   faRobot,
@@ -11,7 +11,7 @@ import {
   faWandMagicSparkles,
   faLightbulb
 } from '@fortawesome/free-solid-svg-icons'
-import { Button } from '../../../../core/components'
+import { Button, ThemedModal } from '../../../../core/components'
 import { BRAND_COLORS } from '../../../../core/theme/colors'
 
 import '../styles/org-settings.css'
@@ -322,7 +322,7 @@ const AIProfileModal = React.memo(({ visible, onCancel, onSuccess, darkMode, cur
 
   return (
     <>
-      <Modal
+      <ThemedModal
         title={
           <div className='flex items-center space-x-3'>
             <div 
@@ -406,7 +406,7 @@ const AIProfileModal = React.memo(({ visible, onCancel, onSuccess, darkMode, cur
         </div>
 
         {renderStepContent()}
-      </Modal>
+      </ThemedModal>
     </>
   )
 })

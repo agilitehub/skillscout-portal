@@ -1,11 +1,12 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
 import React, { useState, useEffect, useMemo, useCallback } from 'react'
-import { Modal, Spin } from 'antd'
+import { Spin } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronLeft } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../core/context/ThemeContext'
 import { BRAND_COLORS } from '../../core/theme/colors'
+import { ThemedModal } from '../../core/components'
 import ChatInterface from './components/ChatInterface'
 
 /**
@@ -321,24 +322,19 @@ const Dashboard = React.memo(({ user }) => {
       <div className='h-full overflow-hidden relative z-10'>{renderContent()}</div>
 
       {/* Knowledge Base Detail Modal */}
-      <Modal
+      <ThemedModal
         open={isModalVisible}
         onCancel={handleModalClose}
         footer={null}
         centered
         width={700}
-        bodyStyle={{
-          padding: '0',
-          borderRadius: '8px',
-          overflow: 'hidden'
-        }}
-        style={{
-          borderRadius: '12px',
-          overflow: 'hidden'
-        }}
-        maskStyle={{
-          background: 'rgba(0, 0, 0, 0.6)',
-          backdropFilter: 'blur(4px)'
+        title={null}
+        maskBlur
+        styles={{
+          content: { padding: 0, borderRadius: '12px', overflow: 'hidden' },
+          body: { padding: 0, borderRadius: '8px', overflow: 'hidden' },
+          header: { display: 'none' },
+          footer: { display: 'none' }
         }}
       >
         <div
@@ -388,7 +384,7 @@ const Dashboard = React.memo(({ user }) => {
             </div>
           )}
         </div>
-      </Modal>
+      </ThemedModal>
     </div>
   )
 })

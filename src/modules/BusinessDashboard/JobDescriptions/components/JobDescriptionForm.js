@@ -2,8 +2,8 @@
 // Frontend Instructions Rule Applied!
 
 import React from 'react'
-import { Card, Form, Space, Row, Col, Tabs, Spin, Input, Select, Modal } from 'antd'
-import { Button } from '../../../../core/components'
+import { Card, Form, Space, Row, Col, Tabs, Spin, Input, Select } from 'antd'
+import { Button, BusinessDashboardPageShell, Toolbar, ThemedModal } from '../../../../core/components'
 import { useNavigate } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
@@ -21,7 +21,6 @@ import {
   faCheckCircle
 } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../../core/context/ThemeContext'
-import { Toolbar } from '../../../../core/components'
 import { useJobDescriptionForm } from '../hooks/useJobDescriptionForm'
 import { groupJobDescriptionValidationErrorsByTab } from '../model'
 
@@ -84,13 +83,7 @@ const CreateJobDescription = React.memo(({ user }) => {
   }
 
   return (
-    <div
-      className={`min-h-screen ${
-        darkMode
-          ? 'bg-gradient-to-br from-slate-700 via-slate-600 to-emerald-800'
-          : 'bg-gradient-to-br from-sky-100 via-gray-50 to-emerald-100'
-      } relative overflow-hidden`}
-    >
+    <BusinessDashboardPageShell className='relative overflow-hidden'>
       {/* Main Content */}
       <div className='relative z-10'>
         {/* Toolbar */}
@@ -559,7 +552,7 @@ const CreateJobDescription = React.memo(({ user }) => {
               )}
 
               {/* Validation Error Modal */}
-              <Modal
+              <ThemedModal
                 title={
                   <div className='flex items-center space-x-2'>
                     <FontAwesomeIcon icon={faExclamationTriangle} className='text-red-500' />
@@ -645,13 +638,13 @@ const CreateJobDescription = React.memo(({ user }) => {
                     </p>
                   </div>
                 </div>
-              </Modal>
+              </ThemedModal>
             </Card>
           </div>
         </div>
       </div>
 
-    </div>
+    </BusinessDashboardPageShell>
   )
 })
 

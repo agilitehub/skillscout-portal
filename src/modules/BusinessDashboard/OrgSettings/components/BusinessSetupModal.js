@@ -1,12 +1,13 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
 import React, { useState } from 'react'
-import { Modal, Form } from 'antd'
+import { Form } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBuilding } from '@fortawesome/free-solid-svg-icons'
-import { Button } from '../../../../core/components'
+import { Button, ThemedModal, ModalTitleWithIcon } from '../../../../core/components'
 import { useTheme } from '../../../../core/context/ThemeContext'
 import OrganizationProfileForm from './OrganizationProfileForm'
+import { BRAND_COLORS, DARK_THEME } from '../../../../core/theme/colors'
 
 /**
  * Business Dashboard Setup Modal Component
@@ -35,12 +36,11 @@ const BusinessSetupModal = ({ isOpen, onClose, onSubmit, form }) => {
   return (
     <>
       {/* Business Setup Modal */}
-      <Modal
+      <ThemedModal
         title={
-          <div className='flex items-center space-x-2'>
-            <FontAwesomeIcon icon={faBuilding} style={{ color: darkMode ? '#10b981' : '#059669' }} />
-            <span style={{ color: darkMode ? '#ffffff' : '#000000' }}>Organization Profile Setup</span>
-          </div>
+          <ModalTitleWithIcon icon={<FontAwesomeIcon icon={faBuilding} className='text-emerald-600 dark:text-emerald-400' />}>
+            Organization Profile Setup
+          </ModalTitleWithIcon>
         }
         open={isOpen}
         onCancel={handleClose}
@@ -48,22 +48,22 @@ const BusinessSetupModal = ({ isOpen, onClose, onSubmit, form }) => {
         maskClosable={false}
         footer={null}
         width='90%'
+        rootClassName='business-setup-themed-modal'
         style={{ maxWidth: '1200px', height: '90vh' }}
-        className={darkMode ? 'ant-modal-dark' : ''}
         styles={{
           content: {
-            backgroundColor: darkMode ? '#374151' : '#ffffff',
-            color: darkMode ? '#ffffff' : '#000000'
+            backgroundColor: darkMode ? DARK_THEME.background.tertiary : BRAND_COLORS.white,
+            color: darkMode ? BRAND_COLORS.white : BRAND_COLORS.black
           },
           body: {
-            backgroundColor: darkMode ? '#374151' : '#ffffff',
-            color: darkMode ? '#ffffff' : '#000000',
+            backgroundColor: darkMode ? DARK_THEME.background.tertiary : BRAND_COLORS.white,
+            color: darkMode ? BRAND_COLORS.white : BRAND_COLORS.black,
             height: 'calc(90vh - 120px)',
             padding: '24px'
           },
           header: {
-            backgroundColor: darkMode ? '#374151' : '#ffffff',
-            borderBottom: darkMode ? '1px solid #4B5563' : '1px solid #e5e7eb'
+            backgroundColor: darkMode ? DARK_THEME.background.tertiary : BRAND_COLORS.white,
+            borderBottom: darkMode ? `1px solid ${DARK_THEME.border.secondary}` : '1px solid #e5e7eb'
           },
           mask: {
             backgroundColor: '#000',
@@ -269,7 +269,7 @@ const BusinessSetupModal = ({ isOpen, onClose, onSubmit, form }) => {
             </Button>
           </div>
         </div>
-      </Modal>
+      </ThemedModal>
     </>
   )
 }

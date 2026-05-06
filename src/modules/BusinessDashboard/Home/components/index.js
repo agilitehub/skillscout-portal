@@ -1,7 +1,7 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
 import React, { useState, useCallback, useMemo, useEffect } from 'react'
-import { Card, Row, Col, Badge, Typography, Menu, Modal, List, Avatar, Dropdown } from 'antd'
+import { Card, Row, Col, Badge, Typography, Menu, List, Avatar, Dropdown } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faBuilding,
@@ -21,15 +21,13 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from 'react-router-dom'
 import { useTheme } from '../../../../core/context/ThemeContext'
-import { Button } from '../../../../core/components'
-import { Toolbar } from '../../../../core/components'
+import { Button, BusinessDashboardPageShell, DashboardToolbarButton, Toolbar, ThemedModal } from '../../../../core/components'
 import { BRAND_COLORS, SEMANTIC_COLORS, LIGHT_THEME, DARK_THEME } from '../../../../core/theme/colors'
 import { setUserProfileOpen } from '../../../../core/store/slices/profileSlice'
 import { useDispatch } from 'react-redux'
 import { getDashboardStats } from '../controllers'
 import { DASHBOARD_ALERT_TYPE, buildBusinessDashboardPath } from '../../../../constants'
 
-import '../../styles/dashboard-toolbar-buttons.css'
 import '../styles/dashboard.css'
 
 const { Title, Text } = Typography
@@ -247,13 +245,7 @@ const Dashboard = React.memo(() => {
   }, [])
 
   return (
-    <div
-      className={`min-h-screen ${
-        darkMode
-          ? 'bg-gradient-to-br from-slate-700 via-slate-600 to-emerald-800'
-          : 'bg-gradient-to-br from-sky-100 via-gray-50 to-emerald-100'
-      }`}
-    >
+    <BusinessDashboardPageShell>
       {/* Main Content */}
       <div className='flex flex-col'>
         <Toolbar
@@ -264,25 +256,11 @@ const Dashboard = React.memo(() => {
               <div className='flex items-center space-x-2'>
                 {/* Quick Actions Dropdown */}
                 <Dropdown overlay={quickActionsMenu} trigger={['click']} placement='bottomRight'>
-                  <Button
-                    type='default'
-                    size='middle'
-                    className='flex items-center space-x-1 dashboard-button'
-                    style={{
-                      backgroundColor: '#ffffff',
-                      borderColor: '#ffffff',
-                      color: '#059669',
-                      boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-                      fontSize: '13px',
-                      height: '32px',
-                      paddingLeft: '12px',
-                      paddingRight: '12px'
-                    }}
-                  >
-                    <FontAwesomeIcon icon={faPlus} style={{ fontSize: '11px', marginRight: '4px' }} />
+                  <DashboardToolbarButton className='gap-1'>
+                    <FontAwesomeIcon icon={faPlus} className='text-[11px]' />
                     <span>Quick Actions</span>
-                    <FontAwesomeIcon icon={faChevronDown} style={{ fontSize: '10px', marginLeft: '4px' }} />
-                  </Button>
+                    <FontAwesomeIcon icon={faChevronDown} className='text-[10px]' />
+                  </DashboardToolbarButton>
                 </Dropdown>
 
                 {/* Alerts Bell - Hidden for now */}
@@ -334,26 +312,13 @@ const Dashboard = React.memo(() => {
                 </Badge> */}
 
                 {/* Refresh Button */}
-                <Button
-                  type='default'
-                  size='middle'
-                  className='flex items-center space-x-1 dashboard-button'
-                  style={{
-                    backgroundColor: '#ffffff',
-                    borderColor: '#ffffff',
-                    color: '#059669',
-                    boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-                    fontSize: '13px',
-                    height: '32px',
-                    paddingLeft: '12px',
-                    paddingRight: '12px'
-                  }}
+                <DashboardToolbarButton
                   onClick={() => handleGetDashboardStats()}
                   loading={loading}
+                  icon={<FontAwesomeIcon icon={faRefresh} className='text-[11px]' />}
                 >
-                  <FontAwesomeIcon icon={faRefresh} style={{ fontSize: '11px', marginRight: '4px' }} />
                   <span>Refresh</span>
-                </Button>
+                </DashboardToolbarButton>
               </div>
             )
           }}
@@ -481,10 +446,10 @@ const Dashboard = React.memo(() => {
       </div>
 
       {/* Alerts Modal */}
-      <Modal
+      <ThemedModal
         title={
-          <div className='flex items-center space-x-2'>
-            <span style={{ fontSize: '16px' }}>🔔</span>
+          <div className='flex items-center gap-2'>
+            <span className='text-base'>🔔</span>
             <span>Notifications & Alerts</span>
           </div>
         }
@@ -492,6 +457,7 @@ const Dashboard = React.memo(() => {
         onCancel={handleCloseAlerts}
         footer={null}
         width={600}
+        maskBlur
         className={darkMode ? 'alerts-modal-dark' : ''}
         styles={{
           content: {
@@ -501,10 +467,6 @@ const Dashboard = React.memo(() => {
             backgroundColor: darkMode ? DARK_THEME.background.secondary : LIGHT_THEME.background.primary,
             borderBottom: `1px solid ${darkMode ? DARK_THEME.border.primary : LIGHT_THEME.border.primary}`
           }
-        }}
-        maskStyle={{
-          backgroundColor: 'rgba(0, 0, 0, 0.6)',
-          backdropFilter: 'blur(4px)'
         }}
       >
         <div className='max-h-96 overflow-y-auto'>
@@ -632,8 +594,8 @@ const Dashboard = React.memo(() => {
             </div>
           )}
         </div>
-      </Modal>
-    </div>
+      </ThemedModal>
+    </BusinessDashboardPageShell>
   )
 })
 

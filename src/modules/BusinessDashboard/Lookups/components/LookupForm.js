@@ -3,12 +3,11 @@
 
 import React, { useState, useCallback, useEffect } from 'react'
 import { Card, Form, message, Row, Col, Input, Switch } from 'antd'
-import { Button } from '../../../../core/components'
-import { useNavigate, useLocation } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSave, faTimes, faPlus } from '@fortawesome/free-solid-svg-icons'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { useTheme } from '../../../../core/context/ThemeContext'
-import { Toolbar } from '../../../../core/components'
+import { Button, BusinessDashboardPageShell, Toolbar } from '../../../../core/components'
 import { createLookup, updateLookup, getLookupById } from '../controllers'
 
 /**
@@ -156,13 +155,7 @@ const LookupForm = React.memo(({ user }) => {
   }, [form, navigate])
 
   return (
-    <div
-      className={`min-h-screen ${
-        darkMode
-          ? 'bg-gradient-to-br from-slate-700 via-slate-600 to-emerald-800'
-          : 'bg-gradient-to-br from-sky-100 via-gray-50 to-emerald-100'
-      }`}
-    >
+    <BusinessDashboardPageShell>
       <div className='relative z-10'>
         {/* Toolbar */}
         <Toolbar
@@ -334,7 +327,7 @@ const LookupForm = React.memo(({ user }) => {
           </div>
         </div>
       </div>
-    </div>
+    </BusinessDashboardPageShell>
   )
 })
 

@@ -6,10 +6,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUser, faEnvelope, faSave, faUserCheck, faUserTimes, faCancel } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useTheme } from '../../../../core/context/ThemeContext'
-import { Button } from '../../../../core/components'
-import { BRAND_COLORS, SEMANTIC_COLORS } from '../../../../core/theme/colors'
-import { Toolbar } from '../../../../core/components'
+import { Button, BusinessDashboardPageShell, Toolbar } from '../../../../core/components'
 import ModuleContainer from '../../../../core/components/layout/Container/ModuleContainer'
+import { BRAND_COLORS, SEMANTIC_COLORS } from '../../../../core/theme/colors'
 
 import '../styles/user-management.css'
 
@@ -129,13 +128,7 @@ const UserEditPage = React.memo(() => {
   }
 
   return (
-    <div
-      className={`min-h-screen ${
-        darkMode
-          ? 'bg-gradient-to-br from-slate-700 via-slate-600 to-emerald-800'
-          : 'bg-gradient-to-br from-sky-100 via-gray-50 to-emerald-100'
-      }`}
-    >
+    <BusinessDashboardPageShell>
       {/* Main Content */}
       <div className='flex-1 relative'>
         <Toolbar title='User Edit' description='Edit user information and permissions' />
@@ -263,7 +256,7 @@ const UserEditPage = React.memo(() => {
         </ModuleContainer>
       </div>
 
-    </div>
+    </BusinessDashboardPageShell>
   )
 })
 

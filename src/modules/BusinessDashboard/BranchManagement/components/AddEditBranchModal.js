@@ -1,7 +1,7 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
 import React, { useState, useCallback, useEffect } from 'react'
-import { Modal, Form, Input, Select, Space, Row, Col, Switch, Tag, message } from 'antd'
+import { Form, Input, Select, Space, Row, Col, Switch, Tag, message } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { 
   faBuilding, 
@@ -16,7 +16,7 @@ import {
   faCheckCircle,
   faTimesCircle
 } from '@fortawesome/free-solid-svg-icons'
-import { Button } from '../../../../core/components'
+import { Button, ThemedModal } from '../../../../core/components'
 import { BRAND_COLORS, SEMANTIC_COLORS } from '../../../../core/theme/colors'
 import branchManagementController from '../controllers'
 
@@ -177,7 +177,7 @@ const AddEditBranchModal = React.memo(({ visible, mode, branch, onCancel, onSucc
 
   return (
     <>
-      <Modal
+      <ThemedModal
         title={
           <div className='flex items-center space-x-3'>
             <div 
@@ -549,7 +549,7 @@ const AddEditBranchModal = React.memo(({ visible, mode, branch, onCancel, onSucc
             </Row>
           </div>
         </Form>
-      </Modal>
+      </ThemedModal>
     </>
   )
 })

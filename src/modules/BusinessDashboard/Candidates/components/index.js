@@ -1,17 +1,24 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
 import React, { useMemo } from 'react'
-import { Modal, Tag, Space, Descriptions } from 'antd'
+import { Tag, Space, Descriptions } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus, faEdit, faEye } from '@fortawesome/free-solid-svg-icons'
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import { useTheme } from '../../../../core/context/ThemeContext'
-import { Button } from '../../../../core/components'
+import {
+  Button,
+  BusinessDashboardPageShell,
+  DashboardToolbarButton,
+  ModalTitleWithIcon,
+  ThemedModal,
+  Toolbar
+} from '../../../../core/components'
 import TableView from '../../../../core/components/view-components/table-view/TableView'
+import ModuleContainer from '../../../../core/components/layout/Container/ModuleContainer'
 import KanbanBoard from './KanbanBoard'
 import { BRAND_COLORS, SEMANTIC_COLORS } from '../../../../core/theme/colors'
-import { Toolbar } from '../../../../core/components'
 import { useCandidatesWorkspace } from '../hooks/useCandidatesWorkspace'
 
 import '../styles/candidates.css'
@@ -188,17 +195,11 @@ const Candidates = React.memo(({ user }) => {
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <div
-        className={`min-h-screen ${
-          darkMode
-            ? 'bg-gradient-to-br from-slate-700 via-slate-600 to-emerald-800'
-            : 'bg-gradient-to-br from-sky-100 via-gray-50 to-emerald-100'
-        }`}
-      >
+      <BusinessDashboardPageShell>
         <Toolbar title='Candidates' description='Manage your recruitment pipeline' />
 
         <div className='flex-1 relative'>
-          <div className='relative pl-5 pr-5 pt-2'>
+          <ModuleContainer variant='padded'>
             {viewMode === 'kanban' ? (
               <KanbanBoard
                 candidatesData={filteredCandidatesData}
@@ -248,29 +249,14 @@ const Candidates = React.memo(({ user }) => {
                   scroll={{ x: 1400 }}
                   emptyText='No candidates found'
                   toolbarActions={[
-                    <Button
+                    <DashboardToolbarButton
                       key='add'
-                      type='default'
                       size='small'
                       onClick={handleAdd}
-                      className='form-btn-primary'
-                      style={{
-                        background: '#ffffff',
-                        backgroundColor: '#ffffff',
-                        color: '#059669',
-                        border: '1px solid #ffffff',
-                        fontWeight: '500',
-                        boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-                        opacity: '1',
-                        height: '28px',
-                        paddingLeft: '10px',
-                        paddingRight: '10px',
-                        fontSize: '13px'
-                      }}
+                      icon={<FontAwesomeIcon icon={faPlus} className='text-[10px]' />}
                     >
-                      <FontAwesomeIcon icon={faPlus} style={{ fontSize: '10px', marginRight: '3px' }} />
                       Add Candidate
-                    </Button>
+                    </DashboardToolbarButton>
                   ]}
                   cardProps={{
                     className: darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
@@ -278,33 +264,22 @@ const Candidates = React.memo(({ user }) => {
                 />
               </div>
             )}
-          </div>
+          </ModuleContainer>
         </div>
 
-        <Modal
+        <ThemedModal
           title={
-            <div className='flex items-center space-x-3'>
-              <FontAwesomeIcon icon={faEye} className={darkMode ? 'text-emerald-400' : 'text-emerald-600'} />
-              <span className={darkMode ? 'text-white' : 'text-gray-900'}>
-                Candidate Details - {selectedCandidate?.name}
-              </span>
-            </div>
+            <ModalTitleWithIcon
+              icon={<FontAwesomeIcon icon={faEye} className={darkMode ? 'text-emerald-400' : 'text-emerald-600'} />}
+            >
+              Candidate Details - {selectedCandidate?.name}
+            </ModalTitleWithIcon>
           }
           open={viewModalVisible}
           onCancel={handleCloseViewModal}
           footer={null}
           width={800}
           className={darkMode ? 'dark-modal' : ''}
-          styles={{
-            content: {
-              backgroundColor: darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white,
-              color: darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray
-            },
-            header: {
-              backgroundColor: darkMode ? BRAND_COLORS.darkSlateAlt : BRAND_COLORS.white,
-              borderBottom: `1px solid ${darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.borderGray}`
-            }
-          }}
           style={{
             top: 20
           }}
@@ -417,8 +392,8 @@ const Candidates = React.memo(({ user }) => {
               )}
             </div>
           )}
-        </Modal>
-      </div>
+        </ThemedModal>
+      </BusinessDashboardPageShell>
     </DndProvider>
   )
 })

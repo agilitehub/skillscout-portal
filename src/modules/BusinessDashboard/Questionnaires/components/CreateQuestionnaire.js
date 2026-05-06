@@ -3,10 +3,9 @@
 
 import React, { useState, useCallback } from 'react'
 import { Card, Form, message, Input, Select, Switch } from 'antd'
-import { Button } from '../../../../core/components'
 import { useNavigate } from 'react-router-dom'
 import { useTheme } from '../../../../core/context/ThemeContext'
-import { Toolbar } from '../../../../core/components'
+import { Button, BusinessDashboardPageShell, Toolbar } from '../../../../core/components'
 import { createQuestionnaire } from '../controllers'
 import { parseTags } from '../model'
 
@@ -55,13 +54,7 @@ const CreateQuestionnaire = React.memo(({ user }) => {
 
   return (
     <>
-      <div
-        className={`min-h-screen ${
-          darkMode
-            ? 'bg-gradient-to-br from-slate-700 via-slate-600 to-emerald-800'
-            : 'bg-gradient-to-br from-sky-100 via-gray-50 to-emerald-100'
-        } relative overflow-hidden`}
-      >
+      <BusinessDashboardPageShell className='relative overflow-hidden'>
         <div className='relative z-10'>
           {/* Toolbar */}
           <Toolbar
@@ -179,7 +172,7 @@ const CreateQuestionnaire = React.memo(({ user }) => {
             </div>
           </div>
         </div>
-      </div>
+      </BusinessDashboardPageShell>
 
     </>
   )

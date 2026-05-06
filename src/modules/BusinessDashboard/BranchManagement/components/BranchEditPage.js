@@ -21,7 +21,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useTheme } from '../../../../core/context/ThemeContext'
-import { Button } from '../../../../core/components'
+import { Button, BusinessDashboardPageShell } from '../../../../core/components'
 import { BRAND_COLORS, SEMANTIC_COLORS } from '../../../../core/theme/colors'
 import branchManagementController from '../controllers'
 
@@ -232,13 +232,7 @@ const BranchEditPage = React.memo(({ user: currentUser }) => {
   )
 
   return (
-    <div
-      className={`min-h-screen ${
-        darkMode
-          ? 'bg-gradient-to-br from-slate-700 via-slate-600 to-emerald-800'
-          : 'bg-gradient-to-br from-sky-100 via-gray-50 to-emerald-100'
-      }`}
-    >
+    <BusinessDashboardPageShell>
       {/* Main Content */}
       <div className='flex-1 relative'>
         {/* Header */}
@@ -579,7 +573,7 @@ const BranchEditPage = React.memo(({ user: currentUser }) => {
           </Form>
         </div>
       </div>
-    </div>
+    </BusinessDashboardPageShell>
   )
 })
 

@@ -1,7 +1,7 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
 import React, { useState, useCallback, useMemo } from 'react'
-import { Modal, Card, Row, Col, Tag, Alert, Divider, Typography } from 'antd'
+import { Card, Row, Col, Tag, Alert, Divider, Typography } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { 
   faRocket,
@@ -10,7 +10,7 @@ import {
   faGem,
   faBriefcase
 } from '@fortawesome/free-solid-svg-icons'
-import { Button } from '../../../../core/components'
+import { Button, ThemedModal } from '../../../../core/components'
 import { BRAND_COLORS } from '../../../../core/theme/colors'
 
 import '../styles/billing.css'
@@ -92,7 +92,7 @@ const PlanUpgradeModal = React.memo(({
 
   return (
     <>
-      <Modal
+      <ThemedModal
         title={
           <div className='flex items-center space-x-3'>
             <div 
@@ -326,7 +326,7 @@ const PlanUpgradeModal = React.memo(({
             />
           )}
         </div>
-      </Modal>
+      </ThemedModal>
     </>
   )
 })

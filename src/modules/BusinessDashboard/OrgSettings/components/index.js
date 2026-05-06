@@ -12,13 +12,12 @@ import {
   faSignOutAlt
 } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../../core/context/ThemeContext'
-import { Button } from '../../../../core/components'
+import { Button, BusinessDashboardPageShell, Toolbar } from '../../../../core/components'
+import ModuleContainer from '../../../../core/components/layout/Container/ModuleContainer'
 import { BRAND_COLORS } from '../../../../core/theme/colors'
 import AIProfileModal from './AIProfileModal'
 import BusinessSetupModal from './BusinessSetupModal'
 import OrganizationProfileForm from './OrganizationProfileForm'
-import { Toolbar } from '../../../../core/components'
-import ModuleContainer from '../../../../core/components/layout/Container/ModuleContainer'
 import { useOrgSettings } from '../hooks/useOrgSettings'
 
 import '../styles/org-settings.css'
@@ -57,13 +56,7 @@ const OrgSettings = React.memo(({ user }) => {
   } = useOrgSettings(user, darkMode)
 
   return (
-    <div
-      className={`min-h-screen ${
-        darkMode
-          ? 'bg-gradient-to-br from-slate-700 via-slate-600 to-emerald-800'
-          : 'bg-gradient-to-br from-sky-100 via-gray-50 to-emerald-100'
-      }`}
-    >
+    <BusinessDashboardPageShell>
       {contextHolder}
 
       {/* Main Content */}
@@ -369,7 +362,7 @@ const OrgSettings = React.memo(({ user }) => {
         form={businessSetupForm}
       />
 
-    </div>
+    </BusinessDashboardPageShell>
   )
 })
 

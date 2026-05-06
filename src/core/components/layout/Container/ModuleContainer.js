@@ -1,7 +1,13 @@
+// Global Instructions Rule Applied!
+// Frontend Instructions Rule Applied!
 import React from 'react'
 
-const ModuleContainer = ({ children }) => {
-  return <div className='pt-2 pl-2 pr-2'>{children}</div>
+/**
+ * @param {'default'|'padded'} variant - default matches toolbar+table spacing; padded uses wider horizontal padding used on some list pages.
+ */
+const ModuleContainer = ({ children, variant = 'default', className = '' }) => {
+  const base = variant === 'padded' ? 'relative pl-5 pr-5 pt-2' : 'pt-2 pl-2 pr-2'
+  return <div className={`${base} ${className}`.trim()}>{children}</div>
 }
 
 export default ModuleContainer

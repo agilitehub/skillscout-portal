@@ -6,7 +6,7 @@ import { useTheme } from '../../../../core/context/ThemeContext'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus, faSpinner, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { message, Spin } from 'antd'
-import { Button } from '../../../../core/components'
+import { BusinessDashboardPageShell, DashboardToolbarButton } from '../../../../core/components'
 import TableView from '../../../../core/components/view-components/table-view/TableView'
 import TableActions from '../../../../core/components/view-components/table-view/TableActions'
 import { getAllLookups, deleteLookup } from '../controllers'
@@ -280,36 +280,17 @@ const Lookups = React.memo(({ user }) => {
 
   return (
     <>
-      <div
-        className={`min-h-screen relative overflow-hidden ${
-          darkMode
-            ? 'bg-gradient-to-br from-slate-700 via-slate-600 to-emerald-800'
-            : 'bg-gradient-to-br from-sky-100 via-gray-50 to-emerald-100'
-        }`}
-      >
+      <BusinessDashboardPageShell className='relative overflow-hidden'>
         <Toolbar
           title='Lookups'
           description='Manage your lookups'
           renderActions={() => (
-            <Button
-              type='default'
-              size='middle'
-              className='dashboard-button'
-              style={{
-                backgroundColor: '#ffffff',
-                borderColor: '#ffffff',
-                color: '#059669',
-                boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-                fontSize: '13px',
-                height: '32px',
-                paddingLeft: '12px',
-                paddingRight: '12px'
-              }}
+            <DashboardToolbarButton
               onClick={handleAdd}
+              icon={<FontAwesomeIcon icon={faPlus} className='text-[11px]' />}
             >
-              <FontAwesomeIcon icon={faPlus} style={{ fontSize: '11px', marginRight: '4px' }} />
               <span>Create New</span>
-            </Button>
+            </DashboardToolbarButton>
           )}
         />
 
@@ -332,7 +313,7 @@ const Lookups = React.memo(({ user }) => {
             />
           </Spin>
         </ModuleContainer>
-      </div>
+      </BusinessDashboardPageShell>
     </>
   )
 })

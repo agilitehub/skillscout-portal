@@ -6,7 +6,7 @@ import { Form, Input, Select, Card, message } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUser, faEnvelope, faPhone, faFlag, faTags, faStickyNote } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../../core/context/ThemeContext'
-import { Button } from '../../../../core/components'
+import { Button, BusinessDashboardPageShell } from '../../../../core/components'
 
 import '../styles/candidates.css'
 
@@ -173,13 +173,7 @@ const CandidateForm = React.memo(({ user }) => {
   }, [navigate])
 
   return (
-    <div
-      className={`candidate-form-page min-h-screen ${
-        darkMode
-          ? 'bg-gradient-to-br from-slate-700 via-slate-600 to-emerald-800'
-          : 'bg-gradient-to-br from-sky-100 via-gray-50 to-emerald-100'
-      }`}
-    >
+    <BusinessDashboardPageShell className='candidate-form-page'>
       {/* Main Content */}
       <div className='flex-1 ml-64 relative'>
         {/* Header */}
@@ -426,7 +420,7 @@ const CandidateForm = React.memo(({ user }) => {
         </div>
 
       </div>
-    </div>
+    </BusinessDashboardPageShell>
   )
 })
 
