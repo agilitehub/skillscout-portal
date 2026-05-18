@@ -18,7 +18,7 @@ export const mergeModalStyles = (base, overrides) => {
 export const getDefaultThemedModalStyles = (darkMode) => {
   if (darkMode) {
     return {
-      content: {
+      container: {
         backgroundColor: BRAND_COLORS.darkSlateAlt,
         color: BRAND_COLORS.white
       },
@@ -38,7 +38,7 @@ export const getDefaultThemedModalStyles = (darkMode) => {
     }
   }
   return {
-    content: {
+    container: {
       backgroundColor: LIGHT_THEME.background.primary,
       color: BRAND_COLORS.darkGray
     },

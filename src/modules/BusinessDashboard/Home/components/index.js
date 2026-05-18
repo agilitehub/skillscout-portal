@@ -325,16 +325,13 @@ const Dashboard = React.memo(() => {
         />
 
         {/* Workspace Cards */}
-        <div className='px-6 py-4'>
+        <div className='dashboard-workspace px-6 py-4'>
           <div>
             <Title
               level={2}
-              className='!mb-4'
-              style={{
-                fontSize: '16px',
-                fontWeight: 'bold',
-                color: darkMode ? DARK_THEME.text.primary : LIGHT_THEME.text.primary
-              }}
+              className={`!mb-4 !text-base !font-bold ${
+                darkMode ? '!text-white' : '!text-gray-900'
+              }`}
             >
               Workspace
             </Title>
@@ -344,20 +341,18 @@ const Dashboard = React.memo(() => {
                 <Col xs={24} lg={8} key={index} className='flex'>
                   <Card
                     hoverable
-                    className='transition-all duration-300 hover:shadow-lg w-full'
-                    style={{
-                      backgroundColor: darkMode ? DARK_THEME.background.secondary : LIGHT_THEME.background.primary,
-                      borderColor: darkMode ? DARK_THEME.border.primary : LIGHT_THEME.border.primary,
-                      display: 'flex',
-                      flexDirection: 'column',
-                      height: '100%'
-                    }}
-                    bodyStyle={{
-                      padding: '16px',
-                      backgroundColor: darkMode ? DARK_THEME.background.secondary : LIGHT_THEME.background.primary,
-                      display: 'flex',
-                      flexDirection: 'column',
-                      flex: 1
+                    className={`transition-all duration-300 hover:shadow-lg w-full flex flex-col h-full ${
+                      darkMode
+                        ? '!bg-gray-800 !border-gray-700'
+                        : '!bg-white !border-gray-200'
+                    }`}
+                    styles={{
+                      body: {
+                        padding: '16px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        flex: 1
+                      }
                     }}
                   >
                     <div className='flex flex-col h-full'>
@@ -372,13 +367,9 @@ const Dashboard = React.memo(() => {
                           <div className='flex-1'>
                             <Title
                               level={4}
-                              className='!mb-0'
-                              style={{
-                                fontSize: '16px',
-                                fontWeight: '600',
-                                margin: 0,
-                                color: darkMode ? DARK_THEME.text.primary : LIGHT_THEME.text.primary
-                              }}
+                              className={`!mb-0 !text-base !font-semibold ${
+                                darkMode ? '!text-white' : '!text-gray-900'
+                              }`}
                             >
                               {card.title}
                             </Title>
@@ -386,11 +377,9 @@ const Dashboard = React.memo(() => {
                         </div>
 
                         <Text
-                          className='block text-sm mb-3'
-                          style={{
-                            lineHeight: '1.4',
-                            color: darkMode ? DARK_THEME.text.secondary : LIGHT_THEME.text.secondary
-                          }}
+                          className={`block text-sm mb-3 leading-snug ${
+                            darkMode ? '!text-gray-300' : '!text-gray-600'
+                          }`}
                         >
                           {card.description}
                         </Text>
@@ -399,19 +388,16 @@ const Dashboard = React.memo(() => {
                           {card.stats && (
                             <div>
                               <Text
-                                className='block text-sm'
-                                style={{
-                                  color: darkMode ? DARK_THEME.text.tertiary : LIGHT_THEME.text.secondary
-                                }}
+                                className={`block text-sm ${
+                                  darkMode ? '!text-gray-400' : '!text-gray-600'
+                                }`}
                               >
                                 {card.stats.label}
                               </Text>
                               <Text
-                                className='block text-xl font-bold'
-                                style={{
-                                  lineHeight: '1.2',
-                                  color: darkMode ? DARK_THEME.text.primary : LIGHT_THEME.text.primary
-                                }}
+                                className={`block text-xl font-bold leading-tight ${
+                                  darkMode ? '!text-white' : '!text-gray-900'
+                                }`}
                               >
                                 {card.stats.value}
                               </Text>
