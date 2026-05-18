@@ -1,3 +1,28 @@
+/* Toolbar status filter on green header — white control, readable in light and dark app theme */
+.questionnaires-toolbar-select.ant-select {
+  --ant-select-background-color: #ffffff;
+  --ant-select-border-color: #ffffff;
+  --ant-select-color: #047857;
+  background-color: #ffffff !important;
+  border-color: #ffffff !important;
+  color: #047857 !important;
+}
+
+.questionnaires-toolbar-select .ant-select-content,
+.questionnaires-toolbar-select .ant-select-content-value {
+  color: #047857 !important;
+}
+
+.questionnaires-toolbar-select .ant-select-suffix,
+.questionnaires-toolbar-select .anticon {
+  color: #059669 !important;
+}
+
+html.dark .questionnaires-table .ant-tag {
+  border-width: 1px;
+  border-style: solid;
+}
+
 .dark-select-dropdown {
   background-color: #ffffff !important;
 }

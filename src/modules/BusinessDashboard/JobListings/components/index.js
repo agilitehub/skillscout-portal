@@ -15,11 +15,13 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../../core/context/ThemeContext'
 import { getAllJobOpportunities, deleteJobOpportunity, updateJobOpportunityStatus } from '../controllers'
+import { getJobTypeTagClass, getWorkArrangementTagClass, getJobStatusTagClass } from '../model'
 import TableView from '../../../../core/components/view-components/table-view/TableView'
 import TableActions from '../../../../core/components/view-components/table-view/TableActions'
 import { Toolbar } from '../../../../core/components'
 
 import '../../styles/dashboard-toolbar-buttons.css'
+import '../styles/job-listings.css'
 import ModuleContainer from '../../../../core/components/layout/Container/ModuleContainer'
 
 /**
@@ -139,11 +141,10 @@ const JobListings = React.memo(({ user }) => {
         dataIndex: 'location',
         key: 'location',
         render: (location) => (
-          <div className='flex items-center'>
+          <div className={`flex items-center ${darkMode ? 'text-gray-200' : 'text-gray-900'}`}>
             <FontAwesomeIcon
               icon={faMapMarkerAlt}
-              className={`mr-1 ${darkMode ? 'text-white' : 'text-gray-500'}`}
-              style={{ color: darkMode ? '#ffffff' : '#6b7280' }}
+              className={`mr-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}
             />
             {location}
           </div>
@@ -155,11 +156,7 @@ const JobListings = React.memo(({ user }) => {
         dataIndex: 'type',
         key: 'type',
         render: (type) => (
-          <Tag
-            color={
-              type === 'Full-time' ? 'blue' : type === 'Part-time' ? 'green' : type === 'Contract' ? 'orange' : 'purple'
-            }
-          >
+          <Tag bordered className={`m-0 font-medium ${getJobTypeTagClass(type, darkMode)}`}>
             {type}
           </Tag>
         ),
@@ -176,7 +173,7 @@ const JobListings = React.memo(({ user }) => {
         dataIndex: 'workArrangement',
         key: 'workArrangement',
         render: (arrangement) => (
-          <Tag color={arrangement === 'Remote' ? 'green' : arrangement === 'Hybrid' ? 'blue' : 'default'}>
+          <Tag bordered className={`m-0 font-medium ${getWorkArrangementTagClass(arrangement, darkMode)}`}>
             {arrangement}
           </Tag>
         ),
@@ -193,12 +190,8 @@ const JobListings = React.memo(({ user }) => {
         dataIndex: 'salary',
         key: 'salary',
         render: (salary) => (
-          <div className='flex items-center'>
-            <FontAwesomeIcon
-              icon={faDollarSign}
-              className={`mr-1 ${darkMode ? 'text-green-300' : 'text-green-500'}`}
-              style={{ color: darkMode ? '#86efac' : '#10b981' }}
-            />
+          <div className={`flex items-center ${darkMode ? 'text-gray-200' : 'text-gray-900'}`}>
+            <FontAwesomeIcon icon={faDollarSign} className={`mr-1 ${darkMode ? 'text-green-400' : 'text-green-600'}`} />
             {salary}
           </div>
         )
@@ -209,8 +202,8 @@ const JobListings = React.memo(({ user }) => {
         key: 'status',
         render: (status, record) => (
           <Tag
-            color={status === 'Active' ? 'green' : status === 'Paused' ? 'orange' : 'red'}
-            style={{ cursor: 'pointer' }}
+            bordered
+            className={`m-0 font-medium cursor-pointer ${getJobStatusTagClass(status, darkMode)}`}
             onClick={() => {
               const nextStatus = status === 'Active' ? 'Paused' : status === 'Paused' ? 'Closed' : 'Active'
               handleStatusChange(record.id, nextStatus)
@@ -231,12 +224,8 @@ const JobListings = React.memo(({ user }) => {
         dataIndex: 'applicants',
         key: 'applicants',
         render: (count) => (
-          <div className='flex items-center'>
-            <FontAwesomeIcon
-              icon={faUsers}
-              className={`mr-1 ${darkMode ? 'text-blue-300' : 'text-blue-500'}`}
-              style={{ color: darkMode ? '#93c5fd' : '#3b82f6' }}
-            />
+          <div className={`flex items-center ${darkMode ? 'text-gray-200' : 'text-gray-900'}`}>
+            <FontAwesomeIcon icon={faUsers} className={`mr-1 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`} />
             {count}
           </div>
         ),
@@ -248,11 +237,10 @@ const JobListings = React.memo(({ user }) => {
         key: 'createdAt',
         render: (date) => {
           return (
-            <div className='flex items-center'>
+            <div className={`flex items-center ${darkMode ? 'text-gray-200' : 'text-gray-900'}`}>
               <FontAwesomeIcon
                 icon={faCalendarAlt}
-                className={`mr-1 ${darkMode ? 'text-white' : 'text-gray-500'}`}
-                style={{ color: darkMode ? '#ffffff' : '#6b7280' }}
+                className={`mr-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}
               />
               {date ? new Date(date).toLocaleDateString() : 'Not set'}
             </div>
@@ -293,7 +281,7 @@ const JobListings = React.memo(({ user }) => {
   )
 
   return (
-    <BusinessDashboardPageShell>
+    <BusinessDashboardPageShell className='flex flex-col min-h-full'>
       <Toolbar
         title='Job Listings'
         description='Manage and track your job listings'
@@ -308,7 +296,8 @@ const JobListings = React.memo(({ user }) => {
       />
 
       <ModuleContainer>
-        <TableView
+        <div className='job-listings-table'>
+          <TableView
           dataSource={jobOpportunities}
           columns={columns}
           loading={loading}
@@ -323,7 +312,8 @@ const JobListings = React.memo(({ user }) => {
           }}
           rowKey='id'
           scroll={{ x: 1200 }}
-        />
+          />
+        </div>
       </ModuleContainer>
     </BusinessDashboardPageShell>
   )

@@ -12,8 +12,14 @@ import TableActions from '../../../../core/components/view-components/table-view
 
 // Import controller functions
 import { getAllQuestionnaires, deleteQuestionnaire, searchQuestionnaires } from '../controllers'
+import {
+  getCategoryTagClass,
+  getQuestionnaireStatusBadgeClass,
+  getAverageScoreTextClass
+} from '../model'
 import { Toolbar } from '../../../../core/components'
 import '../../styles/dashboard-toolbar-buttons.css'
+import '../styles/questionnaires.css'
 import ModuleContainer from '../../../../core/components/layout/Container/ModuleContainer'
 
 const { Option } = Select
@@ -202,7 +208,11 @@ const Questionnaires = React.memo(({ user }) => {
       title: 'CATEGORY',
       dataIndex: 'category',
       key: 'category',
-      render: (text) => <Tag color={text === 'Technical' ? 'blue' : 'green'}>{text}</Tag>,
+      render: (text) => (
+        <Tag bordered className={`m-0 font-medium ${getCategoryTagClass(text, darkMode)}`}>
+          {text}
+        </Tag>
+      ),
       width: 120
     },
     {
@@ -218,11 +228,9 @@ const Questionnaires = React.memo(({ user }) => {
       title: 'STATUS',
       dataIndex: 'status',
       key: 'status',
-      render: (status, record) => (
+      render: (status) => (
         <span
-          className={`inline-flex items-center px-2 py-1 text-xs font-medium rounded-full ${
-            status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-          }`}
+          className={`inline-flex items-center border px-2 py-1 text-xs font-medium rounded-full ${getQuestionnaireStatusBadgeClass(status, darkMode)}`}
         >
           <FontAwesomeIcon icon={status === 'Active' ? faCheckCircle : faTimesCircle} className='mr-1' />
           {status}
@@ -242,11 +250,7 @@ const Questionnaires = React.memo(({ user }) => {
       dataIndex: 'averageScore',
       key: 'averageScore',
       render: (score) => (
-        <span
-          className={`font-medium ${score >= 80 ? 'text-green-600' : score >= 60 ? 'text-yellow-600' : 'text-red-400'}`}
-        >
-          {score}%
-        </span>
+        <span className={`font-medium ${getAverageScoreTextClass(score, darkMode)}`}>{score}%</span>
       ),
       width: 100
     },
@@ -294,7 +298,9 @@ const Questionnaires = React.memo(({ user }) => {
                   <Select
                     value={selectedStatus}
                     onChange={setSelectedStatus}
-                    className={`w-48 ${darkMode ? 'dark-select' : ''}`}
+                    className='questionnaires-toolbar-select w-48'
+                    popupClassName='dark-select-dropdown'
+                    classNames={{ popup: { root: 'dark-select-dropdown' } }}
                   >
                     <Option value='all'>All Status</Option>
                     <Option value='Active'>Active</Option>
@@ -332,7 +338,8 @@ const Questionnaires = React.memo(({ user }) => {
               spinning={loading}
               tip={<span className={darkMode ? 'text-gray-200' : 'text-gray-700'}>Loading questionnaires...</span>}
             >
-              <TableView
+              <div className='questionnaires-table'>
+                <TableView
                 columns={questionnaireColumns}
                 dataSource={filteredData}
                 rowKey='id'
@@ -355,7 +362,8 @@ const Questionnaires = React.memo(({ user }) => {
                     </p>
                   </div>
                 }
-              />
+                />
+              </div>
             </Spin>
           </ModuleContainer>
         </div>

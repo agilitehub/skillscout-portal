@@ -37,7 +37,7 @@ import { setUserProfileOpen, selectUserProfileOpen } from '../../../store/slices
 /**
  * Simplified Header component for the application
  */
-const Header = ({ user }) => {
+const Header = ({ user, sticky = true }) => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const location = useLocation()
@@ -715,7 +715,7 @@ const Header = ({ user }) => {
 
   return (
     <header
-      className='sticky top-0 z-10 shadow-sm transition-all duration-300 hover:shadow-lg'
+      className={`${sticky ? 'sticky top-0' : 'relative'} z-10 shadow-sm transition-all duration-300 hover:shadow-lg`}
       style={{
         background: headerGradient,
         borderColor: darkMode ? '#374151' : '#e5e7eb',
@@ -729,7 +729,7 @@ const Header = ({ user }) => {
           {/* Logo and Title */}
           <Link to='/' className='flex-shrink-0 flex items-center'>
             <div
-              className={`rounded-full p-0 transition-all duration-300 flex items-center justify-center -mt-1 ${
+              className={`rounded-full p-0 transition-all duration-300 flex items-center justify-center ${
                 darkMode ? 'bg-white/15 backdrop-blur-sm shadow-lg' : ''
               }`}
             >

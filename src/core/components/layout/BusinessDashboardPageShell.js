@@ -12,7 +12,7 @@ const LIGHT_GRADIENT = 'bg-gradient-to-br from-sky-100 via-gray-50 to-emerald-10
 const BusinessDashboardPageShell = ({ children, className = '' }) => {
   const { darkMode } = useTheme()
   const grad = darkMode ? DARK_GRADIENT : LIGHT_GRADIENT
-  return <div className={`min-h-screen ${grad} ${className}`.trim()}>{children}</div>
+  return <div className={`min-h-full pt-2 ${grad} ${className}`.trim()}>{children}</div>
 }
 
 export default React.memo(BusinessDashboardPageShell)
