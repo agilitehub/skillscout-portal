@@ -9,6 +9,8 @@ import {
   defaultThemedMaskStyle
 } from './themedModalStyles'
 
+import './themed-modal.css'
+
 /**
  * Ant Design Modal with shared light/dark surface styles. Pass `styles` to shallow-merge per-section overrides.
  */
@@ -23,7 +25,7 @@ const ThemedModal = ({
   const { darkMode } = useTheme()
   const mergedStyles = mergeModalStyles(getDefaultThemedModalStyles(darkMode), stylesProp)
   const maskStyle = maskStyleProp ?? defaultThemedMaskStyle(darkMode, { blur: maskBlur })
-  const modalClass = [darkMode ? 'ant-modal-dark' : '', className].filter(Boolean).join(' ')
+  const modalClass = ['themed-modal', darkMode ? 'ant-modal-dark' : '', className].filter(Boolean).join(' ')
 
   return (
     <Modal className={modalClass} styles={mergedStyles} maskStyle={maskStyle} {...modalProps}>

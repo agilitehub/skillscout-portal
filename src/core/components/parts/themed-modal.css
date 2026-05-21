@@ -1,0 +1,36 @@
+/* Global Instructions Rule Applied! */
+/* Frontend Instructions Rule Applied! */
+/* Shared ThemedModal / ConfirmModal — Ant Design 6 (.ant-modal-container) */
+
+.themed-modal .ant-modal-container {
+  overflow: hidden;
+}
+
+/* Remove header/footer divider lines (light and dark) */
+.themed-modal .ant-modal-header {
+  border-bottom: none !important;
+  margin-bottom: 0 !important;
+}
+
+.themed-modal .ant-modal-footer {
+  border-top: none !important;
+  margin-top: 0 !important;
+}
+
+html.dark .ant-modal-dark .ant-modal-close,
+html.dark .ant-modal-dark .ant-modal-close-x,
+html.dark .ant-modal-dark .ant-modal-close .anticon,
+html.dark .ant-modal-dark .ant-modal-close svg {
+  color: #f9fafb !important;
+}
+
+html.dark .ant-modal-dark .ant-modal-close:hover,
+html.dark .ant-modal-dark .ant-modal-close:hover .anticon {
+  color: #ffffff !important;
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+html.dark .ant-modal-dark .ant-modal-close:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}

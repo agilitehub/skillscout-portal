@@ -42,6 +42,7 @@ const Header = ({ user, sticky = true }) => {
   const navigate = useNavigate()
   const location = useLocation()
   const [isLogoutConfirmOpen, setIsLogoutConfirmOpen] = useState(false)
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
   // eslint-disable-next-line no-unused-vars
   const [selectedDashboard, setSelectedDashboard] = useState('business') // 'personal' or 'business'
   // const [isDashboardDropdownOpen, setIsDashboardDropdownOpen] = useState(false)
@@ -112,6 +113,7 @@ const Header = ({ user, sticky = true }) => {
 
   // Handle logout click - show confirmation dialog
   const handleLogoutClick = useCallback(() => {
+    setIsUserMenuOpen(false)
     setIsLogoutConfirmOpen(true)
   }, [])
 
@@ -218,6 +220,7 @@ const Header = ({ user, sticky = true }) => {
 
   // Handle user profile modal
   const handleUserProfileOpen = useCallback(() => {
+    setIsUserMenuOpen(false)
     dispatch(setUserProfileOpen(true))
   }, [dispatch])
 
@@ -790,7 +793,13 @@ const Header = ({ user, sticky = true }) => {
 
             {/* User Menu */}
             {user ? (
-              <Dropdown dropdownRender={renderSignOutDropdown} trigger={['click']} placement='bottomRight'>
+              <Dropdown
+                dropdownRender={renderSignOutDropdown}
+                trigger={['click']}
+                placement='bottomRight'
+                open={isUserMenuOpen}
+                onOpenChange={setIsUserMenuOpen}
+              >
                 <div className='flex items-center cursor-pointer hover:opacity-80 transition-opacity py-1 md:py-2 px-2 md:px-3 rounded-full hover:bg-white/10 dark:hover:bg-black/20'>
                   <div
                     className='w-7 h-7 md:w-8 md:h-8 rounded-full bg-white/20 flex items-center justify-center text-white mr-1 md:mr-2'
