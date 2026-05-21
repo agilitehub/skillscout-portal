@@ -1,3 +1,5 @@
+// Global Instructions Rule Applied!
+// Frontend Instructions Rule Applied!
 import React from 'react'
 import { useTheme } from '../../context/ThemeContext'
 import { Typography } from 'antd'
@@ -8,38 +10,40 @@ const Toolbar = ({ title, description, renderActions = () => null }) => {
   const { darkMode } = useTheme()
 
   return (
-    <div
-      className={`relative px-3 py-2 flex-shrink-0 shadow-lg rounded-md ${
-        darkMode
-          ? 'bg-gradient-to-r from-emerald-700 to-emerald-600 border-emerald-600'
-          : 'bg-gradient-to-r from-emerald-600 to-emerald-500'
-      }`}
-    >
-      <div className='flex items-center justify-between gap-4'>
-        <div>
-          <Title
-            level={1}
-            className='!mb-0.5'
-            style={{
-              fontSize: '16px',
-              fontWeight: 'bold',
-              margin: 0,
-              color: '#ffffff'
-            }}
-          >
-            {title}
-          </Title>
-          <Text
-            className='text-xs'
-            style={{
-              color: '#d1fae5'
-            }}
-          >
-            {description}
-          </Text>
-        </div>
+    <div className='w-full shrink-0 px-3 sm:px-4'>
+      <div
+        className={`relative px-3 py-2 flex-shrink-0 shadow-lg rounded-md ${
+          darkMode
+            ? 'bg-gradient-to-r from-emerald-700 to-emerald-600 border-emerald-600'
+            : 'bg-gradient-to-r from-emerald-600 to-emerald-500'
+        }`}
+      >
+        <div className='flex items-center justify-between gap-4'>
+          <div className='min-w-0'>
+            <Title
+              level={1}
+              className='!mb-0.5'
+              style={{
+                fontSize: '16px',
+                fontWeight: 'bold',
+                margin: 0,
+                color: '#ffffff'
+              }}
+            >
+              {title}
+            </Title>
+            <Text
+              className='text-xs'
+              style={{
+                color: '#d1fae5'
+              }}
+            >
+              {description}
+            </Text>
+          </div>
 
-        {renderActions()}
+          {renderActions()}
+        </div>
       </div>
     </div>
   )

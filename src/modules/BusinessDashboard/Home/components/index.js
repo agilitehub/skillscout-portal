@@ -1,7 +1,7 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
 import React, { useState, useCallback, useMemo, useEffect } from 'react'
-import { Card, Row, Col, Badge, Typography, Menu, List, Avatar, Dropdown } from 'antd'
+import { Card, Row, Col, Badge, Typography, List, Avatar, Dropdown } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faBuilding,
@@ -176,40 +176,38 @@ const Dashboard = React.memo(() => {
     [navigate, dashboardStats, dispatch]
   )
 
-  // Quick Actions Dropdown Menu
+  // Quick Actions dropdown (Ant Design 6 uses `menu`, not deprecated `overlay`)
   const quickActionsMenu = useMemo(
-    () => (
-      <Menu
-        className={darkMode ? 'quick-actions-menu-dark' : 'quick-actions-menu'}
-        items={[
-          {
-            key: 'create-listing',
-            label: 'Create Listing',
-            icon: <FontAwesomeIcon icon={faPlus} />,
-            onClick: () => navigate(buildBusinessDashboardPath('job-listings/create'))
-          },
-          {
-            key: 'update-org-profile',
-            label: 'Update Organization Profile',
-            icon: <FontAwesomeIcon icon={faEdit} />,
-            onClick: () => navigate(buildBusinessDashboardPath('org-settings'))
-          },
-          {
-            key: 'update-user-profile',
-            label: 'Update User Profile',
-            icon: <FontAwesomeIcon icon={faUserPlus} />,
-            onClick: () => navigate(buildBusinessDashboardPath('user-management'))
-          },
-          {
-            key: 'manage-listing',
-            label: 'Manage Listing',
-            icon: <FontAwesomeIcon icon={faEdit} />,
-            onClick: () => navigate(buildBusinessDashboardPath('job-listings'))
-          }
-        ]}
-      />
-    ),
-    [navigate, darkMode]
+    () => ({
+      className: darkMode ? 'quick-actions-menu-dark' : 'quick-actions-menu',
+      items: [
+        {
+          key: 'create-listing',
+          label: 'Create Listing',
+          icon: <FontAwesomeIcon icon={faPlus} />,
+          onClick: () => navigate(buildBusinessDashboardPath('job-listings/create'))
+        },
+        {
+          key: 'update-org-profile',
+          label: 'Update Organization Profile',
+          icon: <FontAwesomeIcon icon={faEdit} />,
+          onClick: () => navigate(buildBusinessDashboardPath('org-settings'))
+        },
+        {
+          key: 'update-user-profile',
+          label: 'Update User Profile',
+          icon: <FontAwesomeIcon icon={faUserPlus} />,
+          onClick: () => dispatch(setUserProfileOpen(true))
+        },
+        {
+          key: 'manage-listing',
+          label: 'Manage Listing',
+          icon: <FontAwesomeIcon icon={faEdit} />,
+          onClick: () => navigate(buildBusinessDashboardPath('job-listings'))
+        }
+      ]
+    }),
+    [navigate, darkMode, dispatch]
   )
 
   const handleCloseAlerts = useCallback(() => {
@@ -245,7 +243,7 @@ const Dashboard = React.memo(() => {
   }, [])
 
   return (
-    <BusinessDashboardPageShell>
+    <BusinessDashboardPageShell className='min-h-full'>
       {/* Main Content */}
       <div className='flex flex-col'>
         <Toolbar
@@ -255,7 +253,7 @@ const Dashboard = React.memo(() => {
             return (
               <div className='flex items-center space-x-2'>
                 {/* Quick Actions Dropdown */}
-                <Dropdown overlay={quickActionsMenu} trigger={['click']} placement='bottomRight'>
+                <Dropdown menu={quickActionsMenu} trigger={['click']} placement='bottomRight'>
                   <DashboardToolbarButton className='gap-1'>
                     <FontAwesomeIcon icon={faPlus} className='text-[11px]' />
                     <span>Quick Actions</span>
@@ -324,8 +322,8 @@ const Dashboard = React.memo(() => {
           }}
         />
 
-        {/* Workspace Cards */}
-        <div className='dashboard-workspace px-6 py-4'>
+        {/* Workspace Cards — horizontal padding matches shared Toolbar inset */}
+        <div className='dashboard-workspace px-3 py-4 sm:px-4'>
           <div>
             <Title
               level={2}

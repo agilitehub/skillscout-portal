@@ -403,3 +403,97 @@ export const groupJobDescriptionValidationErrorsByTab = (validationErrors) =>
     }
     return acc
   }, [])
+
+const FALLBACK_TAG = {
+  dark: '!bg-gray-700 !text-gray-100 !border-gray-500',
+  light: '!bg-gray-100 !text-gray-700 !border-gray-300'
+}
+
+/**
+ * Normalize lookup labels (e.g. "Medium" vs "Mid Level") for tag styling.
+ */
+export const normalizeExperienceLevelLabel = (label) => {
+  if (!label || typeof label !== 'string') return 'other'
+  const key = label.trim().toLowerCase()
+
+  // Common lookup labels (High / Medium / Low)
+  if (key === 'high') return 'high'
+  if (key === 'low') return 'low'
+  if (key === 'medium' || key.includes('mid')) return 'mid'
+
+  if (key.includes('entry')) return 'entry'
+  if (key.includes('senior')) return 'senior'
+  if (key.includes('execut')) return 'executive'
+  if (key.includes('junior')) return 'junior'
+  if (key.includes('lead') || key.includes('principal')) return 'lead'
+
+  return 'other'
+}
+
+const TAG_IMPORTANT = {
+  dark: {
+    blue: '!bg-blue-900/80 !text-blue-100 !border-blue-600',
+    emerald: '!bg-emerald-900/80 !text-emerald-100 !border-emerald-600',
+    amber: '!bg-amber-900/80 !text-amber-100 !border-amber-600',
+    purple: '!bg-purple-900/80 !text-purple-100 !border-purple-600',
+    violet: '!bg-violet-900/80 !text-violet-100 !border-violet-600',
+    red: '!bg-red-900/80 !text-red-100 !border-red-600',
+    cyan: '!bg-cyan-900/80 !text-cyan-100 !border-cyan-600',
+    slate: '!bg-slate-700 !text-slate-100 !border-slate-500'
+  },
+  light: {
+    blue: '!bg-blue-50 !text-blue-700 !border-blue-200',
+    emerald: '!bg-emerald-50 !text-emerald-700 !border-emerald-200',
+    amber: '!bg-amber-50 !text-amber-800 !border-amber-200',
+    purple: '!bg-purple-50 !text-purple-700 !border-purple-200',
+    violet: '!bg-purple-50 !text-purple-700 !border-purple-200',
+    red: '!bg-red-50 !text-red-700 !border-red-200',
+    cyan: '!bg-cyan-50 !text-cyan-800 !border-cyan-200',
+    slate: '!bg-gray-100 !text-gray-700 !border-gray-300'
+  }
+}
+
+const KEYWORD_PALETTE_KEYS = ['blue', 'emerald', 'amber', 'purple', 'violet']
+
+/**
+ * Tailwind classes for experience level tags in tables (distinct color per level, like job listings).
+ */
+export const getExperienceLevelTagClass = (label, isDark) => {
+  const palette = isDark ? TAG_IMPORTANT.dark : TAG_IMPORTANT.light
+  const level = normalizeExperienceLevelLabel(label)
+
+  const byLevel = {
+    high: palette.red,
+    low: palette.emerald,
+    mid: palette.blue,
+    entry: palette.emerald,
+    junior: palette.cyan,
+    senior: palette.purple,
+    lead: palette.amber,
+    executive: palette.violet,
+    other: isDark ? FALLBACK_TAG.dark : FALLBACK_TAG.light
+  }
+
+  if (byLevel[level] && level !== 'other') {
+    return byLevel[level]
+  }
+
+  return isDark ? FALLBACK_TAG.dark : FALLBACK_TAG.light
+}
+
+/**
+ * Rotating palette for keyword chips (same variety as job listing type/arrangement tags).
+ */
+export const getKeywordTagClass = (index, isDark) => {
+  const palette = isDark ? TAG_IMPORTANT.dark : TAG_IMPORTANT.light
+  const key = KEYWORD_PALETTE_KEYS[index % KEYWORD_PALETTE_KEYS.length]
+  return palette[key]
+}
+
+/**
+ * Tailwind classes for "+N more" keyword overflow tag.
+ */
+export const getKeywordOverflowTagClass = (isDark) => {
+  const palette = isDark ? TAG_IMPORTANT.dark : TAG_IMPORTANT.light
+  return palette.slate
+}

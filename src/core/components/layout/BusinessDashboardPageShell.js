@@ -1,18 +1,16 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
 import React from 'react'
-import { useTheme } from '../../context/ThemeContext'
-
-const DARK_GRADIENT = 'bg-gradient-to-br from-slate-700 via-slate-600 to-emerald-800'
-const LIGHT_GRADIENT = 'bg-gradient-to-br from-sky-100 via-gray-50 to-emerald-100'
 
 /**
- * Full-height gradient background wrapper used across Business Dashboard list and form pages.
+ * Top padding wrapper for Business Dashboard pages.
+ * Background gradient is painted once on {@link DashboardLayout}'s &lt;main&gt; rerunning
+ * the same gradient here caused a visible horizontal seam when this wrapper was shorter than
+ * the viewport (nested gradients use different reference boxes).
+ * Pass className="min-h-full" on pages that should fill the viewport (e.g. dashboard home, list pages).
  */
 const BusinessDashboardPageShell = ({ children, className = '' }) => {
-  const { darkMode } = useTheme()
-  const grad = darkMode ? DARK_GRADIENT : LIGHT_GRADIENT
-  return <div className={`min-h-full pt-2 ${grad} ${className}`.trim()}>{children}</div>
+  return <div className={`pt-2 ${className}`.trim()}>{children}</div>
 }
 
 export default React.memo(BusinessDashboardPageShell)

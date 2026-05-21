@@ -18,6 +18,8 @@ import {
   deleteQuestionnaireQuestion
 } from '../controllers/questions'
 
+import '../styles/questionnaires.css'
+
 const { Option } = Select
 const { TextArea } = Input
 
@@ -292,7 +294,7 @@ const QuestionnaireForm = React.memo(({ user }) => {
 
   return (
     <>
-      <BusinessDashboardPageShell>
+      <BusinessDashboardPageShell className='questionnaire-form-page'>
         <div className='relative z-10'>
           {/* Toolbar */}
           <Toolbar

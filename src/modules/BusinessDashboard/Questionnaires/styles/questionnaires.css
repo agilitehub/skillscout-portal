@@ -65,3 +65,18 @@ html.dark .dark-select-dropdown .ant-select-item-option-selected {
 html.dark .dark-select-dropdown .ant-select-item-option-selected:hover {
   background-color: #047857 !important;
 }
+
+/* Create/edit questionnaire form — white dropdown chevrons in dark mode (Ant Design 6 .ant-select-suffix) */
+html.dark .questionnaire-form-page .global-form .ant-select {
+  --ant-color-text-quaternary: #f9fafb;
+}
+
+html.dark .questionnaire-form-page .global-form .ant-select-suffix,
+html.dark .questionnaire-form-page .global-form .ant-select .ant-select-suffix,
+html.dark .questionnaire-form-page .global-form .ant-select-arrow,
+html.dark .questionnaire-form-page .global-form .ant-select .anticon,
+html.dark .questionnaire-form-page .global-form .ant-select-suffix .anticon,
+html.dark .questionnaire-form-page .global-form .ant-select-suffix svg {
+  color: #f9fafb !important;
+  fill: currentColor !important;
+}

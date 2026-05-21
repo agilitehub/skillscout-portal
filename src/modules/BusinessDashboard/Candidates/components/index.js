@@ -18,7 +18,12 @@ import {
 import TableView from '../../../../core/components/view-components/table-view/TableView'
 import ModuleContainer from '../../../../core/components/layout/Container/ModuleContainer'
 import KanbanBoard from './KanbanBoard'
-import { BRAND_COLORS, SEMANTIC_COLORS } from '../../../../core/theme/colors'
+import { BRAND_COLORS } from '../../../../core/theme/colors'
+import {
+  getStageTagClass,
+  getPriorityTagClass,
+  getCandidateSkillTagClass
+} from '../model'
 import { useCandidatesWorkspace } from '../hooks/useCandidatesWorkspace'
 
 import '../styles/candidates.css'
@@ -91,21 +96,11 @@ const Candidates = React.memo(({ user }) => {
         key: 'stage',
         width: 150,
         sorter: (a, b) => a.stageTitle.localeCompare(b.stageTitle),
-        render: (text, record) => {
-          const stageColors = {
-            'application-received': BRAND_COLORS.shakespeare,
-            screening: BRAND_COLORS.emeraldPrimary,
-            assessment: BRAND_COLORS.pictonBlue,
-            'technical-interview': BRAND_COLORS.toreaBay,
-            'final-interview': BRAND_COLORS.emeraldLight,
-            'offer-extended': BRAND_COLORS.forestGreen
-          }
-          return (
-            <Tag color={stageColors[record.stage]} style={{ color: 'white', fontWeight: '500' }}>
-              {text}
-            </Tag>
-          )
-        }
+        render: (text, record) => (
+          <Tag bordered className={`m-0 font-medium ${getStageTagClass(record.stage, darkMode)}`}>
+            {text}
+          </Tag>
+        )
       },
       {
         title: 'Priority',
@@ -116,18 +111,11 @@ const Candidates = React.memo(({ user }) => {
           const priorityOrder = { high: 3, medium: 2, low: 1 }
           return priorityOrder[a.priority] - priorityOrder[b.priority]
         },
-        render: (priority) => {
-          const priorityColors = {
-            high: SEMANTIC_COLORS.error,
-            medium: SEMANTIC_COLORS.warning,
-            low: SEMANTIC_COLORS.success
-          }
-          return (
-            <Tag color={priorityColors[priority]} style={{ color: 'white', fontWeight: '500' }}>
-              {priority.toUpperCase()}
-            </Tag>
-          )
-        }
+        render: (priority) => (
+          <Tag bordered className={`m-0 font-medium ${getPriorityTagClass(priority, darkMode)}`}>
+            {priority.toUpperCase()}
+          </Tag>
+        )
       },
       {
         title: 'Applied Date',
@@ -144,15 +132,11 @@ const Candidates = React.memo(({ user }) => {
         width: 200,
         render: (tags) => (
           <Space wrap>
-            {tags.map((tag) => (
+            {tags.map((tag, index) => (
               <Tag
                 key={tag}
-                className='text-xs'
-                style={{
-                  backgroundColor: darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.lightGray,
-                  color: darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray,
-                  border: `1px solid ${darkMode ? BRAND_COLORS.darkSlate : BRAND_COLORS.borderGray}`
-                }}
+                bordered
+                className={`m-0 text-xs font-medium ${getCandidateSkillTagClass(index, darkMode)}`}
               >
                 {tag}
               </Tag>
@@ -236,6 +220,7 @@ const Candidates = React.memo(({ user }) => {
                   showViewToggle={true}
                 />
 
+                <div className='candidates-table'>
                 <TableView
                   columns={tableColumns}
                   dataSource={filteredCandidates}
@@ -262,6 +247,7 @@ const Candidates = React.memo(({ user }) => {
                     className: darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
                   }}
                 />
+                </div>
               </div>
             )}
           </ModuleContainer>
@@ -321,33 +307,16 @@ const Candidates = React.memo(({ user }) => {
                   </Descriptions.Item>
                   <Descriptions.Item label='Current Stage'>
                     <Tag
-                      color={(() => {
-                        const stageColors = {
-                          'application-received': BRAND_COLORS.shakespeare,
-                          screening: BRAND_COLORS.emeraldPrimary,
-                          assessment: BRAND_COLORS.pictonBlue,
-                          'technical-interview': BRAND_COLORS.toreaBay,
-                          'final-interview': BRAND_COLORS.emeraldLight,
-                          'offer-extended': BRAND_COLORS.forestGreen
-                        }
-                        return stageColors[selectedCandidate.stage]
-                      })()}
-                      style={{ color: 'white', fontWeight: '500' }}
+                      bordered
+                      className={`m-0 font-medium ${getStageTagClass(selectedCandidate.stage, darkMode)}`}
                     >
                       {getStageTitle(selectedCandidate.stage)}
                     </Tag>
                   </Descriptions.Item>
                   <Descriptions.Item label='Priority' span={2}>
                     <Tag
-                      color={(() => {
-                        const priorityColors = {
-                          high: SEMANTIC_COLORS.error,
-                          medium: SEMANTIC_COLORS.warning,
-                          low: SEMANTIC_COLORS.success
-                        }
-                        return priorityColors[selectedCandidate.priority]
-                      })()}
-                      style={{ color: 'white', fontWeight: '500' }}
+                      bordered
+                      className={`m-0 font-medium ${getPriorityTagClass(selectedCandidate.priority, darkMode)}`}
                     >
                       {selectedCandidate.priority.toUpperCase()} PRIORITY
                     </Tag>
@@ -360,17 +329,11 @@ const Candidates = React.memo(({ user }) => {
                   Skills & Expertise
                 </h3>
                 <div className='flex flex-wrap gap-2'>
-                  {selectedCandidate.tags.map((tag) => (
+                  {selectedCandidate.tags.map((tag, index) => (
                     <Tag
                       key={tag}
-                      style={{
-                        backgroundColor: darkMode ? BRAND_COLORS.mediumSlate : BRAND_COLORS.lightGray,
-                        color: darkMode ? BRAND_COLORS.white : BRAND_COLORS.darkGray,
-                        border: `1px solid ${darkMode ? BRAND_COLORS.darkSlate : BRAND_COLORS.borderGray}`,
-                        padding: '4px 12px',
-                        borderRadius: '6px',
-                        fontWeight: '500'
-                      }}
+                      bordered
+                      className={`m-0 font-medium ${getCandidateSkillTagClass(index, darkMode)}`}
                     >
                       {tag}
                     </Tag>

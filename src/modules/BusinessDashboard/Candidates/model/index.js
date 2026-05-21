@@ -38,6 +38,78 @@ export const PRIORITY_COLORS = {
   [PRIORITY_LEVELS.LOW]: 'green'
 }
 
+const FALLBACK_TAG = {
+  dark: '!bg-gray-700 !text-gray-100 !border-gray-500',
+  light: '!bg-gray-100 !text-gray-700 !border-gray-300'
+}
+
+const TAG_IMPORTANT = {
+  dark: {
+    blue: '!bg-blue-900/80 !text-blue-100 !border-blue-600',
+    emerald: '!bg-emerald-900/80 !text-emerald-100 !border-emerald-600',
+    amber: '!bg-amber-900/80 !text-amber-100 !border-amber-600',
+    purple: '!bg-purple-900/80 !text-purple-100 !border-purple-600',
+    violet: '!bg-violet-900/80 !text-violet-100 !border-violet-600',
+    red: '!bg-red-900/80 !text-red-100 !border-red-600',
+    cyan: '!bg-cyan-900/80 !text-cyan-100 !border-cyan-600',
+    orange: '!bg-orange-900/80 !text-orange-100 !border-orange-600',
+    sky: '!bg-sky-900/80 !text-sky-100 !border-sky-600'
+  },
+  light: {
+    blue: '!bg-blue-50 !text-blue-700 !border-blue-200',
+    emerald: '!bg-emerald-50 !text-emerald-700 !border-emerald-200',
+    amber: '!bg-amber-50 !text-amber-800 !border-amber-200',
+    purple: '!bg-purple-50 !text-purple-700 !border-purple-200',
+    violet: '!bg-purple-50 !text-purple-700 !border-purple-200',
+    red: '!bg-red-50 !text-red-700 !border-red-200',
+    cyan: '!bg-cyan-50 !text-cyan-800 !border-cyan-200',
+    orange: '!bg-orange-50 !text-orange-800 !border-orange-200',
+    sky: '!bg-sky-50 !text-sky-700 !border-sky-200'
+  }
+}
+
+const SKILL_TAG_PALETTE_KEYS = ['blue', 'emerald', 'amber', 'purple', 'violet']
+
+/**
+ * Tailwind classes for pipeline stage tags (distinct color per stage, like job listings).
+ */
+export const getStageTagClass = (stageKey, isDark) => {
+  const p = isDark ? TAG_IMPORTANT.dark : TAG_IMPORTANT.light
+  const map = {
+    [CANDIDATES_STAGES.APPLICATION_RECEIVED]: p.blue,
+    [CANDIDATES_STAGES.SCREENING]: p.orange,
+    [CANDIDATES_STAGES.TECHNICAL_INTERVIEW]: p.purple,
+    [CANDIDATES_STAGES.FINAL_INTERVIEW]: p.cyan,
+    [CANDIDATES_STAGES.OFFER_EXTENDED]: p.amber,
+    [CANDIDATES_STAGES.HIRED]: p.emerald,
+    [CANDIDATES_STAGES.REJECTED]: p.red,
+    assessment: p.sky
+  }
+  return map[stageKey] || (isDark ? FALLBACK_TAG.dark : FALLBACK_TAG.light)
+}
+
+/**
+ * Tailwind classes for priority tags (high / medium / low — red, amber, emerald).
+ */
+export const getPriorityTagClass = (priority, isDark) => {
+  const p = isDark ? TAG_IMPORTANT.dark : TAG_IMPORTANT.light
+  const map = {
+    [PRIORITY_LEVELS.HIGH]: p.red,
+    [PRIORITY_LEVELS.MEDIUM]: p.amber,
+    [PRIORITY_LEVELS.LOW]: p.emerald
+  }
+  return map[priority] || (isDark ? FALLBACK_TAG.dark : FALLBACK_TAG.light)
+}
+
+/**
+ * Rotating palette for candidate skill/tag chips.
+ */
+export const getCandidateSkillTagClass = (index, isDark) => {
+  const palette = isDark ? TAG_IMPORTANT.dark : TAG_IMPORTANT.light
+  const key = SKILL_TAG_PALETTE_KEYS[index % SKILL_TAG_PALETTE_KEYS.length]
+  return palette[key]
+}
+
 /**
  * Candidate Model
  * Defines the structure for a candidates candidate

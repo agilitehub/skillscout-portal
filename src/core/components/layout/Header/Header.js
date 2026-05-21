@@ -727,15 +727,18 @@ const Header = ({ user, sticky = true }) => {
       <div className='px-2 sm:px-4 md:px-6'>
         <div className='flex h-12 items-center justify-between'>
           {/* Logo and Title */}
-          <Link to='/' className='flex-shrink-0 flex items-center'>
+          <Link to='/' className='flex min-w-0 flex-shrink-0 items-center gap-2 sm:gap-3'>
             <div
-              className={`rounded-full p-0 transition-all duration-300 flex items-center justify-center ${
+              className={`flex size-9 shrink-0 items-center justify-center sm:size-10 md:size-11 rounded-full transition-all duration-300 ${
                 darkMode ? 'bg-white/15 backdrop-blur-sm shadow-lg' : ''
               }`}
             >
-              <Logo size='small' className='w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 object-contain' />
+              <Logo
+                alt='SkillScout'
+                className='size-7 object-contain sm:size-8 md:size-9'
+              />
             </div>
-            <h1 className='ml-2 sm:ml-3 text-base sm:text-lg md:text-xl font-bold text-white whitespace-nowrap leading-none flex items-center'>
+            <h1 className='m-0 inline-flex min-w-0 items-center gap-1 whitespace-nowrap text-base font-bold leading-none sm:text-lg md:text-xl'>
               <span className='text-blue-500'>Skill</span>
               <span className='text-emerald-500'>Scout</span>
             </h1>

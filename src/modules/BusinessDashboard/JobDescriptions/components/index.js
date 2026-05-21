@@ -8,7 +8,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus, faUsers, faCalendarAlt, faClipboardCheck, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../../core/context/ThemeContext'
 import { getAllJobDescriptions, deleteJobDescription } from '../controllers'
+import {
+  getExperienceLevelTagClass,
+  getKeywordTagClass,
+  getKeywordOverflowTagClass
+} from '../model'
 import TableView from '../../../../core/components/view-components/table-view/TableView'
+import '../styles/job-descriptions.css'
 import TableActions from '../../../../core/components/view-components/table-view/TableActions'
 import { Toolbar } from '../../../../core/components'
 import '../../styles/dashboard-toolbar-buttons.css'
@@ -133,43 +139,38 @@ const JobDescriptions = React.memo(({ user }) => {
         dataIndex: 'experienceLevelName',
         key: 'experienceLevelName',
         render: (text) => (
-          <Tag
-            color={
-              text === 'Entry Level'
-                ? 'green'
-                : text === 'Mid Level'
-                  ? 'blue'
-                  : text === 'Senior Level'
-                    ? 'purple'
-                    : text === 'Executive'
-                      ? 'red'
-                      : 'default'
-            }
-          >
+          <Tag bordered className={`m-0 font-medium ${getExperienceLevelTagClass(text, darkMode)}`}>
             {text || 'Not specified'}
           </Tag>
         ),
-        width: 120
+        width: 130
       },
       {
         title: 'Keywords',
         dataIndex: 'keywords',
         key: 'keywords',
         render: (keywords) => (
-          <div className='flex flex-wrap gap-1'>
+          <div className='flex min-w-0 flex-wrap items-center gap-1 py-0.5'>
             {(keywords || []).slice(0, 3).map((keyword, index) => (
-              <Tag key={index} size='small' color='blue'>
+              <Tag
+                key={index}
+                bordered
+                className={`m-0 max-w-full shrink-0 whitespace-nowrap font-medium ${getKeywordTagClass(index, darkMode)}`}
+              >
                 {keyword}
               </Tag>
             ))}
             {(keywords || []).length > 3 && (
-              <Tag size='small' color='default'>
+              <Tag
+                bordered
+                className={`m-0 shrink-0 whitespace-nowrap font-medium ${getKeywordOverflowTagClass(darkMode)}`}
+              >
                 +{(keywords || []).length - 3} more
               </Tag>
             )}
           </div>
         ),
-        width: 200
+        width: 260
       },
       {
         title: 'Last Updated',
@@ -211,7 +212,7 @@ const JobDescriptions = React.memo(({ user }) => {
         fixed: 'right'
       }
     ],
-    [handleEditDescription, handleDeleteDescription]
+    [handleEditDescription, handleDeleteDescription, darkMode]
   )
 
   // Filter data based on search term
@@ -265,31 +266,32 @@ const JobDescriptions = React.memo(({ user }) => {
         )}
 
         <ModuleContainer>
-          {/* Job Descriptions Table */}
-          <TableView
-            columns={columns}
-            dataSource={filteredJobDescriptions}
-            loading={loading}
-            rowKey='id'
-            searchTerm={searchTerm}
-            onSearch={setSearchTerm}
-            searchPlaceholder='Search job descriptions...'
-            pagination={{
-              pageSize: 10,
-              showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} job descriptions`
-            }}
-            rowClassName={(record) => {
-              const isRelated =
-                record &&
-                jobContext &&
-                jobContext.title &&
-                jobContext.company &&
-                (record.title?.toLowerCase().includes(jobContext.title.toLowerCase()) ||
-                  record.company?.toLowerCase().includes(jobContext.company.toLowerCase()))
-              return isRelated ? (darkMode ? 'bg-blue-900' : 'bg-blue-50') : ''
-            }}
-            emptyText='No job descriptions found'
-          />
+          <div className='job-descriptions-table'>
+            <TableView
+              columns={columns}
+              dataSource={filteredJobDescriptions}
+              loading={loading}
+              rowKey='id'
+              searchTerm={searchTerm}
+              onSearch={setSearchTerm}
+              searchPlaceholder='Search job descriptions...'
+              pagination={{
+                pageSize: 10,
+                showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} job descriptions`
+              }}
+              rowClassName={(record) => {
+                const isRelated =
+                  record &&
+                  jobContext &&
+                  jobContext.title &&
+                  jobContext.company &&
+                  (record.title?.toLowerCase().includes(jobContext.title.toLowerCase()) ||
+                    record.company?.toLowerCase().includes(jobContext.company.toLowerCase()))
+                return isRelated ? (darkMode ? 'bg-blue-900' : 'bg-blue-50') : ''
+              }}
+              emptyText='No job descriptions found'
+            />
+          </div>
         </ModuleContainer>
 
       </BusinessDashboardPageShell>
