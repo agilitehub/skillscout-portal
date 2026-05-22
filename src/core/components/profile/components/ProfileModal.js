@@ -1,13 +1,15 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
 import React, { useState, useCallback, useEffect } from 'react'
-import { Modal, Form, message, Upload, Avatar, Input, Button, Space } from 'antd'
+import { Form, message, Upload, Avatar, Input, Button, Space } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUpload, faUser } from '@fortawesome/free-solid-svg-icons'
 import { useSelector, useDispatch } from 'react-redux'
 import { useTheme } from '../../../context/ThemeContext'
+import ThemedModal from '../../parts/ThemedModal'
 import { getAvatarPublicUrl } from '../../../infra/supabase-controller'
 import { fetchUserProfile, updateProfile, setError, clearError } from '../../../store/slices/profileSlice'
+import '../styles/profile-modal.css'
 
 /**
  * Profile Modal Component for editing user profile
@@ -194,32 +196,19 @@ const ProfileModal = ({ isOpen, onClose, user }) => {
   )
 
   return (
-    <Modal
+    <ThemedModal
       title={
         <div className='flex items-center space-x-2'>
-          <FontAwesomeIcon icon={faUser} style={{ color: darkMode ? '#10b981' : '#059669' }} />
-          <span style={{ color: darkMode ? '#ffffff' : '#000000' }}>User Profile</span>
+          <FontAwesomeIcon icon={faUser} className={darkMode ? 'text-emerald-400' : 'text-emerald-600'} />
+          <span className={darkMode ? 'text-white' : 'text-gray-900'}>User Profile</span>
         </div>
       }
       open={isOpen}
       onCancel={handleClose}
       footer={null}
       width={500}
-      className={darkMode ? 'ant-modal-dark' : ''}
-      styles={{
-        content: {
-          backgroundColor: darkMode ? '#374151' : '#ffffff',
-          color: darkMode ? '#ffffff' : '#000000'
-        },
-        body: {
-          backgroundColor: darkMode ? '#374151' : '#ffffff',
-          color: darkMode ? '#ffffff' : '#000000'
-        },
-        header: {
-          backgroundColor: darkMode ? '#374151' : '#ffffff',
-          borderBottom: darkMode ? '1px solid #4B5563' : '1px solid #e5e7eb'
-        }
-      }}
+      className='profile-modal'
+      maskBlur
     >
       <div className='space-y-6'>
         <div className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
@@ -241,12 +230,8 @@ const ProfileModal = ({ isOpen, onClose, user }) => {
               />
               <Upload accept='image/*' showUploadList={false} beforeUpload={handleAvatarChange}>
                 <Button
-                  type='ghost'
-                  className={
-                    darkMode
-                      ? 'border-gray-600 text-gray-300 hover:border-gray-500'
-                      : 'border-gray-600 text-gray-900 hover:border-gray-500'
-                  }
+                  type='default'
+                  className='profile-upload-btn form-btn-secondary'
                   loading={isLoading}
                 >
                   <Space>
@@ -292,7 +277,7 @@ const ProfileModal = ({ isOpen, onClose, user }) => {
           </div>
         </Form>
       </div>
-    </Modal>
+    </ThemedModal>
   )
 }
 

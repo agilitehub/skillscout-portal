@@ -8,6 +8,7 @@ import { faSave, faTimes, faGift } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../../core/context/ThemeContext'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { Button, BusinessDashboardPageShell, Toolbar } from '../../../../core/components'
+import ModuleContainer from '../../../../core/components/layout/Container/ModuleContainer'
 import {
   createJobOpportunity,
   updateJobOpportunity,
@@ -193,18 +194,15 @@ const JobOpportunityForm = React.memo(() => {
   }, [form, navigate])
 
   return (
-    <BusinessDashboardPageShell>
-      <div className='relative z-10'>
-        {/* Toolbar */}
-        <Toolbar
-          title={isEditMode ? 'Edit Job Listing' : 'Create Job Listing'}
-          description={
-            isEditMode ? 'Update your job listing details' : 'Create a new job listing for your organization'
-          }
-        />
+    <BusinessDashboardPageShell className='job-opportunity-form-page pb-8'>
+      <Toolbar
+        title={isEditMode ? 'Edit Job Listing' : 'Create Job Listing'}
+        description={
+          isEditMode ? 'Update your job listing details' : 'Create a new job listing for your organization'
+        }
+      />
 
-        {/* Form Card */}
-        <div className='p-4 md:p-6'>
+      <ModuleContainer>
           <Card className={`${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white'} shadow-lg`}>
             <Form
               form={form}
@@ -462,9 +460,7 @@ const JobOpportunityForm = React.memo(() => {
               </div>
             </Form>
           </Card>
-        </div>
-      </div>
-
+      </ModuleContainer>
     </BusinessDashboardPageShell>
   )
 })

@@ -1,7 +1,7 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
 import React, { useState, useCallback, useMemo, useEffect } from 'react'
-import { Card, Row, Col, Badge, Typography, Menu, List, Avatar, Dropdown } from 'antd'
+import { Card, Row, Col, Badge, Typography, List, Avatar, Dropdown } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faBuilding,
@@ -176,40 +176,38 @@ const Dashboard = React.memo(() => {
     [navigate, dashboardStats, dispatch]
   )
 
-  // Quick Actions Dropdown Menu
+  // Quick Actions dropdown (Ant Design 6 uses `menu`, not deprecated `overlay`)
   const quickActionsMenu = useMemo(
-    () => (
-      <Menu
-        className={darkMode ? 'quick-actions-menu-dark' : 'quick-actions-menu'}
-        items={[
-          {
-            key: 'create-listing',
-            label: 'Create Listing',
-            icon: <FontAwesomeIcon icon={faPlus} />,
-            onClick: () => navigate(buildBusinessDashboardPath('job-listings/create'))
-          },
-          {
-            key: 'update-org-profile',
-            label: 'Update Organization Profile',
-            icon: <FontAwesomeIcon icon={faEdit} />,
-            onClick: () => navigate(buildBusinessDashboardPath('org-settings'))
-          },
-          {
-            key: 'update-user-profile',
-            label: 'Update User Profile',
-            icon: <FontAwesomeIcon icon={faUserPlus} />,
-            onClick: () => navigate(buildBusinessDashboardPath('user-management'))
-          },
-          {
-            key: 'manage-listing',
-            label: 'Manage Listing',
-            icon: <FontAwesomeIcon icon={faEdit} />,
-            onClick: () => navigate(buildBusinessDashboardPath('job-listings'))
-          }
-        ]}
-      />
-    ),
-    [navigate, darkMode]
+    () => ({
+      className: darkMode ? 'quick-actions-menu-dark' : 'quick-actions-menu',
+      items: [
+        {
+          key: 'create-listing',
+          label: 'Create Listing',
+          icon: <FontAwesomeIcon icon={faPlus} />,
+          onClick: () => navigate(buildBusinessDashboardPath('job-listings/create'))
+        },
+        {
+          key: 'update-org-profile',
+          label: 'Update Organization Profile',
+          icon: <FontAwesomeIcon icon={faEdit} />,
+          onClick: () => navigate(buildBusinessDashboardPath('org-settings'))
+        },
+        {
+          key: 'update-user-profile',
+          label: 'Update User Profile',
+          icon: <FontAwesomeIcon icon={faUserPlus} />,
+          onClick: () => dispatch(setUserProfileOpen(true))
+        },
+        {
+          key: 'manage-listing',
+          label: 'Manage Listing',
+          icon: <FontAwesomeIcon icon={faEdit} />,
+          onClick: () => navigate(buildBusinessDashboardPath('job-listings'))
+        }
+      ]
+    }),
+    [navigate, darkMode, dispatch]
   )
 
   const handleCloseAlerts = useCallback(() => {
@@ -245,7 +243,7 @@ const Dashboard = React.memo(() => {
   }, [])
 
   return (
-    <BusinessDashboardPageShell>
+    <BusinessDashboardPageShell className='min-h-full'>
       {/* Main Content */}
       <div className='flex flex-col'>
         <Toolbar
@@ -255,7 +253,7 @@ const Dashboard = React.memo(() => {
             return (
               <div className='flex items-center space-x-2'>
                 {/* Quick Actions Dropdown */}
-                <Dropdown overlay={quickActionsMenu} trigger={['click']} placement='bottomRight'>
+                <Dropdown menu={quickActionsMenu} trigger={['click']} placement='bottomRight'>
                   <DashboardToolbarButton className='gap-1'>
                     <FontAwesomeIcon icon={faPlus} className='text-[11px]' />
                     <span>Quick Actions</span>
@@ -324,17 +322,14 @@ const Dashboard = React.memo(() => {
           }}
         />
 
-        {/* Workspace Cards */}
-        <div className='px-6 py-4'>
+        {/* Workspace Cards — horizontal padding matches shared Toolbar inset */}
+        <div className='dashboard-workspace px-3 py-4 sm:px-4'>
           <div>
             <Title
               level={2}
-              className='!mb-4'
-              style={{
-                fontSize: '16px',
-                fontWeight: 'bold',
-                color: darkMode ? DARK_THEME.text.primary : LIGHT_THEME.text.primary
-              }}
+              className={`!mb-4 !text-base !font-bold ${
+                darkMode ? '!text-white' : '!text-gray-900'
+              }`}
             >
               Workspace
             </Title>
@@ -344,20 +339,18 @@ const Dashboard = React.memo(() => {
                 <Col xs={24} lg={8} key={index} className='flex'>
                   <Card
                     hoverable
-                    className='transition-all duration-300 hover:shadow-lg w-full'
-                    style={{
-                      backgroundColor: darkMode ? DARK_THEME.background.secondary : LIGHT_THEME.background.primary,
-                      borderColor: darkMode ? DARK_THEME.border.primary : LIGHT_THEME.border.primary,
-                      display: 'flex',
-                      flexDirection: 'column',
-                      height: '100%'
-                    }}
-                    bodyStyle={{
-                      padding: '16px',
-                      backgroundColor: darkMode ? DARK_THEME.background.secondary : LIGHT_THEME.background.primary,
-                      display: 'flex',
-                      flexDirection: 'column',
-                      flex: 1
+                    className={`transition-all duration-300 hover:shadow-lg w-full flex flex-col h-full ${
+                      darkMode
+                        ? '!bg-gray-800 !border-gray-700'
+                        : '!bg-white !border-gray-200'
+                    }`}
+                    styles={{
+                      body: {
+                        padding: '16px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        flex: 1
+                      }
                     }}
                   >
                     <div className='flex flex-col h-full'>
@@ -372,13 +365,9 @@ const Dashboard = React.memo(() => {
                           <div className='flex-1'>
                             <Title
                               level={4}
-                              className='!mb-0'
-                              style={{
-                                fontSize: '16px',
-                                fontWeight: '600',
-                                margin: 0,
-                                color: darkMode ? DARK_THEME.text.primary : LIGHT_THEME.text.primary
-                              }}
+                              className={`!mb-0 !text-base !font-semibold ${
+                                darkMode ? '!text-white' : '!text-gray-900'
+                              }`}
                             >
                               {card.title}
                             </Title>
@@ -386,11 +375,9 @@ const Dashboard = React.memo(() => {
                         </div>
 
                         <Text
-                          className='block text-sm mb-3'
-                          style={{
-                            lineHeight: '1.4',
-                            color: darkMode ? DARK_THEME.text.secondary : LIGHT_THEME.text.secondary
-                          }}
+                          className={`block text-sm mb-3 leading-snug ${
+                            darkMode ? '!text-gray-300' : '!text-gray-600'
+                          }`}
                         >
                           {card.description}
                         </Text>
@@ -399,19 +386,16 @@ const Dashboard = React.memo(() => {
                           {card.stats && (
                             <div>
                               <Text
-                                className='block text-sm'
-                                style={{
-                                  color: darkMode ? DARK_THEME.text.tertiary : LIGHT_THEME.text.secondary
-                                }}
+                                className={`block text-sm ${
+                                  darkMode ? '!text-gray-400' : '!text-gray-600'
+                                }`}
                               >
                                 {card.stats.label}
                               </Text>
                               <Text
-                                className='block text-xl font-bold'
-                                style={{
-                                  lineHeight: '1.2',
-                                  color: darkMode ? DARK_THEME.text.primary : LIGHT_THEME.text.primary
-                                }}
+                                className={`block text-xl font-bold leading-tight ${
+                                  darkMode ? '!text-white' : '!text-gray-900'
+                                }`}
                               >
                                 {card.stats.value}
                               </Text>

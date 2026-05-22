@@ -9,6 +9,8 @@ import { useTheme } from '../../../../core/context/ThemeContext'
 import OrganizationProfileForm from './OrganizationProfileForm'
 import { BRAND_COLORS, DARK_THEME } from '../../../../core/theme/colors'
 
+import '../styles/business-setup-modal.css'
+
 /**
  * Business Dashboard Setup Modal Component
  * Handles the initial setup for business dashboard access
@@ -124,6 +126,11 @@ const BusinessSetupModal = ({ isOpen, onClose, onSubmit, form }) => {
                .business-setup-form .ant-input-show-count-suffix {
                  color: #9CA3AF !important;
                }
+               /* Ant Design 6: TextArea showCount renders .ant-input-data-count, not -suffix */
+               .business-setup-form .ant-input-data-count,
+               .business-setup-form .ant-input-affix-wrapper.ant-input-textarea-show-count .ant-input-data-count {
+                 color: #F9FAFB !important;
+               }
                .business-setup-form .ant-select,
                .business-setup-form .ant-select-selector,
                .business-setup-form .ant-select-single .ant-select-selector {
@@ -137,12 +144,21 @@ const BusinessSetupModal = ({ isOpen, onClose, onSubmit, form }) => {
                  box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
                  background-color: #4B5563 !important;
                }
-               .business-setup-form .ant-select-selection-placeholder {
-                 color: #D1D5DB !important;
-               }
                .business-setup-form .ant-select-selection-item {
                  color: #F9FAFB !important;
                  background-color: transparent !important;
+               }
+               /* Ant Design 6: Select placeholder uses .ant-select-placeholder */
+               .business-setup-form .ant-select .ant-select-placeholder,
+               .business-setup-form .ant-select-placeholder {
+                 color: #D1D5DB !important;
+                 -webkit-text-fill-color: #D1D5DB !important;
+                 opacity: 1 !important;
+               }
+               .business-setup-form .ant-select input.ant-select-input::placeholder,
+               .business-setup-form .ant-select input.ant-select-input::-webkit-input-placeholder {
+                 color: #D1D5DB !important;
+                 -webkit-text-fill-color: #D1D5DB !important;
                }
                .business-setup-form .ant-select-arrow {
                  color: #9CA3AF !important;

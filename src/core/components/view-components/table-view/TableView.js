@@ -10,6 +10,67 @@ import './styles/table-view.css'
 
 const { Search } = Input
 
+/** Ant Design 6 Select props for pagination page-size control in dark mode */
+const DARK_PAGINATION_SIZE_SELECT = {
+  className: 'table-pagination-size-select',
+  popupClassName: 'table-pagination-size-dropdown',
+  classNames: {
+    popup: {
+      root: 'table-pagination-size-dropdown'
+    }
+  },
+  styles: {
+    root: {
+      backgroundColor: '#4b5563',
+      borderColor: '#6b7280',
+      color: '#f9fafb'
+    },
+    content: {
+      color: '#f9fafb'
+    },
+    suffix: {
+      color: '#e5e7eb'
+    }
+  }
+}
+
+const mergeShowSizeChangerForDarkMode = (showSizeChanger, isDark) => {
+  if (!isDark || showSizeChanger === false) {
+    return showSizeChanger
+  }
+
+  if (showSizeChanger === true || showSizeChanger === undefined) {
+    return { ...DARK_PAGINATION_SIZE_SELECT }
+  }
+
+  if (typeof showSizeChanger === 'object') {
+    return {
+      ...DARK_PAGINATION_SIZE_SELECT,
+      ...showSizeChanger,
+      className: [DARK_PAGINATION_SIZE_SELECT.className, showSizeChanger.className].filter(Boolean).join(' '),
+      popupClassName: [DARK_PAGINATION_SIZE_SELECT.popupClassName, showSizeChanger.popupClassName]
+        .filter(Boolean)
+        .join(' '),
+      classNames: {
+        ...DARK_PAGINATION_SIZE_SELECT.classNames,
+        ...showSizeChanger.classNames,
+        popup: {
+          root: [DARK_PAGINATION_SIZE_SELECT.classNames?.popup?.root, showSizeChanger.classNames?.popup?.root]
+            .filter(Boolean)
+            .join(' ')
+        }
+      },
+      styles: {
+        root: { ...DARK_PAGINATION_SIZE_SELECT.styles.root, ...showSizeChanger.styles?.root },
+        content: { ...DARK_PAGINATION_SIZE_SELECT.styles.content, ...showSizeChanger.styles?.content },
+        suffix: { ...DARK_PAGINATION_SIZE_SELECT.styles.suffix, ...showSizeChanger.styles?.suffix }
+      }
+    }
+  }
+
+  return showSizeChanger
+}
+
 /**
  * Reusable TableView Component
  * A comprehensive table component with dark mode support, search, pagination, and expandable rows
@@ -92,12 +153,16 @@ const TableView = React.memo(
       [darkMode]
     )
 
-    // Merge pagination configurations
+    // Merge pagination configurations (preserve dark page-size Select when callers pass showSizeChanger: true)
     const finalPagination = useMemo(() => {
       if (pagination === false) return false
-      if (pagination === true) return defaultPagination
-      return { ...defaultPagination, ...pagination }
-    }, [pagination, defaultPagination])
+
+      const base = pagination === true ? defaultPagination : { ...defaultPagination, ...pagination }
+      return {
+        ...base,
+        showSizeChanger: mergeShowSizeChangerForDarkMode(base.showSizeChanger, darkMode)
+      }
+    }, [pagination, defaultPagination, darkMode])
 
     // Handle search change
     const handleSearch = useCallback(
@@ -214,9 +279,11 @@ const TableView = React.memo(
     return (
       <>
         <Card
-          className={`${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} shadow-xl rounded-lg overflow-hidden`}
+          className={`table-view-card shadow-xl rounded-lg overflow-hidden ${
+            darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
+          }`}
           {...cardProps}
-          bodyStyle={{ padding: 0 }}
+          styles={{ body: { padding: 0 } }}
         >
           {/* Enhanced Toolbar */}
           {(showSearch || toolbarActions.length > 0) && (

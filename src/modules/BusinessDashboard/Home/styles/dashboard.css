@@ -25,3 +25,23 @@ button.bell-button:hover {
 .dashboard-button span {
   margin-left: 4px !important;
 }
+
+/* Workspace cards — Ant Design Typography defaults to dark text in dark mode */
+html.dark .dashboard-workspace {
+  color: #f9fafb;
+}
+
+html.dark .dashboard-workspace .ant-card {
+  background-color: #1f2937 !important;
+  border-color: #374151 !important;
+  color: #f9fafb;
+}
+
+html.dark .dashboard-workspace .ant-card .ant-card-body {
+  background-color: #1f2937 !important;
+  color: #f9fafb;
+}
+
+html.dark .dashboard-workspace .ant-card .ant-typography {
+  color: inherit !important;
+}

@@ -37,11 +37,12 @@ import { setUserProfileOpen, selectUserProfileOpen } from '../../../store/slices
 /**
  * Simplified Header component for the application
  */
-const Header = ({ user }) => {
+const Header = ({ user, sticky = true }) => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const location = useLocation()
   const [isLogoutConfirmOpen, setIsLogoutConfirmOpen] = useState(false)
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
   // eslint-disable-next-line no-unused-vars
   const [selectedDashboard, setSelectedDashboard] = useState('business') // 'personal' or 'business'
   // const [isDashboardDropdownOpen, setIsDashboardDropdownOpen] = useState(false)
@@ -112,6 +113,7 @@ const Header = ({ user }) => {
 
   // Handle logout click - show confirmation dialog
   const handleLogoutClick = useCallback(() => {
+    setIsUserMenuOpen(false)
     setIsLogoutConfirmOpen(true)
   }, [])
 
@@ -218,6 +220,7 @@ const Header = ({ user }) => {
 
   // Handle user profile modal
   const handleUserProfileOpen = useCallback(() => {
+    setIsUserMenuOpen(false)
     dispatch(setUserProfileOpen(true))
   }, [dispatch])
 
@@ -715,7 +718,7 @@ const Header = ({ user }) => {
 
   return (
     <header
-      className='sticky top-0 z-10 shadow-sm transition-all duration-300 hover:shadow-lg'
+      className={`${sticky ? 'sticky top-0' : 'relative'} z-10 shadow-sm transition-all duration-300 hover:shadow-lg`}
       style={{
         background: headerGradient,
         borderColor: darkMode ? '#374151' : '#e5e7eb',
@@ -727,15 +730,18 @@ const Header = ({ user }) => {
       <div className='px-2 sm:px-4 md:px-6'>
         <div className='flex h-12 items-center justify-between'>
           {/* Logo and Title */}
-          <Link to='/' className='flex-shrink-0 flex items-center'>
+          <Link to='/' className='flex min-w-0 flex-shrink-0 items-center gap-2 sm:gap-3'>
             <div
-              className={`rounded-full p-0 transition-all duration-300 flex items-center justify-center -mt-1 ${
+              className={`flex size-9 shrink-0 items-center justify-center sm:size-10 md:size-11 rounded-full transition-all duration-300 ${
                 darkMode ? 'bg-white/15 backdrop-blur-sm shadow-lg' : ''
               }`}
             >
-              <Logo size='small' className='w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 object-contain' />
+              <Logo
+                alt='SkillScout'
+                className='size-7 object-contain sm:size-8 md:size-9'
+              />
             </div>
-            <h1 className='ml-2 sm:ml-3 text-base sm:text-lg md:text-xl font-bold text-white whitespace-nowrap leading-none flex items-center'>
+            <h1 className='m-0 inline-flex min-w-0 items-center gap-1 whitespace-nowrap text-base font-bold leading-none sm:text-lg md:text-xl'>
               <span className='text-blue-500'>Skill</span>
               <span className='text-emerald-500'>Scout</span>
             </h1>
@@ -787,7 +793,13 @@ const Header = ({ user }) => {
 
             {/* User Menu */}
             {user ? (
-              <Dropdown dropdownRender={renderSignOutDropdown} trigger={['click']} placement='bottomRight'>
+              <Dropdown
+                dropdownRender={renderSignOutDropdown}
+                trigger={['click']}
+                placement='bottomRight'
+                open={isUserMenuOpen}
+                onOpenChange={setIsUserMenuOpen}
+              >
                 <div className='flex items-center cursor-pointer hover:opacity-80 transition-opacity py-1 md:py-2 px-2 md:px-3 rounded-full hover:bg-white/10 dark:hover:bg-black/20'>
                   <div
                     className='w-7 h-7 md:w-8 md:h-8 rounded-full bg-white/20 flex items-center justify-center text-white mr-1 md:mr-2'

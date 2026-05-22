@@ -54,7 +54,7 @@ const CreateQuestionnaire = React.memo(({ user }) => {
 
   return (
     <>
-      <BusinessDashboardPageShell className='relative overflow-hidden'>
+      <BusinessDashboardPageShell className='questionnaire-form-page relative overflow-hidden'>
         <div className='relative z-10'>
           {/* Toolbar */}
           <Toolbar

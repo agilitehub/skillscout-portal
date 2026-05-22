@@ -1,0 +1,119 @@
+/* Global Instructions Rule Applied! */
+/* Frontend Instructions Rule Applied! */
+
+/* Extra token scope so nested inputs / Select combobox pick up correct colors */
+html.dark .business-setup-themed-modal .ant-modal-body {
+  --ant-input-placeholder-color: #9ca3af !important;
+  --ant-color-text: #f9fafb !important;
+  --ant-color-text-placeholder: #9ca3af !important;
+  /* TextArea showCount uses token.colorTextDescription (maps to ant-input-data-count) */
+  --ant-color-text-description: #e5e7eb !important;
+  --ant-select-placeholder-color: #9ca3af !important;
+  --ant-select-color: #f9fafb !important;
+}
+
+html.dark .business-setup-themed-modal .ant-modal-body .ant-input::placeholder,
+html.dark .business-setup-themed-modal .ant-modal-body .ant-input::-webkit-input-placeholder,
+html.dark .business-setup-themed-modal .ant-modal-body input.ant-input::placeholder,
+html.dark .business-setup-themed-modal .ant-modal-body input.ant-input::-webkit-input-placeholder,
+html.dark .business-setup-themed-modal .ant-modal-body textarea.ant-input::placeholder,
+html.dark .business-setup-themed-modal .ant-modal-body textarea.ant-input::-webkit-input-placeholder,
+html.dark .business-setup-themed-modal .ant-modal-body textarea::placeholder {
+  color: #9ca3af !important;
+  opacity: 1 !important;
+}
+
+html.dark .business-setup-themed-modal .ant-modal-body .ant-input-affix-wrapper input::placeholder,
+html.dark .business-setup-themed-modal .ant-modal-body .ant-input-affix-wrapper input::-webkit-input-placeholder {
+  color: #9ca3af !important;
+  opacity: 1 !important;
+}
+
+html.dark .business-setup-themed-modal .ant-modal-body .ant-select {
+  --ant-select-placeholder-color: #9ca3af !important;
+  --ant-select-color: #f9fafb !important;
+  --ant-color-text-placeholder: #9ca3af !important;
+  color: #f9fafb !important;
+}
+
+/* Highest specificity: form wrapper + Ant Design 6 placeholder node */
+html.dark .business-setup-themed-modal .business-setup-form .ant-select .ant-select-placeholder,
+html.dark .business-setup-themed-modal .business-setup-form .ant-select-placeholder {
+  color: #9ca3af !important;
+  -webkit-text-fill-color: #9ca3af !important;
+  opacity: 1 !important;
+}
+
+/* Ant Design 6: single/multiple Select uses combobox input.ant-select-input + .ant-select-content */
+html.dark .business-setup-themed-modal .ant-modal-body .ant-select .ant-select-content {
+  color: #f9fafb !important;
+}
+
+html.dark .business-setup-themed-modal .ant-modal-body .ant-select .ant-select-content-value {
+  color: #f9fafb !important;
+}
+
+/* When Ant merges placeholder into content value node */
+html.dark .business-setup-themed-modal .ant-modal-body .ant-select .ant-select-content-value.ant-select-selection-placeholder {
+  color: #9ca3af !important;
+  -webkit-text-fill-color: #9ca3af !important;
+}
+
+html.dark .business-setup-themed-modal .ant-modal-body .ant-select input.ant-select-input {
+  color: #f9fafb !important;
+  -webkit-text-fill-color: #f9fafb !important;
+}
+
+html.dark .business-setup-themed-modal .ant-modal-body .ant-select input.ant-select-input::placeholder {
+  color: #9ca3af !important;
+  -webkit-text-fill-color: #9ca3af !important;
+  opacity: 1 !important;
+}
+
+html.dark .business-setup-themed-modal .ant-modal-body .ant-select input.ant-select-input::-webkit-input-placeholder {
+  color: #9ca3af !important;
+  -webkit-text-fill-color: #9ca3af !important;
+  opacity: 1 !important;
+}
+
+html.dark .business-setup-themed-modal .ant-modal-body .ant-select input.ant-select-input::-moz-placeholder {
+  color: #9ca3af !important;
+  opacity: 1 !important;
+}
+
+html.dark .business-setup-themed-modal .ant-modal-body .ant-select .ant-select-selection-placeholder,
+html.dark .business-setup-themed-modal .ant-modal-body .ant-select-selection-placeholder,
+html.dark .business-setup-themed-modal .ant-modal-body .ant-select .ant-select-content .ant-select-selection-placeholder {
+  color: #9ca3af !important;
+  opacity: 1 !important;
+  -webkit-text-fill-color: #9ca3af !important;
+}
+
+html.dark .business-setup-themed-modal .ant-modal-body .ant-select .ant-select-selection-search-input {
+  color: #f9fafb !important;
+  -webkit-text-fill-color: #f9fafb !important;
+}
+
+html.dark .business-setup-themed-modal .ant-modal-body .ant-select .ant-select-selection-search-input::placeholder,
+html.dark .business-setup-themed-modal
+  .ant-modal-body
+  .ant-select-multiple
+  .ant-select-selection-search-input::placeholder,
+html.dark .business-setup-themed-modal
+  .ant-modal-body
+  .ant-select
+  .ant-select-selection-search-input::-webkit-input-placeholder {
+  color: #9ca3af !important;
+  -webkit-text-fill-color: #9ca3af !important;
+  opacity: 1 !important;
+}
+
+/* TextArea character counter (showCount) — Ant Design 6: .ant-input-data-count */
+html.dark
+  .business-setup-themed-modal
+  .business-setup-form
+  .ant-input-affix-wrapper.ant-input-textarea-show-count
+  .ant-input-data-count,
+html.dark .business-setup-themed-modal .business-setup-form .ant-input-data-count {
+  color: #f9fafb !important;
+}

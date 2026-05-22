@@ -165,15 +165,23 @@ const Lookups = React.memo(({ user }) => {
       title: 'STATUS',
       dataIndex: 'isActive',
       key: 'isActive',
-      render: (isActive) => (
-        <span
-          className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
-            isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-          }`}
-        >
-          {isActive ? 'Active' : 'Inactive'}
-        </span>
-      ),
+      render: (isActive) => {
+        const activeClass = darkMode
+          ? 'bg-emerald-900/75 text-emerald-100 ring-1 ring-emerald-600/60'
+          : 'bg-green-100 text-green-800'
+        const inactiveClass = darkMode
+          ? 'bg-red-900/70 text-red-100 ring-1 ring-red-600/50'
+          : 'bg-red-100 text-red-800'
+        return (
+          <span
+            className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
+              isActive ? activeClass : inactiveClass
+            }`}
+          >
+            {isActive ? 'Active' : 'Inactive'}
+          </span>
+        )
+      },
       width: 100
     },
     {

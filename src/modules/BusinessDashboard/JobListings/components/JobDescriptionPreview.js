@@ -62,12 +62,11 @@ const JobDescriptionPreview = React.memo(({ jobDescriptionId, visible = false })
     return null
   }
 
+  const previewCardClass = `job-description-preview mt-4 ${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'}`
+
   if (loading) {
     return (
-      <Card
-        className={`mt-4 ${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'}`}
-        bodyStyle={{ padding: '12px' }}
-      >
+      <Card className={previewCardClass} styles={{ body: { padding: '12px' } }}>
         <div className='flex items-center justify-center py-4'>
           <Spin size='default' />
           <span className={`ml-2 text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>Loading preview...</span>
@@ -78,10 +77,7 @@ const JobDescriptionPreview = React.memo(({ jobDescriptionId, visible = false })
 
   if (error) {
     return (
-      <Card
-        className={`mt-4 ${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'}`}
-        bodyStyle={{ padding: '12px' }}
-      >
+      <Card className={previewCardClass} styles={{ body: { padding: '12px' } }}>
         <div className={`text-center py-2 text-sm ${darkMode ? 'text-red-400' : 'text-red-600'}`}>
           <FontAwesomeIcon icon={faBriefcase} className='mr-1' />
           Error loading preview: {error}
@@ -96,7 +92,7 @@ const JobDescriptionPreview = React.memo(({ jobDescriptionId, visible = false })
 
   const formatKeywords = (keywords) => {
     if (!keywords || !Array.isArray(keywords)) return []
-    return keywords.slice(0, 3) // Show only first 3 keywords in collapsed view
+    return keywords.slice(0, 3)
   }
 
   const truncateText = (text, maxLength = 100) => {
@@ -108,14 +104,10 @@ const JobDescriptionPreview = React.memo(({ jobDescriptionId, visible = false })
     setIsExpanded(!isExpanded)
   }
 
-  // Compact view when collapsed
   if (!isExpanded) {
     return (
-      <Card
-        className={`mt-4 ${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'}`}
-        bodyStyle={{ padding: '12px' }}
-      >
-        <div className={`${darkMode ? 'text-white' : 'text-gray-900'}`}>
+      <Card className={previewCardClass} styles={{ body: { padding: '12px' } }}>
+        <div className='job-description-preview-content'>
           <div className='flex items-center justify-between'>
             <div className='flex items-center flex-1'>
               <FontAwesomeIcon icon={faBriefcase} className='mr-2 text-emerald-500' />
@@ -148,24 +140,22 @@ const JobDescriptionPreview = React.memo(({ jobDescriptionId, visible = false })
             />
           </div>
 
-          {/* Quick preview of overview */}
           {jobDescription.overview && (
             <div className='mt-2'>
-              <p className={`text-xs ${darkMode ? 'text-gray-300' : 'text-gray-600'} leading-relaxed`}>
+              <p className={`text-xs leading-relaxed ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
                 {truncateText(jobDescription.overview, 120)}
               </p>
             </div>
           )}
 
-          {/* Keywords preview */}
           {jobDescription.keywords && jobDescription.keywords.length > 0 && (
             <div className='mt-2 flex flex-wrap gap-1'>
               {formatKeywords(jobDescription.keywords).map((keyword, index) => (
                 <Tag
                   key={index}
                   size='small'
-                  color='emerald'
-                  className={`text-xs ${darkMode ? 'bg-emerald-800 text-emerald-200' : 'bg-emerald-100 text-emerald-800'}`}
+                  bordered
+                  className={`text-xs m-0 ${darkMode ? 'bg-emerald-900/80 text-emerald-100 border-emerald-600' : 'bg-emerald-100 text-emerald-800 border-emerald-200'}`}
                 >
                   {keyword}
                 </Tag>
@@ -173,7 +163,8 @@ const JobDescriptionPreview = React.memo(({ jobDescriptionId, visible = false })
               {jobDescription.keywords.length > 3 && (
                 <Tag
                   size='small'
-                  className={`text-xs ${darkMode ? 'bg-gray-600 text-gray-300' : 'bg-gray-200 text-gray-600'}`}
+                  bordered
+                  className={`text-xs m-0 ${darkMode ? 'bg-gray-600 text-gray-200 border-gray-500' : 'bg-gray-200 text-gray-600 border-gray-300'}`}
                 >
                   +{jobDescription.keywords.length - 3} more
                 </Tag>
@@ -185,14 +176,9 @@ const JobDescriptionPreview = React.memo(({ jobDescriptionId, visible = false })
     )
   }
 
-  // Expanded view
   return (
-    <Card
-      className={`mt-4 ${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'}`}
-      bodyStyle={{ padding: '16px' }}
-    >
-      <div className={`${darkMode ? 'text-white' : 'text-gray-900'}`}>
-        {/* Header with collapse button */}
+    <Card className={previewCardClass} styles={{ body: { padding: '16px' } }}>
+      <div className='job-description-preview-content'>
         <div className='flex items-start justify-between mb-4'>
           <div className='flex-1'>
             <h3 className={`text-lg font-semibold mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
@@ -200,38 +186,39 @@ const JobDescriptionPreview = React.memo(({ jobDescriptionId, visible = false })
               {jobDescription.title}
             </h3>
 
-            {/* Department and Experience Level */}
             <div className='flex items-center space-x-4 mb-3'>
               {jobDescription.departmentName && (
-                <div className={`flex items-center ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                <div className={`flex items-center text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
                   <FontAwesomeIcon icon={faBuilding} className='mr-1' />
                   <span>{jobDescription.departmentName}</span>
                 </div>
               )}
               {jobDescription.experienceLevelName && (
-                <div className={`flex items-center ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                <div className={`flex items-center text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
                   <FontAwesomeIcon icon={faGraduationCap} className='mr-1' />
                   <span>{jobDescription.experienceLevelName}</span>
                 </div>
               )}
             </div>
 
-            {/* Keywords */}
             {jobDescription.keywords && jobDescription.keywords.length > 0 && (
               <div className='mb-3'>
-                <div className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'} mb-1`}>Keywords:</div>
+                <div className={`text-sm mb-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Keywords:</div>
                 <div className='flex flex-wrap gap-1'>
                   {jobDescription.keywords.slice(0, 5).map((keyword, index) => (
                     <Tag
                       key={index}
-                      color='emerald'
-                      className={`${darkMode ? 'bg-emerald-800 text-emerald-200' : 'bg-emerald-100 text-emerald-800'}`}
+                      bordered
+                      className={`m-0 ${darkMode ? 'bg-emerald-900/80 text-emerald-100 border-emerald-600' : 'bg-emerald-100 text-emerald-800 border-emerald-200'}`}
                     >
                       {keyword}
                     </Tag>
                   ))}
                   {jobDescription.keywords.length > 5 && (
-                    <Tag className={`${darkMode ? 'bg-gray-600 text-gray-300' : 'bg-gray-200 text-gray-600'}`}>
+                    <Tag
+                      bordered
+                      className={`m-0 ${darkMode ? 'bg-gray-600 text-gray-200 border-gray-500' : 'bg-gray-200 text-gray-600 border-gray-300'}`}
+                    >
                       +{jobDescription.keywords.length - 5} more
                     </Tag>
                   )}
@@ -241,9 +228,8 @@ const JobDescriptionPreview = React.memo(({ jobDescriptionId, visible = false })
           </div>
 
           <div className='flex items-center space-x-2'>
-            {/* Last Updated */}
             {jobDescription.lastUpdated && (
-              <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'} flex items-center`}>
+              <div className={`text-xs flex items-center ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                 <FontAwesomeIcon icon={faCalendarAlt} className='mr-1' />
                 Updated: {jobDescription.lastUpdated}
               </div>
@@ -258,51 +244,46 @@ const JobDescriptionPreview = React.memo(({ jobDescriptionId, visible = false })
           </div>
         </div>
 
-        <Divider className={`${darkMode ? 'border-gray-600' : 'border-gray-200'}`} />
+        <Divider className={darkMode ? 'border-gray-600' : 'border-gray-200'} />
 
-        {/* Overview */}
         {jobDescription.overview && (
           <div className='mb-4'>
             <h4 className={`font-medium mb-2 ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>Overview</h4>
-            <p className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'} leading-relaxed`}>
+            <p className={`text-sm leading-relaxed ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
               {jobDescription.overview}
             </p>
           </div>
         )}
 
-        {/* Responsibilities */}
         {jobDescription.responsibilities && (
           <div className='mb-4'>
             <h4 className={`font-medium mb-2 ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>Key Responsibilities</h4>
-            <div className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'} leading-relaxed`}>
+            <div className={`text-sm leading-relaxed ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
               {jobDescription.responsibilities}
             </div>
           </div>
         )}
 
-        {/* Requirements */}
         {jobDescription.requirements && (
           <div className='mb-4'>
             <h4 className={`font-medium mb-2 ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>Requirements</h4>
-            <div className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'} leading-relaxed`}>
+            <div className={`text-sm leading-relaxed ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
               {jobDescription.requirements}
             </div>
           </div>
         )}
 
-        {/* Benefits */}
         {jobDescription.benefits && (
           <div>
             <h4 className={`font-medium mb-2 ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>Benefits</h4>
-            <div className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'} leading-relaxed`}>
+            <div className={`text-sm leading-relaxed ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
               {jobDescription.benefits}
             </div>
           </div>
         )}
 
-        {/* View Full Details Link */}
-        <div className='mt-4 pt-3 border-t border-gray-200 dark:border-gray-600'>
-          <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'} text-center`}>
+        <div className={`mt-4 pt-3 border-t ${darkMode ? 'border-gray-600' : 'border-gray-200'}`}>
+          <div className={`text-xs text-center ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
             <FontAwesomeIcon icon={faStar} className='mr-1 text-yellow-500' />
             This is a preview. Full details will be available in the job listing.
           </div>

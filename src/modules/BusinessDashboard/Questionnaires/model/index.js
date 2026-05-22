@@ -324,6 +324,70 @@ export const getStatusDisplayProperties = (status) => {
   return statusMap[status] || { color: 'default', description: 'Unknown status' }
 }
 
+const FALLBACK_TAG = {
+  dark: 'bg-gray-700 text-gray-100 border-gray-500',
+  light: 'bg-gray-100 text-gray-700 border-gray-300'
+}
+
+/**
+ * Tailwind classes for category tags in the questionnaires table.
+ */
+export const getCategoryTagClass = (category, isDark) => {
+  const map = isDark
+    ? {
+        Technical: 'bg-blue-900/80 text-blue-100 border-blue-600',
+        Behavioral: 'bg-emerald-900/80 text-emerald-100 border-emerald-600',
+        General: 'bg-violet-900/80 text-violet-100 border-violet-600'
+      }
+    : {
+        Technical: 'bg-blue-50 text-blue-700 border-blue-200',
+        Behavioral: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+        General: 'bg-purple-50 text-purple-700 border-purple-200'
+      }
+
+  if (map[category]) {
+    return map[category]
+  }
+
+  return isDark ? 'bg-emerald-900/80 text-emerald-100 border-emerald-600' : 'bg-green-50 text-green-700 border-green-200'
+}
+
+/**
+ * Tailwind classes for questionnaire status badges.
+ */
+export const getQuestionnaireStatusBadgeClass = (status, isDark) => {
+  const map = isDark
+    ? {
+        Active: 'bg-emerald-900/80 text-emerald-100 border-emerald-600',
+        Draft: 'bg-slate-700 text-slate-100 border-slate-500',
+        Inactive: 'bg-amber-900/80 text-amber-100 border-amber-600',
+        Archived: 'bg-red-900/80 text-red-100 border-red-600'
+      }
+    : {
+        Active: 'bg-green-100 text-green-800 border-green-200',
+        Draft: 'bg-gray-100 text-gray-800 border-gray-300',
+        Inactive: 'bg-yellow-100 text-yellow-800 border-yellow-200',
+        Archived: 'bg-red-100 text-red-800 border-red-200'
+      }
+
+  return map[status] || (isDark ? FALLBACK_TAG.dark : FALLBACK_TAG.light)
+}
+
+/**
+ * Tailwind classes for average score column text.
+ */
+export const getAverageScoreTextClass = (score, isDark) => {
+  if (isDark) {
+    if (score >= 80) return 'text-emerald-300'
+    if (score >= 60) return 'text-amber-300'
+    return 'text-red-300'
+  }
+
+  if (score >= 80) return 'text-green-600'
+  if (score >= 60) return 'text-yellow-600'
+  return 'text-red-600'
+}
+
 /**
  * Truncate text for display
  * @param {string} text - Text to truncate

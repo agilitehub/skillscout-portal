@@ -44,6 +44,24 @@
   background-color: #047857 !important;
 }
 
+/* Tags/keywords dropdown empty state — Ant Design Empty ("No data") */
+.dark-select-dropdown .ant-select-item-empty,
+.dark-select-dropdown .ant-empty,
+.dark-select-dropdown .ant-empty-small,
+.dark-select-dropdown .ant-empty-normal {
+  color: #d1d5db !important;
+}
+
+.dark-select-dropdown .ant-empty-description,
+.dark-select-dropdown .ant-empty .ant-empty-description {
+  color: #d1d5db !important;
+}
+
+.dark-select-dropdown .ant-empty-image svg,
+.dark-select-dropdown .ant-empty-image svg path {
+  fill: #9ca3af !important;
+}
+
 .dark-modal .ant-modal-content {
   background-color: #374151 !important;
   color: #f9fafb !important;

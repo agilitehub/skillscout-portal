@@ -195,3 +195,66 @@ export const getDropdownOptions = () => ({
     { value: 'Closed', label: 'Closed' }
   ]
 })
+
+const FALLBACK_TAG = {
+  dark: 'bg-gray-700 text-gray-100 border-gray-500',
+  light: 'bg-gray-100 text-gray-700 border-gray-300'
+}
+
+/**
+ * Tailwind classes for job type tags (Ant Design preset colors are low-contrast in dark tables).
+ */
+export const getJobTypeTagClass = (type, isDark) => {
+  const map = isDark
+    ? {
+        'Full-time': 'bg-blue-900/80 text-blue-100 border-blue-600',
+        'Part-time': 'bg-emerald-900/80 text-emerald-100 border-emerald-600',
+        Contract: 'bg-amber-900/80 text-amber-100 border-amber-600',
+        Internship: 'bg-purple-900/80 text-purple-100 border-purple-600'
+      }
+    : {
+        'Full-time': 'bg-blue-50 text-blue-700 border-blue-200',
+        'Part-time': 'bg-emerald-50 text-emerald-700 border-emerald-200',
+        Contract: 'bg-amber-50 text-amber-800 border-amber-200',
+        Internship: 'bg-purple-50 text-purple-700 border-purple-200'
+      }
+  return map[type] || (isDark ? FALLBACK_TAG.dark : FALLBACK_TAG.light)
+}
+
+/**
+ * Tailwind classes for work arrangement tags.
+ */
+export const getWorkArrangementTagClass = (arrangement, isDark) => {
+  const map = isDark
+    ? {
+        Remote: 'bg-emerald-900/80 text-emerald-100 border-emerald-600',
+        Hybrid: 'bg-blue-900/80 text-blue-100 border-blue-600',
+        'On-site': 'bg-slate-700 text-slate-100 border-slate-500',
+        Flexible: 'bg-violet-900/80 text-violet-100 border-violet-600'
+      }
+    : {
+        Remote: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+        Hybrid: 'bg-blue-50 text-blue-700 border-blue-200',
+        'On-site': 'bg-gray-100 text-gray-700 border-gray-300',
+        Flexible: 'bg-purple-50 text-purple-700 border-purple-200'
+      }
+  return map[arrangement] || (isDark ? FALLBACK_TAG.dark : FALLBACK_TAG.light)
+}
+
+/**
+ * Tailwind classes for job status tags.
+ */
+export const getJobStatusTagClass = (status, isDark) => {
+  const map = isDark
+    ? {
+        Active: 'bg-emerald-900/80 text-emerald-100 border-emerald-600',
+        Paused: 'bg-amber-900/80 text-amber-100 border-amber-600',
+        Closed: 'bg-red-900/80 text-red-100 border-red-600'
+      }
+    : {
+        Active: 'bg-green-50 text-green-700 border-green-200',
+        Paused: 'bg-orange-50 text-orange-800 border-orange-200',
+        Closed: 'bg-red-50 text-red-700 border-red-200'
+      }
+  return map[status] || (isDark ? FALLBACK_TAG.dark : FALLBACK_TAG.light)
+}

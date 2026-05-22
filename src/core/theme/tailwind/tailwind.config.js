@@ -578,6 +578,15 @@ module.exports = {
             color: '#6b7280'
           },
 
+          // Pointer on all Select surfaces (showSearch inner input defaults to text cursor)
+          '& .ant-select:not(.ant-select-disabled)': {
+            cursor: 'pointer'
+          },
+          '& .ant-select:not(.ant-select-disabled) .ant-select-input, & .ant-select:not(.ant-select-disabled) .ant-select-content, & .ant-select:not(.ant-select-disabled) .ant-select-content-value, & .ant-select:not(.ant-select-disabled) .ant-select-suffix, & .ant-select:not(.ant-select-disabled) .ant-select-selector':
+            {
+              cursor: 'pointer'
+            },
+
           // Multi-select tags
           '& .ant-select-multiple .ant-select-selection-item': {
             backgroundColor: '#f3f4f6',
@@ -632,6 +641,11 @@ module.exports = {
 
         // Dark Mode Global Form
         '.dark .global-form': {
+          // Ant Design 6 reads component tokens from CSS variables; scope light text into forms
+          '--ant-color-text': '#f9fafb',
+          '--ant-color-text-placeholder': '#9ca3af',
+          '--ant-color-text-description': '#9ca3af',
+
           '& .ant-form-item-label > label': {
             color: '#e5e7eb',
             fontWeight: '500'
@@ -641,12 +655,12 @@ module.exports = {
             color: '#9ca3af'
           },
 
-          // Input Fields - Dark Mode
+          // Input Fields - Dark Mode (Outlined inputs use ant-injected rules — need !important)
           '& .ant-input, & input.ant-input, & input[type="text"], & input[type="number"], & input[type="date"], & input':
             {
               backgroundColor: '#4b5563',
               borderColor: '#6b7280',
-              color: '#f9fafb'
+              color: '#f9fafb !important'
             },
 
           '& .ant-input:focus, & input.ant-input:focus, & input[type="text"]:focus, & input[type="number"]:focus, & input[type="date"]:focus, & input:focus':
@@ -654,7 +668,7 @@ module.exports = {
               borderColor: '#059669',
               boxShadow: '0 0 0 2px rgba(5, 150, 105, 0.2)',
               backgroundColor: '#4b5563',
-              color: '#f9fafb'
+              color: '#f9fafb !important'
             },
 
           '& .ant-input::placeholder, & input::placeholder': {
@@ -666,14 +680,14 @@ module.exports = {
           '& textarea.ant-input, & textarea': {
             backgroundColor: '#4b5563',
             borderColor: '#6b7280',
-            color: '#f9fafb'
+            color: '#f9fafb !important'
           },
 
           '& textarea.ant-input:focus, & textarea:focus': {
             borderColor: '#059669',
             boxShadow: '0 0 0 2px rgba(5, 150, 105, 0.2)',
             backgroundColor: '#4b5563',
-            color: '#f9fafb'
+            color: '#f9fafb !important'
           },
 
           '& textarea.ant-input::placeholder, & textarea::placeholder': {
@@ -681,38 +695,80 @@ module.exports = {
             opacity: '1'
           },
 
-          // Select Components - Dark Mode
+          // Select — legacy v4/v5 DOM + Ant Design 6 combobox (.ant-select-input / .ant-select-placeholder)
           '& .ant-select, & .ant-select-selector, & .ant-select-single .ant-select-selector': {
             backgroundColor: '#4b5563',
             borderColor: '#6b7280',
-            color: '#f9fafb'
+            color: '#f9fafb',
+            '--ant-select-color': '#f9fafb',
+            '--ant-color-text-placeholder': '#9ca3af'
           },
 
-          '& .ant-select-focused .ant-select-selector, & .ant-select:focus .ant-select-selector': {
-            borderColor: '#059669',
-            boxShadow: '0 0 0 2px rgba(5, 150, 105, 0.2)',
-            backgroundColor: '#4b5563'
-          },
+          '& .ant-select-focused .ant-select-selector, & .ant-select:focus .ant-select-selector, & .ant-select-focused':
+            {
+              borderColor: '#059669',
+              boxShadow: '0 0 0 2px rgba(5, 150, 105, 0.2)',
+              backgroundColor: '#4b5563'
+            },
 
           '& .ant-select-selection-placeholder': {
             color: '#9ca3af',
-            opacity: '1'
+            opacity: '1',
+            WebkitTextFillColor: '#9ca3af'
+          },
+
+          '& .ant-select .ant-select-placeholder': {
+            color: '#9ca3af !important',
+            opacity: '1',
+            WebkitTextFillColor: '#9ca3af'
+          },
+
+          '& .ant-select .ant-select-content, & .ant-select .ant-select-content-value': {
+            color: '#f9fafb !important'
+          },
+
+          '& .ant-select .ant-select-content-value.ant-select-selection-placeholder': {
+            color: '#9ca3af !important',
+            WebkitTextFillColor: '#9ca3af'
+          },
+
+          '& .ant-select input.ant-select-input': {
+            color: '#f9fafb !important',
+            WebkitTextFillColor: '#f9fafb'
+          },
+
+          '& .ant-select input.ant-select-input::placeholder': {
+            color: '#9ca3af !important',
+            WebkitTextFillColor: '#9ca3af'
           },
 
           '& .ant-select-selection-item': {
-            color: '#f9fafb',
+            color: '#f9fafb !important',
             backgroundColor: 'transparent'
           },
 
-          '& .ant-select-arrow': {
+          '& .ant-select-arrow, & .ant-select-suffix': {
             color: '#9ca3af'
           },
+
+          // Pointer on all Select surfaces - Dark Mode
+          '& .ant-select:not(.ant-select-disabled)': {
+            cursor: 'pointer'
+          },
+          '& .ant-select:not(.ant-select-disabled) .ant-select-input, & .ant-select:not(.ant-select-disabled) .ant-select-content, & .ant-select:not(.ant-select-disabled) .ant-select-content-value, & .ant-select:not(.ant-select-disabled) .ant-select-suffix, & .ant-select:not(.ant-select-disabled) .ant-select-selector':
+            {
+              cursor: 'pointer'
+            },
 
           // Multi-select tags - Dark Mode
           '& .ant-select-multiple .ant-select-selection-item': {
             backgroundColor: '#374151',
             borderColor: '#6b7280',
-            color: '#f9fafb'
+            color: '#f9fafb !important'
+          },
+
+          '& .ant-select-multiple .ant-select-selection-item-content': {
+            color: '#f9fafb !important'
           },
 
           '& .ant-select-selection-item-remove': {
@@ -745,7 +801,7 @@ module.exports = {
 
           '& .ant-input-affix-wrapper input': {
             backgroundColor: 'transparent',
-            color: '#f9fafb'
+            color: '#f9fafb !important'
           },
 
           '& .ant-input-prefix': {

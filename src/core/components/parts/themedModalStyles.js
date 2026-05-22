@@ -18,7 +18,7 @@ export const mergeModalStyles = (base, overrides) => {
 export const getDefaultThemedModalStyles = (darkMode) => {
   if (darkMode) {
     return {
-      content: {
+      container: {
         backgroundColor: BRAND_COLORS.darkSlateAlt,
         color: BRAND_COLORS.white
       },
@@ -28,17 +28,19 @@ export const getDefaultThemedModalStyles = (darkMode) => {
       },
       header: {
         backgroundColor: BRAND_COLORS.darkSlateAlt,
-        borderBottom: `1px solid ${DARK_THEME.border.primary}`
+        borderBottom: 'none',
+        marginBottom: 0
       },
       footer: {
         backgroundColor: BRAND_COLORS.darkSlateAlt,
-        borderTop: `1px solid ${DARK_THEME.border.primary}`
+        borderTop: 'none',
+        marginTop: 0
       },
       mask: {}
     }
   }
   return {
-    content: {
+    container: {
       backgroundColor: LIGHT_THEME.background.primary,
       color: BRAND_COLORS.darkGray
     },
@@ -48,11 +50,13 @@ export const getDefaultThemedModalStyles = (darkMode) => {
     },
     header: {
       backgroundColor: LIGHT_THEME.background.primary,
-      borderBottom: `1px solid ${LIGHT_THEME.border.primary}`
+      borderBottom: 'none',
+      marginBottom: 0
     },
     footer: {
       backgroundColor: LIGHT_THEME.background.primary,
-      borderTop: `1px solid ${LIGHT_THEME.border.primary}`
+      borderTop: 'none',
+      marginTop: 0
     },
     mask: {}
   }
