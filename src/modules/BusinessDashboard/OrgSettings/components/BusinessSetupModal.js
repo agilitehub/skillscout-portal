@@ -160,8 +160,22 @@ const BusinessSetupModal = ({ isOpen, onClose, onSubmit, form }) => {
                  color: #D1D5DB !important;
                  -webkit-text-fill-color: #D1D5DB !important;
                }
-               .business-setup-form .ant-select-arrow {
-                 color: #9CA3AF !important;
+               .business-setup-form .ant-select:not(.ant-select-disabled),
+               .business-setup-form .ant-select:not(.ant-select-disabled) .ant-select-content,
+               .business-setup-form .ant-select:not(.ant-select-disabled) .ant-select-content-value,
+               .business-setup-form .ant-select:not(.ant-select-disabled) .ant-select-input,
+               .business-setup-form .ant-select:not(.ant-select-disabled) .ant-select-suffix,
+               .business-setup-form .ant-select-multiple .ant-select-selector {
+                 cursor: pointer !important;
+               }
+               .business-setup-form .ant-select-suffix,
+               .business-setup-form .ant-select .ant-select-suffix,
+               .business-setup-form .ant-select-arrow,
+               .business-setup-form .ant-select .anticon,
+               .business-setup-form .ant-select-suffix .anticon,
+               .business-setup-form .ant-select-suffix svg {
+                 color: #F9FAFB !important;
+                 fill: currentColor !important;
                }
                .business-setup-form .ant-select-multiple .ant-select-selection-item {
                  background-color: #374151 !important;
@@ -191,6 +205,14 @@ const BusinessSetupModal = ({ isOpen, onClose, onSubmit, form }) => {
                .business-setup-dark-dropdown .ant-select-item-option-selected {
                  background-color: #059669 !important;
                  color: #FFFFFF !important;
+               }
+
+               .business-setup-dark-dropdown {
+                 --rc-virtual-list-scrollbar-bg: #6B7280;
+               }
+
+               .business-setup-dark-dropdown .rc-virtual-list-scrollbar-thumb {
+                 background: #6B7280 !important;
                }
                
                /* Work arrangement dropdown specific styles */
@@ -245,7 +267,7 @@ const BusinessSetupModal = ({ isOpen, onClose, onSubmit, form }) => {
               form={form}
               layout='vertical'
               onFinish={handleSubmit}
-              className={`${darkMode ? 'business-setup-form' : ''}`}
+              className={`global-form ${darkMode ? 'business-setup-form' : ''}`.trim()}
             >
               <OrganizationProfileForm
                 fieldNameFormat='snake_case'

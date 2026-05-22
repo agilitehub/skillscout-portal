@@ -1,5 +1,24 @@
 /* TableView — light default; dark theme uses html.dark (ThemeContext) */
 
+.table-view-card {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.table-view-card .ant-card-container,
+.table-view-card .ant-card-body {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.table-view-scroll {
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 html.dark .table-view-card.ant-card,
 html.dark .table-view-card .ant-card-container,
 html.dark .table-view-card .ant-card-body {

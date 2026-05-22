@@ -1,6 +1,6 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
-import React from 'react'
+import React, { useMemo } from 'react'
 import { Form, Input, Select, Row, Col, Space } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
@@ -14,6 +14,8 @@ import {
   faTags,
   faMapMarkerAlt
 } from '@fortawesome/free-solid-svg-icons'
+
+import { getFoundedYearOptions } from '../model'
 
 const { TextArea } = Input
 const { Option } = Select
@@ -107,6 +109,11 @@ const OrganizationProfileForm = ({
     '1001-5000',
     '5000+'
   ]
+
+  const foundedYearOptions = useMemo(
+    () => customOptions.foundedYearOptions || getFoundedYearOptions(),
+    [customOptions.foundedYearOptions]
+  )
 
   const industryOptions = customOptions.industryOptions || [
     'Technology',
@@ -219,7 +226,14 @@ const OrganizationProfileForm = ({
                 label={<span className={darkMode ? 'text-gray-300' : ''}>Founded Year</span>}
                 name={getFieldName('foundedYear', 'founded_year')}
               >
-                <Input type='number' placeholder='2020' />
+                <Select
+                  placeholder='Select year'
+                  allowClear
+                  showSearch
+                  optionFilterProp='label'
+                  dropdownClassName={dropdownClassName}
+                  options={foundedYearOptions.map((year) => ({ value: year, label: year }))}
+                />
               </Form.Item>
             </Col>
 

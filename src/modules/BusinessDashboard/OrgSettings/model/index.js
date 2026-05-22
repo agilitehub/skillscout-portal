@@ -202,7 +202,8 @@ export const transformFromDatabase = (dbData) => {
     industry: dbData.industry,
     description: dbData.description,
     website: dbData.website,
-    foundedYear: dbData.founded_year,
+    foundedYear:
+      dbData.founded_year != null && dbData.founded_year !== '' ? String(dbData.founded_year) : '',
     employeeRange: dbData.employee_range,
     defaultWorkArrangement: dbData.default_work_arrangement,
     currency: dbData.currency,
@@ -435,10 +436,29 @@ const isValidUrl = (url) => {
  * @param {string} year - Year to validate
  * @returns {boolean} Whether year is valid
  */
+export const FOUNDED_YEAR_MIN = 1800
+
 const isValidYear = (year) => {
-  const yearNum = parseInt(year)
+  const yearNum = parseInt(year, 10)
   const currentYear = new Date().getFullYear()
-  return /^\d{4}$/.test(year) && yearNum >= 1800 && yearNum <= currentYear
+  return /^\d{4}$/.test(String(year)) && yearNum >= FOUNDED_YEAR_MIN && yearNum <= currentYear
+}
+
+/**
+ * Year options for founded-year Select (newest first).
+ * @param {number} [endYear] - Defaults to current calendar year
+ * @param {number} [startYear] - Defaults to FOUNDED_YEAR_MIN
+ * @returns {string[]} Four-digit year strings
+ */
+export const getFoundedYearOptions = (
+  endYear = new Date().getFullYear(),
+  startYear = FOUNDED_YEAR_MIN
+) => {
+  const years = []
+  for (let year = endYear; year >= startYear; year -= 1) {
+    years.push(String(year))
+  }
+  return years
 }
 
 // Export configuration object
@@ -458,7 +478,9 @@ const orgSettingsConfig = {
   calculateProfileCompleteness,
   validateIndustryTags,
   generateOrgSummary,
-  isStartup
+  isStartup,
+  FOUNDED_YEAR_MIN,
+  getFoundedYearOptions
 }
 
 export default orgSettingsConfig

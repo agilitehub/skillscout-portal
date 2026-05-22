@@ -33,7 +33,33 @@ html.dark .business-setup-themed-modal .ant-modal-body .ant-select {
   --ant-select-placeholder-color: #9ca3af !important;
   --ant-select-color: #f9fafb !important;
   --ant-color-text-placeholder: #9ca3af !important;
+  --ant-color-text-quaternary: #f9fafb !important;
   color: #f9fafb !important;
+}
+
+/* Pointer on all Select surfaces (tags mode uses combobox input with default text cursor) */
+.business-setup-themed-modal .business-setup-form .ant-select:not(.ant-select-disabled),
+.business-setup-themed-modal .business-setup-form .ant-select:not(.ant-select-disabled) .ant-select-selector,
+.business-setup-themed-modal .business-setup-form .ant-select:not(.ant-select-disabled) .ant-select-content,
+.business-setup-themed-modal .business-setup-form .ant-select:not(.ant-select-disabled) .ant-select-content-value,
+.business-setup-themed-modal .business-setup-form .ant-select:not(.ant-select-disabled) .ant-select-input,
+.business-setup-themed-modal .business-setup-form .ant-select:not(.ant-select-disabled) .ant-select-suffix,
+.business-setup-themed-modal .business-setup-form .ant-select-multiple .ant-select-selector {
+  cursor: pointer !important;
+}
+
+/* Dropdown chevrons — Ant Design 6 uses .ant-select-suffix, not .ant-select-arrow */
+html.dark .business-setup-themed-modal .business-setup-form .ant-select-suffix,
+html.dark .business-setup-themed-modal .business-setup-form .ant-select .ant-select-suffix,
+html.dark .business-setup-themed-modal .business-setup-form .ant-select-arrow,
+html.dark .business-setup-themed-modal .business-setup-form .ant-select .anticon,
+html.dark .business-setup-themed-modal .business-setup-form .ant-select-suffix .anticon,
+html.dark .business-setup-themed-modal .business-setup-form .ant-select-suffix svg,
+html.dark .business-setup-themed-modal .ant-modal-body .ant-select-suffix,
+html.dark .business-setup-themed-modal .ant-modal-body .ant-select .ant-select-suffix,
+html.dark .business-setup-themed-modal .ant-modal-body .ant-select .anticon {
+  color: #f9fafb !important;
+  fill: currentColor !important;
 }
 
 /* Highest specificity: form wrapper + Ant Design 6 placeholder node */
@@ -116,4 +142,36 @@ html.dark
   .ant-input-data-count,
 html.dark .business-setup-themed-modal .business-setup-form .ant-input-data-count {
   color: #f9fafb !important;
+}
+
+/* Dark dropdown scrollbars — rc-virtual-list defaults to black thumb via --rc-virtual-list-scrollbar-bg */
+html.dark .business-setup-dark-dropdown {
+  --rc-virtual-list-scrollbar-bg: #6b7280;
+  scrollbar-color: #6b7280 #374151;
+}
+
+html.dark .business-setup-dark-dropdown .rc-virtual-list-scrollbar-thumb {
+  background: #6b7280 !important;
+}
+
+html.dark .business-setup-dark-dropdown .rc-virtual-list-scrollbar-thumb:hover,
+html.dark .business-setup-dark-dropdown .rc-virtual-list-scrollbar-thumb.rc-virtual-list-scrollbar-thumb-moving {
+  background: #9ca3af !important;
+}
+
+html.dark .business-setup-dark-dropdown .rc-virtual-list-holder {
+  scrollbar-color: #6b7280 #374151;
+}
+
+html.dark .business-setup-dark-dropdown .rc-virtual-list-holder::-webkit-scrollbar {
+  width: 8px;
+}
+
+html.dark .business-setup-dark-dropdown .rc-virtual-list-holder::-webkit-scrollbar-track {
+  background-color: #374151;
+}
+
+html.dark .business-setup-dark-dropdown .rc-virtual-list-holder::-webkit-scrollbar-thumb {
+  background-color: #6b7280;
+  border-radius: 9999px;
 }

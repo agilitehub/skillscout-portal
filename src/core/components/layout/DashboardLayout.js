@@ -24,7 +24,7 @@ export const DashboardLayout = ({ user }) => {
         <aside className='h-full w-[260px] min-w-[260px] max-w-[280px] flex-shrink-0 overflow-y-auto border-r border-gray-700/30'>
           <BusinessSidebar />
         </aside>
-        <main className={`min-h-0 flex-1 overflow-y-auto ${contentBg}`}>
+        <main className={`min-h-0 min-w-0 flex-1 overflow-y-auto overflow-x-hidden ${contentBg}`}>
           <Outlet />
         </main>
       </div>

@@ -1007,6 +1007,22 @@ module.exports = {
         '.dark .global-dropdown .ant-select-item-option-active': {
           backgroundColor: '#4b5563',
           color: '#f9fafb'
+        },
+
+        '.dark .global-dropdown .ant-select-item-empty': {
+          color: '#d1d5db'
+        },
+
+        '.dark .global-dropdown .ant-empty': {
+          color: '#d1d5db'
+        },
+
+        '.dark .global-dropdown .ant-empty-description': {
+          color: '#d1d5db'
+        },
+
+        '.dark .global-dropdown .ant-empty-image svg': {
+          fill: '#9ca3af'
         }
       })
 

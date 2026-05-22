@@ -348,7 +348,7 @@ const QuestionnaireForm = React.memo(({ user }) => {
                         <Select
                           placeholder='Select status'
                           style={{ fontWeight: '500' }}
-                          dropdownClassName='global-dropdown'
+                          dropdownClassName={darkMode ? 'dark-select-dropdown' : 'global-dropdown'}
                         >
                           <Option value='Draft'>Draft</Option>
                           <Option value='Active'>Active</Option>
@@ -362,7 +362,7 @@ const QuestionnaireForm = React.memo(({ user }) => {
                         <Select
                           placeholder='Select category'
                           style={{ fontWeight: '500' }}
-                          dropdownClassName='global-dropdown'
+                          dropdownClassName={darkMode ? 'dark-select-dropdown' : 'global-dropdown'}
                         >
                           <Option value='Technical'>Technical</Option>
                           <Option value='Behavioral'>Behavioral</Option>
@@ -378,7 +378,7 @@ const QuestionnaireForm = React.memo(({ user }) => {
                       mode='tags'
                       placeholder='Add tags (press Enter to add)'
                       style={{ fontWeight: '500' }}
-                      dropdownClassName='global-dropdown'
+                      dropdownClassName={darkMode ? 'dark-select-dropdown' : 'global-dropdown'}
                     />
                   </Form.Item>
                 </div>

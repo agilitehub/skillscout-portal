@@ -281,7 +281,7 @@ const JobListings = React.memo(({ user }) => {
   )
 
   return (
-    <BusinessDashboardPageShell className='flex flex-col min-h-full'>
+    <BusinessDashboardPageShell className='flex min-h-full min-w-0 w-full max-w-full flex-col'>
       <Toolbar
         title='Job Listings'
         description='Manage and track your job listings'
@@ -311,7 +311,7 @@ const JobListings = React.memo(({ user }) => {
             showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`
           }}
           rowKey='id'
-          scroll={{ x: 1200 }}
+          scroll={{ x: 'max-content' }}
           />
         </div>
       </ModuleContainer>
