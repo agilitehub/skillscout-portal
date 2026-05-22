@@ -1,5 +1,15 @@
 /* Job listings table — tags and pagination in dark mode */
 
+.job-listings-table {
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+}
+
+.job-listings-table .ant-table-wrapper {
+  min-width: 0;
+}
+
 html.dark .job-listings-table .ant-tag {
   border-width: 1px;
   border-style: solid;

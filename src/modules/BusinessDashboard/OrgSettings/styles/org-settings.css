@@ -246,6 +246,38 @@ html:not(.dark) .org-settings-tabs .ant-tabs-tab:hover {
   color: #ffffff !important;
 }
 
+/* Dark dropdown scrollbars — rc-virtual-list defaults to black thumb via --rc-virtual-list-scrollbar-bg */
+html.dark .org-settings-dark-dropdown {
+  --rc-virtual-list-scrollbar-bg: #6b7280;
+  scrollbar-color: #6b7280 #374151;
+}
+
+html.dark .org-settings-dark-dropdown .rc-virtual-list-scrollbar-thumb {
+  background: #6b7280 !important;
+}
+
+html.dark .org-settings-dark-dropdown .rc-virtual-list-scrollbar-thumb:hover,
+html.dark .org-settings-dark-dropdown .rc-virtual-list-scrollbar-thumb.rc-virtual-list-scrollbar-thumb-moving {
+  background: #9ca3af !important;
+}
+
+html.dark .org-settings-dark-dropdown .rc-virtual-list-holder {
+  scrollbar-color: #6b7280 #374151;
+}
+
+html.dark .org-settings-dark-dropdown .rc-virtual-list-holder::-webkit-scrollbar {
+  width: 8px;
+}
+
+html.dark .org-settings-dark-dropdown .rc-virtual-list-holder::-webkit-scrollbar-track {
+  background-color: #374151;
+}
+
+html.dark .org-settings-dark-dropdown .rc-virtual-list-holder::-webkit-scrollbar-thumb {
+  background-color: #6b7280;
+  border-radius: 9999px;
+}
+
 .work-arrangement-dropdown .ant-select-item {
   min-height: 60px !important;
   padding: 8px 12px !important;

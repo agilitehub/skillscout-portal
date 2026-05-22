@@ -279,7 +279,7 @@ const TableView = React.memo(
     return (
       <>
         <Card
-          className={`table-view-card shadow-xl rounded-lg overflow-hidden ${
+          className={`table-view-card shadow-xl rounded-lg ${
             darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
           }`}
           {...cardProps}
@@ -327,8 +327,8 @@ const TableView = React.memo(
             </div>
           )}
 
-          {/* Enhanced Table */}
-          <div className='p-6'>
+          {/* Enhanced Table — horizontal scroll when columns exceed viewport */}
+          <div className='table-view-scroll min-w-0 w-full max-w-full overflow-x-auto p-6'>
             <Table
               columns={columns}
               dataSource={dataSource}

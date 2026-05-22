@@ -66,6 +66,32 @@ html.dark .dark-select-dropdown .ant-select-item-option-selected:hover {
   background-color: #047857 !important;
 }
 
+/* Tags dropdown empty state — Ant Design Empty ("No data") in dark mode */
+html.dark .dark-select-dropdown .ant-select-item-empty,
+html.dark .dark-select-dropdown .ant-empty,
+html.dark .dark-select-dropdown .ant-empty-small,
+html.dark .dark-select-dropdown .ant-empty-normal,
+html.dark .global-dropdown .ant-select-item-empty,
+html.dark .global-dropdown .ant-empty,
+html.dark .global-dropdown .ant-empty-small,
+html.dark .global-dropdown .ant-empty-normal {
+  color: #d1d5db !important;
+}
+
+html.dark .dark-select-dropdown .ant-empty-description,
+html.dark .dark-select-dropdown .ant-empty .ant-empty-description,
+html.dark .global-dropdown .ant-empty-description,
+html.dark .global-dropdown .ant-empty .ant-empty-description {
+  color: #d1d5db !important;
+}
+
+html.dark .dark-select-dropdown .ant-empty-image svg,
+html.dark .dark-select-dropdown .ant-empty-image svg path,
+html.dark .global-dropdown .ant-empty-image svg,
+html.dark .global-dropdown .ant-empty-image svg path {
+  fill: #9ca3af !important;
+}
+
 /* Create/edit questionnaire form — white dropdown chevrons in dark mode (Ant Design 6 .ant-select-suffix) */
 html.dark .questionnaire-form-page .global-form .ant-select {
   --ant-color-text-quaternary: #f9fafb;
