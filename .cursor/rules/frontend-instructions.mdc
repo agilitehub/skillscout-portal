@@ -8,15 +8,40 @@ alwaysApply: true
 - Start each file with the comment:  
   `// Frontend Instructions Rule Applied!`
 - All UI must be **responsive**, prioritizing **mobile-first** design.
-- Support **light and dark mode** via `src/core/context/ThemeContext.js`.
+- Support **light and dark mode** via `src/core/context/ThemeContext.js` (`ThemeProvider` toggles the `dark` class on `<html>`).
 
 ---
 
-### **Styling**
-- **Use TailwindCSS exclusively** for all styling.  
-  ❌ No inline styles.  
-  ❌ No custom CSS files.  
-- Use predefined colors from `src/core/theme/colors.js`.
+### **Styling architecture (token-first)**
+
+Semantic light/dark colors are defined **once** in **`src/core/theme/tokens.css`** (`:root` and `.dark`). Tailwind and shared CSS consume them — do not duplicate hex values across files.
+
+| Layer | Location | Purpose |
+|-------|----------|---------|
+| **Tokens** | `src/core/theme/tokens.css` | CSS custom properties (`--color-background`, `--color-foreground`, …) |
+| **Tailwind utilities** | `src/core/theme/tailwind/themeColors.js` + root `tailwind.config.js` | Semantic classes: `bg-background`, `text-foreground`, `border-border`, `bg-surface`, `text-muted`, … |
+| **Base + shared CSS** | `src/core/theme/tailwind/tailwind.css`, `src/core/theme/module-shared.css` | Body/scrollbar (`@layer base`); cross-module Ant Design patterns (toolbar buttons, modals, dropdowns, pagination) |
+| **Tailwind plugin** | `src/core/theme/tailwind/tailwindPlugin.js` | Reusable component classes: `global-form`, `enhanced-table`, `form-btn-primary`, `card-base`, … |
+| **JS color constants** | `src/core/theme/colors.js` | `BRAND_COLORS`, `LIGHT_THEME`, `DARK_THEME` — **only** for inline `styles` props, charts, or Ant Design APIs that need hex/rgb in JS |
+| **Module CSS** | `src/modules/.../styles/*.css` | Feature-specific Ant Design overrides Ant Design 6 cannot cover with utilities alone; **must** use `rgb(var(--color-*))` |
+
+**Entry:** `src/index.js` imports `./core/theme` → loads `tailwind.css` (which imports `tokens.css` and `module-shared.css`).
+
+#### Do
+
+- Prefer **semantic Tailwind utilities** from tokens: `bg-surface text-foreground border-border`, not `bg-white dark:bg-gray-800`.
+- Add **`className="global-form"`** on Ant Design `<Form>` for standard input/select/switch theming.
+- Use **`rgb(var(--color-<token>))`** in module CSS so values switch with `.dark` automatically.
+- Reserve **`dark:`** for behavioural differences (gradients, show/hide decorative layers), not standard chrome.
+- Reserve **`html.dark`** in module CSS only when Ant Design needs extra specificity or `!important`.
+
+#### Don't
+
+- ❌ Hardcode light/dark hex pairs in components or CSS when a token exists.
+- ❌ Add new global CSS outside `src/core/theme/` unless promoting a shared pattern into `module-shared.css` or the Tailwind plugin.
+- ❌ Use `GlobalStyles.js` (removed — base styles live in `tailwind.css`).
+- ❌ Import per-module toolbar CSS stubs — use classes from `module-shared.css` (e.g. `.dashboard-button`, `.accent-toolbar-btn`).
+- ❌ Inline `style={{}}` for layout/colors when Tailwind or tokens can express it (exception: Ant Design `styles` prop, dynamic chart colours).
 
 ---
 

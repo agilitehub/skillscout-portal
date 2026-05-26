@@ -14,6 +14,8 @@ The review must be based on:
 
 2. **Frontend UI Standards** (`frontend-instructions.mdc`):
   - Reference the @frontend-instructions.mdc for all frontend UI rules
+  - Verify styling uses **`tokens.css`** semantic tokens (Tailwind utilities or `rgb(var(--color-*))` in CSS), not hardcoded light/dark hex pairs
+  - Verify Ant Design forms use **`global-form`** where appropriate; shared patterns belong in **`module-shared.css`** / **`tailwindPlugin.js`**, not duplicated per module
 
 ---
 

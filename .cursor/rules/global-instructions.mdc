@@ -55,3 +55,9 @@ Expert-level Web Development in **JavaScript**, **ReactJS**, **TailwindCSS**, an
 - Sanitize all external data before rendering to prevent XSS attacks.
 - Use environment variables (`process.env`) for secrets.
 
+---
+
+### **Theming**
+- Light/dark semantic colours live in **`src/core/theme/tokens.css`**; do not add ad-hoc palette definitions in feature code.
+- See **`frontend-instructions.mdc`** for the full styling stack (Tailwind utilities, `module-shared.css`, Tailwind plugin, module CSS).
+

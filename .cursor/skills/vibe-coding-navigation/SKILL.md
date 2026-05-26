@@ -55,7 +55,7 @@ This component reads `BUSINESS_SIDEBAR_MAIN_ITEMS` and `BUSINESS_SIDEBAR_SETTING
 
 **Minimal edits to `src/core/config/navigation.js`** are the designated way to add or adjust business sidebar items. Do not use that as an excuse to rewrite `BusinessSidebar.js` or other core layers unless the product requires it.
 
-For everything else in `src/core` (theme, `infra`, auth, layout internals), see the **vibe-coding-module** skill: default is hands off, with a separate exception for shared components.
+For everything else in `src/core` (theme tokens, `module-shared.css`, `infra`, auth, layout internals), see the **vibe-coding-module** skill: default is hands off, with exceptions for shared components and theme/CSS promotion.
 
 ## Quick reference
 
