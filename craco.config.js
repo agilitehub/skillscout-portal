@@ -4,7 +4,20 @@
 // Load environment variables from .env files using agilite-utils
 require('agilite-utils/dist/dotenv').default.config()
 
+/** Where the dev server forwards /openclaw/* (OpenClaw gateway on this machine). */
+const openClawProxyTarget = process.env.REACT_APP_OPENCLAW_PROXY_TARGET || 'http://127.0.0.1:18789'
+
 module.exports = {
+  devServer: {
+    proxy: [
+      {
+        context: ['/openclaw'],
+        target: openClawProxyTarget,
+        changeOrigin: true,
+        pathRewrite: { '^/openclaw': '' }
+      }
+    ]
+  },
   webpack: {
     // Customize webpack configuration
     configure: (config) => ({

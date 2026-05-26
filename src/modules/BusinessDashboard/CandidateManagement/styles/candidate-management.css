@@ -1,0 +1,62 @@
+/* Candidate Management — Ant table overrides for import preview and list */
+
+html.dark .candidate-management-table .ant-input {
+  background-color: rgb(31 41 55);
+  border-color: rgb(75 85 99);
+  color: rgb(243 244 246);
+}
+
+/* Bulk upload wizard — keep action bar visible (modal container uses overflow:hidden) */
+.candidate-import-wizard-modal.themed-modal .ant-modal-container {
+  display: flex;
+  flex-direction: column;
+  max-height: min(92vh, 960px);
+  width: min(1200px, 96vw) !important;
+}
+
+.candidate-import-wizard-modal.themed-modal .ant-modal-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.candidate-import-wizard-body {
+  min-height: 420px;
+}
+
+.candidate-import-wizard-body .candidate-import-preview-table {
+  min-height: 360px;
+}
+
+.candidate-import-wizard-modal .candidate-import-wizard-actions {
+  flex-shrink: 0;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top-width: 1px;
+  border-top-style: solid;
+}
+
+html.dark .candidate-import-wizard-modal .candidate-import-wizard-actions {
+  border-top-color: rgb(75 85 99);
+  background-color: rgb(30 41 59);
+}
+
+html:not(.dark) .candidate-import-wizard-modal .candidate-import-wizard-actions {
+  border-top-color: rgb(229 231 235);
+  background-color: rgb(255 255 255);
+}
+
+/* Ensure wizard footer buttons stay visible (antd + explicit inline styles) */
+.candidate-import-wizard-actions .ant-btn {
+  min-height: 36px;
+  font-weight: 500;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+html.dark .candidate-import-wizard-actions .ant-btn-default:not(:disabled) {
+  color: #f9fafb !important;
+}
+
+html.dark .candidate-import-wizard-actions .ant-btn-primary:not(:disabled) {
+  color: #ffffff !important;
+}

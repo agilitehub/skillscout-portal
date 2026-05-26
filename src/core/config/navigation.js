@@ -9,6 +9,7 @@ import {
   faHome,
   faList,
   faSliders,
+  faUserGraduate,
   faUsers
 } from '@fortawesome/free-solid-svg-icons'
 import { buildBusinessDashboardPath } from '../../constants'
@@ -73,6 +74,12 @@ export const BUSINESS_SIDEBAR_SETTINGS_CATEGORY = {
   label: 'Settings',
   icon: faCogs,
   items: [
+    {
+      path: buildBusinessDashboardPath('candidate-management'),
+      icon: faUserGraduate,
+      label: 'Candidate Management',
+      exact: false
+    },
     {
       path: buildBusinessDashboardPath('user-management'),
       icon: faUsers,

@@ -18,6 +18,7 @@ import BranchManagement, { BranchEditPage } from './modules/BusinessDashboard/Br
 import OrgSettings from './modules/BusinessDashboard/OrgSettings'
 import Billing from './modules/BusinessDashboard/Billing'
 import Candidates, { CandidateForm } from './modules/BusinessDashboard/Candidates'
+import CandidateManagement from './modules/BusinessDashboard/CandidateManagement'
 
 // Protect routes with an element wrapper
 function Protected() {
@@ -95,6 +96,8 @@ export default function AppRoutes() {
             <Route path='create' element={<CreateQuestionnaire user={user} />} />
             <Route path=':id/edit' element={<QuestionnaireForm user={user} />} />
           </Route>
+
+          <Route path='candidate-management' element={<CandidateManagement user={user} />} />
 
           {/* User Management */}
           <Route path='user-management'>
