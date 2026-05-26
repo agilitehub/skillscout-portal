@@ -17,7 +17,6 @@ import TableView from '../../../../core/components/view-components/table-view/Ta
 import '../styles/job-descriptions.css'
 import TableActions from '../../../../core/components/view-components/table-view/TableActions'
 import { Toolbar } from '../../../../core/components'
-import '../../styles/dashboard-toolbar-buttons.css'
 import ModuleContainer from '../../../../core/components/layout/Container/ModuleContainer'
 
 /**

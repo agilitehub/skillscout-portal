@@ -1,4 +1,4 @@
-/* Job descriptions table — tags and pagination in dark mode */
+/* Job Descriptions table — pagination in module-shared.css */
 
 html.dark .job-descriptions-table .ant-tag,
 .job-descriptions-table .ant-tag {
@@ -13,41 +13,10 @@ html.dark .job-descriptions-table .ant-tag,
   padding-inline: 8px;
 }
 
-/* Prevent fixed-column table from clipping keyword / level tags */
 .job-descriptions-table .ant-table-tbody > tr > td {
   overflow: visible;
 }
 
 .job-descriptions-table .ant-table-cell {
   vertical-align: middle;
-}
-
-html.dark .job-descriptions-table .ant-pagination .ant-select,
-html.dark .job-descriptions-table .table-pagination-size-select {
-  --ant-select-background-color: #4b5563 !important;
-  --ant-select-border-color: #6b7280 !important;
-  --ant-select-color: #f9fafb !important;
-  background-color: #4b5563 !important;
-  border-color: #6b7280 !important;
-  color: #f9fafb !important;
-}
-
-html.dark .job-descriptions-table .ant-pagination .ant-select-content,
-html.dark .job-descriptions-table .ant-pagination .ant-select-content-value {
-  color: #f9fafb !important;
-}
-
-html.dark .job-descriptions-table .ant-pagination .ant-select-suffix,
-html.dark .job-descriptions-table .ant-pagination .ant-select .anticon {
-  color: #e5e7eb !important;
-}
-
-html.dark .job-descriptions-table .ant-pagination-options-quick-jumper input {
-  background-color: #4b5563 !important;
-  border-color: #6b7280 !important;
-  color: #f9fafb !important;
-}
-
-html.dark .job-descriptions-table .ant-pagination-options-quick-jumper {
-  color: #e5e7eb !important;
 }

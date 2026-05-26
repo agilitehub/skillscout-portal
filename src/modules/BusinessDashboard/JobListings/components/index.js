@@ -20,7 +20,6 @@ import TableView from '../../../../core/components/view-components/table-view/Ta
 import TableActions from '../../../../core/components/view-components/table-view/TableActions'
 import { Toolbar } from '../../../../core/components'
 
-import '../../styles/dashboard-toolbar-buttons.css'
 import '../styles/job-listings.css'
 import ModuleContainer from '../../../../core/components/layout/Container/ModuleContainer'
 

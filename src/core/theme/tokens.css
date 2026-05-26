@@ -1,0 +1,245 @@
+/* Global Instructions Rule Applied! */
+
+/**
+ * Semantic design tokens — single source of truth for light/dark palettes.
+ * Values align with LIGHT_THEME / DARK_THEME in colors.js (Skill Scout palette).
+ * Consumed via Tailwind utilities (bg-background, text-foreground, …) and themeTokens.js.
+ */
+:root {
+  /* Surfaces */
+  --color-background: 255 255 255;
+  --color-surface: 255 255 255;
+  --color-surface-muted: 249 250 251;
+  --color-surface-elevated: 243 244 246;
+
+  /* Borders */
+  --color-border: 229 231 235;
+  --color-border-input: 209 213 219;
+  --color-border-muted: 243 244 246;
+  --color-border-glass: rgb(255 255 255 / 0.3);
+
+  /* Text */
+  --color-foreground: 17 24 39;
+  --color-muted: 107 114 128;
+  --color-subtle: 156 163 175;
+  --color-placeholder: 156 163 175;
+  --color-on-primary: 255 255 255;
+
+  /* Interactive */
+  --color-ring-offset: 255 255 255;
+  --color-overlay-hover: rgb(0 0 0 / 0.06);
+  --color-focus-ring: 5 150 105;
+  --color-focus-ring-shadow: 0 0 0 2px rgb(5 150 105 / 0.2);
+
+  /* Form controls */
+  --color-input-bg: 255 255 255;
+  --color-input-border: 209 213 219;
+  --color-input-text: 17 24 39;
+  --color-tag-bg: 243 244 246;
+  --color-switch-track: 209 213 219;
+
+  /* Secondary actions */
+  --color-btn-secondary-bg: 255 255 255;
+  --color-btn-secondary-border: 209 213 219;
+  --color-btn-secondary-text: 55 65 81;
+  --color-btn-secondary-hover-bg: 249 250 251;
+  --color-btn-secondary-hover-border: 156 163 175;
+  --color-btn-secondary-hover-text: 17 24 39;
+
+  /* Scrollbar */
+  --color-scrollbar-track: 243 244 246;
+  --color-scrollbar-thumb: 209 213 219;
+  --color-scrollbar-thumb-hover: 156 163 175;
+
+  /* Tables */
+  --color-table-header-from: 249 250 251;
+  --color-table-header-to: 243 244 246;
+  --color-table-header-text: 55 65 81;
+  --color-table-row-border: 243 244 246;
+  --color-table-row-hover-from: 240 249 255;
+  --color-table-row-hover-to: 236 253 245;
+  --color-table-row-hover-shadow: 0 4px 12px rgb(0 0 0 / 0.1);
+  --color-table-selected-from: 236 253 245;
+  --color-table-selected-to: 209 250 229;
+  --color-table-selected-text: 6 95 70;
+
+  /* Dropdowns / popovers */
+  --color-dropdown-bg: 255 255 255;
+  --color-dropdown-border: 209 213 219;
+  --color-dropdown-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  --color-dropdown-hover-bg: 243 244 246;
+  --color-dropdown-empty-text: 107 114 128;
+
+  /* Cards / modals */
+  --color-card-shadow: 0 1px 3px rgb(0 0 0 / 0.1);
+  --color-card-hover-shadow: 0 4px 12px rgb(0 0 0 / 0.15);
+
+  /* Brand (static accents) */
+  --color-brand-primary: 74 144 164;
+  --color-brand-secondary: 5 150 105;
+  --color-brand-secondary-hover: 4 120 87;
+  --color-brand-accent: 22 160 133;
+  --color-brand-accent-light: 52 211 153;
+  --color-success: 16 185 129;
+  --color-danger: 220 38 38;
+  --color-danger-hover: 185 28 28;
+  --color-info: 59 130 246;
+  --color-info-hover: 37 99 235;
+  --color-warning: 245 158 11;
+  --color-error-text: 248 113 113;
+  --color-error-border: 239 68 68;
+  --color-close-hover: 16 185 129;
+
+  /* Toolbar pills on emerald header (always light control) */
+  --color-accent-toolbar-bg: 255 255 255;
+  --color-accent-toolbar-text: 5 150 105;
+  --color-accent-toolbar-hover-bg: 248 249 250;
+  --color-accent-toolbar-hover-text: 4 120 87;
+  --color-accent-toolbar-muted-text: 107 114 128;
+  --color-accent-toolbar-muted-hover-text: 75 85 99;
+
+  /* Descriptions / invoice / alerts */
+  --color-descriptions-label-bg: 249 250 251;
+  --color-descriptions-content-bg: 255 255 255;
+  --color-invoice-strip-bg: 224 224 224;
+  --color-alert-bg: 224 224 224;
+  --color-alert-border: 217 217 217;
+  --color-permission-category-bg: 249 250 251;
+  --color-tab-nav-bg: 255 255 255;
+  --color-tab-inactive-bg: 255 255 255;
+  --color-tab-inactive-border: 209 213 219;
+  --color-tab-active-bg: 5 150 105;
+  --color-tab-active-border: 5 150 105;
+  --color-future-feature-bg: 243 244 246;
+  --color-future-feature-border: 229 231 235;
+  --color-dropdown-shadow-lg: 0 4px 12px rgb(0 0 0 / 0.15);
+  --color-virtual-list-scrollbar: 107 114 128;
+  --color-virtual-list-scrollbar-hover: 156 163 175;
+  --color-plan-current-tint: rgb(59 130 246 / 0.05);
+  --color-plan-selected-ring: 0 0 0 2px rgb(16 185 129 / 0.2);
+
+  /* Chat / kanban */
+  --color-chat-attach: 22 160 133;
+  --color-chat-drop-zone: rgb(59 130 246 / 0.05);
+  --color-chat-subtext: rgb(75 85 99 / 1);
+  --color-kanban-indicator: 16 185 129;
+  --color-kanban-indicator-glow: 0 0 12px rgb(16 185 129 / 0.8);
+
+  /* Gradients (mode-specific) */
+  --gradient-button-primary: linear-gradient(
+    135deg,
+    #5ba3d4 0%,
+    #4a90a4 25%,
+    #16a085 60%,
+    #059669 100%
+  );
+  --gradient-button-secondary: linear-gradient(135deg, #5ba3d4, #16a085);
+  --gradient-magic-link: linear-gradient(135deg, #5ba3d4, #16a085);
+  --gradient-magic-link-submit: linear-gradient(
+    135deg,
+    #5ba3d4 0%,
+    #4a90a4 25%,
+    #16a085 60%,
+    #059669 100%
+  );
+  --gradient-chat-send: linear-gradient(to right, #059669, #16a085);
+}
+
+.dark {
+  --color-background: 17 24 39;
+  --color-surface: 31 41 55;
+  --color-surface-muted: 17 24 39;
+  --color-surface-elevated: 55 65 81;
+
+  --color-border: 55 65 81;
+  --color-border-input: 75 85 99;
+  --color-border-muted: 75 85 99;
+  --color-border-glass: rgb(31 41 55 / 0.7);
+
+  --color-foreground: 255 255 255;
+  --color-muted: 229 231 235;
+  --color-subtle: 209 219 223;
+  --color-placeholder: 107 114 128;
+
+  --color-ring-offset: 17 24 39;
+  --color-overlay-hover: rgb(255 255 255 / 0.08);
+
+  --color-input-bg: 75 85 99;
+  --color-input-border: 107 114 128;
+  --color-input-text: 249 250 251;
+  --color-tag-bg: 55 65 81;
+  --color-switch-track: 107 114 128;
+
+  --color-btn-secondary-bg: 75 85 99;
+  --color-btn-secondary-border: 107 114 128;
+  --color-btn-secondary-text: 249 250 251;
+  --color-btn-secondary-hover-bg: 55 65 81;
+  --color-btn-secondary-hover-border: 75 85 99;
+  --color-btn-secondary-hover-text: 255 255 255;
+
+  --color-scrollbar-track: 31 41 55;
+  --color-scrollbar-thumb: 75 85 99;
+  --color-scrollbar-thumb-hover: 107 114 128;
+
+  --color-table-header-from: 55 65 81;
+  --color-table-header-to: 75 85 99;
+  --color-table-header-text: 229 231 235;
+  --color-table-row-border: 75 85 99;
+  --color-table-row-hover-from: 55 65 81;
+  --color-table-row-hover-to: 75 85 99;
+  --color-table-row-hover-shadow: 0 4px 12px rgb(0 0 0 / 0.4);
+  --color-table-selected-from: 6 95 70;
+  --color-table-selected-to: 4 120 87;
+  --color-table-selected-text: 255 255 255;
+
+  --color-dropdown-bg: 55 65 81;
+  --color-dropdown-border: 75 85 99;
+  --color-dropdown-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.3);
+  --color-dropdown-hover-bg: 75 85 99;
+  --color-dropdown-empty-text: 209 219 223;
+
+  --color-card-shadow: 0 1px 3px rgb(0 0 0 / 0.3);
+  --color-card-hover-shadow: 0 4px 12px rgb(0 0 0 / 0.4);
+
+  --color-chat-attach: 74 144 164;
+  --color-chat-drop-zone: rgb(59 130 246 / 0.1);
+  --color-chat-subtext: rgb(229 231 235 / 0.9);
+  --color-kanban-indicator: 52 211 153;
+  --color-kanban-indicator-glow: 0 0 12px rgb(52 211 153 / 0.8);
+
+  --color-descriptions-label-bg: 75 85 99;
+  --color-descriptions-content-bg: 31 41 55;
+  --color-invoice-strip-bg: 75 85 99;
+  --color-alert-bg: 75 85 99;
+  --color-alert-border: 107 114 128;
+  --color-permission-category-bg: 75 85 99;
+  --color-tab-nav-bg: 55 65 81;
+  --color-tab-inactive-bg: 75 85 99;
+  --color-tab-inactive-border: 107 114 128;
+  --color-tab-active-bg: 5 150 105;
+  --color-tab-active-border: 5 150 105;
+  --color-future-feature-bg: 55 65 81;
+  --color-future-feature-border: 75 85 99;
+  --color-dropdown-shadow-lg: 0 4px 12px rgb(0 0 0 / 0.3);
+  --color-virtual-list-scrollbar: 107 114 128;
+  --color-virtual-list-scrollbar-hover: 156 163 175;
+  --color-plan-current-tint: rgb(59 130 246 / 0.1);
+  --color-error-text: 252 165 165;
+
+  --gradient-button-primary: linear-gradient(
+    135deg,
+    #1e3a52 0%,
+    #4a90a4 35%,
+    #059669 70%,
+    #065f46 100%
+  );
+  --gradient-button-secondary: linear-gradient(135deg, #5ba3d4, #16a085);
+  --gradient-magic-link: linear-gradient(135deg, #5ba3d4, #16a085);
+  --gradient-magic-link-submit: linear-gradient(
+    135deg,
+    #1e3a52 0%,
+    #4a90a4 35%,
+    #059669 70%,
+    #065f46 100%
+  );
+}

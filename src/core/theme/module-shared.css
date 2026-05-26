@@ -1,0 +1,653 @@
+/* Global Instructions Rule Applied! */
+
+/**
+ * Shared module Ant Design overrides using semantic tokens from tokens.css.
+ * Import after tokens.css — values switch automatically when .dark is on <html>.
+ */
+
+/* ── Accent toolbar buttons (white pill on emerald header) ───────────────── */
+.accent-toolbar-btn,
+.accent-toolbar-btn.ant-btn,
+button.accent-toolbar-btn,
+.dashboard-button,
+.dashboard-button.ant-btn,
+button.dashboard-button,
+.bell-button,
+.bell-button.ant-btn,
+button.bell-button,
+.add-candidate-visible,
+.add-candidate-visible.ant-btn,
+button.add-candidate-visible,
+.add-branch-btn,
+.add-branch-btn.ant-btn,
+button.add-branch-btn,
+.create-branch-page-btn,
+.create-branch-page-btn.ant-btn,
+button.create-branch-page-btn {
+  background: rgb(var(--color-accent-toolbar-bg)) !important;
+  background-color: rgb(var(--color-accent-toolbar-bg)) !important;
+  color: rgb(var(--color-accent-toolbar-text)) !important;
+  border: 1px solid rgb(var(--color-accent-toolbar-bg)) !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.accent-toolbar-btn:hover,
+.accent-toolbar-btn.ant-btn:hover,
+button.accent-toolbar-btn:hover,
+.dashboard-button:hover,
+.dashboard-button.ant-btn:hover,
+button.dashboard-button:hover,
+.bell-button:hover,
+.bell-button.ant-btn:hover,
+button.bell-button:hover,
+.add-candidate-visible:hover,
+.add-candidate-visible.ant-btn:hover,
+button.add-candidate-visible:hover,
+.add-branch-btn:hover,
+.add-branch-btn.ant-btn:hover,
+button.add-branch-btn:hover,
+.create-branch-page-btn:hover,
+.create-branch-page-btn.ant-btn:hover,
+button.create-branch-page-btn:hover {
+  background: rgb(var(--color-accent-toolbar-hover-bg)) !important;
+  background-color: rgb(var(--color-accent-toolbar-hover-bg)) !important;
+  color: rgb(var(--color-accent-toolbar-hover-text)) !important;
+  border: 1px solid rgb(var(--color-accent-toolbar-hover-bg)) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 0.15) !important;
+}
+
+.reset-branch-btn,
+.reset-branch-btn.ant-btn,
+button.reset-branch-btn {
+  background: rgb(var(--color-accent-toolbar-bg)) !important;
+  background-color: rgb(var(--color-accent-toolbar-bg)) !important;
+  color: rgb(var(--color-accent-toolbar-muted-text)) !important;
+  border: 1px solid rgb(var(--color-accent-toolbar-bg)) !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  transition: all 0.2s ease !important;
+}
+
+.reset-branch-btn:hover,
+.reset-branch-btn.ant-btn:hover,
+button.reset-branch-btn:hover {
+  background: rgb(var(--color-accent-toolbar-hover-bg)) !important;
+  background-color: rgb(var(--color-accent-toolbar-hover-bg)) !important;
+  color: rgb(var(--color-accent-toolbar-muted-hover-text)) !important;
+  border: 1px solid rgb(var(--color-accent-toolbar-hover-bg)) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgb(0 0 0 / 0.15) !important;
+}
+
+.dashboard-button .anticon,
+.dashboard-button svg,
+.add-candidate-visible svg,
+.add-candidate-visible .anticon {
+  margin-right: 4px !important;
+}
+
+.dashboard-button span,
+.add-candidate-visible span {
+  margin-left: 4px !important;
+}
+
+/* ── Primary / info action buttons ─────────────────────────────────────────── */
+.token-primary-btn,
+.candidate-form-cancel-btn,
+.candidate-form-submit-btn,
+.candidate-form-cancel-btn.ant-btn,
+.candidate-form-submit-btn.ant-btn,
+button.candidate-form-cancel-btn,
+button.candidate-form-submit-btn,
+.invoice-view-btn {
+  background-color: rgb(var(--color-brand-secondary)) !important;
+  border-color: rgb(var(--color-brand-secondary)) !important;
+  color: rgb(var(--color-on-primary)) !important;
+  font-weight: 500 !important;
+  transition: all 0.2s ease !important;
+}
+
+.token-primary-btn:hover,
+.candidate-form-cancel-btn:hover,
+.candidate-form-submit-btn:hover,
+.candidate-form-cancel-btn.ant-btn:hover,
+.candidate-form-submit-btn.ant-btn:hover,
+button.candidate-form-cancel-btn:hover,
+button.candidate-form-submit-btn:hover,
+.invoice-view-btn:hover {
+  background-color: rgb(var(--color-brand-secondary-hover)) !important;
+  border-color: rgb(var(--color-brand-secondary-hover)) !important;
+  color: rgb(var(--color-on-primary)) !important;
+}
+
+.token-primary-btn:focus,
+.candidate-form-cancel-btn:focus,
+.candidate-form-submit-btn:focus,
+.invoice-view-btn:focus {
+  box-shadow: var(--color-focus-ring-shadow) !important;
+}
+
+.invoice-view-btn {
+  padding: 4px 12px !important;
+  height: auto !important;
+  min-height: 32px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 6px !important;
+}
+
+.invoice-view-btn svg {
+  margin-right: 4px !important;
+}
+
+.token-info-btn,
+.invoice-download-btn {
+  background-color: rgb(var(--color-info)) !important;
+  border-color: rgb(var(--color-info)) !important;
+  color: rgb(var(--color-on-primary)) !important;
+  font-weight: 500 !important;
+  padding: 4px 12px !important;
+  height: auto !important;
+  min-height: 32px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 6px !important;
+}
+
+.token-info-btn:hover,
+.invoice-download-btn:hover {
+  background-color: rgb(var(--color-info-hover)) !important;
+  border-color: rgb(var(--color-info-hover)) !important;
+  color: rgb(var(--color-on-primary)) !important;
+}
+
+.invoice-download-btn:focus {
+  box-shadow: 0 0 0 2px rgb(59 130 246 / 0.2) !important;
+}
+
+.invoice-download-btn svg {
+  margin-right: 4px !important;
+}
+
+.candidate-form-cancel-btn span,
+.candidate-form-submit-btn span,
+.candidate-form-cancel-btn .anticon,
+.candidate-form-submit-btn .anticon {
+  color: rgb(var(--color-on-primary)) !important;
+}
+
+.candidate-form-cancel-btn,
+.candidate-form-submit-btn {
+  box-shadow: 0 2px 4px rgb(0 0 0 / 0.1) !important;
+}
+
+.candidate-form-cancel-btn:hover,
+.candidate-form-submit-btn:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 8px rgb(0 0 0 / 0.15) !important;
+}
+
+.add-candidate-visible {
+  height: 28px !important;
+  font-size: 13px !important;
+  padding: 2px 10px !important;
+}
+
+.create-branch-page-btn:disabled,
+.create-branch-page-btn.ant-btn:disabled,
+button.create-branch-page-btn:disabled {
+  transform: none !important;
+  cursor: not-allowed !important;
+}
+
+/* ── Modal shells (token-driven — no html.dark duplicate) ────────────────── */
+.token-modal .ant-modal-content,
+.view-branch-modal .ant-modal-content,
+.branch-modal .ant-modal-content,
+.permissions-modal .ant-modal-content,
+.ai-profile-modal .ant-modal-content,
+.invoice-details-modal .ant-modal-content,
+.plan-upgrade-modal .ant-modal-content,
+.payment-method-modal .ant-modal-content,
+.dark-modal .ant-modal-content {
+  background-color: rgb(var(--color-surface)) !important;
+  color: rgb(var(--color-foreground)) !important;
+  border: 1px solid rgb(var(--color-border)) !important;
+}
+
+.token-modal .ant-modal-header,
+.view-branch-modal .ant-modal-header,
+.branch-modal .ant-modal-header,
+.permissions-modal .ant-modal-header,
+.ai-profile-modal .ant-modal-header,
+.invoice-details-modal .ant-modal-header,
+.plan-upgrade-modal .ant-modal-header,
+.payment-method-modal .ant-modal-header,
+.dark-modal .ant-modal-header {
+  background-color: rgb(var(--color-surface)) !important;
+  border-bottom: 1px solid rgb(var(--color-border)) !important;
+}
+
+.token-modal .ant-modal-close,
+.view-branch-modal .ant-modal-close,
+.branch-modal .ant-modal-close,
+.permissions-modal .ant-modal-close,
+.ai-profile-modal .ant-modal-close,
+.invoice-details-modal .ant-modal-close,
+.plan-upgrade-modal .ant-modal-close,
+.payment-method-modal .ant-modal-close,
+.dark-modal .ant-modal-close {
+  color: rgb(var(--color-foreground)) !important;
+}
+
+.token-modal .ant-modal-close:hover,
+.view-branch-modal .ant-modal-close:hover,
+.branch-modal .ant-modal-close:hover,
+.permissions-modal .ant-modal-close:hover,
+.ai-profile-modal .ant-modal-close:hover,
+.invoice-details-modal .ant-modal-close:hover,
+.plan-upgrade-modal .ant-modal-close:hover,
+.payment-method-modal .ant-modal-close:hover,
+.dark-modal .ant-modal-close:hover {
+  color: rgb(var(--color-close-hover)) !important;
+}
+
+.dark-modal .ant-modal-title,
+.dark-modal .ant-modal-body,
+.dark-modal .ant-modal-footer {
+  background-color: rgb(var(--color-surface)) !important;
+  color: rgb(var(--color-foreground)) !important;
+  border-color: rgb(var(--color-border)) !important;
+}
+
+html.dark .profile-modal .ant-modal-container {
+  background-color: rgb(var(--color-surface)) !important;
+  color: rgb(var(--color-foreground)) !important;
+  border: 1px solid rgb(var(--color-border)) !important;
+}
+
+html.dark .profile-modal .ant-modal-header,
+html.dark .profile-modal .ant-modal-body {
+  background-color: rgb(var(--color-surface)) !important;
+  border-color: rgb(var(--color-border)) !important;
+}
+
+html.dark .profile-modal .ant-modal-close,
+html.dark .profile-modal .ant-modal-close-x {
+  color: rgb(var(--color-foreground)) !important;
+}
+
+html.dark .profile-modal .ant-modal-close:hover,
+html.dark .profile-modal .ant-modal-close-x:hover {
+  color: rgb(var(--color-close-hover)) !important;
+}
+
+html.dark .profile-modal .profile-upload-btn.ant-btn,
+html.dark .profile-modal .profile-upload-btn.ant-btn-default {
+  background-color: rgb(var(--color-input-bg)) !important;
+  border-color: rgb(var(--color-input-border)) !important;
+  color: rgb(var(--color-input-text)) !important;
+}
+
+html.dark .profile-modal .profile-upload-btn.ant-btn:hover,
+html.dark .profile-modal .profile-upload-btn.ant-btn-default:hover {
+  background-color: rgb(var(--color-surface-elevated)) !important;
+  border-color: rgb(var(--color-subtle)) !important;
+  color: rgb(var(--color-on-primary)) !important;
+}
+
+/* ── Bordered descriptions ─────────────────────────────────────────────────── */
+.token-descriptions .ant-descriptions-item-label,
+.view-branch-descriptions .ant-descriptions-item-label {
+  background-color: rgb(var(--color-descriptions-label-bg)) !important;
+  color: rgb(var(--color-foreground)) !important;
+  border-color: rgb(var(--color-border-input)) !important;
+  font-weight: 500 !important;
+}
+
+.token-descriptions .ant-descriptions-item-content,
+.view-branch-descriptions .ant-descriptions-item-content {
+  background-color: rgb(var(--color-descriptions-content-bg)) !important;
+  color: rgb(var(--color-foreground)) !important;
+  border-color: rgb(var(--color-border-input)) !important;
+}
+
+.token-descriptions .ant-descriptions-bordered .ant-descriptions-item,
+.token-descriptions .ant-descriptions-bordered .ant-descriptions-row,
+.view-branch-descriptions .ant-descriptions-bordered .ant-descriptions-item,
+.view-branch-descriptions .ant-descriptions-bordered .ant-descriptions-row {
+  border-bottom: 1px solid rgb(var(--color-border-input)) !important;
+}
+
+.dark-descriptions .ant-descriptions-item-label {
+  background-color: rgb(var(--color-input-bg)) !important;
+  color: rgb(var(--color-on-primary)) !important;
+  border-color: rgb(var(--color-input-border)) !important;
+}
+
+.dark-descriptions .ant-descriptions-item-content {
+  background-color: rgb(var(--color-surface)) !important;
+  color: rgb(var(--color-on-primary)) !important;
+  border-color: rgb(var(--color-input-border)) !important;
+}
+
+.dark-descriptions .ant-descriptions-bordered .ant-descriptions-item,
+.dark-descriptions .ant-descriptions-bordered .ant-descriptions-row {
+  border-bottom: 1px solid rgb(var(--color-input-border)) !important;
+}
+
+html.dark .ant-descriptions-item-label {
+  color: rgb(var(--color-subtle)) !important;
+}
+
+html.dark .ant-descriptions-item-content {
+  color: rgb(var(--color-input-text)) !important;
+}
+
+/* ── Dark dropdowns (unified) ──────────────────────────────────────────────── */
+.token-dark-dropdown,
+.billing-dark-dropdown,
+.payment-dark-dropdown,
+.branch-dark-dropdown,
+.branch-mgmt-dark-dropdown,
+.branch-edit-dark-dropdown,
+.user-edit-dark-dropdown,
+.org-settings-dark-dropdown,
+.job-opportunity-dark-dropdown,
+.dark-select-dropdown,
+.business-setup-dark-dropdown {
+  background-color: rgb(var(--color-dropdown-bg)) !important;
+  border-color: rgb(var(--color-dropdown-border)) !important;
+}
+
+.token-dark-dropdown .ant-select-item,
+.billing-dark-dropdown .ant-select-item,
+.payment-dark-dropdown .ant-select-item,
+.branch-dark-dropdown .ant-select-item,
+.branch-mgmt-dark-dropdown .ant-select-item,
+.branch-edit-dark-dropdown .ant-select-item,
+.user-edit-dark-dropdown .ant-select-item,
+.org-settings-dark-dropdown .ant-select-item,
+.job-opportunity-dark-dropdown .ant-select-item,
+.dark-select-dropdown .ant-select-item,
+.business-setup-dark-dropdown .ant-select-item {
+  color: rgb(var(--color-foreground)) !important;
+  background-color: transparent !important;
+}
+
+.token-dark-dropdown .ant-select-item:hover,
+.billing-dark-dropdown .ant-select-item:hover,
+.payment-dark-dropdown .ant-select-item:hover,
+.branch-dark-dropdown .ant-select-item:hover,
+.branch-mgmt-dark-dropdown .ant-select-item:hover,
+.branch-edit-dark-dropdown .ant-select-item:hover,
+.user-edit-dark-dropdown .ant-select-item:hover,
+.org-settings-dark-dropdown .ant-select-item:hover,
+.job-opportunity-dark-dropdown .ant-select-item:hover,
+.dark-select-dropdown .ant-select-item:hover,
+.business-setup-dark-dropdown .ant-select-item:hover {
+  background-color: rgb(var(--color-dropdown-hover-bg)) !important;
+}
+
+.token-dark-dropdown .ant-select-item-option-selected,
+.billing-dark-dropdown .ant-select-item-option-selected,
+.payment-dark-dropdown .ant-select-item-option-selected,
+.branch-dark-dropdown .ant-select-item-option-selected,
+.branch-mgmt-dark-dropdown .ant-select-item-option-selected,
+.branch-edit-dark-dropdown .ant-select-item-option-selected,
+.user-edit-dark-dropdown .ant-select-item-option-selected,
+.org-settings-dark-dropdown .ant-select-item-option-selected,
+.job-opportunity-dark-dropdown .ant-select-item-option-selected,
+.dark-select-dropdown .ant-select-item-option-selected,
+.business-setup-dark-dropdown .ant-select-item-option-selected {
+  background-color: rgb(var(--color-brand-secondary)) !important;
+  color: rgb(var(--color-on-primary)) !important;
+}
+
+/* Global select dropdown (portals) */
+html.dark .job-opportunity-dark-dropdown .ant-select-item-option-selected:hover,
+html.dark .business-setup-dark-dropdown .ant-select-item-option-selected:hover {
+  background-color: rgb(var(--color-brand-secondary-hover)) !important;
+}
+
+/* Global select dropdown (portals) */
+.ant-select-dropdown {
+  background-color: rgb(var(--color-dropdown-bg)) !important;
+  border: 1px solid rgb(var(--color-dropdown-border)) !important;
+  border-radius: 6px !important;
+  box-shadow: var(--color-dropdown-shadow-lg) !important;
+}
+
+.ant-select-dropdown .ant-select-item-option {
+  color: rgb(var(--color-foreground)) !important;
+  background-color: transparent !important;
+  padding: 8px 12px !important;
+  border-radius: 4px !important;
+  margin: 2px 4px !important;
+}
+
+.ant-select-dropdown .ant-select-item-option:hover {
+  background-color: rgb(var(--color-dropdown-hover-bg)) !important;
+}
+
+.ant-select-dropdown .ant-select-item-option-selected {
+  background-color: rgb(var(--color-brand-secondary)) !important;
+  color: rgb(var(--color-on-primary)) !important;
+  font-weight: 500 !important;
+}
+
+.ant-select-dropdown .ant-select-item-option-selected:hover {
+  background-color: rgb(var(--color-success)) !important;
+}
+
+html.dark .dark-select-dropdown .ant-select-item-option-selected:hover,
+html.dark .job-opportunity-dark-dropdown .ant-select-item-option-selected:hover,
+html.dark .business-setup-dark-dropdown .ant-select-item-option-selected:hover {
+  background-color: rgb(var(--color-brand-secondary-hover)) !important;
+}
+
+/* Dropdown empty states */
+html.dark .dark-select-dropdown .ant-select-item-empty,
+html.dark .dark-select-dropdown .ant-empty,
+html.dark .dark-select-dropdown .ant-empty-description,
+html.dark .global-dropdown .ant-select-item-empty,
+html.dark .global-dropdown .ant-empty,
+html.dark .global-dropdown .ant-empty-description,
+.dark-select-dropdown .ant-select-item-empty,
+.dark-select-dropdown .ant-empty-description {
+  color: rgb(var(--color-dropdown-empty-text)) !important;
+}
+
+html.dark .dark-select-dropdown .ant-empty-image svg,
+html.dark .global-dropdown .ant-empty-image svg,
+.dark-select-dropdown .ant-empty-image svg {
+  fill: rgb(var(--color-placeholder)) !important;
+}
+
+/* ── Table pagination (dark) ───────────────────────────────────────────────── */
+html.dark .token-pagination .ant-pagination .ant-select,
+html.dark .token-pagination .table-pagination-size-select,
+html.dark .table-view-card .ant-pagination .ant-select,
+html.dark .candidates-table .ant-pagination .ant-select,
+html.dark .candidates-table .table-pagination-size-select,
+html.dark .job-listings-table .ant-pagination .ant-select,
+html.dark .job-listings-table .table-pagination-size-select,
+html.dark .job-descriptions-table .ant-pagination .ant-select,
+html.dark .job-descriptions-table .table-pagination-size-select {
+  --ant-select-background-color: rgb(var(--color-input-bg)) !important;
+  --ant-select-border-color: rgb(var(--color-input-border)) !important;
+  --ant-select-color: rgb(var(--color-input-text)) !important;
+  --ant-select-hover-background-color: rgb(var(--color-surface-elevated)) !important;
+  --ant-select-hover-border-color: rgb(var(--color-subtle)) !important;
+  background-color: rgb(var(--color-input-bg)) !important;
+  border-color: rgb(var(--color-input-border)) !important;
+  color: rgb(var(--color-input-text)) !important;
+}
+
+html.dark .token-pagination .ant-pagination .ant-select-content,
+html.dark .token-pagination .ant-pagination .ant-select-content-value,
+html.dark .table-view-card .ant-pagination .ant-select-content,
+html.dark .table-view-card .ant-pagination .ant-select-content-value,
+html.dark .candidates-table .ant-pagination .ant-select-content,
+html.dark .candidates-table .ant-pagination .ant-select-content-value,
+html.dark .job-listings-table .ant-pagination .ant-select-content,
+html.dark .job-listings-table .ant-pagination .ant-select-content-value,
+html.dark .job-descriptions-table .ant-pagination .ant-select-content,
+html.dark .job-descriptions-table .ant-pagination .ant-select-content-value {
+  color: rgb(var(--color-input-text)) !important;
+}
+
+html.dark .token-pagination .ant-pagination .ant-select-suffix,
+html.dark .token-pagination .ant-pagination .ant-select .anticon,
+html.dark .table-view-card .ant-pagination .ant-select-suffix,
+html.dark .candidates-table .ant-pagination .ant-select-suffix,
+html.dark .job-listings-table .ant-pagination .ant-select-suffix,
+html.dark .job-descriptions-table .ant-pagination .ant-select-suffix {
+  color: rgb(var(--color-muted)) !important;
+}
+
+html.dark .token-pagination .ant-pagination-options-quick-jumper input,
+html.dark .table-view-card .ant-pagination-options-quick-jumper input,
+html.dark .candidates-table .ant-pagination-options-quick-jumper input,
+html.dark .job-listings-table .ant-pagination-options-quick-jumper input,
+html.dark .job-descriptions-table .ant-pagination-options-quick-jumper input {
+  background-color: rgb(var(--color-input-bg)) !important;
+  border-color: rgb(var(--color-input-border)) !important;
+  color: rgb(var(--color-input-text)) !important;
+}
+
+html.dark .token-pagination .ant-pagination-options-quick-jumper,
+html.dark .table-view-card .ant-pagination-options-quick-jumper,
+html.dark .candidates-table .ant-pagination-options-quick-jumper,
+html.dark .job-listings-table .ant-pagination-options-quick-jumper,
+html.dark .job-descriptions-table .ant-pagination-options-quick-jumper {
+  color: rgb(var(--color-muted)) !important;
+}
+
+html.dark .table-pagination-size-dropdown.ant-select-dropdown,
+html.dark .table-pagination-size-dropdown .ant-select-item {
+  background-color: rgb(var(--color-dropdown-bg)) !important;
+  color: rgb(var(--color-foreground)) !important;
+}
+
+html.dark .table-pagination-size-dropdown .ant-select-item-option-active,
+html.dark .table-pagination-size-dropdown .ant-select-item-option-selected {
+  background-color: rgb(var(--color-dropdown-hover-bg)) !important;
+  color: rgb(var(--color-foreground)) !important;
+}
+
+/* ── Dark billing table ────────────────────────────────────────────────────── */
+.dark-table .ant-table {
+  background: rgb(var(--color-surface)) !important;
+  color: rgb(var(--color-foreground)) !important;
+}
+
+.dark-table .ant-table-thead > tr > th {
+  background: rgb(var(--color-input-bg)) !important;
+  color: rgb(var(--color-foreground)) !important;
+  border-bottom: 1px solid rgb(var(--color-input-border)) !important;
+}
+
+.dark-table .ant-table-tbody > tr > td {
+  background: rgb(var(--color-surface)) !important;
+  color: rgb(var(--color-foreground)) !important;
+  border-bottom: 1px solid rgb(var(--color-border)) !important;
+}
+
+.dark-table .ant-table-tbody > tr:hover > td {
+  background: rgb(var(--color-input-bg)) !important;
+}
+
+.dark-table .ant-pagination-item,
+.dark-table .ant-pagination-prev,
+.dark-table .ant-pagination-next,
+.dark-table .ant-pagination-jump-prev,
+.dark-table .ant-pagination-jump-next {
+  background: rgb(var(--color-input-bg)) !important;
+  border-color: rgb(var(--color-input-border)) !important;
+}
+
+.dark-table .ant-pagination-item a,
+.dark-table .ant-pagination-prev a,
+.dark-table .ant-pagination-next a,
+.dark-table .ant-pagination-jump-prev a,
+.dark-table .ant-pagination-jump-next a,
+.dark-table .ant-pagination-options,
+.dark-table .ant-pagination-total-text {
+  color: rgb(var(--color-on-primary)) !important;
+}
+
+.dark-table .ant-pagination-item-active {
+  background: rgb(var(--color-brand-secondary)) !important;
+  border-color: rgb(var(--color-brand-secondary)) !important;
+}
+
+/* ── Billing / shared dark typography helpers ──────────────────────────────── */
+html.dark .ant-card-body span,
+html.dark .ant-card-body div,
+html.dark .ant-table-tbody > tr > td,
+html.dark .ant-modal-content,
+html.dark .ant-modal-content span,
+html.dark .ant-modal-content div,
+html.dark .ant-modal-content p,
+html.dark .ant-progress-text,
+html.dark .ant-typography,
+html.dark .ant-alert-message,
+html.dark .ant-alert-description,
+html.dark .ant-card-head-title {
+  color: inherit;
+}
+
+html.dark .ant-tag {
+  font-weight: 500 !important;
+}
+
+html.dark .ant-tag-success {
+  background-color: rgb(var(--color-success)) !important;
+  color: rgb(var(--color-on-primary)) !important;
+  border-color: rgb(var(--color-success)) !important;
+}
+
+html.dark .ant-tag-warning {
+  background-color: rgb(var(--color-warning)) !important;
+  color: rgb(var(--color-on-primary)) !important;
+  border-color: rgb(var(--color-warning)) !important;
+}
+
+html.dark .ant-tag-error {
+  background-color: rgb(var(--color-danger)) !important;
+  color: rgb(var(--color-on-primary)) !important;
+  border-color: rgb(var(--color-danger)) !important;
+}
+
+/* ── Virtual list scrollbars in dark dropdowns ─────────────────────────────── */
+html.dark .org-settings-dark-dropdown,
+html.dark .business-setup-dark-dropdown {
+  --rc-virtual-list-scrollbar-bg: rgb(var(--color-virtual-list-scrollbar));
+  scrollbar-color: rgb(var(--color-virtual-list-scrollbar)) rgb(var(--color-dropdown-bg));
+}
+
+html.dark .org-settings-dark-dropdown .rc-virtual-list-scrollbar-thumb,
+html.dark .business-setup-dark-dropdown .rc-virtual-list-scrollbar-thumb {
+  background: rgb(var(--color-virtual-list-scrollbar)) !important;
+}
+
+html.dark .org-settings-dark-dropdown .rc-virtual-list-scrollbar-thumb:hover,
+html.dark .business-setup-dark-dropdown .rc-virtual-list-scrollbar-thumb:hover {
+  background: rgb(var(--color-virtual-list-scrollbar-hover)) !important;
+}
+
+html.dark .org-settings-dark-dropdown .rc-virtual-list-holder::-webkit-scrollbar-track,
+html.dark .business-setup-dark-dropdown .rc-virtual-list-holder::-webkit-scrollbar-track {
+  background-color: rgb(var(--color-dropdown-bg));
+}
+
+html.dark .org-settings-dark-dropdown .rc-virtual-list-holder::-webkit-scrollbar-thumb,
+html.dark .business-setup-dark-dropdown .rc-virtual-list-holder::-webkit-scrollbar-thumb {
+  background-color: rgb(var(--color-virtual-list-scrollbar));
+  border-radius: 9999px;
+}

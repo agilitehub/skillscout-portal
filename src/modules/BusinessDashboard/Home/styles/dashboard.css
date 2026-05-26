@@ -1,45 +1,18 @@
-/* Dashboard page-only (bell); shared toolbar buttons imported from ../../styles/dashboard-toolbar-buttons.css */
-.bell-button,
-.bell-button.ant-btn,
-button.bell-button {
-  background: #ffffff !important;
-  background-color: #ffffff !important;
-  color: #059669 !important;
-  border: 1px solid #ffffff !important;
-}
+/* Dashboard — shared toolbar via module-shared.css; workspace cards use tokens */
 
-.bell-button:hover,
-.bell-button.ant-btn:hover,
-button.bell-button:hover {
-  background: #f8f9fa !important;
-  background-color: #f8f9fa !important;
-  color: #047857 !important;
-  border: 1px solid #f8f9fa !important;
-}
-
-.dashboard-button .anticon,
-.dashboard-button svg {
-  margin-right: 4px !important;
-}
-
-.dashboard-button span {
-  margin-left: 4px !important;
-}
-
-/* Workspace cards — Ant Design Typography defaults to dark text in dark mode */
 html.dark .dashboard-workspace {
-  color: #f9fafb;
+  color: rgb(var(--color-foreground));
 }
 
 html.dark .dashboard-workspace .ant-card {
-  background-color: #1f2937 !important;
-  border-color: #374151 !important;
-  color: #f9fafb;
+  background-color: rgb(var(--color-surface)) !important;
+  border-color: rgb(var(--color-border)) !important;
+  color: rgb(var(--color-foreground));
 }
 
 html.dark .dashboard-workspace .ant-card .ant-card-body {
-  background-color: #1f2937 !important;
-  color: #f9fafb;
+  background-color: rgb(var(--color-surface)) !important;
+  color: rgb(var(--color-foreground));
 }
 
 html.dark .dashboard-workspace .ant-card .ant-typography {

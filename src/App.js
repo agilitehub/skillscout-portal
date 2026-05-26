@@ -1,6 +1,5 @@
 import React from 'react'
 import { Provider } from 'react-redux'
-import GlobalStyles from './core/theme/GlobalStyles'
 import AppRoutes from './routes'
 import { ThemeProvider } from './core/context/ThemeContext'
 import { AuthProvider } from './core/auth'
@@ -19,7 +18,6 @@ const App = () => {
     <Provider store={store}>
       <AuthProvider>
         <ThemeProvider>
-          <GlobalStyles />
           <Router>
             <AppRoutes />
             <ToastContainer position='top-right' autoClose={3000} />

@@ -1,4 +1,5 @@
-/* Profile modal — Ant Design 6 uses .ant-modal-container for the dialog shell */
+/* Profile modal — Ant Design 6 container; dark shell in module-shared.css */
+
 .profile-modal .ant-modal-container {
   overflow: hidden;
   border-radius: 12px;
@@ -10,46 +11,6 @@
 
 .profile-modal .ant-modal-body {
   padding-top: 16px;
-}
-
-html.dark .profile-modal .ant-modal-container {
-  background-color: #1f2937 !important;
-  color: #f9fafb !important;
-  border: 1px solid #4b5563 !important;
-}
-
-html.dark .profile-modal .ant-modal-header {
-  background-color: #1f2937 !important;
-  border-bottom: 1px solid #4b5563 !important;
-}
-
-html.dark .profile-modal .ant-modal-body {
-  background-color: #1f2937 !important;
-}
-
-html.dark .profile-modal .ant-modal-close,
-html.dark .profile-modal .ant-modal-close-x {
-  color: #f9fafb !important;
-}
-
-html.dark .profile-modal .ant-modal-close:hover,
-html.dark .profile-modal .ant-modal-close-x:hover {
-  color: #10b981 !important;
-}
-
-/* Upload Photo — ghost/default Ant styles wash out label text in dark mode */
-html.dark .profile-modal .profile-upload-btn.ant-btn,
-html.dark .profile-modal .profile-upload-btn.ant-btn-default {
-  background-color: #4b5563 !important;
-  border-color: #6b7280 !important;
-  color: #f9fafb !important;
-}
-
-html.dark .profile-modal .profile-upload-btn.ant-btn:hover,
-html.dark .profile-modal .profile-upload-btn.ant-btn-default:hover {
-  background-color: #374151 !important;
-  border-color: #9ca3af !important;
-  color: #ffffff !important;
 }
 
 html.dark .profile-modal .profile-upload-btn.ant-btn span,

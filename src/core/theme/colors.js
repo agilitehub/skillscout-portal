@@ -2,9 +2,8 @@
 // Frontend Instructions Rule Applied!
 
 /**
- * Centralized color configuration for the entire application
- * This serves as a single source of truth for all color-related styling
- * Organized by brand colors, semantic colors, and theme-specific variants
+ * Centralized color configuration for the application.
+ * Semantic light/dark values are defined in tokens.css — keep these JS tokens aligned when editing themes.
  */
 
 // Primary brand colors - Skill Scout palette
@@ -166,7 +165,7 @@ export const OPACITY_VARIANTS = {
   90: '90' // 90% opacity
 }
 
-// CSS custom properties generator
+// CSS custom properties generator for inline/chart use — semantic CSS tokens live in tokens.css
 export const generateCSSCustomProperties = (isDarkMode = false) => {
   const theme = getThemeColors(isDarkMode)
 

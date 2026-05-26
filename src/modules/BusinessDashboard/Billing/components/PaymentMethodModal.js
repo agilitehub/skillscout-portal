@@ -207,7 +207,7 @@ const PaymentMethodModal = React.memo(({
           form={form}
           layout="vertical"
           onFinish={handleSubmit}
-          className={`${darkMode ? 'billing-form' : ''}`}
+          className='global-form'
         >
                 {/* Card Information */}
                 <div className="space-y-4">

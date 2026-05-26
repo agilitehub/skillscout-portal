@@ -224,7 +224,7 @@ const AddEditBranchModal = React.memo(({ visible, mode, branch, onCancel, onSucc
           form={form}
           layout="vertical"
           onFinish={handleSubmit}
-          className={`${darkMode ? 'branch-form' : ''}`}
+          className='global-form'
         >
           {/* Basic Information */}
           <div className="mb-6">

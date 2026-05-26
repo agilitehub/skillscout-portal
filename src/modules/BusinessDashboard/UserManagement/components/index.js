@@ -21,8 +21,6 @@ import TableActions from '../../../../core/components/view-components/table-view
 import { Toolbar } from '../../../../core/components'
 import dayjs from 'dayjs'
 import ModuleContainer from '../../../../core/components/layout/Container/ModuleContainer'
-import '../../styles/dashboard-toolbar-buttons.css'
-
 /**
  * User Management Page
  * Manages organization users, roles, permissions, and invitations

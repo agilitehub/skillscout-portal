@@ -18,7 +18,6 @@ import {
   getAverageScoreTextClass
 } from '../model'
 import { Toolbar } from '../../../../core/components'
-import '../../styles/dashboard-toolbar-buttons.css'
 import '../styles/questionnaires.css'
 import ModuleContainer from '../../../../core/components/layout/Container/ModuleContainer'
 

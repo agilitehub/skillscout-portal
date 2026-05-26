@@ -19,7 +19,6 @@ import { useCandidateImport } from '../hooks/useCandidateImport'
 import { deleteOrganizationCandidate } from '../controllers'
 import CandidateImportWizard from './CandidateImportWizard'
 
-import '../../styles/dashboard-toolbar-buttons.css'
 import '../styles/candidate-management.css'
 
 const CandidateManagement = React.memo(({ user: _user }) => {

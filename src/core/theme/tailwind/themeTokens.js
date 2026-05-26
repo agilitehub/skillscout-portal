@@ -1,0 +1,71 @@
+// Global Instructions Rule Applied!
+
+/**
+ * CSS custom property references for Tailwind plugin component styles.
+ * Tokens switch automatically when ThemeContext toggles .dark on <html>.
+ */
+const rgb = (token) => `rgb(var(--color-${token}))`
+
+const themeTokens = {
+  background: rgb('background'),
+  surface: rgb('surface'),
+  surfaceMuted: rgb('surface-muted'),
+  surfaceElevated: rgb('surface-elevated'),
+  border: rgb('border'),
+  borderInput: rgb('border-input'),
+  borderMuted: rgb('border-muted'),
+  borderGlass: 'var(--color-border-glass)',
+  foreground: rgb('foreground'),
+  muted: rgb('muted'),
+  subtle: rgb('subtle'),
+  placeholder: rgb('placeholder'),
+  onPrimary: rgb('on-primary'),
+  overlayHover: 'var(--color-overlay-hover)',
+  inputBg: rgb('input-bg'),
+  inputBorder: rgb('input-border'),
+  inputText: rgb('input-text'),
+  tagBg: rgb('tag-bg'),
+  switchTrack: rgb('switch-track'),
+  brandPrimary: rgb('brand-primary'),
+  brandSecondary: rgb('brand-secondary'),
+  brandSecondaryHover: rgb('brand-secondary-hover'),
+  brandAccent: rgb('brand-accent'),
+  brandAccentLight: rgb('brand-accent-light'),
+  success: rgb('success'),
+  danger: rgb('danger'),
+  dangerHover: rgb('danger-hover'),
+  focusRing: rgb('focus-ring'),
+  focusRingShadow: 'var(--color-focus-ring-shadow)',
+  btnSecondaryBg: rgb('btn-secondary-bg'),
+  btnSecondaryBorder: rgb('btn-secondary-border'),
+  btnSecondaryText: rgb('btn-secondary-text'),
+  btnSecondaryHoverBg: rgb('btn-secondary-hover-bg'),
+  btnSecondaryHoverBorder: rgb('btn-secondary-hover-border'),
+  btnSecondaryHoverText: rgb('btn-secondary-hover-text'),
+  dropdownBg: rgb('dropdown-bg'),
+  dropdownBorder: rgb('dropdown-border'),
+  dropdownShadow: 'var(--color-dropdown-shadow)',
+  dropdownHoverBg: rgb('dropdown-hover-bg'),
+  dropdownEmptyText: rgb('dropdown-empty-text'),
+  cardShadow: 'var(--color-card-shadow)',
+  cardHoverShadow: 'var(--color-card-hover-shadow)',
+  chatAttach: rgb('chat-attach'),
+  chatDropZone: 'var(--color-chat-drop-zone)',
+  chatSubtext: 'var(--color-chat-subtext)',
+  kanbanIndicator: rgb('kanban-indicator'),
+  kanbanIndicatorGlow: 'var(--color-kanban-indicator-glow)',
+  gradientButtonPrimary: 'var(--gradient-button-primary)',
+  gradientButtonSecondary: 'var(--gradient-button-secondary)',
+  gradientMagicLink: 'var(--gradient-magic-link)',
+  gradientMagicLinkSubmit: 'var(--gradient-magic-link-submit)',
+  gradientChatSend: 'var(--gradient-chat-send)',
+  tableHeaderGradient: 'linear-gradient(135deg, rgb(var(--color-table-header-from)) 0%, rgb(var(--color-table-header-to)) 100%)',
+  tableRowHoverGradient: 'linear-gradient(90deg, rgb(var(--color-table-row-hover-from)) 0%, rgb(var(--color-table-row-hover-to)) 100%)',
+  tableSelectedGradient: 'linear-gradient(90deg, rgb(var(--color-table-selected-from)) 0%, rgb(var(--color-table-selected-to)) 100%)',
+  tableHeaderText: rgb('table-header-text'),
+  tableRowBorder: rgb('table-row-border'),
+  tableRowHoverShadow: 'var(--color-table-row-hover-shadow)',
+  tableSelectedText: rgb('table-selected-text')
+}
+
+module.exports = themeTokens

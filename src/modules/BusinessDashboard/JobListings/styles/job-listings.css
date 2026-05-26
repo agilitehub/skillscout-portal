@@ -1,4 +1,4 @@
-/* Job listings table — tags and pagination in dark mode */
+/* Job Listings table — pagination in module-shared.css */
 
 .job-listings-table {
   min-width: 0;
@@ -13,34 +13,4 @@
 html.dark .job-listings-table .ant-tag {
   border-width: 1px;
   border-style: solid;
-}
-
-html.dark .job-listings-table .ant-pagination .ant-select,
-html.dark .job-listings-table .table-pagination-size-select {
-  --ant-select-background-color: #4b5563 !important;
-  --ant-select-border-color: #6b7280 !important;
-  --ant-select-color: #f9fafb !important;
-  background-color: #4b5563 !important;
-  border-color: #6b7280 !important;
-  color: #f9fafb !important;
-}
-
-html.dark .job-listings-table .ant-pagination .ant-select-content,
-html.dark .job-listings-table .ant-pagination .ant-select-content-value {
-  color: #f9fafb !important;
-}
-
-html.dark .job-listings-table .ant-pagination .ant-select-suffix,
-html.dark .job-listings-table .ant-pagination .ant-select .anticon {
-  color: #e5e7eb !important;
-}
-
-html.dark .job-listings-table .ant-pagination-options-quick-jumper input {
-  background-color: #4b5563 !important;
-  border-color: #6b7280 !important;
-  color: #f9fafb !important;
-}
-
-html.dark .job-listings-table .ant-pagination-options-quick-jumper {
-  color: #e5e7eb !important;
 }

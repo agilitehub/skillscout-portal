@@ -1,6 +1,5 @@
-/* Job listing create/edit form — dark mode inputs (Ant Design 6) */
+/* Job opportunity form — uses global-form; dropdown in module-shared.css */
 
-/* Consistent pointer on all dropdowns (showSearch uses input.ant-select-input with text cursor by default) */
 .job-opportunity-form-page .global-form .ant-select:not(.ant-select-disabled),
 .job-opportunity-form-page .global-form .ant-select:not(.ant-select-disabled) .ant-select-input,
 .job-opportunity-form-page .global-form .ant-select:not(.ant-select-disabled) .ant-select-content,
@@ -10,171 +9,22 @@
   cursor: pointer !important;
 }
 
-.job-opportunity-dark-dropdown {
-  background-color: #374151 !important;
+/* Ant Design 6 combobox tokens when global-form needs extra specificity */
+html.dark .job-opportunity-form-page.global-form .ant-input,
+html.dark .job-opportunity-form-page .global-form .ant-input,
+html.dark .job-opportunity-form-page .global-form input,
+html.dark .job-opportunity-form-page .global-form textarea {
+  --ant-input-color: rgb(var(--color-input-text)) !important;
+  --ant-color-text: rgb(var(--color-input-text)) !important;
 }
 
-.job-opportunity-dark-dropdown .ant-select-item {
-  color: #f9fafb !important;
-  background-color: #374151 !important;
+html.dark .job-opportunity-form-page .global-form .ant-select {
+  --ant-select-background-color: rgb(var(--color-input-bg)) !important;
+  --ant-select-border-color: rgb(var(--color-input-border)) !important;
+  --ant-select-color: rgb(var(--color-input-text)) !important;
+  --ant-color-text: rgb(var(--color-input-text)) !important;
 }
 
-.job-opportunity-dark-dropdown .ant-select-item:hover {
-  background-color: #4b5563 !important;
-}
-
-.job-opportunity-dark-dropdown .ant-select-item-option-selected {
-  background-color: #059669 !important;
-  color: #ffffff !important;
-}
-
-.job-opportunity-dark-dropdown .ant-select-item-option-selected:hover {
-  background-color: #047857 !important;
-}
-
-html.dark .job-opportunity-form-page .ant-form-item-label > label {
-  color: #e5e7eb !important;
-}
-
-html.dark .job-opportunity-form-page .ant-form-item-extra {
-  color: #9ca3af !important;
-}
-
-html.dark .job-opportunity-form-page .ant-input,
-html.dark .job-opportunity-form-page input.ant-input,
-html.dark .job-opportunity-form-page input[type='text'],
-html.dark .job-opportunity-form-page input {
-  --ant-input-color: #f9fafb !important;
-  --ant-color-text: #f9fafb !important;
-  background-color: #4b5563 !important;
-  border-color: #6b7280 !important;
-  color: #f9fafb !important;
-}
-
-html.dark .job-opportunity-form-page .ant-input:focus,
-html.dark .job-opportunity-form-page input.ant-input:focus,
-html.dark .job-opportunity-form-page input:focus {
-  border-color: #059669 !important;
-  box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
-  background-color: #4b5563 !important;
-  color: #f9fafb !important;
-}
-
-html.dark .job-opportunity-form-page .ant-input::placeholder,
-html.dark .job-opportunity-form-page input::placeholder {
-  color: #9ca3af !important;
-}
-
-html.dark .job-opportunity-form-page textarea.ant-input,
-html.dark .job-opportunity-form-page textarea {
-  --ant-input-color: #f9fafb !important;
-  --ant-color-text: #f9fafb !important;
-  background-color: #4b5563 !important;
-  border-color: #6b7280 !important;
-  color: #f9fafb !important;
-}
-
-html.dark .job-opportunity-form-page textarea.ant-input:focus,
-html.dark .job-opportunity-form-page textarea:focus {
-  border-color: #059669 !important;
-  box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
-  background-color: #4b5563 !important;
-  color: #f9fafb !important;
-}
-
-html.dark .job-opportunity-form-page textarea::placeholder {
-  color: #9ca3af !important;
-}
-
-html.dark .job-opportunity-form-page .ant-input-show-count-suffix,
-html.dark .job-opportunity-form-page .ant-input-data-count {
-  color: #9ca3af !important;
-}
-
-html.dark .job-opportunity-form-page .ant-select,
-html.dark .job-opportunity-form-page .ant-select-selector,
-html.dark .job-opportunity-form-page .ant-select-single .ant-select-selector {
-  --ant-select-background-color: #4b5563 !important;
-  --ant-select-border-color: #6b7280 !important;
-  --ant-select-color: #f9fafb !important;
-  --ant-color-text: #f9fafb !important;
-  background-color: #4b5563 !important;
-  border-color: #6b7280 !important;
-  color: #f9fafb !important;
-}
-
-html.dark .job-opportunity-form-page .ant-select-content,
-html.dark .job-opportunity-form-page .ant-select-content-value,
-html.dark .job-opportunity-form-page .ant-select-selection-item,
-html.dark .job-opportunity-form-page .ant-select-selection-search-input {
-  color: #f9fafb !important;
-}
-
-html.dark .job-opportunity-form-page .ant-select-focused .ant-select-selector,
-html.dark .job-opportunity-form-page .ant-select:focus .ant-select-selector,
-html.dark .job-opportunity-form-page .ant-select-focused {
-  border-color: #059669 !important;
-  box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
-}
-
-html.dark .job-opportunity-form-page .ant-select-selection-placeholder {
-  color: #9ca3af !important;
-}
-
-html.dark .job-opportunity-form-page .ant-select-arrow,
-html.dark .job-opportunity-form-page .ant-select .anticon {
-  color: #9ca3af !important;
-}
-
-html.dark .job-opportunity-form-page .ant-select-multiple .ant-select-selection-item {
-  background-color: #374151 !important;
-  border-color: #6b7280 !important;
-  color: #f9fafb !important;
-}
-
-html.dark .job-opportunity-form-page .ant-select-selection-item-remove {
-  color: #9ca3af !important;
-}
-
-html.dark .job-opportunity-form-page .ant-select-selection-item-remove:hover {
-  color: #f9fafb !important;
-}
-
-html.dark .job-opportunity-form-page .ant-form-item-explain-error {
-  color: #f87171 !important;
-}
-
-html.dark .job-opportunity-form-page .ant-form-item-control-input-content input,
-html.dark .job-opportunity-form-page .ant-form-item-control-input-content textarea,
-html.dark .job-opportunity-form-page .ant-form-item input,
-html.dark .job-opportunity-form-page .ant-form-item textarea {
-  background-color: #4b5563 !important;
-  color: #f9fafb !important;
-  border-color: #6b7280 !important;
-}
-
-html.dark .job-opportunity-form-page .ant-form-item .ant-select-selector {
-  background-color: #4b5563 !important;
-  color: #f9fafb !important;
-  border-color: #6b7280 !important;
-}
-
-/* Job description preview card (department, experience level, overview, etc.) */
-html.dark .job-opportunity-form-page .job-description-preview .ant-card-body {
-  color: #e5e7eb !important;
-}
-
-html.dark .job-opportunity-form-page .job-description-preview-content h3,
-html.dark .job-opportunity-form-page .job-description-preview-content h4 {
-  color: #f9fafb !important;
-}
-
-html.dark .job-opportunity-form-page .job-description-preview-content p,
-html.dark .job-opportunity-form-page .job-description-preview-content span,
-html.dark .job-opportunity-form-page .job-description-preview-content div {
-  color: #d1d5db !important;
-}
-
-html.dark .job-opportunity-form-page .job-description-preview .ant-tag {
-  background-color: transparent !important;
+html.dark .job-opportunity-form-page .global-form .ant-form-item-explain-error {
+  color: rgb(var(--color-error-text)) !important;
 }

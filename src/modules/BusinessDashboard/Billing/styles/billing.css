@@ -1,457 +1,33 @@
-/* Billing module — invoicing, tables, forms, modals */
-
-@import '../../styles/dashboard-toolbar-buttons.css';
-
-.invoice-view-btn {
-  background-color: #059669 !important;
-  border-color: #059669 !important;
-  color: white !important;
-  font-weight: 500 !important;
-  padding: 4px 12px !important;
-  height: auto !important;
-  min-height: 32px !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  border-radius: 6px !important;
-}
-
-.invoice-view-btn:hover {
-  background-color: #047857 !important;
-  border-color: #047857 !important;
-  color: white !important;
-  transform: none !important;
-}
-
-.invoice-view-btn:focus {
-  background-color: #059669 !important;
-  border-color: #059669 !important;
-  color: white !important;
-  box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
-}
-
-.invoice-view-btn svg {
-  margin-right: 4px !important;
-}
-
-.invoice-download-btn {
-  background-color: #3b82f6 !important;
-  border-color: #3b82f6 !important;
-  color: white !important;
-  font-weight: 500 !important;
-  padding: 4px 12px !important;
-  height: auto !important;
-  min-height: 32px !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  border-radius: 6px !important;
-}
-
-.invoice-download-btn:hover {
-  background-color: #2563eb !important;
-  border-color: #2563eb !important;
-  color: white !important;
-  transform: none !important;
-}
-
-.invoice-download-btn:focus {
-  background-color: #3b82f6 !important;
-  border-color: #3b82f6 !important;
-  color: white !important;
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2) !important;
-}
-
-.invoice-download-btn svg {
-  margin-right: 4px !important;
-}
-
-html.dark .billing-form .ant-form-item-label > label {
-  color: #e5e7eb !important;
-}
-
-html.dark .billing-form .ant-form-item-extra {
-  color: #9ca3af !important;
-}
-
-html.dark .billing-form .ant-input,
-html.dark .billing-form input.ant-input,
-html.dark .billing-form input[type='text'],
-html.dark .billing-form input {
-  background-color: #4b5563 !important;
-  border-color: #6b7280 !important;
-  color: #f9fafb !important;
-}
-
-html.dark .billing-form .ant-input:focus,
-html.dark .billing-form input.ant-input:focus,
-html.dark .billing-form input[type='text']:focus,
-html.dark .billing-form input:focus {
-  border-color: #059669 !important;
-  box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
-  background-color: #4b5563 !important;
-  color: #f9fafb !important;
-}
-
-html.dark .billing-form .ant-input::placeholder,
-html.dark .billing-form input::placeholder {
-  color: #d1d5db !important;
-}
-
-html.dark .billing-form textarea.ant-input,
-html.dark .billing-form textarea {
-  background-color: #4b5563 !important;
-  border-color: #6b7280 !important;
-  color: #f9fafb !important;
-}
-
-html.dark .billing-form textarea.ant-input:focus,
-html.dark .billing-form textarea:focus {
-  border-color: #059669 !important;
-  box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
-  background-color: #4b5563 !important;
-  color: #f9fafb !important;
-}
-
-html.dark .billing-form textarea.ant-input::placeholder,
-html.dark .billing-form textarea::placeholder {
-  color: #d1d5db !important;
-}
-
-html.dark .billing-form .ant-input-show-count-suffix {
-  color: #9ca3af !important;
-}
-
-html.dark .billing-form .ant-select,
-html.dark .billing-form .ant-select-selector,
-html.dark .billing-form .ant-select-single .ant-select-selector {
-  background-color: #4b5563 !important;
-  border-color: #6b7280 !important;
-  color: #f9fafb !important;
-}
-
-html.dark .billing-form .ant-select-focused .ant-select-selector,
-html.dark .billing-form .ant-select:focus .ant-select-selector {
-  border-color: #059669 !important;
-  box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
-  background-color: #4b5563 !important;
-}
-
-html.dark .billing-form .ant-select-selection-placeholder {
-  color: #d1d5db !important;
-}
-
-html.dark .billing-form .ant-select-selection-item {
-  color: #f9fafb !important;
-  background-color: transparent !important;
-}
-
-html.dark .billing-form .ant-select-arrow {
-  color: #9ca3af !important;
-}
-
-html.dark .billing-form .ant-select-multiple .ant-select-selection-item {
-  background-color: #374151 !important;
-  border-color: #6b7280 !important;
-  color: #f9fafb !important;
-}
-
-html.dark .billing-form .ant-select-multiple .ant-select-selection-item-remove {
-  color: #9ca3af !important;
-}
-
-html.dark .billing-form .ant-select-multiple .ant-select-selection-item-remove:hover {
-  color: #f9fafb !important;
-}
-
-html.dark .billing-form .ant-form-item-explain-error {
-  color: #f87171 !important;
-}
-
-html.dark .billing-form .ant-input-data-count {
-  color: #9ca3af !important;
-}
-
-html.dark .billing-form .ant-form-item-control-input {
-  background-color: transparent !important;
-}
-
-html.dark .billing-form .ant-form-item-control-input-content input {
-  background-color: #4b5563 !important;
-  color: #f9fafb !important;
-  border-color: #6b7280 !important;
-}
-
-html.dark .billing-form .ant-form-item-control-input-content textarea {
-  background-color: #4b5563 !important;
-  color: #f9fafb !important;
-  border-color: #6b7280 !important;
-}
-
-html.dark .billing-form .ant-form-item-control-input-content .ant-select-selector {
-  background-color: #4b5563 !important;
-  color: #f9fafb !important;
-  border-color: #6b7280 !important;
-}
-
-html.dark .billing-form .ant-form-item input,
-html.dark .billing-form .ant-form-item textarea,
-html.dark .billing-form .ant-form-item .ant-select-selector {
-  background-color: #4b5563 !important;
-  color: #f9fafb !important;
-  border-color: #6b7280 !important;
-}
-
-html.dark .billing-form .ant-form-item .ant-input-affix-wrapper {
-  background-color: #4b5563 !important;
-  border-color: #6b7280 !important;
-}
-
-html.dark .billing-form .ant-form-item .ant-input-affix-wrapper input {
-  background-color: transparent !important;
-  color: #f9fafb !important;
-}
-
-html.dark .billing-form .ant-form-item .ant-input-prefix {
-  color: #9ca3af !important;
-}
-
-.billing-dark-dropdown {
-  background-color: #374151 !important;
-}
-
-.billing-dark-dropdown .ant-select-item {
-  color: #f9fafb !important;
-}
-
-.billing-dark-dropdown .ant-select-item:hover {
-  background-color: #4b5563 !important;
-}
-
-.billing-dark-dropdown .ant-select-item-option-selected {
-  background-color: #059669 !important;
-  color: #ffffff !important;
-}
-
-html.dark .ant-descriptions-item-label {
-  color: #9ca3af !important;
-}
-
-html.dark .ant-descriptions-item-content {
-  color: #f9fafb !important;
-}
-
-html.dark .ant-card-body span,
-html.dark .ant-card-body div {
-  color: inherit !important;
-}
-
-html.dark .ant-table-tbody > tr > td {
-  color: #f9fafb !important;
-}
-
-html.dark .ant-modal-content,
-html.dark .ant-modal-content span,
-html.dark .ant-modal-content div,
-html.dark .ant-modal-content p {
-  color: #f9fafb !important;
-}
-
-html.dark .ant-progress-text {
-  color: #f9fafb !important;
-}
-
-html.dark .ant-typography {
-  color: inherit !important;
-}
-
-html.dark .ant-alert-message,
-html.dark .ant-alert-description {
-  color: #f9fafb !important;
-}
-
-html.dark .ant-card-head-title {
-  color: #f9fafb !important;
-}
-
-html.dark .ant-tag {
-  font-weight: 500 !important;
-}
-
-html.dark .ant-tag-success {
-  background-color: #10b981 !important;
-  color: #ffffff !important;
-  border-color: #10b981 !important;
-}
-
-html.dark .ant-tag-warning {
-  background-color: #f59e0b !important;
-  color: #ffffff !important;
-  border-color: #f59e0b !important;
-}
-
-html.dark .ant-tag-error {
-  background-color: #ef4444 !important;
-  color: #ffffff !important;
-  border-color: #ef4444 !important;
-}
-
-.dark-table .ant-table {
-  background: #1f2937 !important;
-  color: #ffffff !important;
-}
-
-.dark-table .ant-table-thead > tr > th {
-  background: #4b5563 !important;
-  color: #ffffff !important;
-  border-bottom: 1px solid #6b7280 !important;
-}
-
-.dark-table .ant-table-tbody > tr > td {
-  background: #1f2937 !important;
-  color: #ffffff !important;
-  border-bottom: 1px solid #4b5563 !important;
-}
-
-.dark-table .ant-table-tbody > tr:hover > td {
-  background: #4b5563 !important;
-}
-
-.dark-table .ant-pagination-item {
-  background: #4b5563 !important;
-  border-color: #6b7280 !important;
-}
-
-.dark-table .ant-pagination-item a {
-  color: #ffffff !important;
-}
-
-.dark-table .ant-pagination-item-active {
-  background: #059669 !important;
-  border-color: #059669 !important;
-}
-
-html.dark .ant-tag {
-  font-weight: 500 !important;
-}
-
-html.dark .ant-tag-success {
-  background-color: #10b981 !important;
-  color: #ffffff !important;
-  border-color: #10b981 !important;
-}
-
-html.dark .ant-tag-warning {
-  background-color: #f59e0b !important;
-  color: #ffffff !important;
-  border-color: #f59e0b !important;
-}
-
-.invoice-details-modal .ant-modal-content {
-  background-color: #ffffff !important;
-  color: #333333 !important;
-  border: 1px solid #d9d9d9 !important;
-}
-
-.invoice-details-modal .ant-modal-header {
-  background-color: #ffffff !important;
-  border-bottom: 1px solid #d9d9d9 !important;
-}
-
-.invoice-details-modal .ant-modal-close {
-  color: #333333 !important;
-}
-
-.invoice-details-modal .ant-modal-close:hover {
-  color: #10b981 !important;
-}
-
-.invoice-details-modal .ant-descriptions-item-label {
-  color: #505050 !important;
-}
-
-.invoice-details-modal .ant-descriptions-item-content {
-  color: #333333 !important;
-}
+/* Billing — shared buttons, dropdowns, dark table in module-shared.css */
 
 .invoice-header {
-  background: #e0e0e0;
+  background: rgb(var(--color-invoice-strip-bg));
   padding: 20px;
   border-radius: 8px;
   margin-bottom: 24px;
 }
 
 .invoice-table th {
-  background: #e0e0e0 !important;
-  color: #333333 !important;
+  background: rgb(var(--color-invoice-strip-bg)) !important;
+  color: rgb(var(--color-foreground)) !important;
   font-weight: 600;
   padding: 12px;
-  border: 1px solid #d9d9d9;
+  border: 1px solid rgb(var(--color-border-input));
 }
 
 .invoice-table td {
-  background: #ffffff !important;
-  color: #333333 !important;
+  background: rgb(var(--color-surface)) !important;
+  color: rgb(var(--color-foreground)) !important;
   padding: 12px;
-  border: 1px solid #d9d9d9;
+  border: 1px solid rgb(var(--color-border-input));
 }
 
-html.dark .invoice-details-modal .ant-modal-content {
-  background-color: #1f2937 !important;
-  color: #ffffff !important;
-  border: 1px solid #4b5563 !important;
+.invoice-details-modal .ant-descriptions-item-label {
+  color: rgb(var(--color-muted)) !important;
 }
 
-html.dark .invoice-details-modal .ant-modal-header {
-  background-color: #1f2937 !important;
-  border-bottom: 1px solid #4b5563 !important;
-}
-
-html.dark .invoice-details-modal .ant-modal-close {
-  color: #ffffff !important;
-}
-
-html.dark .invoice-details-modal .ant-descriptions-item-label {
-  color: #e0e0e0 !important;
-}
-
-html.dark .invoice-details-modal .ant-descriptions-item-content {
-  color: #ffffff !important;
-}
-
-html.dark .invoice-header {
-  background: #4b5563;
-}
-
-html.dark .invoice-table th {
-  background: #4b5563 !important;
-  color: #ffffff !important;
-  border: 1px solid #6b7280;
-}
-
-html.dark .invoice-table td {
-  background: #1f2937 !important;
-  color: #ffffff !important;
-  border: 1px solid #6b7280;
-}
-
-.plan-upgrade-modal .ant-modal-content {
-  background-color: #ffffff !important;
-  color: #333333 !important;
-  border: 1px solid #d9d9d9 !important;
-}
-
-.plan-upgrade-modal .ant-modal-header {
-  background-color: #ffffff !important;
-  border-bottom: 1px solid #d9d9d9 !important;
-}
-
-.plan-upgrade-modal .ant-modal-close {
-  color: #333333 !important;
-}
-
-.plan-upgrade-modal .ant-modal-close:hover {
-  color: #10b981 !important;
+.invoice-details-modal .ant-descriptions-item-content {
+  color: rgb(var(--color-foreground)) !important;
 }
 
 .plan-card {
@@ -461,23 +37,23 @@ html.dark .invoice-table td {
 
 .plan-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--color-card-hover-shadow);
 }
 
 .plan-card.selected {
-  border-color: #059669 !important;
-  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+  border-color: rgb(var(--color-brand-secondary)) !important;
+  box-shadow: var(--color-plan-selected-ring);
 }
 
 .plan-card.current {
-  border-color: #3b82f6 !important;
-  background: rgba(59, 130, 246, 0.05) !important;
+  border-color: rgb(var(--color-info)) !important;
+  background: var(--color-plan-current-tint) !important;
 }
 
 .plan-upgrade-modal .ant-modal-footer .ant-btn {
-  background-color: #ffffff !important;
-  border-color: #d1d5db !important;
-  color: #374151 !important;
+  background-color: rgb(var(--color-btn-secondary-bg)) !important;
+  border-color: rgb(var(--color-btn-secondary-border)) !important;
+  color: rgb(var(--color-btn-secondary-text)) !important;
   font-weight: 500 !important;
   padding: 8px 24px !important;
   height: auto !important;
@@ -489,36 +65,24 @@ html.dark .invoice-table td {
 }
 
 .plan-upgrade-modal .ant-modal-footer .ant-btn:hover {
-  background-color: #f9fafb !important;
-  border-color: #d1d5db !important;
-  color: #111827 !important;
-  transform: none !important;
+  background-color: rgb(var(--color-btn-secondary-hover-bg)) !important;
+  border-color: rgb(var(--color-btn-secondary-hover-border)) !important;
+  color: rgb(var(--color-btn-secondary-hover-text)) !important;
 }
 
 .plan-upgrade-modal .ant-modal-footer .ant-btn-primary {
-  background-color: #059669 !important;
-  border-color: #059669 !important;
-  color: white !important;
+  background-color: rgb(var(--color-brand-secondary)) !important;
+  border-color: rgb(var(--color-brand-secondary)) !important;
+  color: rgb(var(--color-on-primary)) !important;
 }
 
 .plan-upgrade-modal .ant-modal-footer .ant-btn-primary:hover {
-  background-color: #047857 !important;
-  border-color: #047857 !important;
-  color: white !important;
+  background-color: rgb(var(--color-brand-secondary-hover)) !important;
+  border-color: rgb(var(--color-brand-secondary-hover)) !important;
 }
 
 .plan-upgrade-modal .ant-modal-footer .ant-btn:focus {
-  background-color: #ffffff !important;
-  border-color: #059669 !important;
-  color: #374151 !important;
-  box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
-}
-
-.plan-upgrade-modal .ant-modal-footer .ant-btn-primary:focus {
-  background-color: #059669 !important;
-  border-color: #059669 !important;
-  color: white !important;
-  box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
+  box-shadow: var(--color-focus-ring-shadow) !important;
 }
 
 .plan-upgrade-modal .plan-title {
@@ -532,200 +96,84 @@ html.dark .invoice-table td {
   gap: 4px !important;
 }
 
-html.dark .plan-upgrade-modal .ant-modal-content {
-  background-color: #1f2937 !important;
-  color: #ffffff !important;
-  border: 1px solid #4b5563 !important;
-}
-
-html.dark .plan-upgrade-modal .ant-modal-header {
-  background-color: #1f2937 !important;
-  border-bottom: 1px solid #4b5563 !important;
-}
-
-html.dark .plan-upgrade-modal .ant-modal-close {
-  color: #ffffff !important;
-}
-
 html.dark .plan-upgrade-modal .ant-alert {
-  background-color: #4b5563 !important;
-  border-color: #6b7280 !important;
+  background-color: rgb(var(--color-alert-bg)) !important;
+  border-color: rgb(var(--color-alert-border)) !important;
 }
 
 html.dark .plan-upgrade-modal .ant-alert-message,
-html.dark .plan-upgrade-modal .ant-alert-description {
-  color: #ffffff !important;
-}
-
-html.dark .plan-upgrade-modal .ant-card-body * {
-  color: #ffffff !important;
-}
-
-html.dark .plan-upgrade-modal .ant-typography {
-  color: #ffffff !important;
-}
-
+html.dark .plan-upgrade-modal .ant-alert-description,
+html.dark .plan-upgrade-modal .ant-card-body *,
+html.dark .plan-upgrade-modal .ant-typography,
 html.dark .plan-upgrade-modal ul li {
-  color: #e0e0e0 !important;
-}
-
-html.dark .plan-card.current {
-  background: rgba(59, 130, 246, 0.1) !important;
-}
-
-html.dark .plan-upgrade-modal .ant-modal-footer .ant-btn {
-  background-color: #4b5563 !important;
-  border-color: #6b7280 !important;
-  color: #ffffff !important;
-}
-
-html.dark .plan-upgrade-modal .ant-modal-footer .ant-btn:hover {
-  background-color: #374151 !important;
-  border-color: #4b5563 !important;
-}
-
-html.dark .plan-upgrade-modal .ant-modal-footer .ant-btn:focus {
-  background-color: #4b5563 !important;
-  border-color: #059669 !important;
-  color: #ffffff !important;
+  color: rgb(var(--color-foreground)) !important;
 }
 
 html.dark .plan-upgrade-modal .ant-tag {
-  background-color: #374151 !important;
-  border-color: #4b5563 !important;
-  color: #f9fafb !important;
+  background-color: rgb(var(--color-surface-elevated)) !important;
+  border-color: rgb(var(--color-border)) !important;
+  color: rgb(var(--color-input-text)) !important;
 }
 
 html.dark .plan-upgrade-modal .ant-tag-gold {
-  background-color: #f59e0b !important;
-  border-color: #f59e0b !important;
-  color: #ffffff !important;
+  background-color: rgb(var(--color-warning)) !important;
+  border-color: rgb(var(--color-warning)) !important;
+  color: rgb(var(--color-on-primary)) !important;
 }
 
 html.dark .plan-upgrade-modal .ant-tag-blue {
-  background-color: #3b82f6 !important;
-  border-color: #3b82f6 !important;
-  color: #ffffff !important;
+  background-color: rgb(var(--color-info)) !important;
+  border-color: rgb(var(--color-info)) !important;
+  color: rgb(var(--color-on-primary)) !important;
 }
 
-html.dark .payment-method-modal .ant-modal-content {
-  background-color: #374151 !important;
-  color: #f9fafb !important;
-}
-
-html.dark .payment-method-modal .ant-modal-header {
-  background-color: #374151 !important;
-  border-bottom-color: #4b5563 !important;
-}
-
-html.dark .payment-method-modal .ant-modal-title {
-  color: #f9fafb !important;
-}
-
+html.dark .payment-method-modal .ant-modal-title,
 html.dark .payment-method-modal .ant-modal-close-x {
-  color: #9ca3af !important;
+  color: rgb(var(--color-input-text)) !important;
 }
 
 html.dark .payment-method-modal .ant-modal-close-x:hover {
-  color: #f9fafb !important;
+  color: rgb(var(--color-foreground)) !important;
 }
 
 html.dark .payment-method-modal .ant-alert {
-  background-color: #4b5563 !important;
-  border-color: #6b7280 !important;
+  background-color: rgb(var(--color-alert-bg)) !important;
+  border-color: rgb(var(--color-alert-border)) !important;
 }
 
 html.dark .payment-method-modal .ant-alert-message,
-html.dark .payment-method-modal .ant-alert-description {
-  color: #f9fafb !important;
+html.dark .payment-method-modal .ant-alert-description,
+html.dark .payment-method-modal .ant-card-body * {
+  color: rgb(var(--color-input-text)) !important;
 }
 
 html.dark .payment-method-modal .ant-card {
-  background-color: #4b5563 !important;
-  border-color: #6b7280 !important;
-}
-
-html.dark .payment-method-modal .ant-card-body * {
-  color: #f9fafb !important;
-}
-
-.payment-method-modal .ant-modal-content {
-  background-color: #ffffff !important;
-  color: #333333 !important;
-  border: 1px solid #d9d9d9 !important;
-}
-
-.payment-method-modal .ant-modal-header {
-  background-color: #ffffff !important;
-  border-bottom: 1px solid #d9d9d9 !important;
-}
-
-.payment-method-modal .ant-modal-close {
-  color: #333333 !important;
-}
-
-.payment-method-modal .ant-modal-close:hover {
-  color: #10b981 !important;
+  background-color: rgb(var(--color-input-bg)) !important;
+  border-color: rgb(var(--color-input-border)) !important;
 }
 
 .payment-method-modal .ant-form-item-label > label {
-  color: #333333 !important;
+  color: rgb(var(--color-foreground)) !important;
 }
 
-.payment-method-modal .ant-input {
-  background-color: #ffffff !important;
-  border-color: #d9d9d9 !important;
-  color: #333333 !important;
+.payment-method-modal .ant-input,
+.payment-method-modal .ant-select-selector {
+  background-color: rgb(var(--color-input-bg)) !important;
+  border-color: rgb(var(--color-input-border)) !important;
+  color: rgb(var(--color-input-text)) !important;
 }
 
 .payment-method-modal .ant-input:focus,
 .payment-method-modal .ant-input-focused {
-  border-color: #059669 !important;
-  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2) !important;
-}
-
-.payment-method-modal .ant-select-selector {
-  background-color: #ffffff !important;
-  border-color: #d9d9d9 !important;
-  color: #333333 !important;
-}
-
-html.dark .payment-method-modal .ant-modal-content {
-  background-color: #1f2937 !important;
-  color: #ffffff !important;
-  border: 1px solid #4b5563 !important;
-}
-
-html.dark .payment-method-modal .ant-modal-header {
-  background-color: #1f2937 !important;
-  border-bottom: 1px solid #4b5563 !important;
-}
-
-html.dark .payment-method-modal .ant-modal-close {
-  color: #ffffff !important;
-}
-
-html.dark .payment-method-modal .ant-form-item-label > label {
-  color: #ffffff !important;
-}
-
-html.dark .payment-method-modal .ant-input {
-  background-color: #4b5563 !important;
-  border-color: #6b7280 !important;
-  color: #ffffff !important;
-}
-
-html.dark .payment-method-modal .ant-select-selector {
-  background-color: #4b5563 !important;
-  border-color: #6b7280 !important;
-  color: #ffffff !important;
+  border-color: rgb(var(--color-brand-secondary)) !important;
+  box-shadow: var(--color-focus-ring-shadow) !important;
 }
 
 .card-preview {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   border-radius: 12px;
   padding: 20px;
-  color: white;
+  color: rgb(var(--color-on-primary));
   font-family: 'Courier New', monospace;
   position: relative;
   overflow: hidden;
@@ -738,23 +186,6 @@ html.dark .payment-method-modal .ant-select-selector {
   right: -50%;
   width: 100%;
   height: 100%;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgb(255 255 255 / 0.1);
   border-radius: 50%;
-}
-
-.payment-dark-dropdown {
-  background-color: #374151 !important;
-}
-
-.payment-dark-dropdown .ant-select-item {
-  color: #f9fafb !important;
-}
-
-.payment-dark-dropdown .ant-select-item:hover {
-  background-color: #4b5563 !important;
-}
-
-.payment-dark-dropdown .ant-select-item-option-selected {
-  background-color: #10b981 !important;
-  color: #ffffff !important;
 }

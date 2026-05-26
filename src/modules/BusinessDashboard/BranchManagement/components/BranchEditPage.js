@@ -305,7 +305,7 @@ const BranchEditPage = React.memo(({ user: currentUser }) => {
             layout='vertical'
             onFinish={handleSubmit}
             onValuesChange={handleValuesChange}
-            className={`${darkMode ? 'branch-edit-form' : ''}`}
+            className='global-form branch-edit-form'
           >
             {/* Basic Information */}
             <Card

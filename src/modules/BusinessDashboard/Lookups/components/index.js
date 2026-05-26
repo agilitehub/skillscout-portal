@@ -12,7 +12,6 @@ import TableActions from '../../../../core/components/view-components/table-view
 import { getAllLookups, deleteLookup } from '../controllers'
 import { Toolbar } from '../../../../core/components'
 
-import '../../styles/dashboard-toolbar-buttons.css'
 import ModuleContainer from '../../../../core/components/layout/Container/ModuleContainer'
 
 /**

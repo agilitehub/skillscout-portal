@@ -1,136 +1,37 @@
-html.dark .user-edit-form .ant-form-item-label > label {
-  color: #e5e7eb !important;
-}
+/* User Management — forms use global-form; dropdown/modals in module-shared.css */
 
-html.dark .user-edit-form .ant-form-item-extra {
-  color: #9ca3af !important;
-}
-
-html.dark .user-edit-form .ant-input,
-html.dark .user-edit-form input.ant-input,
-html.dark .user-edit-form input[type='text'],
-html.dark .user-edit-form input {
-  background-color: #4b5563 !important;
-  border-color: #6b7280 !important;
-  color: #f9fafb !important;
-}
-
-html.dark .user-edit-form .ant-input:focus,
-html.dark .user-edit-form input.ant-input:focus,
-html.dark .user-edit-form input[type='text']:focus,
-html.dark .user-edit-form input:focus {
-  border-color: #059669 !important;
-  box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
-  background-color: #4b5563 !important;
-  color: #f9fafb !important;
-}
-
-html.dark .user-edit-form .ant-input::placeholder,
-html.dark .user-edit-form input::placeholder {
-  color: #d1d5db !important;
-}
-
-html.dark .user-edit-form .ant-select,
-html.dark .user-edit-form .ant-select-selector,
-html.dark .user-edit-form .ant-select-single .ant-select-selector {
-  background-color: #4b5563 !important;
-  border-color: #6b7280 !important;
-  color: #f9fafb !important;
-}
-
-html.dark .user-edit-form .ant-select-focused .ant-select-selector,
-html.dark .user-edit-form .ant-select:focus .ant-select-selector {
-  border-color: #059669 !important;
-  box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
-  background-color: #4b5563 !important;
-}
-
-html.dark .user-edit-form .ant-select-selection-placeholder {
-  color: #d1d5db !important;
-}
-
-html.dark .user-edit-form .ant-select-selection-item {
-  color: #f9fafb !important;
-  background-color: transparent !important;
-}
-
-html.dark .user-edit-form .ant-select-arrow {
-  color: #9ca3af !important;
-}
-
-html.dark .user-edit-form .ant-form-item-explain-error {
-  color: #f87171 !important;
-}
-
-.user-edit-dark-dropdown {
-  background-color: #374151 !important;
-}
-
-.user-edit-dark-dropdown .ant-select-item {
-  color: #f9fafb !important;
-}
-
-.user-edit-dark-dropdown .ant-select-item:hover {
-  background-color: #4b5563 !important;
-}
-
-.user-edit-dark-dropdown .ant-select-item-option-selected {
-  background-color: #059669 !important;
-  color: #ffffff !important;
-}
-
-/* Edit permissions modal */
-.permissions-modal .ant-modal-content {
-  background-color: #ffffff !important;
-  color: #333333 !important;
-  border: 1px solid #d9d9d9 !important;
-}
-
-.permissions-modal .ant-modal-header {
-  background-color: #ffffff !important;
-  border-bottom: 1px solid #d9d9d9 !important;
-}
-
-.permissions-modal .ant-modal-close {
-  color: #333333 !important;
-}
-
-.permissions-modal .ant-modal-close:hover {
-  color: #10b981 !important;
+.permissions-modal .ant-switch-checked {
+  background-color: rgb(var(--color-brand-secondary)) !important;
 }
 
 .permissions-modal .ant-form-item-label > label {
-  color: #333333 !important;
+  color: rgb(var(--color-foreground)) !important;
   font-weight: 500 !important;
 }
 
-.permissions-modal .ant-switch-checked {
-  background-color: #059669 !important;
-}
-
 .permissions-modal .ant-alert {
-  background-color: #e0e0e0 !important;
-  border-color: #d9d9d9 !important;
+  background-color: rgb(var(--color-alert-bg)) !important;
+  border-color: rgb(var(--color-alert-border)) !important;
 }
 
 .permissions-modal .ant-alert-message {
-  color: #333333 !important;
+  color: rgb(var(--color-foreground)) !important;
 }
 
 .permissions-modal .ant-alert-description {
-  color: #505050 !important;
+  color: rgb(var(--color-muted)) !important;
 }
 
 .permission-category {
-  background-color: #f9fafb !important;
-  border: 1px solid #e5e7eb !important;
+  background-color: rgb(var(--color-permission-category-bg)) !important;
+  border: 1px solid rgb(var(--color-border)) !important;
   border-radius: 8px;
   padding: 16px;
   margin-bottom: 16px;
 }
 
 .permission-category-title {
-  color: #333333 !important;
+  color: rgb(var(--color-foreground)) !important;
   font-weight: 600;
   font-size: 14px;
   margin-bottom: 12px;
@@ -141,7 +42,7 @@ html.dark .user-edit-form .ant-form-item-explain-error {
   align-items: flex-start;
   justify-content: space-between;
   padding: 12px 0;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid rgb(var(--color-border));
 }
 
 .permission-item:last-child {
@@ -154,67 +55,23 @@ html.dark .user-edit-form .ant-form-item-explain-error {
 }
 
 .permission-label {
-  color: #333333 !important;
+  color: rgb(var(--color-foreground)) !important;
   font-weight: 500;
   font-size: 14px;
   margin-bottom: 4px;
 }
 
 .permission-description {
-  color: #505050 !important;
+  color: rgb(var(--color-muted)) !important;
   font-size: 12px;
   line-height: 1.4;
 }
 
-html.dark .permissions-modal .ant-modal-content {
-  background-color: #1f2937 !important;
-  color: #ffffff !important;
-  border: 1px solid #4b5563 !important;
-}
-
-html.dark .permissions-modal .ant-modal-header {
-  background-color: #1f2937 !important;
-  border-bottom: 1px solid #4b5563 !important;
-}
-
-html.dark .permissions-modal .ant-modal-close {
-  color: #ffffff !important;
-}
-
-html.dark .permissions-modal .ant-form-item-label > label {
-  color: #ffffff !important;
-}
-
-html.dark .permissions-modal .ant-alert {
-  background-color: #4b5563 !important;
-  border-color: #6b7280 !important;
-}
-
-html.dark .permissions-modal .ant-alert-message {
-  color: #ffffff !important;
-}
-
-html.dark .permissions-modal .ant-alert-description {
-  color: #e0e0e0 !important;
-}
-
-html.dark .permission-category {
-  background-color: #4b5563 !important;
-  border: 1px solid #6b7280 !important;
-}
-
-html.dark .permission-category-title {
-  color: #ffffff !important;
+html.dark .permissions-modal .ant-alert-description,
+html.dark .permission-description {
+  color: rgb(var(--color-muted)) !important;
 }
 
 html.dark .permission-item {
-  border-bottom: 1px solid #6b7280;
-}
-
-html.dark .permission-label {
-  color: #ffffff !important;
-}
-
-html.dark .permission-description {
-  color: #e0e0e0 !important;
+  border-bottom-color: rgb(var(--color-input-border));
 }

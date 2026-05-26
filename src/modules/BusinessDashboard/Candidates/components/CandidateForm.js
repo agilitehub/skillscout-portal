@@ -207,7 +207,7 @@ const CandidateForm = React.memo(({ user }) => {
               darkMode ? 'bg-gray-800/90 border-gray-700' : 'bg-white/90 border-gray-200'
             }`}
           >
-            <Form form={form} layout='vertical' onFinish={handleFormSubmit} className='space-y-6'>
+            <Form form={form} layout='vertical' onFinish={handleFormSubmit} className='global-form space-y-6'>
               <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
                 {/* Name */}
                 <Form.Item

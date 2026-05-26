@@ -5,7 +5,7 @@ import PropTypes from 'prop-types'
 import { useTheme } from '../../context/ThemeContext'
 import { BRAND_COLORS } from '../colors'
 
-// Define transitions locally since styles.js seems to be unavailable
+// Transition classes for toggle animation
 const TRANSITIONS = {
   FAST: 'transition-all duration-200 ease-in-out',
   MEDIUM: 'transition-all duration-300 ease-in-out',

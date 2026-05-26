@@ -139,7 +139,7 @@ const UserEditPage = React.memo(() => {
             layout='vertical'
             onFinish={handleSubmit}
             onValuesChange={handleValuesChange}
-            className={`${darkMode ? 'user-edit-form' : ''}`}
+            className='global-form'
           >
             {/* User Information */}
             <Card

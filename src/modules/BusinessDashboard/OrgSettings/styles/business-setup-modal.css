@@ -1,43 +1,31 @@
-/* Global Instructions Rule Applied! */
-/* Frontend Instructions Rule Applied! */
+/* Business Setup modal — Ant Design 6 token overrides scoped to modal body */
 
-/* Extra token scope so nested inputs / Select combobox pick up correct colors */
 html.dark .business-setup-themed-modal .ant-modal-body {
-  --ant-input-placeholder-color: #9ca3af !important;
-  --ant-color-text: #f9fafb !important;
-  --ant-color-text-placeholder: #9ca3af !important;
-  /* TextArea showCount uses token.colorTextDescription (maps to ant-input-data-count) */
-  --ant-color-text-description: #e5e7eb !important;
-  --ant-select-placeholder-color: #9ca3af !important;
-  --ant-select-color: #f9fafb !important;
+  --ant-input-placeholder-color: rgb(var(--color-placeholder)) !important;
+  --ant-color-text: rgb(var(--color-input-text)) !important;
+  --ant-color-text-placeholder: rgb(var(--color-placeholder)) !important;
+  --ant-color-text-description: rgb(var(--color-muted)) !important;
+  --ant-select-placeholder-color: rgb(var(--color-placeholder)) !important;
+  --ant-select-color: rgb(var(--color-input-text)) !important;
 }
 
 html.dark .business-setup-themed-modal .ant-modal-body .ant-input::placeholder,
-html.dark .business-setup-themed-modal .ant-modal-body .ant-input::-webkit-input-placeholder,
 html.dark .business-setup-themed-modal .ant-modal-body input.ant-input::placeholder,
-html.dark .business-setup-themed-modal .ant-modal-body input.ant-input::-webkit-input-placeholder,
 html.dark .business-setup-themed-modal .ant-modal-body textarea.ant-input::placeholder,
-html.dark .business-setup-themed-modal .ant-modal-body textarea.ant-input::-webkit-input-placeholder,
-html.dark .business-setup-themed-modal .ant-modal-body textarea::placeholder {
-  color: #9ca3af !important;
-  opacity: 1 !important;
-}
-
-html.dark .business-setup-themed-modal .ant-modal-body .ant-input-affix-wrapper input::placeholder,
-html.dark .business-setup-themed-modal .ant-modal-body .ant-input-affix-wrapper input::-webkit-input-placeholder {
-  color: #9ca3af !important;
+html.dark .business-setup-themed-modal .ant-modal-body textarea::placeholder,
+html.dark .business-setup-themed-modal .ant-modal-body .ant-input-affix-wrapper input::placeholder {
+  color: rgb(var(--color-placeholder)) !important;
   opacity: 1 !important;
 }
 
 html.dark .business-setup-themed-modal .ant-modal-body .ant-select {
-  --ant-select-placeholder-color: #9ca3af !important;
-  --ant-select-color: #f9fafb !important;
-  --ant-color-text-placeholder: #9ca3af !important;
-  --ant-color-text-quaternary: #f9fafb !important;
-  color: #f9fafb !important;
+  --ant-select-placeholder-color: rgb(var(--color-placeholder)) !important;
+  --ant-select-color: rgb(var(--color-input-text)) !important;
+  --ant-color-text-placeholder: rgb(var(--color-placeholder)) !important;
+  --ant-color-text-quaternary: rgb(var(--color-input-text)) !important;
+  color: rgb(var(--color-input-text)) !important;
 }
 
-/* Pointer on all Select surfaces (tags mode uses combobox input with default text cursor) */
 .business-setup-themed-modal .business-setup-form .ant-select:not(.ant-select-disabled),
 .business-setup-themed-modal .business-setup-form .ant-select:not(.ant-select-disabled) .ant-select-selector,
 .business-setup-themed-modal .business-setup-form .ant-select:not(.ant-select-disabled) .ant-select-content,
@@ -48,130 +36,48 @@ html.dark .business-setup-themed-modal .ant-modal-body .ant-select {
   cursor: pointer !important;
 }
 
-/* Dropdown chevrons — Ant Design 6 uses .ant-select-suffix, not .ant-select-arrow */
 html.dark .business-setup-themed-modal .business-setup-form .ant-select-suffix,
-html.dark .business-setup-themed-modal .business-setup-form .ant-select .ant-select-suffix,
 html.dark .business-setup-themed-modal .business-setup-form .ant-select-arrow,
 html.dark .business-setup-themed-modal .business-setup-form .ant-select .anticon,
-html.dark .business-setup-themed-modal .business-setup-form .ant-select-suffix .anticon,
-html.dark .business-setup-themed-modal .business-setup-form .ant-select-suffix svg,
 html.dark .business-setup-themed-modal .ant-modal-body .ant-select-suffix,
-html.dark .business-setup-themed-modal .ant-modal-body .ant-select .ant-select-suffix,
 html.dark .business-setup-themed-modal .ant-modal-body .ant-select .anticon {
-  color: #f9fafb !important;
+  color: rgb(var(--color-input-text)) !important;
   fill: currentColor !important;
 }
 
-/* Highest specificity: form wrapper + Ant Design 6 placeholder node */
 html.dark .business-setup-themed-modal .business-setup-form .ant-select .ant-select-placeholder,
 html.dark .business-setup-themed-modal .business-setup-form .ant-select-placeholder {
-  color: #9ca3af !important;
-  -webkit-text-fill-color: #9ca3af !important;
+  color: rgb(var(--color-placeholder)) !important;
+  -webkit-text-fill-color: rgb(var(--color-placeholder)) !important;
   opacity: 1 !important;
 }
 
-/* Ant Design 6: single/multiple Select uses combobox input.ant-select-input + .ant-select-content */
-html.dark .business-setup-themed-modal .ant-modal-body .ant-select .ant-select-content {
-  color: #f9fafb !important;
-}
-
-html.dark .business-setup-themed-modal .ant-modal-body .ant-select .ant-select-content-value {
-  color: #f9fafb !important;
-}
-
-/* When Ant merges placeholder into content value node */
-html.dark .business-setup-themed-modal .ant-modal-body .ant-select .ant-select-content-value.ant-select-selection-placeholder {
-  color: #9ca3af !important;
-  -webkit-text-fill-color: #9ca3af !important;
-}
-
+html.dark .business-setup-themed-modal .ant-modal-body .ant-select .ant-select-content,
+html.dark .business-setup-themed-modal .ant-modal-body .ant-select .ant-select-content-value,
 html.dark .business-setup-themed-modal .ant-modal-body .ant-select input.ant-select-input {
-  color: #f9fafb !important;
-  -webkit-text-fill-color: #f9fafb !important;
+  color: rgb(var(--color-input-text)) !important;
+  -webkit-text-fill-color: rgb(var(--color-input-text)) !important;
 }
 
-html.dark .business-setup-themed-modal .ant-modal-body .ant-select input.ant-select-input::placeholder {
-  color: #9ca3af !important;
-  -webkit-text-fill-color: #9ca3af !important;
+html.dark .business-setup-themed-modal .ant-modal-body .ant-select .ant-select-content-value.ant-select-selection-placeholder,
+html.dark .business-setup-themed-modal .ant-modal-body .ant-select input.ant-select-input::placeholder,
+html.dark .business-setup-themed-modal .ant-modal-body .ant-select .ant-select-selection-placeholder {
+  color: rgb(var(--color-placeholder)) !important;
+  -webkit-text-fill-color: rgb(var(--color-placeholder)) !important;
   opacity: 1 !important;
-}
-
-html.dark .business-setup-themed-modal .ant-modal-body .ant-select input.ant-select-input::-webkit-input-placeholder {
-  color: #9ca3af !important;
-  -webkit-text-fill-color: #9ca3af !important;
-  opacity: 1 !important;
-}
-
-html.dark .business-setup-themed-modal .ant-modal-body .ant-select input.ant-select-input::-moz-placeholder {
-  color: #9ca3af !important;
-  opacity: 1 !important;
-}
-
-html.dark .business-setup-themed-modal .ant-modal-body .ant-select .ant-select-selection-placeholder,
-html.dark .business-setup-themed-modal .ant-modal-body .ant-select-selection-placeholder,
-html.dark .business-setup-themed-modal .ant-modal-body .ant-select .ant-select-content .ant-select-selection-placeholder {
-  color: #9ca3af !important;
-  opacity: 1 !important;
-  -webkit-text-fill-color: #9ca3af !important;
 }
 
 html.dark .business-setup-themed-modal .ant-modal-body .ant-select .ant-select-selection-search-input {
-  color: #f9fafb !important;
-  -webkit-text-fill-color: #f9fafb !important;
+  color: rgb(var(--color-input-text)) !important;
+  -webkit-text-fill-color: rgb(var(--color-input-text)) !important;
 }
 
-html.dark .business-setup-themed-modal .ant-modal-body .ant-select .ant-select-selection-search-input::placeholder,
-html.dark .business-setup-themed-modal
-  .ant-modal-body
-  .ant-select-multiple
-  .ant-select-selection-search-input::placeholder,
-html.dark .business-setup-themed-modal
-  .ant-modal-body
-  .ant-select
-  .ant-select-selection-search-input::-webkit-input-placeholder {
-  color: #9ca3af !important;
-  -webkit-text-fill-color: #9ca3af !important;
+html.dark .business-setup-themed-modal .ant-modal-body .ant-select .ant-select-selection-search-input::placeholder {
+  color: rgb(var(--color-placeholder)) !important;
+  -webkit-text-fill-color: rgb(var(--color-placeholder)) !important;
   opacity: 1 !important;
 }
 
-/* TextArea character counter (showCount) — Ant Design 6: .ant-input-data-count */
-html.dark
-  .business-setup-themed-modal
-  .business-setup-form
-  .ant-input-affix-wrapper.ant-input-textarea-show-count
-  .ant-input-data-count,
 html.dark .business-setup-themed-modal .business-setup-form .ant-input-data-count {
-  color: #f9fafb !important;
-}
-
-/* Dark dropdown scrollbars — rc-virtual-list defaults to black thumb via --rc-virtual-list-scrollbar-bg */
-html.dark .business-setup-dark-dropdown {
-  --rc-virtual-list-scrollbar-bg: #6b7280;
-  scrollbar-color: #6b7280 #374151;
-}
-
-html.dark .business-setup-dark-dropdown .rc-virtual-list-scrollbar-thumb {
-  background: #6b7280 !important;
-}
-
-html.dark .business-setup-dark-dropdown .rc-virtual-list-scrollbar-thumb:hover,
-html.dark .business-setup-dark-dropdown .rc-virtual-list-scrollbar-thumb.rc-virtual-list-scrollbar-thumb-moving {
-  background: #9ca3af !important;
-}
-
-html.dark .business-setup-dark-dropdown .rc-virtual-list-holder {
-  scrollbar-color: #6b7280 #374151;
-}
-
-html.dark .business-setup-dark-dropdown .rc-virtual-list-holder::-webkit-scrollbar {
-  width: 8px;
-}
-
-html.dark .business-setup-dark-dropdown .rc-virtual-list-holder::-webkit-scrollbar-track {
-  background-color: #374151;
-}
-
-html.dark .business-setup-dark-dropdown .rc-virtual-list-holder::-webkit-scrollbar-thumb {
-  background-color: #6b7280;
-  border-radius: 9999px;
+  color: rgb(var(--color-input-text)) !important;
 }

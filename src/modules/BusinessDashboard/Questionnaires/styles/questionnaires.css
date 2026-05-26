@@ -1,21 +1,22 @@
-/* Toolbar status filter on green header — white control, readable in light and dark app theme */
+/* Questionnaires — toolbar select on emerald header; table tags */
+
 .questionnaires-toolbar-select.ant-select {
-  --ant-select-background-color: #ffffff;
-  --ant-select-border-color: #ffffff;
-  --ant-select-color: #047857;
-  background-color: #ffffff !important;
-  border-color: #ffffff !important;
-  color: #047857 !important;
+  --ant-select-background-color: rgb(var(--color-accent-toolbar-bg));
+  --ant-select-border-color: rgb(var(--color-accent-toolbar-bg));
+  --ant-select-color: rgb(var(--color-accent-toolbar-hover-text));
+  background-color: rgb(var(--color-accent-toolbar-bg)) !important;
+  border-color: rgb(var(--color-accent-toolbar-bg)) !important;
+  color: rgb(var(--color-accent-toolbar-hover-text)) !important;
 }
 
 .questionnaires-toolbar-select .ant-select-content,
 .questionnaires-toolbar-select .ant-select-content-value {
-  color: #047857 !important;
+  color: rgb(var(--color-accent-toolbar-hover-text)) !important;
 }
 
 .questionnaires-toolbar-select .ant-select-suffix,
 .questionnaires-toolbar-select .anticon {
-  color: #059669 !important;
+  color: rgb(var(--color-accent-toolbar-text)) !important;
 }
 
 html.dark .questionnaires-table .ant-tag {
@@ -23,86 +24,15 @@ html.dark .questionnaires-table .ant-tag {
   border-style: solid;
 }
 
-.dark-select-dropdown {
-  background-color: #ffffff !important;
-}
-
-.dark-select-dropdown .ant-select-item {
-  color: #374151 !important;
-  background-color: #ffffff !important;
-}
-
-.dark-select-dropdown .ant-select-item:hover {
-  background-color: #f3f4f6 !important;
-}
-
-.dark-select-dropdown .ant-select-item-option-selected {
-  background-color: #10b981 !important;
-  color: #ffffff !important;
-}
-
-.dark-select-dropdown .ant-select-item-option-selected:hover {
-  background-color: #059669 !important;
-}
-
-html.dark .dark-select-dropdown {
-  background-color: #374151 !important;
-}
-
-html.dark .dark-select-dropdown .ant-select-item {
-  color: #f9fafb !important;
-  background-color: #374151 !important;
-}
-
-html.dark .dark-select-dropdown .ant-select-item:hover {
-  background-color: #4b5563 !important;
-}
-
-html.dark .dark-select-dropdown .ant-select-item-option-selected {
-  background-color: #059669 !important;
-}
-
-html.dark .dark-select-dropdown .ant-select-item-option-selected:hover {
-  background-color: #047857 !important;
-}
-
-/* Tags dropdown empty state — Ant Design Empty ("No data") in dark mode */
-html.dark .dark-select-dropdown .ant-select-item-empty,
-html.dark .dark-select-dropdown .ant-empty,
-html.dark .dark-select-dropdown .ant-empty-small,
-html.dark .dark-select-dropdown .ant-empty-normal,
-html.dark .global-dropdown .ant-select-item-empty,
-html.dark .global-dropdown .ant-empty,
-html.dark .global-dropdown .ant-empty-small,
-html.dark .global-dropdown .ant-empty-normal {
-  color: #d1d5db !important;
-}
-
-html.dark .dark-select-dropdown .ant-empty-description,
-html.dark .dark-select-dropdown .ant-empty .ant-empty-description,
-html.dark .global-dropdown .ant-empty-description,
-html.dark .global-dropdown .ant-empty .ant-empty-description {
-  color: #d1d5db !important;
-}
-
-html.dark .dark-select-dropdown .ant-empty-image svg,
-html.dark .dark-select-dropdown .ant-empty-image svg path,
-html.dark .global-dropdown .ant-empty-image svg,
-html.dark .global-dropdown .ant-empty-image svg path {
-  fill: #9ca3af !important;
-}
-
-/* Create/edit questionnaire form — white dropdown chevrons in dark mode (Ant Design 6 .ant-select-suffix) */
 html.dark .questionnaire-form-page .global-form .ant-select {
-  --ant-color-text-quaternary: #f9fafb;
+  --ant-color-text-quaternary: rgb(var(--color-input-text));
 }
 
 html.dark .questionnaire-form-page .global-form .ant-select-suffix,
-html.dark .questionnaire-form-page .global-form .ant-select .ant-select-suffix,
 html.dark .questionnaire-form-page .global-form .ant-select-arrow,
 html.dark .questionnaire-form-page .global-form .ant-select .anticon,
 html.dark .questionnaire-form-page .global-form .ant-select-suffix .anticon,
 html.dark .questionnaire-form-page .global-form .ant-select-suffix svg {
-  color: #f9fafb !important;
+  color: rgb(var(--color-input-text)) !important;
   fill: currentColor !important;
 }
