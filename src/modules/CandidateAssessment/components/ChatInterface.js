@@ -257,8 +257,7 @@ const ResumePreviewPanel = React.memo(({ user, uploadedFiles, messages, darkMode
 ResumePreviewPanel.displayName = 'ResumePreviewPanel'
 
 /**
- * Main ChatInterface component - Integrates AI controller with chat UI
- * Provides a complete chat experience with file uploads, resume preview, and streaming support
+ * Main ChatInterface component — OpenClaw-backed candidate chat with file uploads and resume preview
  */
 const ChatInterface = React.memo(({ user }) => {
   const { darkMode } = useTheme()

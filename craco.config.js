@@ -14,7 +14,14 @@ module.exports = {
         context: ['/openclaw'],
         target: openClawProxyTarget,
         changeOrigin: true,
-        pathRewrite: { '^/openclaw': '' }
+        pathRewrite: { '^/openclaw': '' },
+        onProxyRes: (proxyRes) => {
+          const contentType = proxyRes.headers['content-type'] || ''
+          if (contentType.includes('text/event-stream')) {
+            proxyRes.headers['cache-control'] = 'no-cache, no-transform'
+            proxyRes.headers['x-accel-buffering'] = 'no'
+          }
+        }
       }
     ]
   },

@@ -1,6 +1,7 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
 import { useEffect } from 'react'
+import { getDefaultDashboardPath } from '../../constants/paths'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { supabase } from './client'
 
@@ -25,7 +26,7 @@ export default function AuthCallback() {
         }
 
         window.history.replaceState({}, '', window.location.pathname)
-        navigate('/business-dashboard', { replace: true })
+        navigate(getDefaultDashboardPath(), { replace: true })
       } catch (e) {
         console.error('Auth callback error', e)
         navigate('/login', { replace: true })

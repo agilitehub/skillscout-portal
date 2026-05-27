@@ -2,7 +2,11 @@
 
 export {
   BUSINESS_DASHBOARD_BASE_PATH,
-  buildBusinessDashboardPath
+  CANDIDATE_DASHBOARD_BASE_PATH,
+  DASHBOARD_TYPE_STORAGE_KEY,
+  buildBusinessDashboardPath,
+  buildCandidateDashboardPath,
+  getDefaultDashboardPath
 } from './paths'
 
 export {

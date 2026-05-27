@@ -6,8 +6,11 @@ import { Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom'
 import { useAuth, AuthCallback } from './core/auth'
 import { DefaultLayout } from './core/components/layout/DefaultLayout'
 import { DashboardLayout } from './core/components/layout/DashboardLayout'
+import { CandidateLayout } from './core/components/layout/CandidateLayout'
+import { getDefaultDashboardPath } from './constants/paths'
 
 import Login from './modules/Login'
+import CandidateDashboard from './modules/CandidateAssessment'
 import BusinessDashboard from './modules/BusinessDashboard/Home'
 import JobListings, { JobOpportunityForm } from './modules/BusinessDashboard/JobListings'
 import JobDescriptions, { JobDescriptionForm } from './modules/BusinessDashboard/JobDescriptions'
@@ -54,17 +57,22 @@ export default function AppRoutes() {
 
       {/* Public layout */}
       <Route element={<DefaultLayout />}>
-        <Route path='/login' element={user ? <Navigate to='/business-dashboard' replace /> : <Login />} />
+        <Route path='/login' element={user ? <Navigate to={getDefaultDashboardPath()} replace /> : <Login />} />
       </Route>
 
       {/* Default redirect */}
       <Route
         path='/'
-        element={user ? <Navigate to='/business-dashboard' replace /> : <Navigate to='/login' replace />}
+        element={user ? <Navigate to={getDefaultDashboardPath()} replace /> : <Navigate to='/login' replace />}
       />
 
       {/* Protected area */}
       <Route element={<Protected />}>
+        {/* Candidate / personal dashboard — AI chat, resume prep */}
+        <Route path='/dashboard' element={<CandidateLayout user={user} />}>
+          <Route index element={<CandidateDashboard user={user} />} />
+        </Route>
+
         <Route path='/business-dashboard' element={<DashboardLayout user={user} />}>
           {/* Index route = business home */}
           <Route index element={<BusinessDashboard user={user} />} />
@@ -125,7 +133,7 @@ export default function AppRoutes() {
       </Route>
 
       {/* Fallback */}
-      <Route path='*' element={<Navigate to={user ? '/business-dashboard' : '/login'} replace />} />
+      <Route path='*' element={<Navigate to={user ? getDefaultDashboardPath() : '/login'} replace />} />
     </Routes>
   )
 }

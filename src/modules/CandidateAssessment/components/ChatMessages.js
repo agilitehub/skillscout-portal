@@ -364,8 +364,8 @@ const ChatMessages = React.memo(
             const isUserMessage = message.type === 'user'
             const isSystemMessage = message.type === 'system'
 
-            if (!message.content && streamingEnabled) {
-              return typingIndicator()
+            if (message.isStreaming && !message.content) {
+              return <div key={message.id}>{typingIndicator()}</div>
             }
 
             return (
@@ -452,6 +452,14 @@ const ChatMessages = React.memo(
                       className='break-words'
                     >
                       {renderChatMarkdown(message.content, messageStyle.color)}
+                      {message.isStreaming && message.content ? (
+                        <span
+                          className='inline-block w-2 ml-0.5 animate-pulse'
+                          style={{ color: messageStyle.color, opacity: 0.7 }}
+                        >
+                          ▋
+                        </span>
+                      ) : null}
                     </Paragraph>
                   </div>
 
