@@ -38,7 +38,12 @@ export const ensureUserRecord = async (userId) => {
             id: userId,
             email: existingUser.email,
             first_name: existingUser.first_name,
+            middle_name: existingUser.middle_name,
             last_name: existingUser.last_name,
+            phone: existingUser.phone,
+            location: existingUser.location,
+            professional_title: existingUser.professional_title,
+            summary: existingUser.summary,
             org_id: trashed ? null : existingUser.org_id,
             avatar_url: existingUser.avatar_url,
             trashed: false

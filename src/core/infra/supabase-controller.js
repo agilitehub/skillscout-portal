@@ -938,6 +938,22 @@ export const updateUserProfile = async (userId, profileData) => {
       last_name: profileData.last_name.trim()
     }
 
+    if (profileData.middle_name !== undefined) {
+      updateData.middle_name = profileData.middle_name?.trim() || null
+    }
+    if (profileData.phone !== undefined) {
+      updateData.phone = profileData.phone?.trim() || null
+    }
+    if (profileData.location !== undefined) {
+      updateData.location = profileData.location?.trim() || null
+    }
+    if (profileData.professional_title !== undefined) {
+      updateData.professional_title = profileData.professional_title?.trim() || null
+    }
+    if (profileData.summary !== undefined) {
+      updateData.summary = profileData.summary?.trim() || null
+    }
+
     // Add avatar URL if provided
     if (profileData.avatar_url) {
       updateData.avatar_url = profileData.avatar_url
@@ -948,7 +964,9 @@ export const updateUserProfile = async (userId, profileData) => {
       .from('users')
       .update(updateData)
       .eq('id', userId)
-      .select('id, first_name, last_name, avatar_url, created_at')
+      .select(
+        'id, first_name, middle_name, last_name, phone, location, professional_title, summary, avatar_url, created_at'
+      )
       .single()
 
     if (updateError) {
@@ -1012,7 +1030,9 @@ export const getUserProfile = async (userId) => {
         // Get user profile data
         const { data: userData, error: fetchError } = await supabase
           .from('users')
-          .select('id, first_name, last_name, avatar_url, created_at')
+          .select(
+            'id, email, first_name, middle_name, last_name, phone, location, professional_title, summary, avatar_url, created_at'
+          )
           .eq('id', userId)
           .neq('trashed', true) // Exclude trashed users
           .single()

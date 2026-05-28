@@ -1,11 +1,10 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
 import React, { useRef, useCallback } from 'react'
-import { Input, message, Progress } from 'antd'
+import { Input, message, Progress, Switch } from 'antd'
 import { Button } from '../../../core/components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPaperPlane, faPaperclip, faCloudUploadAlt, faSpinner } from '@fortawesome/free-solid-svg-icons'
-import { useTheme } from '../../../core/context/ThemeContext'
 import { BRAND_COLORS } from '../../../core/theme/colors'
 import { validateChatAttachmentBatch } from '../controllers/chatAttachments'
 
@@ -29,7 +28,6 @@ const ChatInput = React.memo(
     onCancelStream = null,
     maxLength = 4000
   }) => {
-    const { darkMode } = useTheme()
     const [userInput, setUserInput] = React.useState('')
     const [isDragOver, setIsDragOver] = React.useState(false)
     const [dragError, setDragError] = React.useState(null)
@@ -210,58 +208,30 @@ const ChatInput = React.memo(
           style={{ display: 'none' }}
         />
 
-        {/* Dark mode styles for input placeholder */}
-        {darkMode && (
-          <style>
-            {`
-            .dark-mode-input::placeholder {
-              color: rgba(229, 231, 235, 0.9) !important;
-            }
-            .dark-mode-input:focus::placeholder {
-              color: rgba(229, 231, 235, 0.7) !important;
-            }
-          `}
-          </style>
-        )}
-
         <div
-          className={`relative p-2 md:p-4 border-t transition-all duration-200 ${
-            isDragOver ? 'border-2 border-dashed shadow-lg transform scale-[1.02]' : 'border-t'
+          className={`global-form relative p-2 md:p-4 border-t bg-background transition-all duration-200 ${
+            isDragOver
+              ? 'border-2 border-dashed border-brand-accent shadow-lg transform scale-[1.02]'
+              : 'border-border'
           }`}
-          style={{
-            background: isDragOver
-              ? darkMode
-                ? 'rgba(59, 130, 246, 0.1)'
-                : 'rgba(59, 130, 246, 0.05)'
-              : darkMode
-                ? '#1F2937'
-                : '#ffffff',
-            borderColor: isDragOver
-              ? BRAND_COLORS.emeraldPrimary
-              : darkMode
-                ? 'rgba(255,255,255,0.1)'
-                : 'rgba(0,0,0,0.1)'
-          }}
           onDragEnter={handleDragEnter}
           onDragLeave={handleDragLeave}
           onDragOver={handleDragOver}
           onDrop={handleDrop}
         >
-          {/* Drag Error Display */}
           {dragError && (
-            <div className='mb-3 p-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg'>
+            <div className='mb-3 p-2 bg-danger/10 border border-danger/30 rounded-lg'>
               <div className='flex items-center'>
-                <FontAwesomeIcon icon={faCloudUploadAlt} className='text-red-500 mr-2' />
-                <span className='text-xs text-red-600 dark:text-red-400'>{dragError}</span>
+                <FontAwesomeIcon icon={faCloudUploadAlt} className='text-danger mr-2' />
+                <span className='text-xs text-danger'>{dragError}</span>
               </div>
             </div>
           )}
 
-          {/* Upload Progress Bar */}
           {isUploading && (
             <div className='mb-3'>
               <div className='flex items-center justify-between mb-1'>
-                <span className='text-xs text-gray-500 dark:text-gray-400 flex items-center'>
+                <span className='text-xs text-muted flex items-center'>
                   <FontAwesomeIcon icon={faSpinner} className='animate-spin mr-2' />
                   Uploading files...
                 </span>
@@ -274,18 +244,17 @@ const ChatInput = React.memo(
                   '0%': BRAND_COLORS.shakespeare,
                   '100%': BRAND_COLORS.emeraldPrimary
                 }}
-                trailColor={darkMode ? '#374151' : '#f3f4f6'}
+                trailColor='rgb(var(--color-border))'
                 size='small'
               />
             </div>
           )}
 
-          {/* Individual File Progress */}
           {Object.keys(uploadProgress).length > 0 && (
             <div className='mb-3 space-y-1'>
               {Object.entries(uploadProgress).map(([fileName, progress]) => (
                 <div key={fileName} className='flex items-center space-x-2'>
-                  <span className='text-xs text-gray-500 dark:text-gray-400 min-w-0 flex-1 truncate'>{fileName}</span>
+                  <span className='text-xs text-muted min-w-0 flex-1 truncate'>{fileName}</span>
                   <div className='w-16'>
                     <Progress
                       percent={Math.round(progress)}
@@ -295,31 +264,26 @@ const ChatInput = React.memo(
                         '0%': BRAND_COLORS.shakespeare,
                         '100%': BRAND_COLORS.emeraldPrimary
                       }}
-                      trailColor={darkMode ? '#374151' : '#f3f4f6'}
+                      trailColor='rgb(var(--color-border))'
                     />
                   </div>
-                  <span className='text-xs text-gray-400 dark:text-gray-300 w-8 text-right'>
-                    {Math.round(progress)}%
-                  </span>
+                  <span className='text-xs text-muted w-8 text-right'>{Math.round(progress)}%</span>
                 </div>
               ))}
             </div>
           )}
 
           <div className='flex items-center gap-3'>
-            {/* Attachment Button */}
             <Button
-              type='text'
+              variant='ghost'
               onClick={handleAttachFileClick}
               disabled={isDisabled}
-              className='flex items-center justify-center h-auto flex-shrink-0 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200'
+              aria-label='Attach files'
+              className='flex items-center justify-center flex-shrink-0 !h-11 !w-11 !min-h-[44px] !min-w-[44px] !p-0 !rounded-lg text-brand-accent hover:!bg-surface hover:!text-brand-primary disabled:opacity-50 !shadow-none hover:!scale-100 active:!scale-100 focus:!ring-brand-accent/40'
               style={{
-                borderRadius: '8px',
-                minHeight: '44px',
-                width: '44px',
-                padding: '0',
-                color: darkMode ? BRAND_COLORS.shakespeare : BRAND_COLORS.seaGreen,
-                opacity: isDisabled ? 0.5 : 1
+                background: 'rgb(var(--color-input-bg))',
+                border: '1px solid rgb(var(--color-border))',
+                color: 'rgb(var(--color-brand-accent))'
               }}
               icon={
                 isUploading ? (
@@ -330,142 +294,98 @@ const ChatInput = React.memo(
               }
             />
 
-            {/* Text Input */}
-            <TextArea
-              value={userInput}
-              onChange={(e) => setUserInput(e.target.value)}
-              onKeyPress={handleKeyPress}
-              disabled={isDisabled}
-              maxLength={maxLength}
-              autoSize={{ minRows: 1, maxRows: 3 }}
-              style={{
-                background: darkMode ? '#374151' : '#ffffff',
-                border: `1px solid ${darkMode ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)'}`,
-                color: darkMode ? '#F9FAFB' : '#000000',
-                padding: '12px 16px',
-                fontSize: '0.875rem',
-                boxShadow: 'none',
-                resize: 'none',
-                borderRadius: '8px',
-                opacity: isDisabled ? 0.7 : 1
-              }}
-              className={`flex-grow ${darkMode ? 'dark-mode-input' : ''}`}
-              placeholder={
-                isUploading
-                  ? 'Uploading files...'
-                  : isTyping
-                    ? '...'
-                    : isDisabled
-                      ? 'Chat is disabled...'
-                      : 'Tell me about your career goals or ask for interview preparation help...'
-              }
-            />
+            <div className='flex-grow min-w-0'>
+              <TextArea
+                value={userInput}
+                onChange={(e) => setUserInput(e.target.value)}
+                onKeyPress={handleKeyPress}
+                disabled={isDisabled}
+                maxLength={maxLength}
+                autoSize={{ minRows: 1, maxRows: 3 }}
+                style={{
+                  resize: 'none',
+                  opacity: isDisabled ? 0.7 : 1
+                }}
+                className='!rounded-lg'
+                placeholder={
+                  isUploading
+                    ? 'Uploading files...'
+                    : isTyping
+                      ? '...'
+                      : isDisabled
+                        ? 'Chat is disabled...'
+                        : 'Tell me about your career goals or ask for interview preparation help...'
+                }
+              />
+            </div>
 
-            {/* Send Button */}
             <Button
-              type='primary'
+              variant='primary'
               onClick={handleSendMessage}
               disabled={!isInputValid}
-              className='flex items-center justify-center h-auto border-0 flex-shrink-0 transition-all duration-200'
+              aria-label='Send message'
+              className='flex items-center justify-center flex-shrink-0 !h-11 !w-11 !min-h-[44px] !min-w-[44px] !p-0 !rounded-lg !shadow-none hover:!scale-100 active:!scale-100 disabled:opacity-60'
               style={{
-                background: `linear-gradient(to right, ${BRAND_COLORS.emeraldPrimary}, ${BRAND_COLORS.seaGreen})`,
-                borderRadius: '8px',
-                minHeight: '44px',
-                width: '44px',
-                padding: '0',
-                opacity: !isInputValid ? 0.6 : 1
+                background: `linear-gradient(to right, ${BRAND_COLORS.emeraldPrimary}, ${BRAND_COLORS.seaGreen})`
               }}
-              icon={<FontAwesomeIcon icon={faPaperPlane} className='text-white' />}
+              icon={<FontAwesomeIcon icon={faPaperPlane} className='text-on-primary' />}
             />
           </div>
 
-          {/* Drag Overlay */}
           {isDragOver && (
-            <div className='absolute inset-0 z-20 flex items-center justify-center bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-lg border-2 border-dashed border-emerald-500'>
+            <div className='absolute inset-0 z-20 flex items-center justify-center bg-background/90 backdrop-blur-sm rounded-lg border-2 border-dashed border-brand-accent'>
               <div className='text-center'>
-                <FontAwesomeIcon icon={faCloudUploadAlt} className='text-4xl text-emerald-500 mb-2 animate-bounce' />
-                <p
-                  className='font-medium'
-                  style={{
-                    color: darkMode ? '#34D399' : '#059669'
-                  }}
-                >
-                  Drop files here to upload
-                </p>
-                <p
-                  className='text-xs mt-1'
-                  style={{
-                    color: darkMode ? 'rgba(229, 231, 235, 0.9)' : 'rgba(75, 85, 99, 1)'
-                  }}
-                >
-                  PDF, DOC, Images, CSV files supported
-                </p>
+                <FontAwesomeIcon
+                  icon={faCloudUploadAlt}
+                  className='text-4xl text-brand-accent mb-2 animate-bounce'
+                />
+                <p className='font-medium text-brand-accent'>Drop files here to upload</p>
+                <p className='text-xs mt-1 text-muted'>PDF, DOC, Images, CSV files supported</p>
               </div>
             </div>
           )}
 
-          {/* Streaming Controls */}
           <div className='flex items-center justify-between text-xs py-2'>
-            {/* Left side - Drag & Drop Hint */}
             <div
-              className={`flex items-center space-x-2 transition-opacity duration-200 ${
+              className={`flex items-center space-x-2 text-muted transition-opacity duration-200 ${
                 isDragOver ? 'opacity-0' : 'opacity-100'
               }`}
             >
-              <FontAwesomeIcon
-                icon={faCloudUploadAlt}
-                className='text-xs'
-                style={{
-                  color: darkMode ? 'rgba(229, 231, 235, 0.9)' : 'rgba(75, 85, 99, 0.8)'
-                }}
-              />
-              <span
-                style={{
-                  color: darkMode ? 'rgba(229, 231, 235, 0.9)' : 'rgba(75, 85, 99, 0.8)'
-                }}
-              >
+              <FontAwesomeIcon icon={faCloudUploadAlt} className='text-xs' />
+              <span>
                 {isUploading ? (
                   'Uploading files...'
                 ) : (
                   <>
                     Drag & drop files or click
-                    <FontAwesomeIcon
-                      icon={faPaperclip}
-                      className='mx-1 text-xs'
-                      style={{
-                        color: darkMode ? 'rgba(229, 231, 235, 0.9)' : 'rgba(75, 85, 99, 0.8)'
-                      }}
-                    />
+                    <FontAwesomeIcon icon={faPaperclip} className='mx-1 text-xs text-brand-accent' />
                     to upload
                   </>
                 )}
               </span>
             </div>
 
-            {/* Right side - Streaming Controls */}
             <div className='flex items-center space-x-3'>
-              {/* Streaming Status */}
               {isStreaming && (
                 <div className='flex items-center space-x-2'>
                   <div className='flex space-x-1'>
-                    <div className='w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse'></div>
+                    <div className='w-1.5 h-1.5 bg-brand-accent rounded-full animate-pulse' />
                     <div
-                      className='w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse'
+                      className='w-1.5 h-1.5 bg-brand-accent rounded-full animate-pulse'
                       style={{ animationDelay: '0.2s' }}
-                    ></div>
+                    />
                     <div
-                      className='w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse'
+                      className='w-1.5 h-1.5 bg-brand-accent rounded-full animate-pulse'
                       style={{ animationDelay: '0.4s' }}
-                    ></div>
+                    />
                   </div>
-                  <span className='text-emerald-500'>Streaming...</span>
+                  <span className='text-brand-accent'>Streaming...</span>
                   {onCancelStream && (
                     <Button
-                      type='text'
+                      variant='ghost'
                       size='small'
                       onClick={onCancelStream}
-                      className='!px-2 !py-0 !h-5 text-xs hover:!bg-red-50 dark:hover:!bg-red-900/20'
-                      style={{ color: '#ef4444' }}
+                      className='!px-2 !py-0 !h-5 text-xs text-danger hover:!bg-danger/10 !shadow-none hover:!scale-100 active:!scale-100'
                     >
                       Cancel
                     </Button>
@@ -473,36 +393,10 @@ const ChatInput = React.memo(
                 </div>
               )}
 
-              {/* Streaming Toggle */}
               {onToggleStreaming && !isStreaming && (
                 <div className='flex items-center space-x-2'>
-                  <span
-                    className='text-xs'
-                    style={{
-                      color: darkMode ? 'rgba(229, 231, 235, 0.9)' : 'rgba(75, 85, 99, 0.8)'
-                    }}
-                  >
-                    Streaming:
-                  </span>
-                  <Button
-                    type='text'
-                    size='small'
-                    onClick={() => onToggleStreaming(!streamingEnabled)}
-                    className={`!px-2 !py-0 !h-5 text-xs transition-colors duration-200 ${
-                      streamingEnabled
-                        ? 'hover:!bg-emerald-50 dark:hover:!bg-emerald-900/20'
-                        : 'hover:!bg-gray-50 dark:hover:!bg-gray-800'
-                    }`}
-                    style={{
-                      color: streamingEnabled
-                        ? BRAND_COLORS.emeraldPrimary
-                        : darkMode
-                          ? 'rgba(229, 231, 235, 0.6)'
-                          : 'rgba(75, 85, 99, 0.6)'
-                    }}
-                  >
-                    {streamingEnabled ? '✓ ON' : '✗ OFF'}
-                  </Button>
+                  <span className='text-xs text-muted'>Streaming</span>
+                  <Switch size='small' checked={streamingEnabled} onChange={onToggleStreaming} />
                 </div>
               )}
             </div>

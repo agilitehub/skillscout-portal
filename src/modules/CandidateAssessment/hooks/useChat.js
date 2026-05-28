@@ -15,10 +15,14 @@ import {
   deleteFileFromStorage
 } from '../../../core/infra/supabase-controller'
 import { DEFAULT_SUPABASE_STORAGE_BUCKET } from '../../../constants'
+import { CV_ACCEPTED_MIME_TYPES } from '../model/chatAttachmentRules'
+import { ingestResumeFile } from '../controllers/resumeIngestion'
 
 const CHAT_HISTORY_STORAGE_KEY = (userId) => `skillscout_candidate_chat_${userId}`
 const INITIAL_VISIBLE_MESSAGES = 20
 const LOAD_MORE_BATCH = 20
+/** Brief delay before refresh so async MCP writes can complete. */
+const LIVE_RESUME_REFRESH_DELAY_MS = 300
 
 const loadStoredChatHistory = (userId) => {
   try {
@@ -39,10 +43,18 @@ const saveStoredChatHistory = (userId, history) => {
   }
 }
 
+const isCvFile = (file) => CV_ACCEPTED_MIME_TYPES.includes(file.type)
+
 /**
- * Candidate chat hook — OpenClaw-backed messaging with local history and Supabase file storage.
+ * Candidate chat hook — OpenClaw-backed messaging; live resume refresh after replies.
+ * @param {{ id?: string, name?: string }|null} user
+ * @param {{ liveResumeContext?: object|null, onResumeUpdated?: () => void }} options
  */
-export const useChat = (user = null) => {
+export const useChat = (user = null, options = {}) => {
+  const { liveResumeContext = null, onResumeUpdated } = options
+  const liveResumeContextRef = useRef(liveResumeContext)
+  liveResumeContextRef.current = liveResumeContext
+
   const [chatHistory, setChatHistory] = useState([])
   const [visibleMessageCount, setVisibleMessageCount] = useState(INITIAL_VISIBLE_MESSAGES)
   const [isInitialized, setIsInitialized] = useState(false)
@@ -66,7 +78,6 @@ export const useChat = (user = null) => {
     return chatHistory.slice(chatHistory.length - visibleMessageCount)
   }, [chatHistory, visibleMessageCount])
 
-  // Initialize chat from localStorage or welcome message
   useEffect(() => {
     if (!user?.id) return
 
@@ -86,13 +97,11 @@ export const useChat = (user = null) => {
     setIsInitialized(true)
   }, [user?.id, user?.name])
 
-  // Persist chat history
   useEffect(() => {
     if (!user?.id || !isInitialized) return
     saveStoredChatHistory(user.id, chatHistory)
   }, [user?.id, chatHistory, isInitialized])
 
-  // Finalize streaming message into history
   useEffect(() => {
     if (currentStreamingMessage && !currentStreamingMessage.isStreaming) {
       setChatHistory((prev) => {
@@ -102,6 +111,12 @@ export const useChat = (user = null) => {
       setTimeout(() => setCurrentStreamingMessage(null), 100)
     }
   }, [currentStreamingMessage])
+
+  const refreshLiveResumeAfterChat = useCallback(async () => {
+    if (!onResumeUpdated) return
+    await new Promise((resolve) => setTimeout(resolve, LIVE_RESUME_REFRESH_DELAY_MS))
+    onResumeUpdated()
+  }, [onResumeUpdated])
 
   const sendMessage = useCallback(
     async (content, useStreaming = null) => {
@@ -154,6 +169,8 @@ export const useChat = (user = null) => {
             chatHistory: historyWithUser,
             stream: true,
             signal: abortControllerRef.current.signal,
+            liveResumeContext: liveResumeContextRef.current,
+            userId: user?.id,
             onChunk: ({ fullContent }) => {
               typewriter.setTarget(fullContent)
             }
@@ -170,18 +187,23 @@ export const useChat = (user = null) => {
           typewriter.setTarget(result.content || '')
           await typewriter.finish()
 
+          const assistantContent = result.content || ''
           setCurrentStreamingMessage({
             id: streamingId,
             type: 'assistant',
-            content: result.content || '',
+            content: assistantContent,
             timestamp: new Date().toISOString(),
             isStreaming: false
           })
+
+          await refreshLiveResumeAfterChat()
         } else {
           const result = await sendCandidateChatMessage({
             chatHistory: historyWithUser,
             stream: false,
-            signal: abortControllerRef.current.signal
+            signal: abortControllerRef.current.signal,
+            liveResumeContext: liveResumeContextRef.current,
+            userId: user?.id
           })
 
           if (!result.success) {
@@ -190,15 +212,18 @@ export const useChat = (user = null) => {
             return
           }
 
+          const assistantContent = result.content || ''
           setChatHistory((prev) => [
             ...prev,
             {
               id: `assistant-${Date.now()}`,
               type: 'assistant',
-              content: result.content || '',
+              content: assistantContent,
               timestamp: new Date().toISOString()
             }
           ])
+
+          await refreshLiveResumeAfterChat()
         }
       } catch (error) {
         if (error?.name === 'AbortError') return
@@ -212,7 +237,7 @@ export const useChat = (user = null) => {
         abortControllerRef.current = null
       }
     },
-    [chatHistory, isSending, streamingEnabled]
+    [chatHistory, isSending, streamingEnabled, refreshLiveResumeAfterChat, user?.id]
   )
 
   const cancelStreaming = useCallback(() => {
@@ -238,39 +263,72 @@ export const useChat = (user = null) => {
       setIsUploading(true)
 
       try {
-        const uploadResult = await uploadMultipleFiles(files, user.id, DEFAULT_SUPABASE_STORAGE_BUCKET)
+        const fileArray = Array.from(files)
+        const cvFiles = fileArray.filter(isCvFile)
+        const otherFiles = fileArray.filter((f) => !isCvFile(f))
 
-        if (uploadResult.success) {
-          const newFiles = uploadResult.data.successful.map((fileData) => ({
-            id: fileData.id,
-            name: fileData.name,
-            size: fileData.size,
-            type: fileData.type,
-            url: fileData.url,
-            path: fileData.path,
-            uploadedAt: fileData.uploadedAt,
-            userId: fileData.userId
-          }))
+        if (fileArray.length === 1 && cvFiles.length === 1) {
+          const ingestResult = await ingestResumeFile(user.id, cvFiles[0], { setAsPrimary: true })
+          if (ingestResult.success) {
+            setChatHistory((prev) => [
+              ...prev,
+              {
+                id: `system-${Date.now()}`,
+                type: 'system',
+                content: `Resume uploaded and analyzed: ${cvFiles[0].name}`,
+                timestamp: new Date().toISOString()
+              }
+            ])
+            message.success('Resume uploaded and added to your live profile.')
+            if (onResumeUpdated) onResumeUpdated()
+          } else {
+            message.error(ingestResult.error || 'Failed to process resume')
+          }
+          return
+        }
 
-          setUploadedFiles((prev) => [...prev, ...newFiles])
+        if (otherFiles.length > 0) {
+          const uploadResult = await uploadMultipleFiles(otherFiles, user.id, DEFAULT_SUPABASE_STORAGE_BUCKET)
 
+          if (uploadResult.success) {
+            const newFiles = uploadResult.data.successful.map((fileData) => ({
+              id: fileData.id,
+              name: fileData.name,
+              size: fileData.size,
+              type: fileData.type,
+              url: fileData.url,
+              path: fileData.path,
+              uploadedAt: fileData.uploadedAt,
+              userId: fileData.userId
+            }))
+
+            setUploadedFiles((prev) => [...prev, ...newFiles])
+
+            if (uploadResult.data.failed.length > 0) {
+              message.warning(`Failed to upload: ${uploadResult.data.failed.map((f) => f.file).join(', ')}`)
+            }
+          } else {
+            message.error(uploadResult.error || 'Failed to upload files')
+          }
+        }
+
+        if (cvFiles.length > 0) {
+          for (let i = 0; i < cvFiles.length; i += 1) {
+            await ingestResumeFile(user.id, cvFiles[i], { setAsPrimary: i === 0 })
+          }
           setChatHistory((prev) => [
             ...prev,
             {
               id: `system-${Date.now()}`,
               type: 'system',
-              content: `Uploaded ${newFiles.length} file(s): ${newFiles.map((f) => f.name).join(', ')}`,
+              content: `Resume(s) uploaded and analyzed: ${cvFiles.map((f) => f.name).join(', ')}`,
               timestamp: new Date().toISOString()
             }
           ])
-
-          message.success(`Successfully uploaded ${newFiles.length} file(s)`)
-
-          if (uploadResult.data.failed.length > 0) {
-            message.warning(`Failed to upload: ${uploadResult.data.failed.map((f) => f.file).join(', ')}`)
-          }
-        } else {
-          message.error(uploadResult.error || 'Failed to upload files')
+          message.success(`Processed ${cvFiles.length} resume file(s).`)
+          if (onResumeUpdated) onResumeUpdated()
+        } else if (otherFiles.length > 0) {
+          message.success(`Successfully uploaded ${otherFiles.length} file(s)`)
         }
       } catch (error) {
         console.error('Error uploading files:', error)
@@ -279,7 +337,7 @@ export const useChat = (user = null) => {
         setIsUploading(false)
       }
     },
-    [user?.id]
+    [user?.id, onResumeUpdated]
   )
 
   const handleFileRemove = useCallback(

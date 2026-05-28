@@ -5,8 +5,19 @@ export { callChatCompletions } from './client'
 export {
   isOpenClawMockMode,
   buildMockCvFields,
+  buildMockFullResume,
   getMockCandidateChatResponse,
   buildWelcomeMessage
 } from './mock'
-export { extractCandidateFieldsFromCvText } from './cv-extraction'
-export { sendCandidateChatMessage, toOpenClawMessages, CANDIDATE_CHAT_SYSTEM_PROMPT } from './candidate-chat'
+export {
+  extractCandidateFieldsFromCvText,
+  extractFullResumeFromCvText,
+  parseJsonFromAssistantContent
+} from './cv-extraction'
+export {
+  sendCandidateChatMessage,
+  toOpenClawMessages,
+  CANDIDATE_CHAT_SYSTEM_PROMPT,
+  buildCandidateChatSystemPrompt,
+  buildCandidateChatUserParam
+} from './candidate-chat'

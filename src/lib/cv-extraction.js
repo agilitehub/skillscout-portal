@@ -1,3 +1,3 @@
 // Global Instructions Rule Applied!
 
-export { extractCandidateFieldsFromCvText } from './openclaw/cv-extraction'
+export { extractCandidateFieldsFromCvText, extractFullResumeFromCvText } from './openclaw/cv-extraction'

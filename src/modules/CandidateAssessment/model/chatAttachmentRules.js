@@ -18,6 +18,14 @@ export const CHAT_ATTACHMENT_ALLOWED_MIME_TYPES = [
 
 export const CHAT_ATTACHMENT_MAX_BYTES = 50 * 1024 * 1024
 
+/** MIME types accepted for dedicated CV/resume upload */
+export const CV_ACCEPTED_MIME_TYPES = [
+  'application/pdf',
+  'application/msword',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'text/plain'
+]
+
 /**
  * Split FileList into accepted files vs human-readable errors.
  */

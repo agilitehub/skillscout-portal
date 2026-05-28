@@ -19,7 +19,7 @@ export const CandidateLayout = ({ user }) => {
       <header className='flex-shrink-0'>
         <Header user={user} sticky={false} />
       </header>
-      <main className={`min-h-0 min-w-0 flex-1 overflow-y-auto overflow-x-hidden ${contentBg}`}>
+      <main className={`flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden ${contentBg}`}>
         <Outlet />
       </main>
     </div>

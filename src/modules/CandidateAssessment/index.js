@@ -284,14 +284,14 @@ const Dashboard = React.memo(({ user }) => {
   // Show loading spinner while data is being fetched
   if (loading && !dashboardData) {
     return (
-      <div className='min-h-screen flex items-center justify-center'>
+      <div className='flex h-full min-h-0 items-center justify-center'>
         <Spin size='large' />
       </div>
     )
   }
 
   return (
-    <div className='relative overflow-hidden h-[70vh] md:h-[80vh]'>
+    <div className='relative flex h-full min-h-0 flex-col overflow-hidden'>
       {/* Background Elements */}
       <div className='fixed inset-0 pointer-events-none'>
         {darkMode ? (
@@ -319,7 +319,7 @@ const Dashboard = React.memo(({ user }) => {
       </div>
 
       {/* Main Content */}
-      <div className='h-full overflow-hidden relative z-10'>{renderContent()}</div>
+      <div className='relative z-10 flex min-h-0 flex-1 flex-col overflow-hidden'>{renderContent()}</div>
 
       {/* Knowledge Base Detail Modal */}
       <ThemedModal
