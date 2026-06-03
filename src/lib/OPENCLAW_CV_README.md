@@ -1,6 +1,8 @@
-# Candidate Management — OpenClaw CV extraction
+# Business Dashboard — Candidate Management CV extraction (OpenClaw)
 
-CV import calls **OpenClaw Gateway** (`POST /v1/chat/completions`), not OpenAI cloud or Supabase Edge Functions.
+CV import in **Candidate Management** calls **OpenClaw Gateway** (`POST /v1/chat/completions`).
+
+Personal Dashboard (candidate chat + live resume CV upload) uses **Hermes** instead — see [`HERMES_CANDIDATE_CHAT.md`](./HERMES_CANDIDATE_CHAT.md).
 
 ---
 
@@ -117,3 +119,14 @@ curl -sS http://localhost:3000/openclaw/v1/models -H "Authorization: Bearer YOUR
 ```
 
 Both should return model data if OpenClaw and the token are correct.
+
+---
+
+## Code map
+
+| Path | Role |
+|------|------|
+| `src/lib/openclaw-cv-extraction.js` | Facade — import this from Business Dashboard code |
+| `src/lib/openclaw/cv-extraction.js` | OpenClaw contact-field extraction (`first_name`, `last_name`, `email`, `phone`) |
+| `src/lib/openclaw/` | OpenClaw HTTP client, config, mock |
+| `src/modules/BusinessDashboard/CandidateManagement/controllers/cvProcessing.js` | CV import pipeline |

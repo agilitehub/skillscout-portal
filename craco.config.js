@@ -6,6 +6,8 @@ require('agilite-utils/dist/dotenv').default.config()
 
 /** Where the dev server forwards /openclaw/* (OpenClaw gateway on this machine). */
 const openClawProxyTarget = process.env.REACT_APP_OPENCLAW_PROXY_TARGET || 'http://127.0.0.1:18789'
+/** Where the dev server forwards /hermes/* (Hermes Agent API server for Personal Dashboard). */
+const hermesProxyTarget = process.env.REACT_APP_HERMES_PROXY_TARGET || 'http://127.0.0.1:8642'
 
 module.exports = {
   devServer: {
@@ -15,6 +17,19 @@ module.exports = {
         target: openClawProxyTarget,
         changeOrigin: true,
         pathRewrite: { '^/openclaw': '' },
+        onProxyRes: (proxyRes) => {
+          const contentType = proxyRes.headers['content-type'] || ''
+          if (contentType.includes('text/event-stream')) {
+            proxyRes.headers['cache-control'] = 'no-cache, no-transform'
+            proxyRes.headers['x-accel-buffering'] = 'no'
+          }
+        }
+      },
+      {
+        context: ['/hermes'],
+        target: hermesProxyTarget,
+        changeOrigin: true,
+        pathRewrite: { '^/hermes': '' },
         onProxyRes: (proxyRes) => {
           const contentType = proxyRes.headers['content-type'] || ''
           if (contentType.includes('text/event-stream')) {

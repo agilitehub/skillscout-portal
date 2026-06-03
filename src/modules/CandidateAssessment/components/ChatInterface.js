@@ -1,7 +1,7 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
 import React, { useCallback } from 'react'
-import { Typography } from 'antd'
+import { Typography, Popconfirm } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faFileAlt,
@@ -9,9 +9,11 @@ import {
   faFileWord,
   faFileImage,
   faTrash,
-  faRobot
+  faRobot,
+  faRotateLeft
 } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../core/context/ThemeContext'
+import { Button } from '../../../core/components'
 import ChatMessages from './ChatMessages'
 import ChatInput from './ChatInput'
 import ResumePreviewPanel from './ResumePreviewPanel'
@@ -20,8 +22,12 @@ import useLiveResume from '../hooks/useLiveResume'
 
 const { Title, Text } = Typography
 
+/** Dev-only — set REACT_APP_SHOW_CLEAR_HERMES_SESSION=true to show in production builds. */
+const SHOW_CLEAR_HERMES_SESSION =
+  process.env.NODE_ENV === 'development' || process.env.REACT_APP_SHOW_CLEAR_HERMES_SESSION === 'true'
+
 /**
- * Main ChatInterface component — OpenClaw-backed candidate chat with live resume preview
+ * Main ChatInterface component — Hermes-backed candidate chat with live resume preview
  */
 const ChatInterface = React.memo(({ user }) => {
   const { darkMode } = useTheme()
@@ -61,7 +67,9 @@ const ChatInterface = React.memo(({ user }) => {
     isStreaming,
     streamingEnabled,
     cancelStreaming,
-    toggleStreaming
+    toggleStreaming,
+    clearChat,
+    isClearingSession
   } = useChat(user, { liveResumeContext, onResumeUpdated: refreshLiveResume })
 
   const colors = {
@@ -162,8 +170,33 @@ const ChatInterface = React.memo(({ user }) => {
               </Title>
               <Text className='text-white/70 text-sm'>AI-powered career assessment and interview preparation</Text>
             </div>
-            <div className='text-white/60'>
-              <FontAwesomeIcon icon={faRobot} className='text-xl' />
+            <div className='flex items-center gap-2'>
+              {SHOW_CLEAR_HERMES_SESSION && (
+                <Popconfirm
+                  title='Clear Hermes chat session?'
+                  description='Deletes message history for this user on the Hermes gateway. Uploaded files in Supabase are not removed.'
+                  onConfirm={clearChat}
+                  okText='Clear'
+                  cancelText='Cancel'
+                  okButtonProps={{ danger: true }}
+                  disabled={isClearingSession || isTyping}
+                >
+                  <Button
+                    variant='ghost'
+                    size='small'
+                    loading={isClearingSession}
+                    disabled={isTyping}
+                    icon={<FontAwesomeIcon icon={faRotateLeft} />}
+                    className='!text-white/90 hover:!bg-white/15 !shadow-none !border !border-white/25'
+                    aria-label='Clear Hermes chat session (dev)'
+                  >
+                    Clear session
+                  </Button>
+                </Popconfirm>
+              )}
+              <div className='text-white/60'>
+                <FontAwesomeIcon icon={faRobot} className='text-xl' />
+              </div>
             </div>
           </div>
         </div>

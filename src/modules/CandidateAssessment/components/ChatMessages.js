@@ -17,7 +17,7 @@ import { useTheme } from '../../../core/context/ThemeContext'
 import { BRAND_COLORS, DARK_THEME } from '../../../core/theme/colors'
 import { renderChatMarkdown } from '../model/chatMarkdown'
 
-const { Text, Paragraph } = Typography
+const { Text } = Typography
 
 /**
  * ChatMessages component - Displays chat messages with proper styling
@@ -441,15 +441,9 @@ const ChatMessages = React.memo(
 
                   {/* Message Content */}
                   <div className='relative'>
-                    <Paragraph
-                      style={{
-                        margin: 0,
-                        whiteSpace: 'pre-wrap',
-                        fontSize: '0.9rem',
-                        lineHeight: '1.5',
-                        color: messageStyle.color
-                      }}
-                      className='break-words'
+                    <div
+                      className='break-words text-[0.9rem] leading-relaxed'
+                      style={{ color: messageStyle.color }}
                     >
                       {renderChatMarkdown(message.content, messageStyle.color)}
                       {message.isStreaming && message.content ? (
@@ -460,7 +454,7 @@ const ChatMessages = React.memo(
                           ▋
                         </span>
                       ) : null}
-                    </Paragraph>
+                    </div>
                   </div>
 
                   {/* Message Footer */}

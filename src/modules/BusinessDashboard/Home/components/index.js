@@ -261,8 +261,7 @@ const Dashboard = React.memo(() => {
                   </DashboardToolbarButton>
                 </Dropdown>
 
-                {/* Alerts Bell - Hidden for now */}
-                {/* <Badge
+                <Badge
                   count={alertsData.filter((alert) => !alert.read).length}
                   size='small'
                   style={{
@@ -270,44 +269,14 @@ const Dashboard = React.memo(() => {
                     color: '#ffffff'
                   }}
                 >
-                  <Button
-                    type='default'
-                    className='flex items-center justify-center w-8 h-8 rounded-full bell-button'
-                    style={{
-                      backgroundColor: '#ffffff',
-                      borderColor: '#ffffff',
-                      color: '#059669',
-                      transition: 'all 0.2s ease'
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = '#f8f9fa'
-                      e.currentTarget.style.borderColor = '#f8f9fa'
-                      e.currentTarget.style.color = '#047857'
-                      e.currentTarget.style.transform = 'translateY(-1px)'
-                      e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.15)'
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = '#ffffff'
-                      e.currentTarget.style.borderColor = '#ffffff'
-                      e.currentTarget.style.color = '#059669'
-                      e.currentTarget.style.transform = 'translateY(0)'
-                      e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)'
-                    }}
+                  <DashboardToolbarButton
+                    className='gap-1'
                     onClick={() => setAlertsVisible(true)}
+                    icon={<FontAwesomeIcon icon={faBell} className='text-[11px]' />}
                   >
-                    <span
-                      style={{
-                        fontSize: '14px',
-                        fontWeight: 'bold',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                      }}
-                    >
-                      🔔
-                    </span>
-                  </Button>
-                </Badge> */}
+                    <span>Alerts</span>
+                  </DashboardToolbarButton>
+                </Badge>
 
                 {/* Refresh Button */}
                 <DashboardToolbarButton

@@ -2,7 +2,7 @@
 // Frontend Instructions Rule Applied!
 
 import { extractTextFromCvFile } from '../../../../lib/cv-text-extraction'
-import { extractCandidateFieldsFromCvText } from '../../../../lib/cv-extraction'
+import { extractCandidateFieldsFromCvText } from '../../../../lib/openclaw-cv-extraction'
 import { DRAFT_STATUS } from '../model'
 
 /**

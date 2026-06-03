@@ -2,7 +2,7 @@
 // Frontend Instructions Rule Applied!
 
 import { extractTextFromCvFile } from '../../../lib/cv-text-extraction'
-import { extractFullResumeFromCvText } from '../../../lib/openclaw/cv-extraction'
+import { extractFullResumeFromCvText } from '../../../lib/hermes/cv-extraction'
 import { uploadFileToStorage } from '../../../core/infra/supabase-controller'
 import { DEFAULT_SUPABASE_STORAGE_BUCKET } from '../../../constants'
 import {
@@ -98,7 +98,7 @@ export async function ingestResumeFile(userId, file, options = { setAsPrimary: t
   }
 
   const rawText = String(textResult.text).slice(0, RAW_TEXT_MAX)
-  const aiResult = await extractFullResumeFromCvText(rawText)
+  const aiResult = await extractFullResumeFromCvText(rawText, userId)
 
   if (!aiResult.success) {
     await updateResumeRecord(resumeRecord.id, {

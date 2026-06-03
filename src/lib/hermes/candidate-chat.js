@@ -1,8 +1,13 @@
 // Global Instructions Rule Applied!
 
 import { callChatCompletions } from './client'
-import { getMockCandidateChatResponse, isOpenClawMockMode } from './mock'
-import { normalizeResumeContent, normalizeContactFields, formatFullName } from '../../modules/CandidateAssessment/model/resumeContent'
+import { getMockCandidateChatResponse, isHermesMockMode } from './mock'
+import { buildCandidateSessionHeaders, ensureCandidateChatSession } from './sessions'
+import {
+  normalizeResumeContent,
+  normalizeContactFields,
+  formatFullName
+} from '../../modules/CandidateAssessment/model/resumeContent'
 
 const USER_FACING_RULES = `
 IMPORTANT — User-facing communication rules:
@@ -15,7 +20,8 @@ IMPORTANT — User-facing communication rules:
 - Good: "Got it — I've updated your location to Johannesburg, Gauteng."
 - Bad: "Updated end_date to Current and is_current to true."
 - Bad: "Updated users.location and live_resumes.content.location to Johannesburg, Gauteng."
-- Bad: bullet lists of field assignments or anything that reads like a database/API log.`
+- Bad: bullet lists of field assignments or anything that reads like a database/API log.
+- Format replies for chat readability: use blank lines between sections, put each list item on its own line starting with "- ", and use **bold** for short section labels when helpful.`
 
 export const CANDIDATE_CHAT_SYSTEM_PROMPT = `You are SkillScout, a helpful career advisor and interview preparation assistant.
 Help users with:
@@ -75,33 +81,17 @@ ${JSON.stringify(snapshot, null, 2)}`
 }
 
 /**
- * Map UI chat history to OpenClaw chat/completions messages.
- * @param {Array} chatHistory
- * @param {string} [systemPromptOverride]
+ * Build messages for Hermes — system prompt + latest user turn only when using session continuity.
+ * @param {string} lastUserMessage
+ * @param {string} systemPrompt
  */
-export const toOpenClawMessages = (chatHistory, systemPromptOverride) => {
-  const messages = [{ role: 'system', content: systemPromptOverride || CANDIDATE_CHAT_SYSTEM_PROMPT }]
-
-  for (const msg of chatHistory) {
-    if (msg.type === 'user') {
-      messages.push({ role: 'user', content: msg.content })
-    } else if (msg.type === 'assistant') {
-      messages.push({ role: 'assistant', content: msg.content })
-    }
-  }
-
-  return messages
-}
+export const toHermesSessionMessages = (lastUserMessage, systemPrompt) => [
+  { role: 'system', content: systemPrompt },
+  { role: 'user', content: lastUserMessage }
+]
 
 /**
- * Build OpenClaw user param for MCP session scoping.
- * @param {string|null|undefined} userId
- */
-export const buildCandidateChatUserParam = (userId) =>
-  userId ? `skillscout-candidate-chat:${userId}` : 'skillscout-candidate-chat'
-
-/**
- * Send a candidate chat message through OpenClaw.
+ * Send a candidate chat message through Hermes Agent API.
  */
 export async function sendCandidateChatMessage({
   chatHistory,
@@ -114,7 +104,7 @@ export async function sendCandidateChatMessage({
   const lastUserMessage = [...chatHistory].reverse().find((msg) => msg.type === 'user')?.content || ''
   const systemPrompt = buildCandidateChatSystemPrompt(liveResumeContext, userId)
 
-  if (isOpenClawMockMode()) {
+  if (isHermesMockMode()) {
     await new Promise((resolve) => setTimeout(resolve, 400))
     const content = getMockCandidateChatResponse(lastUserMessage)
 
@@ -125,12 +115,22 @@ export async function sendCandidateChatMessage({
     return { success: true, content }
   }
 
+  if (userId) {
+    await ensureCandidateChatSession(userId)
+  }
+
+  const { sessionId, sessionKey } = userId
+    ? buildCandidateSessionHeaders(userId)
+    : { sessionId: null, sessionKey: null }
+
   return callChatCompletions({
-    messages: toOpenClawMessages(chatHistory, systemPrompt),
+    messages: toHermesSessionMessages(lastUserMessage, systemPrompt),
     stream,
     onChunk,
     signal,
-    user: buildCandidateChatUserParam(userId),
+    user: sessionKey || 'skillscout-candidate',
+    sessionId,
+    sessionKey,
     temperature: 0.7
   })
 }

@@ -5,10 +5,13 @@ import { message } from 'antd'
 import {
   sendCandidateChatMessage,
   buildWelcomeMessage,
-  isOpenClawMockMode,
-  isOpenClawConfigured
-} from '../../../lib/openclaw'
-import { createStreamingTypewriter } from '../../../lib/openclaw/stream-utils'
+  isHermesMockMode,
+  isHermesConfigured,
+  createStreamingTypewriter,
+  fetchCandidateChatHistory,
+  ensureCandidateChatSession,
+  deleteCandidateChatSession
+} from '../../../lib/hermes'
 import {
   uploadMultipleFiles,
   getUserFiles,
@@ -18,35 +21,15 @@ import { DEFAULT_SUPABASE_STORAGE_BUCKET } from '../../../constants'
 import { CV_ACCEPTED_MIME_TYPES } from '../model/chatAttachmentRules'
 import { ingestResumeFile } from '../controllers/resumeIngestion'
 
-const CHAT_HISTORY_STORAGE_KEY = (userId) => `skillscout_candidate_chat_${userId}`
 const INITIAL_VISIBLE_MESSAGES = 20
 const LOAD_MORE_BATCH = 20
 /** Brief delay before refresh so async MCP writes can complete. */
 const LIVE_RESUME_REFRESH_DELAY_MS = 300
 
-const loadStoredChatHistory = (userId) => {
-  try {
-    const raw = localStorage.getItem(CHAT_HISTORY_STORAGE_KEY(userId))
-    if (!raw) return null
-    const parsed = JSON.parse(raw)
-    return Array.isArray(parsed) ? parsed : null
-  } catch {
-    return null
-  }
-}
-
-const saveStoredChatHistory = (userId, history) => {
-  try {
-    localStorage.setItem(CHAT_HISTORY_STORAGE_KEY(userId), JSON.stringify(history))
-  } catch (error) {
-    console.warn('Failed to persist chat history:', error)
-  }
-}
-
 const isCvFile = (file) => CV_ACCEPTED_MIME_TYPES.includes(file.type)
 
 /**
- * Candidate chat hook — OpenClaw-backed messaging; live resume refresh after replies.
+ * Candidate chat hook — Hermes-backed messaging; live resume refresh after replies.
  * @param {{ id?: string, name?: string }|null} user
  * @param {{ liveResumeContext?: object|null, onResumeUpdated?: () => void }} options
  */
@@ -66,6 +49,7 @@ export const useChat = (user = null, options = {}) => {
   const [currentStreamingMessage, setCurrentStreamingMessage] = useState(null)
   const [isLoadingMore, setIsLoadingMore] = useState(false)
   const [isLoadingHistorical, setIsLoadingHistorical] = useState(false)
+  const [isClearingSession, setIsClearingSession] = useState(false)
   const abortControllerRef = useRef(null)
   const activeTypewriterRef = useRef(null)
 
@@ -81,26 +65,57 @@ export const useChat = (user = null, options = {}) => {
   useEffect(() => {
     if (!user?.id) return
 
-    const stored = loadStoredChatHistory(user.id)
-    if (stored?.length) {
-      setChatHistory(stored)
-      setVisibleMessageCount(Math.min(stored.length, INITIAL_VISIBLE_MESSAGES))
-    } else if (isOpenClawMockMode()) {
-      setChatHistory([buildWelcomeMessage(user.name)])
-    } else if (!isOpenClawConfigured()) {
-      message.error('OpenClaw is not configured. Set REACT_APP_OPENCLAW_BASE_URL or enable REACT_APP_MOCK_AI.')
-      setChatHistory([buildWelcomeMessage(user.name)])
-    } else {
-      setChatHistory([buildWelcomeMessage(user.name)])
+    let cancelled = false
+
+    const initializeChat = async () => {
+      setIsInitialized(false)
+
+      if (isHermesMockMode()) {
+        if (!cancelled) {
+          setChatHistory([buildWelcomeMessage(user.name)])
+          setVisibleMessageCount(INITIAL_VISIBLE_MESSAGES)
+          setIsInitialized(true)
+        }
+        return
+      }
+
+      if (!isHermesConfigured()) {
+        message.error(
+          'Hermes is not configured. Set REACT_APP_HERMES_BASE_URL and REACT_APP_HERMES_API_KEY, or enable REACT_APP_MOCK_AI.'
+        )
+        if (!cancelled) {
+          setChatHistory([buildWelcomeMessage(user.name)])
+          setVisibleMessageCount(INITIAL_VISIBLE_MESSAGES)
+          setIsInitialized(true)
+        }
+        return
+      }
+
+      const historyResult = await fetchCandidateChatHistory(user.id)
+      if (cancelled) return
+
+      if (historyResult.success && historyResult.messages.length > 0) {
+        setChatHistory(historyResult.messages)
+        setVisibleMessageCount(Math.min(historyResult.messages.length, INITIAL_VISIBLE_MESSAGES))
+      } else {
+        await ensureCandidateChatSession(user.id)
+        if (!cancelled) {
+          setChatHistory([buildWelcomeMessage(user.name)])
+          setVisibleMessageCount(INITIAL_VISIBLE_MESSAGES)
+        }
+      }
+
+      if (!cancelled) {
+        setIsInitialized(true)
+      }
     }
 
-    setIsInitialized(true)
-  }, [user?.id, user?.name])
+    initializeChat()
 
-  useEffect(() => {
-    if (!user?.id || !isInitialized) return
-    saveStoredChatHistory(user.id, chatHistory)
-  }, [user?.id, chatHistory, isInitialized])
+    return () => {
+      cancelled = true
+    }
+  }, [user?.id, user?.name])
 
   useEffect(() => {
     if (currentStreamingMessage && !currentStreamingMessage.isStreaming) {
@@ -391,15 +406,34 @@ export const useChat = (user = null, options = {}) => {
     }
   }, [user?.id, isInitialized, loadUserFiles])
 
-  const clearChat = useCallback(() => {
-    setChatHistory([buildWelcomeMessage(user?.name)])
-    setVisibleMessageCount(INITIAL_VISIBLE_MESSAGES)
-    setUploadedFiles([])
-    if (user?.id) {
-      saveStoredChatHistory(user.id, [buildWelcomeMessage(user?.name)])
+  const clearChat = useCallback(async () => {
+    if (isClearingSession || isSending) return
+
+    setIsClearingSession(true)
+
+    try {
+      const welcome = buildWelcomeMessage(user?.name)
+      setChatHistory([welcome])
+      setVisibleMessageCount(INITIAL_VISIBLE_MESSAGES)
+      setUploadedFiles([])
+
+      if (user?.id && !isHermesMockMode() && isHermesConfigured()) {
+        const deleted = await deleteCandidateChatSession(user.id)
+        if (!deleted.success) {
+          message.error(deleted.error || 'Failed to clear Hermes session')
+          return
+        }
+        await ensureCandidateChatSession(user.id)
+      }
+
+      message.success('Chat session cleared')
+    } catch (error) {
+      console.error('clearChat error:', error)
+      message.error('Failed to clear chat session')
+    } finally {
+      setIsClearingSession(false)
     }
-    message.info('Chat cleared')
-  }, [user?.id, user?.name])
+  }, [user?.id, user?.name, isClearingSession, isSending])
 
   const loadMoreMessages = useCallback(async () => {
     if (!hasMoreMessages || isLoadingMore) return
@@ -423,7 +457,7 @@ export const useChat = (user = null, options = {}) => {
   }, [visibleMessages, currentStreamingMessage])
 
   const isChatReady = useCallback(() => {
-    return isInitialized && !isSending && (isOpenClawMockMode() || isOpenClawConfigured())
+    return isInitialized && !isSending && (isHermesMockMode() || isHermesConfigured())
   }, [isInitialized, isSending])
 
   return {
@@ -448,6 +482,7 @@ export const useChat = (user = null, options = {}) => {
     handleFileUpload,
     handleFileRemove,
     clearChat,
+    isClearingSession,
     loadMoreMessages
   }
 }
