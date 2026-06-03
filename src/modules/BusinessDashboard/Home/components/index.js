@@ -1,18 +1,15 @@
 // Global Instructions Rule Applied!
 // Frontend Instructions Rule Applied!
 import React, { useState, useCallback, useMemo, useEffect } from 'react'
-import { Card, Row, Col, Badge, Typography, List, Avatar, Dropdown } from 'antd'
+import { Card, Row, Col, Typography, Dropdown } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faBuilding,
   faUser,
   faBriefcase,
-  faChartLine,
   faPlus,
-  faSearch,
   faSliders,
   faEdit,
-  faBell,
   faUserPlus,
   faQuestion,
   faFileAlt,
@@ -21,12 +18,15 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from 'react-router-dom'
 import { useTheme } from '../../../../core/context/ThemeContext'
-import { Button, BusinessDashboardPageShell, DashboardToolbarButton, Toolbar, ThemedModal } from '../../../../core/components'
-import { BRAND_COLORS, SEMANTIC_COLORS, LIGHT_THEME, DARK_THEME } from '../../../../core/theme/colors'
+import { Button, BusinessDashboardPageShell, DashboardToolbarButton, Toolbar } from '../../../../core/components'
+import { BRAND_COLORS, SEMANTIC_COLORS } from '../../../../core/theme/colors'
 import { setUserProfileOpen } from '../../../../core/store/slices/profileSlice'
 import { useDispatch } from 'react-redux'
 import { getDashboardStats } from '../controllers'
-import { DASHBOARD_ALERT_TYPE, buildBusinessDashboardPath } from '../../../../constants'
+import { buildBusinessDashboardPath } from '../../../../constants'
+import { getUserOrganization } from '../../../../core/infra/supabase-controller'
+import { usePotentialCandidates } from '../hooks/usePotentialCandidates'
+import PotentialCandidatesSection from './PotentialCandidatesSection'
 
 import '../styles/dashboard.css'
 
@@ -34,16 +34,8 @@ const { Title, Text } = Typography
 
 /**
  * Business Dashboard Main Page - AI-powered recruitment matching system
- * Displays key metrics, quick actions, and AI features
- *
- * Color Scheme:
- * - Primary: Shakespeare Blue (#4A90A4) - main organization features
- * - Success: Emerald Green (#10B981) - user/profile actions
- * - Accent: Picton Blue (#5BA3D4) - job-related features
- * - Warning: Orange (#F59E0B) - admin/settings actions
- * - Teal: Teal Green (#14B8A6) - tracking/progress features
  */
-const Dashboard = React.memo(() => {
+const Dashboard = React.memo(({ user }) => {
   const { darkMode } = useTheme()
   const navigate = useNavigate()
   const dispatch = useDispatch()
@@ -52,78 +44,59 @@ const Dashboard = React.memo(() => {
     descriptionCount: 0,
     questionnaireCount: 0
   })
+  const [orgId, setOrgId] = useState(null)
+  const [statsLoading, setStatsLoading] = useState(false)
 
-  // State management
-  const [alertsVisible, setAlertsVisible] = useState(false)
-  const [loading, setLoading] = useState(false)
+  const { matches, loading: matchesLoading, error: matchesError, refresh: refreshMatches } =
+    usePotentialCandidates(orgId)
 
-  // Mock data - in real app this would come from API
   useEffect(() => {
-    handleGetDashboardStats()
-    // eslint-disable-next-line
-  }, [])
+    const loadOrg = async () => {
+      if (!user?.id) {
+        setOrgId(null)
+        return
+      }
+      const result = await getUserOrganization(user.id)
+      if (result.success && result.data?.organization?.id) {
+        setOrgId(result.data.organization.id)
+      } else {
+        setOrgId(null)
+      }
+    }
+    loadOrg()
+  }, [user?.id])
 
-  const handleGetDashboardStats = async () => {
+  const handleRefresh = useCallback(async () => {
+    setStatsLoading(true)
     try {
-      setLoading(true)
       const data = await getDashboardStats()
       setDashboardStats(data)
+      await refreshMatches()
     } catch (e) {
-      console.error('Dashboard: Error fetching dashboard stats:', e)
-      // Set default stats on error
+      console.error('Dashboard: Error refreshing:', e)
       setDashboardStats({
         listingCount: 0,
         descriptionCount: 0,
         questionnaireCount: 0
       })
     } finally {
-      setLoading(false)
+      setStatsLoading(false)
     }
-  }
+  }, [refreshMatches])
 
-  // Mock alerts data
-  const alertsData = useMemo(
-    () => [
-      {
-        id: 1,
-        type: DASHBOARD_ALERT_TYPE.CANDIDATE_SUBMISSION,
-        title: 'New Candidate Application',
-        message: 'John Smith applied for Senior React Developer position',
-        timestamp: '2 minutes ago',
-        read: false,
-        avatar: null
-      },
-      {
-        id: 2,
-        type: DASHBOARD_ALERT_TYPE.MATCH_FOUND,
-        title: 'Candidate Match Found',
-        message: 'Sarah Johnson matches 92% with UX Designer role',
-        timestamp: '15 minutes ago',
-        read: false,
-        avatar: null
-      },
-      {
-        id: 3,
-        type: DASHBOARD_ALERT_TYPE.INTERVIEW_SCHEDULED,
-        title: 'Interview Scheduled',
-        message: 'Technical interview with Mike Chen scheduled for tomorrow',
-        timestamp: '1 hour ago',
-        read: true,
-        avatar: null
-      }
-    ],
-    []
-  )
+  useEffect(() => {
+    handleRefresh()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
-  // Workspace Cards Data
   const workspaceCards = useMemo(
     () => [
       {
         title: 'Organization Profile',
         description: 'Manage company information, culture, and requirements',
         icon: faBuilding,
-        color: SEMANTIC_COLORS.primary, // Shakespeare blue - primary brand color
-        stats: null, // No stats needed - user has one organization
+        color: SEMANTIC_COLORS.primary,
+        stats: null,
         action: () => navigate(buildBusinessDashboardPath('org-settings')),
         buttonText: 'Manage'
       },
@@ -131,8 +104,8 @@ const Dashboard = React.memo(() => {
         title: 'User Profile',
         description: 'Update your personal information and preferences',
         icon: faUser,
-        color: SEMANTIC_COLORS.success, // Emerald green for success/profile actions
-        stats: null, // No stats needed - user has one profile
+        color: SEMANTIC_COLORS.success,
+        stats: null,
         action: () => dispatch(setUserProfileOpen(true)),
         buttonText: 'Update'
       },
@@ -140,7 +113,7 @@ const Dashboard = React.memo(() => {
         title: 'Job Listings',
         description: 'Job postings and requirements',
         icon: faBriefcase,
-        color: BRAND_COLORS.pictonBlue, // Picton blue for job-related features
+        color: BRAND_COLORS.pictonBlue,
         stats: { value: dashboardStats.listingCount, label: 'Active Listings' },
         action: () => navigate(buildBusinessDashboardPath('job-listings')),
         buttonText: 'View All'
@@ -149,8 +122,8 @@ const Dashboard = React.memo(() => {
         title: 'Job Descriptions',
         description: 'Job descriptions and requirements',
         icon: faFileAlt,
-        color: BRAND_COLORS.pictonBlue, // Picton blue for job-related features
-        stats: { value: dashboardStats.descriptionCount, label: 'Active Listings' },
+        color: BRAND_COLORS.pictonBlue,
+        stats: { value: dashboardStats.descriptionCount, label: 'Descriptions' },
         action: () => navigate(buildBusinessDashboardPath('job-descriptions')),
         buttonText: 'View All'
       },
@@ -158,8 +131,8 @@ const Dashboard = React.memo(() => {
         title: 'Questionnaires',
         description: 'Questionnaires for job postings',
         icon: faQuestion,
-        color: BRAND_COLORS.pictonBlue, // Picton blue for job-related features
-        stats: { value: dashboardStats.questionnaireCount, label: 'Active Listings' },
+        color: BRAND_COLORS.pictonBlue,
+        stats: { value: dashboardStats.questionnaireCount, label: 'Questionnaires' },
         action: () => navigate(buildBusinessDashboardPath('questionnaires')),
         buttonText: 'View All'
       },
@@ -167,7 +140,7 @@ const Dashboard = React.memo(() => {
         title: 'Administration',
         description: 'User management, settings, and system configuration',
         icon: faSliders,
-        color: SEMANTIC_COLORS.warning, // Warning orange for admin/settings
+        color: SEMANTIC_COLORS.warning,
         stats: { value: 4, label: 'Admin Tools' },
         action: () => navigate(buildBusinessDashboardPath('user-management')),
         buttonText: 'Manage'
@@ -176,7 +149,6 @@ const Dashboard = React.memo(() => {
     [navigate, dashboardStats, dispatch]
   )
 
-  // Quick Actions dropdown (Ant Design 6 uses `menu`, not deprecated `overlay`)
   const quickActionsMenu = useMemo(
     () => ({
       className: darkMode ? 'quick-actions-menu-dark' : 'quick-actions-menu',
@@ -210,88 +182,33 @@ const Dashboard = React.memo(() => {
     [navigate, darkMode, dispatch]
   )
 
-  const handleCloseAlerts = useCallback(() => {
-    setAlertsVisible(false)
-  }, [])
-
-  // Get alert icon based on type
-  const getAlertIcon = useCallback((type) => {
-    switch (type) {
-      case DASHBOARD_ALERT_TYPE.CANDIDATE_SUBMISSION:
-        return faUserPlus
-      case DASHBOARD_ALERT_TYPE.MATCH_FOUND:
-        return faSearch
-      case DASHBOARD_ALERT_TYPE.INTERVIEW_SCHEDULED:
-        return faChartLine
-      default:
-        return faBell
-    }
-  }, [])
-
-  // Get alert color based on type
-  const getAlertColor = useCallback((type) => {
-    switch (type) {
-      case DASHBOARD_ALERT_TYPE.CANDIDATE_SUBMISSION:
-        return SEMANTIC_COLORS.success
-      case DASHBOARD_ALERT_TYPE.MATCH_FOUND:
-        return SEMANTIC_COLORS.primary
-      case DASHBOARD_ALERT_TYPE.INTERVIEW_SCHEDULED:
-        return SEMANTIC_COLORS.warning
-      default:
-        return SEMANTIC_COLORS.info
-    }
-  }, [])
-
   return (
     <BusinessDashboardPageShell className='min-h-full'>
-      {/* Main Content */}
       <div className='flex flex-col'>
         <Toolbar
           title='Dashboard'
           description='AI-powered recruitment matching system'
-          renderActions={() => {
-            return (
-              <div className='flex items-center space-x-2'>
-                {/* Quick Actions Dropdown */}
-                <Dropdown menu={quickActionsMenu} trigger={['click']} placement='bottomRight'>
-                  <DashboardToolbarButton className='gap-1'>
-                    <FontAwesomeIcon icon={faPlus} className='text-[11px]' />
-                    <span>Quick Actions</span>
-                    <FontAwesomeIcon icon={faChevronDown} className='text-[10px]' />
-                  </DashboardToolbarButton>
-                </Dropdown>
-
-                <Badge
-                  count={alertsData.filter((alert) => !alert.read).length}
-                  size='small'
-                  style={{
-                    backgroundColor: SEMANTIC_COLORS.error,
-                    color: '#ffffff'
-                  }}
-                >
-                  <DashboardToolbarButton
-                    className='gap-1'
-                    onClick={() => setAlertsVisible(true)}
-                    icon={<FontAwesomeIcon icon={faBell} className='text-[11px]' />}
-                  >
-                    <span>Alerts</span>
-                  </DashboardToolbarButton>
-                </Badge>
-
-                {/* Refresh Button */}
-                <DashboardToolbarButton
-                  onClick={() => handleGetDashboardStats()}
-                  loading={loading}
-                  icon={<FontAwesomeIcon icon={faRefresh} className='text-[11px]' />}
-                >
-                  <span>Refresh</span>
+          renderActions={() => (
+            <div className='flex items-center space-x-2'>
+              <Dropdown menu={quickActionsMenu} trigger={['click']} placement='bottomRight'>
+                <DashboardToolbarButton className='gap-1'>
+                  <FontAwesomeIcon icon={faPlus} className='text-[11px]' />
+                  <span>Quick Actions</span>
+                  <FontAwesomeIcon icon={faChevronDown} className='text-[10px]' />
                 </DashboardToolbarButton>
-              </div>
-            )
-          }}
+              </Dropdown>
+
+              <DashboardToolbarButton
+                onClick={handleRefresh}
+                loading={statsLoading || matchesLoading}
+                icon={<FontAwesomeIcon icon={faRefresh} className='text-[11px]' />}
+              >
+                <span>Refresh</span>
+              </DashboardToolbarButton>
+            </div>
+          )}
         />
 
-        {/* Workspace Cards — horizontal padding matches shared Toolbar inset */}
         <div className='dashboard-workspace px-3 py-4 sm:px-4'>
           <div>
             <Title
@@ -396,158 +313,13 @@ const Dashboard = React.memo(() => {
             </Row>
           </div>
         </div>
-      </div>
 
-      {/* Alerts Modal */}
-      <ThemedModal
-        title={
-          <div className='flex items-center gap-2'>
-            <span className='text-base'>🔔</span>
-            <span>Notifications & Alerts</span>
-          </div>
-        }
-        open={alertsVisible}
-        onCancel={handleCloseAlerts}
-        footer={null}
-        width={600}
-        maskBlur
-        className={darkMode ? 'alerts-modal-dark' : ''}
-        styles={{
-          content: {
-            backgroundColor: darkMode ? DARK_THEME.background.secondary : LIGHT_THEME.background.primary
-          },
-          header: {
-            backgroundColor: darkMode ? DARK_THEME.background.secondary : LIGHT_THEME.background.primary,
-            borderBottom: `1px solid ${darkMode ? DARK_THEME.border.primary : LIGHT_THEME.border.primary}`
-          }
-        }}
-      >
-        <div className='max-h-96 overflow-y-auto'>
-          {alertsData.length > 0 ? (
-            <List
-              dataSource={alertsData}
-              renderItem={(alert) => (
-                <List.Item
-                  className={`${!alert.read ? 'bg-blue-50 dark:bg-blue-900/20' : ''} rounded-lg p-3 mb-2`}
-                  style={{
-                    border: `1px solid ${darkMode ? DARK_THEME.border.primary : LIGHT_THEME.border.primary}`,
-                    backgroundColor: !alert.read
-                      ? darkMode
-                        ? 'rgba(74, 144, 164, 0.1)'
-                        : 'rgba(74, 144, 164, 0.05)'
-                      : darkMode
-                        ? DARK_THEME.background.secondary
-                        : LIGHT_THEME.background.primary
-                  }}
-                >
-                  <List.Item.Meta
-                    avatar={
-                      <Avatar
-                        style={{
-                          backgroundColor: darkMode
-                            ? `${getAlertColor(alert.type)}15`
-                            : `${getAlertColor(alert.type)}20`,
-                          border: `2px solid ${getAlertColor(alert.type)}`,
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center'
-                        }}
-                        icon={
-                          <FontAwesomeIcon
-                            icon={getAlertIcon(alert.type)}
-                            style={{
-                              color: getAlertColor(alert.type),
-                              fontSize: '16px'
-                            }}
-                          />
-                        }
-                      />
-                    }
-                    title={
-                      <div className='flex items-center justify-between'>
-                        <span
-                          className='font-medium'
-                          style={{
-                            color: darkMode ? DARK_THEME.text.primary : LIGHT_THEME.text.primary
-                          }}
-                        >
-                          {alert.title}
-                        </span>
-                        {!alert.read && (
-                          <Badge
-                            count='New'
-                            style={{
-                              backgroundColor: SEMANTIC_COLORS.primary,
-                              color: '#ffffff',
-                              fontSize: '11px',
-                              height: '20px',
-                              lineHeight: '20px',
-                              minWidth: '35px',
-                              borderRadius: '10px'
-                            }}
-                          />
-                        )}
-                      </div>
-                    }
-                    description={
-                      <div>
-                        <p
-                          className='mb-1'
-                          style={{
-                            color: darkMode ? DARK_THEME.text.secondary : LIGHT_THEME.text.secondary
-                          }}
-                        >
-                          {alert.message}
-                        </p>
-                        <Text
-                          className='text-xs'
-                          style={{
-                            color: darkMode ? DARK_THEME.text.tertiary : LIGHT_THEME.text.secondary
-                          }}
-                        >
-                          {alert.timestamp}
-                        </Text>
-                      </div>
-                    }
-                  />
-                </List.Item>
-              )}
-            />
-          ) : (
-            <div className='text-center py-8'>
-              <div
-                style={{
-                  width: '64px',
-                  height: '64px',
-                  borderRadius: '50%',
-                  backgroundColor: darkMode ? `${SEMANTIC_COLORS.primary}15` : `${SEMANTIC_COLORS.primary}10`,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  margin: '0 auto 16px auto'
-                }}
-              >
-                <span
-                  style={{
-                    fontSize: '32px',
-                    opacity: 0.7
-                  }}
-                >
-                  🔔
-                </span>
-              </div>
-              <p
-                style={{
-                  color: darkMode ? DARK_THEME.text.tertiary : LIGHT_THEME.text.secondary,
-                  margin: 0
-                }}
-              >
-                No notifications at this time
-              </p>
-            </div>
-          )}
-        </div>
-      </ThemedModal>
+        <PotentialCandidatesSection
+          matches={matches}
+          loading={matchesLoading}
+          error={matchesError}
+        />
+      </div>
     </BusinessDashboardPageShell>
   )
 })

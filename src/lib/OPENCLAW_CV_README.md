@@ -129,4 +129,6 @@ Both should return model data if OpenClaw and the token are correct.
 | `src/lib/openclaw-cv-extraction.js` | Facade — import this from Business Dashboard code |
 | `src/lib/openclaw/cv-extraction.js` | OpenClaw contact-field extraction (`first_name`, `last_name`, `email`, `phone`) |
 | `src/lib/openclaw/` | OpenClaw HTTP client, config, mock |
+
+Job listing → candidate matching (scheduled worker): [`OPENCLAW_CANDIDATE_MATCHING.md`](./OPENCLAW_CANDIDATE_MATCHING.md).
 | `src/modules/BusinessDashboard/CandidateManagement/controllers/cvProcessing.js` | CV import pipeline |
