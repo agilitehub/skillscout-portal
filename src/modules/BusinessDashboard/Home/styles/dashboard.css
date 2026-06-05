@@ -1,20 +1,32 @@
-/* Dashboard — shared toolbar via module-shared.css; workspace cards use tokens */
+/* Dashboard — shared toolbar via module-shared.css; cards use semantic tokens */
 
-html.dark .dashboard-workspace {
+html.dark .dashboard-workspace,
+html.dark .dashboard-potential-candidates {
   color: rgb(var(--color-foreground));
 }
 
-html.dark .dashboard-workspace .ant-card {
+html.dark .dashboard-workspace .ant-card,
+html.dark .dashboard-potential-candidates .ant-card {
   background-color: rgb(var(--color-surface)) !important;
   border-color: rgb(var(--color-border)) !important;
   color: rgb(var(--color-foreground));
 }
 
-html.dark .dashboard-workspace .ant-card .ant-card-body {
+html.dark .dashboard-workspace .ant-card .ant-card-body,
+html.dark .dashboard-potential-candidates .ant-card .ant-card-body {
   background-color: rgb(var(--color-surface)) !important;
   color: rgb(var(--color-foreground));
 }
 
-html.dark .dashboard-workspace .ant-card .ant-typography {
+html.dark .dashboard-workspace .ant-card .ant-typography,
+html.dark .dashboard-potential-candidates .ant-card .ant-typography {
   color: inherit !important;
+}
+
+html.dark .dashboard-potential-candidates .candidate-match-item {
+  color: rgb(var(--color-foreground));
+}
+
+html.dark .dashboard-potential-candidates .candidate-match-item .text-muted {
+  color: rgb(var(--color-muted)) !important;
 }

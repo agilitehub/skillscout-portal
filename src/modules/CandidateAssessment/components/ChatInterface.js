@@ -115,7 +115,7 @@ const ChatInterface = React.memo(({ user }) => {
 
   if (!isInitialized) {
     return (
-      <div className='h-full flex items-center justify-center'>
+      <div className='flex min-h-0 flex-1 items-center justify-center'>
         <div className='text-center'>
           <div className='animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4'></div>
           <Text className='text-muted'>Initializing chat...</Text>
@@ -126,14 +126,14 @@ const ChatInterface = React.memo(({ user }) => {
 
   return (
     <div
-      className='flex h-full min-h-0 flex-col overflow-hidden bg-background relative'
+      className='relative flex min-h-0 flex-1 flex-col overflow-hidden bg-background'
       style={{
         background: darkMode
           ? 'linear-gradient(135deg, #0F172A 0%, #1E293B 100%)'
           : 'linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%)'
       }}
     >
-      <div className='fixed inset-0 pointer-events-none'>
+      <div className='fixed inset-0 pointer-events-none z-0'>
         {darkMode ? (
           <>
             <div

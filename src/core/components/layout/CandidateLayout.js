@@ -16,10 +16,10 @@ export const CandidateLayout = ({ user }) => {
 
   return (
     <div className='flex h-screen w-full flex-col overflow-hidden'>
-      <header className='flex-shrink-0'>
+      <header className='relative z-20 flex-shrink-0'>
         <Header user={user} sticky={false} />
       </header>
-      <main className={`flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden ${contentBg}`}>
+      <main className={`relative z-0 flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden ${contentBg}`}>
         <Outlet />
       </main>
     </div>

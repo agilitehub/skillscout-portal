@@ -103,15 +103,22 @@ const PotentialCandidatesSection = React.memo(({ matches, loading, error }) => {
                   {group.items.map((item) => (
                     <li
                       key={item.id}
-                      className='rounded-lg border border-border p-3 bg-surface'
+                      className='candidate-match-item rounded-lg border border-border p-3 bg-surface'
                     >
                       <div className='flex justify-between items-start gap-2'>
                         <div>
-                          <Text strong className='text-foreground block'>
+                          <Text
+                            strong
+                            className={`block ${darkMode ? '!text-white' : '!text-gray-900'}`}
+                          >
                             {item.candidateName}
                           </Text>
                           {item.candidateTitle && (
-                            <Text className='text-muted text-xs block'>{item.candidateTitle}</Text>
+                            <Text
+                              className={`text-xs block ${darkMode ? '!text-gray-300' : '!text-gray-600'}`}
+                            >
+                              {item.candidateTitle}
+                            </Text>
                           )}
                         </div>
                         <span
@@ -125,9 +132,15 @@ const PotentialCandidatesSection = React.memo(({ matches, loading, error }) => {
                         </span>
                       </div>
                       {item.rationale && (
-                        <Text className='text-muted text-sm block mt-2'>{item.rationale}</Text>
+                        <Text
+                          className={`text-sm block mt-2 ${darkMode ? '!text-gray-300' : '!text-gray-600'}`}
+                        >
+                          {item.rationale}
+                        </Text>
                       )}
-                      <Text className='text-muted text-xs block mt-1'>
+                      <Text
+                        className={`text-xs block mt-1 ${darkMode ? '!text-gray-400' : '!text-gray-500'}`}
+                      >
                         {formatRelativeTime(item.updatedAt)}
                       </Text>
                     </li>

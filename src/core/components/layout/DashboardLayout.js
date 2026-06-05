@@ -17,14 +17,14 @@ export const DashboardLayout = ({ user }) => {
 
   return (
     <div className='flex h-screen w-full flex-col overflow-hidden'>
-      <header className='flex-shrink-0'>
+      <header className='relative z-20 flex-shrink-0'>
         <Header user={user} sticky={false} />
       </header>
       <div className='flex min-h-0 flex-1 overflow-hidden'>
         <aside className='h-full w-[260px] min-w-[260px] max-w-[280px] flex-shrink-0 overflow-y-auto border-r border-gray-700/30'>
           <BusinessSidebar />
         </aside>
-        <main className={`min-h-0 min-w-0 flex-1 overflow-y-auto overflow-x-hidden ${contentBg}`}>
+        <main className={`relative z-0 min-h-0 min-w-0 flex-1 overflow-y-auto overflow-x-hidden ${contentBg}`}>
           <Outlet />
         </main>
       </div>
