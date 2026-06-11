@@ -2,44 +2,41 @@
 // Frontend Instructions Rule Applied!
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react'
 import { message } from 'antd'
-import {
-  sendCandidateChatMessage,
-  buildWelcomeMessage,
-  isHermesMockMode,
-  isHermesConfigured,
-  createStreamingTypewriter,
-  fetchCandidateChatHistory,
-  ensureCandidateChatSession,
-  deleteCandidateChatSession
-} from '../../../lib/hermes'
-import {
-  uploadMultipleFiles,
-  getUserFiles,
-  deleteFileFromStorage
-} from '../../../core/infra/supabase-controller'
-import { DEFAULT_SUPABASE_STORAGE_BUCKET } from '../../../constants'
-import { CV_ACCEPTED_MIME_TYPES } from '../model/chatAttachmentRules'
-import { ingestResumeFile } from '../controllers/resumeIngestion'
 
-const INITIAL_VISIBLE_MESSAGES = 20
 const LOAD_MORE_BATCH = 20
-/** Brief delay before refresh so async MCP writes can complete. */
-const LIVE_RESUME_REFRESH_DELAY_MS = 300
-
-const isCvFile = (file) => CV_ACCEPTED_MIME_TYPES.includes(file.type)
 
 /**
- * Candidate chat hook — Hermes-backed messaging; live resume refresh after replies.
+ * Generic chat session hook — messaging, streaming, and pagination via a pluggable adapter.
  * @param {{ id?: string, name?: string }|null} user
- * @param {{ liveResumeContext?: object|null, onResumeUpdated?: () => void }} options
+ * @param {{
+ *   chatService: import('../../../../lib/chat/chatServiceAdapter').ChatServiceAdapter,
+ *   context?: unknown,
+ *   onAfterAssistantReply?: () => void | Promise<void>,
+ *   onFileUpload?: (files: FileList | File[], helpers: {
+ *     addSystemMessage: (content: string) => void,
+ *     setUploadedFiles: React.Dispatch<React.SetStateAction<object[]>>
+ *   }) => void | Promise<void>,
+ *   onFileRemove?: (fileId: string, uploadedFiles: object[]) => Promise<boolean>,
+ *   fetchUploadedFiles?: (userId: string) => Promise<object[]>,
+ *   initialVisibleCount?: number
+ * }} options
  */
-export const useChat = (user = null, options = {}) => {
-  const { liveResumeContext = null, onResumeUpdated } = options
-  const liveResumeContextRef = useRef(liveResumeContext)
-  liveResumeContextRef.current = liveResumeContext
+export const useChatSession = (user = null, options = {}) => {
+  const {
+    chatService,
+    context = null,
+    onAfterAssistantReply,
+    onFileUpload,
+    onFileRemove,
+    fetchUploadedFiles,
+    initialVisibleCount = 20
+  } = options
+
+  const contextRef = useRef(context)
+  contextRef.current = context
 
   const [chatHistory, setChatHistory] = useState([])
-  const [visibleMessageCount, setVisibleMessageCount] = useState(INITIAL_VISIBLE_MESSAGES)
+  const [visibleMessageCount, setVisibleMessageCount] = useState(initialVisibleCount)
   const [isInitialized, setIsInitialized] = useState(false)
   const [isSending, setIsSending] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
@@ -62,46 +59,58 @@ export const useChat = (user = null, options = {}) => {
     return chatHistory.slice(chatHistory.length - visibleMessageCount)
   }, [chatHistory, visibleMessageCount])
 
+  const addSystemMessage = useCallback((content) => {
+    setChatHistory((prev) => [
+      ...prev,
+      {
+        id: `system-${Date.now()}`,
+        type: 'system',
+        content,
+        timestamp: new Date().toISOString()
+      }
+    ])
+  }, [])
+
   useEffect(() => {
-    if (!user?.id) return
+    if (!user?.id || !chatService?.fetchHistory) return
 
     let cancelled = false
 
     const initializeChat = async () => {
       setIsInitialized(false)
 
-      if (isHermesMockMode()) {
+      if (chatService.isMockMode()) {
         if (!cancelled) {
-          setChatHistory([buildWelcomeMessage(user.name)])
-          setVisibleMessageCount(INITIAL_VISIBLE_MESSAGES)
+          setChatHistory([chatService.buildWelcomeMessage(user.name)])
+          setVisibleMessageCount(initialVisibleCount)
           setIsInitialized(true)
         }
         return
       }
 
-      if (!isHermesConfigured()) {
-        message.error(
-          'Hermes is not configured. Set REACT_APP_HERMES_BASE_URL and REACT_APP_HERMES_API_KEY, or enable REACT_APP_MOCK_AI.'
-        )
+      if (!chatService.isConfigured()) {
+        const configMessage =
+          chatService.getConfigurationErrorMessage?.() || 'Chat service is not configured.'
+        message.error(configMessage)
         if (!cancelled) {
-          setChatHistory([buildWelcomeMessage(user.name)])
-          setVisibleMessageCount(INITIAL_VISIBLE_MESSAGES)
+          setChatHistory([chatService.buildWelcomeMessage(user.name)])
+          setVisibleMessageCount(initialVisibleCount)
           setIsInitialized(true)
         }
         return
       }
 
-      const historyResult = await fetchCandidateChatHistory(user.id)
+      const historyResult = await chatService.fetchHistory(user.id)
       if (cancelled) return
 
-      if (historyResult.success && historyResult.messages.length > 0) {
+      if (historyResult.success && historyResult.messages?.length > 0) {
         setChatHistory(historyResult.messages)
-        setVisibleMessageCount(Math.min(historyResult.messages.length, INITIAL_VISIBLE_MESSAGES))
+        setVisibleMessageCount(Math.min(historyResult.messages.length, initialVisibleCount))
       } else {
-        await ensureCandidateChatSession(user.id)
+        await chatService.ensureSession(user.id)
         if (!cancelled) {
-          setChatHistory([buildWelcomeMessage(user.name)])
-          setVisibleMessageCount(INITIAL_VISIBLE_MESSAGES)
+          setChatHistory([chatService.buildWelcomeMessage(user.name)])
+          setVisibleMessageCount(initialVisibleCount)
         }
       }
 
@@ -115,7 +124,7 @@ export const useChat = (user = null, options = {}) => {
     return () => {
       cancelled = true
     }
-  }, [user?.id, user?.name])
+  }, [user?.id, user?.name, chatService, initialVisibleCount])
 
   useEffect(() => {
     if (currentStreamingMessage && !currentStreamingMessage.isStreaming) {
@@ -127,15 +136,14 @@ export const useChat = (user = null, options = {}) => {
     }
   }, [currentStreamingMessage])
 
-  const refreshLiveResumeAfterChat = useCallback(async () => {
-    if (!onResumeUpdated) return
-    await new Promise((resolve) => setTimeout(resolve, LIVE_RESUME_REFRESH_DELAY_MS))
-    onResumeUpdated()
-  }, [onResumeUpdated])
+  const notifyAfterAssistantReply = useCallback(async () => {
+    if (!onAfterAssistantReply) return
+    await onAfterAssistantReply()
+  }, [onAfterAssistantReply])
 
   const sendMessage = useCallback(
     async (content, useStreaming = null) => {
-      if (!content.trim() || isSending) return
+      if (!content.trim() || isSending || !chatService) return
 
       const shouldStream = useStreaming !== null ? useStreaming : streamingEnabled
 
@@ -161,7 +169,7 @@ export const useChat = (user = null, options = {}) => {
           const streamingId = `assistant-${Date.now()}`
           setIsStreaming(true)
 
-          const typewriter = createStreamingTypewriter((visibleText, isActive) => {
+          const typewriter = chatService.createStreamingTypewriter((visibleText, isActive) => {
             setCurrentStreamingMessage({
               id: streamingId,
               type: 'assistant',
@@ -180,11 +188,11 @@ export const useChat = (user = null, options = {}) => {
             isStreaming: true
           })
 
-          const result = await sendCandidateChatMessage({
+          const result = await chatService.sendMessage({
             chatHistory: historyWithUser,
             stream: true,
             signal: abortControllerRef.current.signal,
-            liveResumeContext: liveResumeContextRef.current,
+            context: contextRef.current,
             userId: user?.id,
             onChunk: ({ fullContent }) => {
               typewriter.setTarget(fullContent)
@@ -211,13 +219,13 @@ export const useChat = (user = null, options = {}) => {
             isStreaming: false
           })
 
-          await refreshLiveResumeAfterChat()
+          await notifyAfterAssistantReply()
         } else {
-          const result = await sendCandidateChatMessage({
+          const result = await chatService.sendMessage({
             chatHistory: historyWithUser,
             stream: false,
             signal: abortControllerRef.current.signal,
-            liveResumeContext: liveResumeContextRef.current,
+            context: contextRef.current,
             userId: user?.id
           })
 
@@ -238,7 +246,7 @@ export const useChat = (user = null, options = {}) => {
             }
           ])
 
-          await refreshLiveResumeAfterChat()
+          await notifyAfterAssistantReply()
         }
       } catch (error) {
         if (error?.name === 'AbortError') return
@@ -252,7 +260,7 @@ export const useChat = (user = null, options = {}) => {
         abortControllerRef.current = null
       }
     },
-    [chatHistory, isSending, streamingEnabled, refreshLiveResumeAfterChat, user?.id]
+    [chatHistory, isSending, streamingEnabled, notifyAfterAssistantReply, user?.id, chatService]
   )
 
   const cancelStreaming = useCallback(() => {
@@ -270,6 +278,8 @@ export const useChat = (user = null, options = {}) => {
 
   const handleFileUpload = useCallback(
     async (files) => {
+      if (!onFileUpload) return
+
       if (!user?.id) {
         message.error('User not authenticated. Please log in to upload files.')
         return
@@ -278,73 +288,7 @@ export const useChat = (user = null, options = {}) => {
       setIsUploading(true)
 
       try {
-        const fileArray = Array.from(files)
-        const cvFiles = fileArray.filter(isCvFile)
-        const otherFiles = fileArray.filter((f) => !isCvFile(f))
-
-        if (fileArray.length === 1 && cvFiles.length === 1) {
-          const ingestResult = await ingestResumeFile(user.id, cvFiles[0], { setAsPrimary: true })
-          if (ingestResult.success) {
-            setChatHistory((prev) => [
-              ...prev,
-              {
-                id: `system-${Date.now()}`,
-                type: 'system',
-                content: `Resume uploaded and analyzed: ${cvFiles[0].name}`,
-                timestamp: new Date().toISOString()
-              }
-            ])
-            message.success('Resume uploaded and added to your live profile.')
-            if (onResumeUpdated) onResumeUpdated()
-          } else {
-            message.error(ingestResult.error || 'Failed to process resume')
-          }
-          return
-        }
-
-        if (otherFiles.length > 0) {
-          const uploadResult = await uploadMultipleFiles(otherFiles, user.id, DEFAULT_SUPABASE_STORAGE_BUCKET)
-
-          if (uploadResult.success) {
-            const newFiles = uploadResult.data.successful.map((fileData) => ({
-              id: fileData.id,
-              name: fileData.name,
-              size: fileData.size,
-              type: fileData.type,
-              url: fileData.url,
-              path: fileData.path,
-              uploadedAt: fileData.uploadedAt,
-              userId: fileData.userId
-            }))
-
-            setUploadedFiles((prev) => [...prev, ...newFiles])
-
-            if (uploadResult.data.failed.length > 0) {
-              message.warning(`Failed to upload: ${uploadResult.data.failed.map((f) => f.file).join(', ')}`)
-            }
-          } else {
-            message.error(uploadResult.error || 'Failed to upload files')
-          }
-        }
-
-        if (cvFiles.length > 0) {
-          for (let i = 0; i < cvFiles.length; i += 1) {
-            await ingestResumeFile(user.id, cvFiles[i], { setAsPrimary: i === 0 })
-          }
-          setChatHistory((prev) => [
-            ...prev,
-            {
-              id: `system-${Date.now()}`,
-              type: 'system',
-              content: `Resume(s) uploaded and analyzed: ${cvFiles.map((f) => f.name).join(', ')}`,
-              timestamp: new Date().toISOString()
-            }
-          ])
-          message.success(`Processed ${cvFiles.length} resume file(s).`)
-          if (onResumeUpdated) onResumeUpdated()
-        } else if (otherFiles.length > 0) {
-          message.success(`Successfully uploaded ${otherFiles.length} file(s)`)
-        }
+        await onFileUpload(files, { addSystemMessage, setUploadedFiles })
       } catch (error) {
         console.error('Error uploading files:', error)
         message.error('An unexpected error occurred while uploading files')
@@ -352,78 +296,62 @@ export const useChat = (user = null, options = {}) => {
         setIsUploading(false)
       }
     },
-    [user?.id, onResumeUpdated]
+    [user?.id, onFileUpload, addSystemMessage]
   )
 
   const handleFileRemove = useCallback(
     async (fileId) => {
-      try {
-        const fileToRemove = uploadedFiles.find((file) => file.id === fileId)
-        if (!fileToRemove) return
+      if (!onFileRemove) return
 
-        const deleteResult = await deleteFileFromStorage(fileToRemove.path, DEFAULT_SUPABASE_STORAGE_BUCKET)
-        if (deleteResult.success) {
+      try {
+        const removed = await onFileRemove(fileId, uploadedFiles)
+        if (removed) {
           setUploadedFiles((prev) => prev.filter((file) => file.id !== fileId))
           message.success('File removed successfully')
-        } else {
-          message.error(deleteResult.error || 'Failed to remove file')
         }
       } catch (error) {
         console.error('Error removing file:', error)
         message.error('An unexpected error occurred while removing file')
       }
     },
-    [uploadedFiles]
+    [onFileRemove, uploadedFiles]
   )
 
-  const loadUserFiles = useCallback(async () => {
-    if (!user?.id) return
+  const loadUploadedFiles = useCallback(async () => {
+    if (!user?.id || !fetchUploadedFiles) return
 
     try {
-      const result = await getUserFiles(user.id, DEFAULT_SUPABASE_STORAGE_BUCKET)
-      if (result.success) {
-        setUploadedFiles(
-          result.files.map((file) => ({
-            id: file.id,
-            name: file.name,
-            size: file.size,
-            type: file.type,
-            url: file.url,
-            path: `${user.id}/${file.name}`,
-            uploadedAt: file.createdAt,
-            userId: file.userId
-          }))
-        )
-      }
+      const files = await fetchUploadedFiles(user.id)
+      setUploadedFiles(files)
     } catch (error) {
       console.error('Error loading user files:', error)
     }
-  }, [user?.id])
+  }, [user?.id, fetchUploadedFiles])
 
   useEffect(() => {
-    if (user?.id && isInitialized) {
-      loadUserFiles()
+    if (user?.id && isInitialized && fetchUploadedFiles) {
+      loadUploadedFiles()
     }
-  }, [user?.id, isInitialized, loadUserFiles])
+  }, [user?.id, isInitialized, fetchUploadedFiles, loadUploadedFiles])
 
   const clearChat = useCallback(async () => {
-    if (isClearingSession || isSending) return
+    if (isClearingSession || isSending || !chatService) return
 
     setIsClearingSession(true)
 
     try {
-      const welcome = buildWelcomeMessage(user?.name)
+      const welcome = chatService.buildWelcomeMessage(user?.name)
       setChatHistory([welcome])
-      setVisibleMessageCount(INITIAL_VISIBLE_MESSAGES)
+      setVisibleMessageCount(initialVisibleCount)
       setUploadedFiles([])
 
-      if (user?.id && !isHermesMockMode() && isHermesConfigured()) {
-        const deleted = await deleteCandidateChatSession(user.id)
+      if (user?.id && !chatService.isMockMode() && chatService.isConfigured()) {
+        const deleted = await chatService.deleteSession(user.id)
         if (!deleted.success) {
-          message.error(deleted.error || 'Failed to clear Hermes session')
+          message.error(deleted.error || 'Failed to clear chat session')
           return
         }
-        await ensureCandidateChatSession(user.id)
+        await chatService.ensureSession(user.id)
       }
 
       message.success('Chat session cleared')
@@ -433,7 +361,7 @@ export const useChat = (user = null, options = {}) => {
     } finally {
       setIsClearingSession(false)
     }
-  }, [user?.id, user?.name, isClearingSession, isSending])
+  }, [user?.id, user?.name, isClearingSession, isSending, chatService, initialVisibleCount])
 
   const loadMoreMessages = useCallback(async () => {
     if (!hasMoreMessages || isLoadingMore) return
@@ -456,9 +384,10 @@ export const useChat = (user = null, options = {}) => {
     return visibleMessages
   }, [visibleMessages, currentStreamingMessage])
 
-  const isChatReady = useCallback(() => {
-    return isInitialized && !isSending && (isHermesMockMode() || isHermesConfigured())
-  }, [isInitialized, isSending])
+  const isChatReady = useMemo(() => {
+    if (!chatService) return false
+    return isInitialized && !isSending && (chatService.isMockMode() || chatService.isConfigured())
+  }, [isInitialized, isSending, chatService])
 
   return {
     messages: allMessages,
@@ -467,7 +396,7 @@ export const useChat = (user = null, options = {}) => {
     error: null,
     uploadedFiles,
     isInitialized,
-    isChatReady: isChatReady(),
+    isChatReady,
     isUploading,
     hasMoreMessages,
     isLoadingMore,
@@ -487,4 +416,4 @@ export const useChat = (user = null, options = {}) => {
   }
 }
 
-export default useChat
+export default useChatSession

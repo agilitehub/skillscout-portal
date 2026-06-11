@@ -1,6 +1,6 @@
 // Global Instructions Rule Applied!
 
-import { getOpenClawConfig } from './config'
+import { getOpenClawConfig, getOpenClawGatewayRoot } from './config'
 import { mapOpenClawFetchError, parseOpenClawHttpError } from './errors'
 import { extractStreamDelta } from './stream-utils'
 
@@ -17,16 +17,21 @@ import { extractStreamDelta } from './stream-utils'
  * @property {(chunk: { delta: string, fullContent: string }) => void} [onChunk]
  * @property {AbortSignal} [signal]
  * @property {string} [user]
+ * @property {string} [sessionKey]
+ * @property {string} [model]
  * @property {number} [temperature]
  */
 
-const buildHeaders = (token, stream) => {
+const buildHeaders = (token, stream, sessionKey = null) => {
   const headers = { 'Content-Type': 'application/json' }
   if (stream) {
     headers.Accept = 'text/event-stream'
   }
   if (token) {
     headers.Authorization = `Bearer ${token}`
+  }
+  if (sessionKey) {
+    headers['x-openclaw-session-key'] = sessionKey
   }
   return headers
 }
@@ -72,7 +77,6 @@ const readChatCompletionStream = async (response, onChunk) => {
 
     buffer += decoder.decode(value, { stream: true })
 
-    // Support both LF and CRLF framed SSE
     const parts = buffer.split(/\r?\n/)
     buffer = parts.pop() || ''
 
@@ -96,6 +100,45 @@ const isEventStreamResponse = (response) => {
 }
 
 /**
+ * OpenClaw gateway fetch for session APIs (history lives under gateway root, not /v1).
+ * @param {string} path — e.g. `/sessions/foo/history`
+ * @param {{ method?: string, body?: object, signal?: AbortSignal }} [options]
+ */
+export async function openclawFetch(path, options = {}) {
+  const { token, timeoutMs } = getOpenClawConfig()
+  const gatewayRoot = getOpenClawGatewayRoot()
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs)
+
+  const linkedSignal = options.signal
+  if (linkedSignal) {
+    linkedSignal.addEventListener('abort', () => controller.abort(), { once: true })
+  }
+
+  try {
+    const response = await fetch(`${gatewayRoot}${path}`, {
+      method: options.method || 'GET',
+      headers: buildHeaders(token, false, options.sessionKey),
+      body: options.body ? JSON.stringify(options.body) : undefined,
+      signal: controller.signal
+    })
+
+    const payload = await response.json().catch(() => null)
+
+    if (!response.ok) {
+      const err = parseOpenClawHttpError(response.status, payload)
+      return { ...err, status: response.status }
+    }
+
+    return { success: true, data: payload, status: response.status }
+  } catch (error) {
+    return mapOpenClawFetchError(error)
+  } finally {
+    clearTimeout(timeoutId)
+  }
+}
+
+/**
  * Call OpenClaw Gateway chat/completions (OpenAI-compatible).
  * @param {ChatCompletionsOptions} options
  * @returns {Promise<{ success: boolean, content?: string, error?: string }>}
@@ -106,9 +149,12 @@ export async function callChatCompletions({
   onChunk,
   signal,
   user = 'skillscout',
+  sessionKey = null,
+  model = null,
   temperature = 0.7
 }) {
-  const { baseUrl, token, model, timeoutMs } = getOpenClawConfig()
+  const { baseUrl, token, model: defaultModel, timeoutMs } = getOpenClawConfig()
+  const resolvedModel = model || defaultModel
   const controller = new AbortController()
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs)
 
@@ -120,9 +166,9 @@ export async function callChatCompletions({
   try {
     const response = await fetch(`${baseUrl}/chat/completions`, {
       method: 'POST',
-      headers: buildHeaders(token, stream),
+      headers: buildHeaders(token, stream, sessionKey),
       body: JSON.stringify({
-        model,
+        model: resolvedModel,
         user,
         temperature,
         messages,

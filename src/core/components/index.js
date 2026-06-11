@@ -17,5 +17,17 @@ export { default as Logo } from './parts/Logo'
 export { default as StatusBadge } from './parts/StatusBadge'
 export { default as Toolbar } from './parts/Toolbar'
 export { default as TableView } from './view-components/table-view/TableView'
+export {
+  ChatPanel,
+  ChatInput,
+  ChatMessages,
+  useChatSession,
+  renderChatMarkdown,
+  CHAT_ATTACHMENT_ALLOWED_MIME_TYPES,
+  CHAT_ATTACHMENT_MAX_BYTES,
+  CV_ACCEPTED_MIME_TYPES,
+  partitionChatAttachments,
+  validateChatAttachmentBatch
+} from './chat'
 export { BRAND_COLORS, SEMANTIC_COLORS } from '../theme/colors'
 export { default as ThemeToggle } from '../theme/components/ThemeToggle'

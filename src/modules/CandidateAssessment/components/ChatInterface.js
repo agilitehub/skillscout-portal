@@ -3,31 +3,35 @@
 import React, { useCallback } from 'react'
 import { Typography, Popconfirm } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {
-  faFileAlt,
-  faFilePdf,
-  faFileWord,
-  faFileImage,
-  faTrash,
-  faRobot,
-  faRotateLeft
-} from '@fortawesome/free-solid-svg-icons'
+import { faRotateLeft } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../core/context/ThemeContext'
-import { Button } from '../../../core/components'
-import ChatMessages from './ChatMessages'
-import ChatInput from './ChatInput'
+import { Button, ChatPanel } from '../../../core/components'
 import ResumePreviewPanel from './ResumePreviewPanel'
-import useChat from '../hooks/useChat'
+import useCandidateChat from '../hooks/useCandidateChat'
 import useLiveResume from '../hooks/useLiveResume'
+import {
+  CANDIDATE_CHAT_HEADER_SUBTITLE,
+  CANDIDATE_CHAT_INPUT_PLACEHOLDER,
+  CANDIDATE_CHAT_LOADING_TEXT
+} from '../candidateChatConfig'
 
-const { Title, Text } = Typography
+const { Title } = Typography
 
 /** Dev-only — set REACT_APP_SHOW_CLEAR_HERMES_SESSION=true to show in production builds. */
 const SHOW_CLEAR_HERMES_SESSION =
   process.env.NODE_ENV === 'development' || process.env.REACT_APP_SHOW_CLEAR_HERMES_SESSION === 'true'
 
+const RESUME_PANEL_COLORS = {
+  darkBlue: '#1E3A52',
+  shakespeare: '#4A90A4',
+  pictonBlue: '#5BA3D4',
+  seaGreen: '#16A085',
+  emeraldPrimary: '#059669',
+  tealGreen: '#14B8A6'
+}
+
 /**
- * Main ChatInterface component — Hermes-backed candidate chat with live resume preview
+ * Candidate chat interface — composes reusable ChatPanel with live resume side panel.
  */
 const ChatInterface = React.memo(({ user }) => {
   const { darkMode } = useTheme()
@@ -70,34 +74,7 @@ const ChatInterface = React.memo(({ user }) => {
     toggleStreaming,
     clearChat,
     isClearingSession
-  } = useChat(user, { liveResumeContext, onResumeUpdated: refreshLiveResume })
-
-  const colors = {
-    darkBlue: '#1E3A52',
-    shakespeare: '#4A90A4',
-    pictonBlue: '#5BA3D4',
-    seaGreen: '#16A085',
-    emeraldPrimary: '#059669',
-    tealGreen: '#14B8A6'
-  }
-
-  const getFileIcon = useCallback((fileName) => {
-    const extension = fileName.split('.').pop()?.toLowerCase()
-    switch (extension) {
-      case 'pdf':
-        return faFilePdf
-      case 'doc':
-      case 'docx':
-        return faFileWord
-      case 'jpg':
-      case 'jpeg':
-      case 'png':
-      case 'gif':
-        return faFileImage
-      default:
-        return faFileAlt
-    }
-  }, [])
+  } = useCandidateChat(user, { liveResumeContext, onResumeUpdated: refreshLiveResume })
 
   const handleSendMessage = useCallback(
     (content) => {
@@ -113,180 +90,77 @@ const ChatInterface = React.memo(({ user }) => {
     [uploadAndParseResume]
   )
 
-  if (!isInitialized) {
-    return (
-      <div className='flex min-h-0 flex-1 items-center justify-center'>
-        <div className='text-center'>
-          <div className='animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4'></div>
-          <Text className='text-muted'>Initializing chat...</Text>
-        </div>
-      </div>
-    )
-  }
+  const headerTitle = (
+    <Title level={4} className='!text-white !mb-0'>
+      <span className='text-blue-500'>Skill</span>
+      <span className='text-emerald-500'>Scout</span> Interview
+    </Title>
+  )
+
+  const headerActions =
+    SHOW_CLEAR_HERMES_SESSION ? (
+      <Popconfirm
+        title='Clear Hermes chat session?'
+        description='Deletes message history for this user on the Hermes gateway. Uploaded files in Supabase are not removed.'
+        onConfirm={clearChat}
+        okText='Clear'
+        cancelText='Cancel'
+        okButtonProps={{ danger: true }}
+        disabled={isClearingSession || isTyping}
+      >
+        <Button
+          variant='ghost'
+          size='small'
+          loading={isClearingSession}
+          disabled={isTyping}
+          icon={<FontAwesomeIcon icon={faRotateLeft} />}
+          className='!text-white/90 hover:!bg-white/15 !shadow-none !border !border-white/25'
+          aria-label='Clear Hermes chat session (dev)'
+        >
+          Clear session
+        </Button>
+      </Popconfirm>
+    ) : null
 
   return (
-    <div
-      className='relative flex min-h-0 flex-1 flex-col overflow-hidden bg-background'
-      style={{
-        background: darkMode
-          ? 'linear-gradient(135deg, #0F172A 0%, #1E293B 100%)'
-          : 'linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%)'
-      }}
-    >
-      <div className='fixed inset-0 pointer-events-none z-0'>
-        {darkMode ? (
-          <>
-            <div
-              className='absolute -top-[20%] -right-[20%] w-3/4 h-3/4 rounded-full blur-3xl opacity-40'
-              style={{ background: 'radial-gradient(circle, #4A90A4 0%, #2E5984 30%, transparent 70%)' }}
-            />
-            <div
-              className='absolute -bottom-[20%] -left-[20%] w-3/4 h-3/4 rounded-full blur-3xl opacity-35'
-              style={{ background: 'radial-gradient(circle, #059669 0%, #065F46 30%, transparent 70%)' }}
-            />
-          </>
-        ) : (
-          <>
-            <div className='absolute top-0 right-0 w-2/3 h-2/3 bg-gradient-to-bl from-blue-400/30 to-transparent rounded-full blur-3xl opacity-80' />
-            <div className='absolute bottom-0 left-0 w-2/3 h-2/3 bg-gradient-to-tr from-blue-500/30 to-transparent rounded-full blur-3xl opacity-80' />
-          </>
-        )}
-      </div>
-
-      <div className='flex min-h-0 flex-1 flex-col relative z-10'>
-        <div
-          className='flex-shrink-0 px-4 py-3 border-b border-border'
-          style={{
-            background: darkMode
-              ? `linear-gradient(135deg, ${colors.darkBlue}, ${colors.shakespeare})`
-              : `linear-gradient(135deg, ${colors.pictonBlue}, ${colors.shakespeare})`
-          }}
-        >
-          <div className='flex items-center justify-between'>
-            <div>
-              <Title level={4} className='!text-white !mb-0'>
-                <span className='text-blue-500'>Skill</span>
-                <span className='text-emerald-500'>Scout</span> Interview
-              </Title>
-              <Text className='text-white/70 text-sm'>AI-powered career assessment and interview preparation</Text>
-            </div>
-            <div className='flex items-center gap-2'>
-              {SHOW_CLEAR_HERMES_SESSION && (
-                <Popconfirm
-                  title='Clear Hermes chat session?'
-                  description='Deletes message history for this user on the Hermes gateway. Uploaded files in Supabase are not removed.'
-                  onConfirm={clearChat}
-                  okText='Clear'
-                  cancelText='Cancel'
-                  okButtonProps={{ danger: true }}
-                  disabled={isClearingSession || isTyping}
-                >
-                  <Button
-                    variant='ghost'
-                    size='small'
-                    loading={isClearingSession}
-                    disabled={isTyping}
-                    icon={<FontAwesomeIcon icon={faRotateLeft} />}
-                    className='!text-white/90 hover:!bg-white/15 !shadow-none !border !border-white/25'
-                    aria-label='Clear Hermes chat session (dev)'
-                  >
-                    Clear session
-                  </Button>
-                </Popconfirm>
-              )}
-              <div className='text-white/60'>
-                <FontAwesomeIcon icon={faRobot} className='text-xl' />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className='flex min-h-0 flex-1 overflow-hidden'>
-          <div className='flex min-h-0 flex-1 flex-col lg:w-3/5 xl:w-1/2'>
-            {uploadedFiles.length > 0 && (
-              <div className='flex-shrink-0 px-4 py-2 bg-surface border-b border-border'>
-                <Text className='text-xs text-muted mb-1 block'>
-                  Uploaded Documents ({uploadedFiles.length})
-                </Text>
-                <div className='flex flex-wrap gap-1'>
-                  {uploadedFiles.map((file) => (
-                    <div
-                      key={file.id}
-                      className='flex items-center space-x-1 px-2 py-1 bg-surface border border-border rounded-full text-xs'
-                    >
-                      <FontAwesomeIcon icon={getFileIcon(file.name)} className='text-blue-500 text-xs' />
-                      <span className='text-foreground max-w-[100px] truncate'>{file.name}</span>
-                      <button
-                        type='button'
-                        onClick={() => handleFileRemove(file.id)}
-                        className='p-0 w-3 h-3 text-red-400 hover:text-red-600'
-                        aria-label={`Remove ${file.name}`}
-                      >
-                        <FontAwesomeIcon icon={faTrash} className='text-xs' />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            <div className='min-h-0 flex-1 overflow-hidden'>
-              <ChatMessages
-                messages={messages}
-                isTyping={isTyping}
-                user={user}
-                uploadedFiles={uploadedFiles}
-                showFileInfo={true}
-                hasMoreMessages={hasMoreMessages}
-                isLoadingMore={isLoadingMore}
-                isLoadingHistorical={isLoadingHistorical}
-                onLoadMoreMessages={loadMoreMessages}
-                streamingEnabled={streamingEnabled}
-              />
-            </div>
-
-            <div className='flex-shrink-0'>
-              <ChatInput
-                onSendMessage={handleSendMessage}
-                onAttachFile={() => {}}
-                onFileUpload={handleFileUpload}
-                disabled={!isChatReady}
-                isTyping={isTyping}
-                isUploading={isUploading}
-                isStreaming={isStreaming}
-                streamingEnabled={streamingEnabled}
-                onToggleStreaming={toggleStreaming}
-                onCancelStream={cancelStreaming}
-                maxLength={4000}
-              />
-            </div>
-          </div>
-
-          <div className='hidden lg:block w-3 bg-gradient-to-b from-transparent via-border to-transparent relative'>
-            <div
-              className='absolute inset-0 bg-gradient-to-b opacity-50'
-              style={{
-                background: darkMode
-                  ? `linear-gradient(to bottom, transparent 0%, ${colors.shakespeare}40 50%, transparent 100%)`
-                  : `linear-gradient(to bottom, transparent 0%, ${colors.emeraldPrimary}30 50%, transparent 100%)`
-              }}
-            />
-          </div>
-
-          <ResumePreviewPanel
-            resumeData={resumeData}
-            isLoading={isResumeLoading}
-            isRefreshing={isResumeRefreshing}
-            isProcessing={isResumeProcessing}
-            messages={messages}
-            darkMode={darkMode}
-            colors={colors}
-            onUploadResume={handleResumeUpload}
-            onPromoteResume={promoteResumeAsPrimary}
-          />
-        </div>
-      </div>
-    </div>
+    <ChatPanel
+      headerTitle={headerTitle}
+      headerSubtitle={CANDIDATE_CHAT_HEADER_SUBTITLE}
+      headerActions={headerActions}
+      messages={messages}
+      isTyping={isTyping}
+      isInitialized={isInitialized}
+      isChatReady={isChatReady}
+      uploadedFiles={uploadedFiles}
+      hasMoreMessages={hasMoreMessages}
+      isLoadingMore={isLoadingMore}
+      isLoadingHistorical={isLoadingHistorical}
+      isUploading={isUploading}
+      isStreaming={isStreaming}
+      streamingEnabled={streamingEnabled}
+      onSendMessage={handleSendMessage}
+      onFileUpload={handleFileUpload}
+      onFileRemove={handleFileRemove}
+      onLoadMoreMessages={loadMoreMessages}
+      onToggleStreaming={toggleStreaming}
+      onCancelStream={cancelStreaming}
+      inputPlaceholder={CANDIDATE_CHAT_INPUT_PLACEHOLDER}
+      user={user}
+      loadingText={CANDIDATE_CHAT_LOADING_TEXT}
+      sidebar={
+        <ResumePreviewPanel
+          resumeData={resumeData}
+          isLoading={isResumeLoading}
+          isRefreshing={isResumeRefreshing}
+          isProcessing={isResumeProcessing}
+          messages={messages}
+          darkMode={darkMode}
+          colors={RESUME_PANEL_COLORS}
+          onUploadResume={handleResumeUpload}
+          onPromoteResume={promoteResumeAsPrimary}
+        />
+      }
+    />
   )
 })
 

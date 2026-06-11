@@ -13,15 +13,14 @@ import {
   faPaperclip,
   faClock
 } from '@fortawesome/free-solid-svg-icons'
-import { useTheme } from '../../../core/context/ThemeContext'
-import { BRAND_COLORS, DARK_THEME } from '../../../core/theme/colors'
-import { renderChatMarkdown } from '../model/chatMarkdown'
+import { useTheme } from '../../context/ThemeContext'
+import { BRAND_COLORS, DARK_THEME } from '../../theme/colors'
+import { renderChatMarkdown } from './chatMarkdown'
 
 const { Text } = Typography
 
 /**
- * ChatMessages component - Displays chat messages with proper styling
- * Implements responsive design, theme support, and AI integration
+ * ChatMessages — message list with scroll, load-more, and streaming support.
  */
 const ChatMessages = React.memo(
   ({
@@ -42,38 +41,31 @@ const ChatMessages = React.memo(
     const [showLoadMoreButton, setShowLoadMoreButton] = useState(false)
     const prevMessageCountRef = useRef(0)
 
-    // Add scroll position tracking for when loading previous messages
     const scrollPositionRef = useRef(null)
     const prevScrollHeightRef = useRef(0)
     const isRestoringScrollRef = useRef(false)
     const prevIsLoadingHistoricalRef = useRef(false)
 
-    // Handle scroll detection for showing load more button
     const handleScroll = useCallback(
       (e) => {
-        // Don't process scroll events when we're restoring scroll position
         if (isRestoringScrollRef.current) return
 
         const { scrollTop } = e.target
-        // Show load more button only when user scrolls near the top (within 100px)
         const shouldShow = scrollTop < 100 && hasMoreMessages
         setShowLoadMoreButton(shouldShow)
       },
       [hasMoreMessages]
     )
 
-    // Enhanced load more messages handler with scroll position preservation
     const handleLoadMoreMessages = useCallback(async () => {
       if (!messagesContainerRef.current || !onLoadMoreMessages) return
 
       const container = messagesContainerRef.current
 
-      // Store current scroll position relative to the bottom
       const scrollTop = container.scrollTop
       const scrollHeight = container.scrollHeight
       const clientHeight = container.clientHeight
 
-      // Store the distance from the bottom
       scrollPositionRef.current = {
         scrollTop,
         scrollHeight,
@@ -83,16 +75,13 @@ const ChatMessages = React.memo(
 
       prevScrollHeightRef.current = scrollHeight
 
-      // Call the load more function
       await onLoadMoreMessages()
     }, [onLoadMoreMessages])
 
-    // Restore scroll position after loading historical messages
     useEffect(() => {
       const prevIsLoadingHistorical = prevIsLoadingHistoricalRef.current
       prevIsLoadingHistoricalRef.current = isLoadingHistorical
 
-      // Only restore when isLoadingHistorical just changed from true to false
       if (
         isLoadingHistorical ||
         !prevIsLoadingHistorical ||
@@ -104,51 +93,30 @@ const ChatMessages = React.memo(
 
       const container = messagesContainerRef.current
 
-      // Wait a bit for the DOM to update with new messages
       setTimeout(() => {
         const newScrollHeight = container.scrollHeight
         const prevScrollHeight = prevScrollHeightRef.current
 
-        console.log('Scroll restoration:', {
-          newScrollHeight,
-          prevScrollHeight,
-          storedPosition: scrollPositionRef.current
-        })
-
-        // Calculate how much the content has grown
         const heightDifference = newScrollHeight - prevScrollHeight
 
         if (heightDifference > 0 && scrollPositionRef.current) {
-          // Set flag to prevent scroll event processing during restoration
           isRestoringScrollRef.current = true
 
-          // Restore scroll position by adjusting for the new content
           const newScrollTop = scrollPositionRef.current.scrollTop + heightDifference
 
-          console.log('Restoring scroll position:', {
-            oldScrollTop: scrollPositionRef.current.scrollTop,
-            heightDifference,
-            newScrollTop
-          })
-
-          // Set the scroll position
           container.scrollTop = newScrollTop
 
-          // Reset flag after a small delay
           setTimeout(() => {
             isRestoringScrollRef.current = false
           }, 100)
         }
 
-        // Clear the stored position
         scrollPositionRef.current = null
         prevScrollHeightRef.current = newScrollHeight
-      }, 50) // Small delay to ensure DOM is updated
+      }, 50)
     }, [isLoadingHistorical])
 
-    // Auto-scroll to bottom when new messages arrive (but not when loading more)
     useEffect(() => {
-      // Completely disable auto-scroll if we're loading historical messages or restoring scroll
       if (isLoadingHistorical || isRestoringScrollRef.current) {
         return
       }
@@ -156,18 +124,15 @@ const ChatMessages = React.memo(
       const currentMessageCount = messages.length
       const prevMessageCount = prevMessageCountRef.current
 
-      // Only auto-scroll if new messages were added (count increased)
       const messagesAdded = currentMessageCount - prevMessageCount
 
       if (messagesEndRef.current && messagesAdded > 0 && currentMessageCount > 0) {
         messagesEndRef.current.scrollIntoView({ behavior: 'smooth' })
       }
 
-      // Update the previous message count
       prevMessageCountRef.current = currentMessageCount
     }, [messages, isTyping, isLoadingHistorical])
 
-    // Add scroll event listener
     useEffect(() => {
       const container = messagesContainerRef.current
       if (container) {
@@ -176,7 +141,6 @@ const ChatMessages = React.memo(
       }
     }, [handleScroll])
 
-    // Get file icon based on type
     const getFileIcon = useCallback((fileName) => {
       const extension = fileName.split('.').pop()?.toLowerCase()
       switch (extension) {
@@ -195,7 +159,6 @@ const ChatMessages = React.memo(
       }
     }, [])
 
-    // Format timestamp
     const formatTimestamp = useCallback((timestamp) => {
       if (!timestamp) return ''
 
@@ -206,15 +169,13 @@ const ChatMessages = React.memo(
 
         if (diffInHours < 24) {
           return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-        } else {
-          return date.toLocaleDateString([], { month: 'short', day: 'numeric' })
         }
-      } catch (error) {
+        return date.toLocaleDateString([], { month: 'short', day: 'numeric' })
+      } catch {
         return ''
       }
     }, [])
 
-    // Get message styling based on type
     const getMessageStyle = useCallback(
       (messageType) => {
         switch (messageType) {
@@ -299,7 +260,6 @@ const ChatMessages = React.memo(
       )
     }
 
-    // Validate props
     if (!messages || !Array.isArray(messages)) {
       return (
         <div className='flex items-center justify-center h-full text-gray-500'>
@@ -322,7 +282,6 @@ const ChatMessages = React.memo(
         ref={messagesContainerRef}
       >
         <div className='w-full space-y-4 px-4'>
-          {/* Load more messages button - moved to top */}
           {showLoadMoreButton && (
             <div className='flex justify-center py-2 sticky top-0 z-10 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-lg shadow-sm border border-blue-200 dark:border-blue-700'>
               <button
@@ -358,7 +317,6 @@ const ChatMessages = React.memo(
             </div>
           )}
 
-          {/* Chat Messages */}
           {messages.map((message) => {
             const messageStyle = getMessageStyle(message.type)
             const isUserMessage = message.type === 'user'
@@ -380,7 +338,6 @@ const ChatMessages = React.memo(
                     borderColor: messageStyle.borderColor
                   }}
                 >
-                  {/* Message Header */}
                   {!isUserMessage && !isSystemMessage && (
                     <div className='flex items-center mb-2'>
                       <Avatar
@@ -439,7 +396,6 @@ const ChatMessages = React.memo(
                     </div>
                   )}
 
-                  {/* Message Content */}
                   <div className='relative'>
                     <div
                       className='break-words text-[0.9rem] leading-relaxed'
@@ -457,9 +413,7 @@ const ChatMessages = React.memo(
                     </div>
                   </div>
 
-                  {/* Message Footer */}
                   <div className='flex items-center justify-between mt-2'>
-                    {/* Timestamp */}
                     <Text
                       style={{
                         fontSize: '0.75rem',
@@ -470,10 +424,9 @@ const ChatMessages = React.memo(
                       {formatTimestamp(message.timestamp)}
                     </Text>
 
-                    {/* File attachments for system messages */}
                     {isSystemMessage && showFileInfo && uploadedFiles.length > 0 && (
                       <div className='flex items-center space-x-1'>
-                        {uploadedFiles.slice(0, 3).map((file, index) => (
+                        {uploadedFiles.slice(0, 3).map((file) => (
                           <Tooltip key={file.id} title={file.name}>
                             <Tag
                               size='small'
@@ -508,10 +461,8 @@ const ChatMessages = React.memo(
             )
           })}
 
-          {/* Typing indicator */}
           {isTyping && !streamingEnabled && typingIndicator()}
 
-          {/* Scroll anchor */}
           <div ref={messagesEndRef} />
         </div>
       </div>

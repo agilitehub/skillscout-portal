@@ -131,4 +131,6 @@ Both should return model data if OpenClaw and the token are correct.
 | `src/lib/openclaw/` | OpenClaw HTTP client, config, mock |
 
 Job listing → candidate matching (scheduled worker): [`OPENCLAW_CANDIDATE_MATCHING.md`](./OPENCLAW_CANDIDATE_MATCHING.md).
+
+Potential candidate recruiter chat: [`OPENCLAW_BUSINESS_CANDIDATE_CHAT.md`](./OPENCLAW_BUSINESS_CANDIDATE_CHAT.md).
 | `src/modules/BusinessDashboard/CandidateManagement/controllers/cvProcessing.js` | CV import pipeline |

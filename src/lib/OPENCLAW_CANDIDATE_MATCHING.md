@@ -102,4 +102,4 @@ On hosted SkillScout, these MCP migrations were applied: `enable_vector_extensio
 
 ## Portal
 
-Business Dashboard home → **Potential Candidates** (reads `potential_candidate_matches` via anon client + RLS). No OpenClaw calls from the browser.
+Business Dashboard home → **Potential Candidates** (reads `potential_candidate_matches` via anon client + RLS). Clicking a match opens recruiter CV chat — see [`OPENCLAW_BUSINESS_CANDIDATE_CHAT.md`](./OPENCLAW_BUSINESS_CANDIDATE_CHAT.md).

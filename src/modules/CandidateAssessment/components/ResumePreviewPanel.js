@@ -20,7 +20,7 @@ import {
   faCircleExclamation,
   faArrowsRotate
 } from '@fortawesome/free-solid-svg-icons'
-import { CV_ACCEPTED_MIME_TYPES } from '../model/chatAttachmentRules'
+import { CV_ACCEPTED_MIME_TYPES } from '../../../core/components/chat/chatAttachmentRules'
 
 const { Title, Text } = Typography
 

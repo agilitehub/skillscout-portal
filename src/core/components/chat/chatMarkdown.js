@@ -2,7 +2,7 @@
 // Frontend Instructions Rule Applied!
 
 import React from 'react'
-import { BRAND_COLORS } from '../../../core/theme/colors'
+import { BRAND_COLORS } from '../../theme/colors'
 
 const HEADING_CLASSES = {
   h1: 'block text-lg font-bold mt-3 mb-1.5',

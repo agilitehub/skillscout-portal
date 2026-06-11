@@ -27,6 +27,7 @@ import { buildBusinessDashboardPath } from '../../../../constants'
 import { getUserOrganization } from '../../../../core/infra/supabase-controller'
 import { usePotentialCandidates } from '../hooks/usePotentialCandidates'
 import PotentialCandidatesSection from './PotentialCandidatesSection'
+import PotentialCandidateChatModal from './PotentialCandidateChatModal'
 
 import '../styles/dashboard.css'
 
@@ -46,6 +47,8 @@ const Dashboard = React.memo(({ user }) => {
   })
   const [orgId, setOrgId] = useState(null)
   const [statsLoading, setStatsLoading] = useState(false)
+  const [selectedMatch, setSelectedMatch] = useState(null)
+  const [chatModalOpen, setChatModalOpen] = useState(false)
 
   const { matches, loading: matchesLoading, error: matchesError, refresh: refreshMatches } =
     usePotentialCandidates(orgId)
@@ -65,6 +68,16 @@ const Dashboard = React.memo(({ user }) => {
     }
     loadOrg()
   }, [user?.id])
+
+  const handleSelectMatch = useCallback((match) => {
+    setSelectedMatch(match)
+    setChatModalOpen(true)
+  }, [])
+
+  const handleCloseChatModal = useCallback(() => {
+    setChatModalOpen(false)
+    setSelectedMatch(null)
+  }, [])
 
   const handleRefresh = useCallback(async () => {
     setStatsLoading(true)
@@ -318,6 +331,14 @@ const Dashboard = React.memo(({ user }) => {
           matches={matches}
           loading={matchesLoading}
           error={matchesError}
+          onSelectMatch={handleSelectMatch}
+        />
+
+        <PotentialCandidateChatModal
+          open={chatModalOpen}
+          match={selectedMatch}
+          recruiterUser={user}
+          onClose={handleCloseChatModal}
         />
       </div>
     </BusinessDashboardPageShell>

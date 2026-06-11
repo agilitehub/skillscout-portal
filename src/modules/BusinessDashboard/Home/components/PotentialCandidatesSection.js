@@ -39,7 +39,7 @@ const groupByListing = (matches) => {
   return Array.from(map.values())
 }
 
-const PotentialCandidatesSection = React.memo(({ matches, loading, error }) => {
+const PotentialCandidatesSection = React.memo(({ matches, loading, error, onSelectMatch }) => {
   const { darkMode } = useTheme()
   const groups = useMemo(() => groupByListing(matches), [matches])
 
@@ -101,10 +101,13 @@ const PotentialCandidatesSection = React.memo(({ matches, loading, error }) => {
                 )}
                 <ul className='space-y-3 list-none p-0 m-0'>
                   {group.items.map((item) => (
-                    <li
-                      key={item.id}
-                      className='candidate-match-item rounded-lg border border-border p-3 bg-surface'
-                    >
+                    <li key={item.id}>
+                      <button
+                        type='button'
+                        onClick={() => onSelectMatch?.(item)}
+                        className='candidate-match-item w-full text-left rounded-lg border border-border p-3 bg-surface cursor-pointer transition-colors hover:border-brand-accent/50 hover:bg-surface/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent/40'
+                        aria-label={`Open chat about ${item.candidateName}`}
+                      >
                       <div className='flex justify-between items-start gap-2'>
                         <div>
                           <Text
@@ -143,6 +146,7 @@ const PotentialCandidatesSection = React.memo(({ matches, loading, error }) => {
                       >
                         {formatRelativeTime(item.updatedAt)}
                       </Text>
+                      </button>
                     </li>
                   ))}
                 </ul>

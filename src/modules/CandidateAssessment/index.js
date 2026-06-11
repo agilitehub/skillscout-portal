@@ -252,15 +252,7 @@ const Dashboard = React.memo(({ user }) => {
       }
 
       // Render main chat interface for career interviews and tests
-      return (
-        <ChatInterface
-          onDetailViewOpen={handleDetailViewOpen}
-          uploadedFiles={uploadedFiles}
-          onFileUpload={handleFileUpload}
-          onFileRemove={handleFileRemove}
-          user={user}
-        />
-      )
+      return <ChatInterface user={user} />
     } catch (error) {
       console.error('Error rendering content:', error)
       return (

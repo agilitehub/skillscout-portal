@@ -2,7 +2,7 @@
 
 Candidate chat on the Personal Dashboard uses **Hermes Agent** (`POST /v1/chat/completions` + `/api/sessions`), not OpenClaw.
 
-OpenClaw remains under `src/lib/openclaw/` for **Business Dashboard** Candidate Management only.
+Business Dashboard uses OpenClaw for CV import and potential-candidate recruiter chat — see [`OPENCLAW_CV_README.md`](./OPENCLAW_CV_README.md) and [`OPENCLAW_BUSINESS_CANDIDATE_CHAT.md`](./OPENCLAW_BUSINESS_CANDIDATE_CHAT.md).
 
 ---
 

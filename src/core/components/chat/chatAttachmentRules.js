@@ -45,3 +45,10 @@ export function partitionChatAttachments(fileList) {
 
   return { validFiles, errors }
 }
+
+/**
+ * Validates files selected or dropped into chat before upload.
+ */
+export function validateChatAttachmentBatch(fileList) {
+  return partitionChatAttachments(fileList)
+}
