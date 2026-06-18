@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEnvelope, faCheckCircle, faSpinner } from '@fortawesome/free-solid-svg-icons'
 import { useTheme } from '../../../core/context/ThemeContext'
 import { BRAND_COLORS } from '../../../core/theme/colors'
+import '../styles/login-form.css'
 
 /**
  * Magic Link Login Component
@@ -170,7 +171,7 @@ const MagicLinkLogin = React.memo(({ onLogin, loading }) => {
         form={form}
         onFinish={handleSubmit}
         layout='vertical'
-        className={`global-form p-4 rounded-lg border ${
+        className={`global-form login-form p-4 rounded-lg border ${
           darkMode ? 'bg-white/10 backdrop-blur-md border-white/20' : 'bg-white shadow-lg border-gray-200'
         }`}
       >
@@ -200,12 +201,7 @@ const MagicLinkLogin = React.memo(({ onLogin, loading }) => {
           rules={emailRules}
           className='mb-4'
         >
-          <Input
-            size='default'
-            placeholder='Enter your email address'
-            className={darkMode ? 'bg-white/20 border-white/30 text-white placeholder-white/50' : ''}
-            disabled={loading}
-          />
+          <Input size='default' placeholder='Enter your email address' disabled={loading} />
         </Form.Item>
 
         <Form.Item className='mb-0'>

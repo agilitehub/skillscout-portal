@@ -1,0 +1,37 @@
+/* Login — glass card on gradient; Ant Design 6 CSS vars need explicit dark overrides */
+
+html.dark .login-form {
+  --ant-color-text: rgb(var(--color-foreground));
+  --ant-color-text-placeholder: rgb(var(--color-muted));
+  --ant-input-color: rgb(var(--color-foreground));
+}
+
+html.dark .login-form .ant-input,
+html.dark .login-form input.ant-input {
+  background-color: rgb(var(--color-foreground) / 0.12) !important;
+  border-color: rgb(var(--color-foreground) / 0.28) !important;
+  color: rgb(var(--color-foreground)) !important;
+  -webkit-text-fill-color: rgb(var(--color-foreground)) !important;
+}
+
+html.dark .login-form .ant-input:focus,
+html.dark .login-form input.ant-input:focus {
+  background-color: rgb(var(--color-foreground) / 0.16) !important;
+  border-color: rgb(var(--color-foreground) / 0.4) !important;
+  color: rgb(var(--color-foreground)) !important;
+  -webkit-text-fill-color: rgb(var(--color-foreground)) !important;
+}
+
+html.dark .login-form .ant-input::placeholder,
+html.dark .login-form input.ant-input::placeholder {
+  color: rgb(var(--color-muted) / 0.85) !important;
+  -webkit-text-fill-color: rgb(var(--color-muted) / 0.85) !important;
+  opacity: 1 !important;
+}
+
+html.dark .login-form .ant-input:-webkit-autofill,
+html.dark .login-form .ant-input:-webkit-autofill:focus {
+  -webkit-text-fill-color: rgb(var(--color-foreground)) !important;
+  caret-color: rgb(var(--color-foreground)) !important;
+  transition: background-color 9999s ease-out 0s;
+}

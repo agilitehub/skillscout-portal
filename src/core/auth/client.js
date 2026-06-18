@@ -1,6 +1,9 @@
 // Global Instructions Rule Applied!
 import { createClient } from '@supabase/supabase-js'
 
+/** Bypass Web/process locks; safe with multiTab: false (single-tab SPA). */
+const authLockNoOp = async (_name, _acquireTimeout, fn) => fn()
+
 /**
  * Single Supabase client for the app (auth + data). Auth options match prior supabase-controller setup.
  */
@@ -28,7 +31,9 @@ const createSupabaseClient = () => {
         persistSession: true,
         autoRefreshToken: true,
         detectSessionInUrl: false,
-        multiTab: false
+        multiTab: false,
+        // React StrictMode double-mount orphans navigator/process locks and throws after ~5s.
+        lock: authLockNoOp
       }
     })
   } catch (error) {
